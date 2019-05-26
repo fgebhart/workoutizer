@@ -1,7 +1,8 @@
-
 // Enable Navbar Dropdown
 $(document).ready(function () {
-    $(".dropdown-trigger").dropdown();
+    $(".dropdown-trigger").dropdown({
+        coverTrigger: false
+    });
 });
 
 
@@ -20,4 +21,3 @@ document.addEventListener('DOMContentLoaded', function () {
 $(document).ready(function () {
     $('.sidenav').sidenav();
 });
-
