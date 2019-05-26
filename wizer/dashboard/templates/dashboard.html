@@ -1,52 +1,45 @@
-<html>
 <title>Workoutizer - Dashboard</title>
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
+    <body>
+    <div class="container">
+        <p class="flow-text">I am Flow Text</p>
+        <blockquote>
+            This is an example quotation that uses the blockquote tag.
+        </blockquote>
 
+        <p>normal paragraph</p>
 
-<body>
-<div class="container">
-    <!-- Page Content goes here -->
+        <img src="{% static 'img/star.png' %}" alt="My image">
 
-    <p>hello world</p>
+        <table class="highlight responsive-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Item Name</th>
+                <th>Item Price</th>
+            </tr>
+            </thead>
 
-    <img src="{% static 'img/star.png' %}" alt="My image">
-
-
-    <table class="highlight responsive-table">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Item Name</th>
-            <th>Item Price</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr>
-            <td>Alvin</td>
-            <td>Eclair</td>
-            <td>$0.87</td>
-        </tr>
-        <tr>
-            <td>Alan</td>
-            <td>Jellybean</td>
-            <td>$3.76</td>
-        </tr>
-        <tr>
-            <td>Jonathan</td>
-            <td>Lollipop</td>
-            <td>$7.00</td>
-        </tr>
-        </tbody>
-    </table>
-
-    <a href="activity" class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>add activity</a>
-</div>
-
-
-</body>
-
+            <tbody>
+            <tr>
+                <td>Alvin</td>
+                <td>Eclair</td>
+                <td>$0.87</td>
+            </tr>
+            <tr>
+                <td>Alan</td>
+                <td>Jellybean</td>
+                <td>$3.76</td>
+            </tr>
+            <tr>
+                <td>Jonathan</td>
+                <td>Lollipop</td>
+                <td>$7.00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    </body>
 {% endblock %}
-</html>

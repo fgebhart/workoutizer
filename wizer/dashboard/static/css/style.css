@@ -1,0 +1,7 @@
+i.icon-orange {
+    color: #ff9100;
+}
+
+ul.dropdown-content-black {
+    color: #000; /* no need for !important :) */
+}
