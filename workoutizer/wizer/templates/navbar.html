@@ -1,0 +1,44 @@
+{% load custom_tags %}
+
+<nav class='{% get_setting "PRIMARY_COLOR" %}'>
+    <div class="nav-wrapper">
+        <a href="/" class="center brand-logo"><i class="material-icons">polymer</i><b
+                class="flow-text hide-on-med-and-down">Workoutizer</b></a>
+
+        <ul class="left">
+            <li><a href="/activity/add" class="waves-effect waves-light btn {% get_setting "SECONDARY_COLOR" %}"><i
+                    class="material-icons left">add</i>Activity</a></li>
+        </ul>
+        <ul class="right">
+            <li><a class="dropdown-trigger" href="#!" data-target="mysports-dd">
+                <i class="material-icons">directions_run directions_bike expand_more</i></a></li>
+            <li><a class="dropdown-trigger" href="#!" data-target="notification-dd">
+                <i class="material-icons">notifications_none expand_more</i></a></li>
+            <li><a class="dropdown-trigger" href="#!" data-target="settings-dd">
+                <i class="material-icons">build expand_more</i></a></li>
+        </ul>
+    </div>
+</nav>
+
+{# Dropdowns #}
+{# Settings #}
+<ul id="settings-dd" class="dropdown-content">
+    <li><a href="#!" style="color: black;"><div><b>Fabian Gebhart</b><p>That's me</p></div></a></li>
+    <li class="divider"></li>
+    <li><a href="#!" style="color: black;">Profile</a></li>
+    <li><a href="#!" style="color: black;">Settings</a></li>
+    <li class="divider"></li>
+    <li><a href="#!" style="color: grey;">Sign out</a></li>
+</ul>
+{# My Sports #}
+<ul id="mysports-dd" class="dropdown-content">
+    <li><a href="#!" style="color: black;">Running</a></li>
+    <li><a href="#!" style="color: black;">Swimming</a></li>
+    <li><a href="#!" style="color: black;">Biking</a></li>
+    <li class="divider"></li>
+    <li><a href="#!" style="color: grey;"><i class="material-icons left">add</i>Sport</a></li>
+</ul>
+{# Notifications #}
+<ul id="notification-dd" class="dropdown-content">
+    <li><a href="#!" style="color: grey;"><i class="material-icons left">info_outline</i>nothing here</a></li>
+</ul>
