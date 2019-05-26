@@ -1,13 +1,13 @@
-<title>Workoutizer - Dashboard</title>
+<title>Activity</title>
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
     <body>
     <div class="container">
         <p class="flow-text">Activities</p>
-
-        <p>normal paragraph</p>
-
+        {% for id in activity_id %}
+        <p>my activity id: {{ id }}</p>
+        {% endfor %}
         <img src="{% static 'img/star.png' %}" alt="My image">
 
     </div>

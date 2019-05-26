@@ -1,7 +1,15 @@
+import logging
+
 from django.shortcuts import render
 from django.views.generic import View
+from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist
 
-from wizer.models import Sport, Activity
+from .models import Sport, Activity
+from .forms import AddSportsForm
+
+
+log = logging.getLogger(__name__)
 
 
 class DashboardView(View):
@@ -16,9 +24,16 @@ class DashboardView(View):
 class ActivityView(View):
     template_name = "activity/activity.html"
 
-    def get(self, request):
+    def get(self, request, activity_id):
         sports = Sport.objects.all().order_by('id')
-        return render(request, self.template_name, {'sports': sports})
+        log.error(f"got activity_id: {activity_id}")
+        try:
+            activity = Activity.objects.get(id=activity_id)
+            log.error(f"database has activity: {activity}")
+            return render(request, self.template_name, {'sports': sports, 'activity_id': activity_id})
+        except ObjectDoesNotExist:
+            log.critical("this activity does not exist")
+            raise Http404
 
 
 class AddActivityView(View):
@@ -32,9 +47,16 @@ class AddActivityView(View):
 class SportsView(View):
     template_name = "sports/sports.html"
 
-    def get(self, request):
+    def get(self, request, sports_name_slug):
         sports = Sport.objects.all().order_by('id')
-        return render(request, self.template_name, {'sports': sports})
+        log.error(f"got sports name: {sports_name_slug}")
+        try:
+            sport = Sport.objects.get(sports_name_slug=sports_name_slug)
+            log.error(f"database has sport: {sport}")
+            return render(request, self.template_name, {'sports': sports, 'sports_name': sport})
+        except ObjectDoesNotExist:
+            log.critical("this sport does not exist")
+            raise Http404
 
 
 class AddSportsView(View):
@@ -43,3 +65,10 @@ class AddSportsView(View):
     def get(self, request):
         sports = Sport.objects.all().order_by('id')
         return render(request, self.template_name, {'sports': sports})
+
+    def post(self, request):
+        form = AddSportsForm(request.POST)
+        if form.is_valid():
+            print(f"got form: {form.cleaned_data}")
+            sports_name = form.cleaned_data['sports_name']
+            print(f"sports_name: {sports_name}")

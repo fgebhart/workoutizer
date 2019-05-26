@@ -1,13 +1,11 @@
-<title>Sport</title>
+<title>Sports Discipline</title>
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
     <body>
     <div class="container">
-        <p class="flow-text">Sports Disciplines</p>
-
-        <p>normal paragraph</p>
-
+        <p class="flow-text">{{ sports_name }}</p>
+        <p>sports name: {{ sports_name }} </p>
         <img src="{% static 'img/star.png' %}" alt="My image">
 
     </div>

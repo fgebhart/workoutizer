@@ -33,3 +33,16 @@ document.addEventListener('DOMContentLoaded', function () {
 $(document).ready(function () {
     $('select').formSelect();
 });
+
+
+// enable button when form is filled
+$('#button').attr('disabled', true);
+$('input:text').keyup(function () {
+    var disable = false;
+    $('input:text').each(function () {
+        if ($(this).val() == "") {
+            disable = true;
+        }
+    });
+    $('#button').prop('disabled', disable);
+});

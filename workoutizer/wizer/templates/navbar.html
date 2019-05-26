@@ -4,7 +4,7 @@
                 class="flow-text hide-on-med-and-down">Workoutizer</b></a>
 
         <ul class="left">
-            <li><a href="/activity/add" class="waves-effect waves-light btn"><i
+            <li><a href="/add-activity" class="waves-effect waves-light btn"><i
                     class="material-icons left">add</i>Activity</a></li>
         </ul>
         <ul class="right">
@@ -35,10 +35,10 @@
 {# My Sports #}
 <ul id="mysports-dd" class="dropdown-content">
     {% for s in sports %}
-    <li><a href="#!">{{ s.sport }}</a></li>
+    <li><a href="/sports/{{ s.sports_name_slug }}">{{ s.sports_name }}</a></li>
     {% endfor %}
     <li class="divider"></li>
-    <li><a href="/sports/add"><i class="material-icons left">add</i>Sport</a></li>
+    <li><a href="/add-sports"><i class="material-icons left">add</i>Sport</a></li>
 </ul>
 
 {# Notifications #}
