@@ -1,6 +1,4 @@
-{% load custom_tags %}
-
-<nav class='{% get_setting "PRIMARY_COLOR" %}'>
+<nav>
     <div class="nav-wrapper">
         <a href="/" class="center brand-logo"><i class="material-icons">polymer</i><b
                 class="flow-text hide-on-med-and-down">Workoutizer</b></a>
@@ -15,7 +13,7 @@
             <li><a class="dropdown-trigger" href="#!" data-target="notification-dd">
                 <i class="material-icons">notifications_none expand_more</i></a></li>
             <li><a class="dropdown-trigger" href="#!" data-target="settings-dd">
-                <i class="material-icons">build expand_more</i></a></li>
+                <i class="material-icons">settings expand_more</i></a></li>
         </ul>
     </div>
 </nav>
@@ -23,27 +21,27 @@
 {# Dropdowns #}
 {# Settings #}
 <ul id="settings-dd" class="dropdown-content">
-    <li><a href="#!" style="color: black;">
+    <li><a href="#!">
         <div><b>Fabian Gebhart</b>
             <p>That's me</p></div>
     </a></li>
     <li class="divider"></li>
-    <li><a href="#!" style="color: black;">Profile</a></li>
-    <li><a href="#!" style="color: black;">Settings</a></li>
+    <li><a href="#!">Profile</a></li>
+    <li><a href="#!">Settings</a></li>
     <li class="divider"></li>
-    <li><a href="#!" style="color: grey;"><i class="material-icons left">vpn_key</i>Sign out</a></li>
+    <li><a href="#!"><i class="material-icons left">vpn_key</i>Sign out</a></li>
 </ul>
 
 {# My Sports #}
 <ul id="mysports-dd" class="dropdown-content">
     {% for s in sports %}
-    <li><a href="#!" style="color: black">{{ s.sport }}</a></li>
+    <li><a href="#!">{{ s.sport }}</a></li>
     {% endfor %}
     <li class="divider"></li>
-    <li><a href="/sports/add" style="color: grey;"><i class="material-icons left">add</i>Sport</a></li>
+    <li><a href="/sports/add"><i class="material-icons left">add</i>Sport</a></li>
 </ul>
 
 {# Notifications #}
 <ul id="notification-dd" class="dropdown-content">
-    <li><a href="#!" style="color: grey;"><i class="material-icons left">info_outline</i>nothing here</a></li>
+    <li><a href="#!"><i class="material-icons left">info_outline</i>nothing here</a></li>
 </ul>

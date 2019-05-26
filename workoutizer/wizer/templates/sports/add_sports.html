@@ -1,15 +1,52 @@
-<title>Workoutizer - Dashboard</title>
+<title>Add new Sports</title>
+
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
+
     <body>
     <div class="container">
-        <p class="flow-text">Add new Sports Discipline</p>
+        <p class="flow-text">Add new Sports</p>
+        <p>Use the following form to add a new sports type or pick a predefined template:</p>
 
-        <p>normal paragraph</p>
+        <div class="row">
+            <div class="input-field col s6">
+                <select>
+                    <option value="" disabled selected>Pick Sports template</option>
+                    <option value="1">Jogging</option>
+                    <option value="2">Swimming</option>
+                    <option value="4">Cycling</option>
+                </select>
+            </div>
+        </div>
+        <p>Or create your own new Sports Type:</p>
+        <form>
+            <div class="row">
+                <div class="input-field col s6">
+                    <input id="sports_name" type="text" class="validate">
+                    <label for="sports_name">Sports Name</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                    <input id="icon" type="text" class="validate">
+                    <label for="icon">Icon</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                    <input id="color" type="text" class="validate">
+                    <label for="color">Color</label>
+                </div>
+            </div>
+        </form>
 
-        <img src="{% static 'img/star.png' %}" alt="My image">
 
+        <button id="button" class="btn waves-effect waves-light" type="submit" name="action">Submit
+            <i class="material-icons right">send</i>
+        </button>
     </div>
+
     </body>
+
 {% endblock %}
