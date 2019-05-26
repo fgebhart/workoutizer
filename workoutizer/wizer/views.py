@@ -1,15 +1,16 @@
 from django.shortcuts import render
 from django.views.generic import View
 
-from wizer.models import Sport
+from wizer.models import Sport, Activity
 
 
 class DashboardView(View):
     template_name = "dashboard.html"
 
     def get(self, request):
-        sports = Sport.objects.all().order_by('-id')
-        return render(request, self.template_name, {'sports': sports})
+        sports = Sport.objects.all().order_by('id')
+        activities = Activity.objects.all()
+        return render(request, self.template_name, {'sports': sports, 'activities': activities})
 
 
 class ActivityView(View):

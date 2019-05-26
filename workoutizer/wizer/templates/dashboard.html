@@ -4,44 +4,34 @@
 {% block body %}
     <body>
     <div class="container">
-        <p class="flow-text">I am Flow Text</p>
-        <blockquote>
-            This is an example quotation that uses the blockquote tag.
-        </blockquote>
+        <h3>Dashboard</h3>
 
-        <p>normal paragraph</p>
+        <p class="flow-text">Your Activities</p>
 
-
-
-        <img src="{% static 'img/star.png' %}" alt="My image">
-
-        <table class="highlight responsive-table">
+        <table class="highlight">
             <thead>
             <tr>
+                <th>Date</th>
                 <th>Name</th>
-                <th>Item Name</th>
-                <th>Item Price</th>
+                <th>Sport</th>
+                <th>Duration</th>
+                <th>Distance</th>
             </tr>
             </thead>
+            {% for a in activities %}
+                <tbody>
+                <tr>
+                    <td>{{ a.date }}</td>
+                    <td>{{ a.title }}</td>
+                    <td>{{ a.sport }}</td>
+                    <td>{{ a.duration }}</td>
+                    <td>{{ a.distance }}</td>
+                </tr>
+                </tbody>
+            {% endfor %}
 
-            <tbody>
-            <tr>
-                <td>Alvin</td>
-                <td>Eclair</td>
-                <td>$0.87</td>
-            </tr>
-            <tr>
-                <td>Alan</td>
-                <td>Jellybean</td>
-                <td>$3.76</td>
-            </tr>
-            <tr>
-                <td>Jonathan</td>
-                <td>Lollipop</td>
-                <td>$7.00</td>
-            </tr>
-            </tbody>
         </table>
+
     </div>
     </body>
 {% endblock %}

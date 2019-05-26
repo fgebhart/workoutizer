@@ -1,3 +1,7 @@
+body {
+    font-family: 'Ubuntu', sans-serif;
+}
+
 i.icon-orange {
     color: #ff9100;
 }
@@ -6,7 +10,16 @@ ul.dropdown-content-black {
     color: #000; /* no need for !important :) */
 }
 
+a.btn {
+    font-family: 'Ubuntu', sans-serif;
+    background-color: #ff9100; /* Green */
+    text-transform: none;
+}
 
 .dropdown-content {
     min-width: 200px;
+}
+
+h4 {
+    font-family: sans-serif;
 }

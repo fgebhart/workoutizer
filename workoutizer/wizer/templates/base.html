@@ -1,5 +1,7 @@
 <html lang="en">
+
 {% load static %}
+
 <head>
     <title>Workoutizer</title>
     <meta charset="utf-8">
@@ -11,22 +13,18 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}"/>
     <link type="text/css" rel="stylesheet" href="{% static 'css/materialize.min.css' %}" media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="{% static 'css/style.css' %}"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-
+    <script type="text/javascript" src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
 </head>
 
 <body>
-
 {% include 'navbar.html' %}
 {% block body %}
     //content will be here
 {% endblock %}
-
 <!--JavaScript at end of body for optimized loading-->
 <script type="text/javascript" src="{% static 'js/materialize.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/materialize.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
-
 </body>
+
 </html>
