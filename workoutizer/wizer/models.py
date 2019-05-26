@@ -6,7 +6,7 @@ class Sport(models.Model):
     def __str__(self):
         return self.sport
 
-    sport = models.CharField(max_length=200)
+    sport = models.CharField(max_length=200, unique=True)
     color = models.CharField(max_length=200)
 
 
