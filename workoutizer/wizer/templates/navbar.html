@@ -9,7 +9,7 @@
         </ul>
         <ul class="right">
             <li><a class="dropdown-trigger" href="#!" data-target="mysports-dd">
-                <i class="material-icons">pool directions_run directions_bike expand_more</i></a></li>
+                <i class="material-icons">directions_run expand_more</i></a></li>
             <li><a class="dropdown-trigger" href="#!" data-target="notification-dd">
                 <i class="material-icons">notifications_none expand_more</i></a></li>
             <li><a class="dropdown-trigger" href="#!" data-target="settings-dd">
@@ -35,7 +35,7 @@
 {# My Sports #}
 <ul id="mysports-dd" class="dropdown-content">
     {% for s in sports %}
-    <li><a href="/sports/{{ s.sports_name_slug }}">{{ s.sports_name }}</a></li>
+    <li><a href="/sports/{{ s.slug }}">{{ s.name }}</a></li>
     {% endfor %}
     <li class="divider"></li>
     <li><a href="/add-sports"><i class="material-icons left">add</i>Sport</a></li>

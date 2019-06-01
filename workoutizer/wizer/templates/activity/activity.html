@@ -5,9 +5,25 @@
     <body>
     <div class="container">
         <p class="flow-text">Activities</p>
-        {% for id in activity_id %}
-        <p>my activity id: {{ id }}</p>
-        {% endfor %}
+
+
+        <table class="highlight" style="width: 40%">
+            <tbody>
+            {% for k, v in activity.items %}
+                <tr>
+                    <th scope="row">{{ k }}:</th>
+                    <td>{{ v }}</td>
+                <tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p></p>
+        {{ activity }}
+
+        <br>
+        <p></p>
+
         <img src="{% static 'img/star.png' %}" alt="My image">
 
     </div>

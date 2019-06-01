@@ -4,8 +4,11 @@
 {% block body %}
     <body>
     <div class="container">
-        <p class="flow-text">{{ sports_name }}</p>
-        <p>sports name: {{ sports_name }} </p>
+        <p class="flow-text">{{ sport.name }}</p>
+        <p>sports name: {{ sport.name }} </p>
+        <p>sports name slug: {{ sport.slug }} </p>
+        <p>sports name color: {{ sport.color }} </p>
+        <p>sports name icon: {{ sport.icon }} </p>
         <img src="{% static 'img/star.png' %}" alt="My image">
 
     </div>

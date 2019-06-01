@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
+from django.forms.models import model_to_dict
 
 from .models import Sport, Activity
 from .forms import AddSportsForm
@@ -25,12 +26,11 @@ class ActivityView(View):
     template_name = "activity/activity.html"
 
     def get(self, request, activity_id):
-        sports = Sport.objects.all().order_by('id')
         log.error(f"got activity_id: {activity_id}")
         try:
-            activity = Activity.objects.get(id=activity_id)
+            activity = model_to_dict(Activity.objects.get(id=activity_id))
             log.error(f"database has activity: {activity}")
-            return render(request, self.template_name, {'sports': sports, 'activity_id': activity_id})
+            return render(request, self.template_name, {'activity': activity})
         except ObjectDoesNotExist:
             log.critical("this activity does not exist")
             raise Http404
@@ -48,12 +48,11 @@ class SportsView(View):
     template_name = "sports/sports.html"
 
     def get(self, request, sports_name_slug):
-        sports = Sport.objects.all().order_by('id')
         log.error(f"got sports name: {sports_name_slug}")
         try:
-            sport = Sport.objects.get(sports_name_slug=sports_name_slug)
+            sport = Sport.objects.get(slug=sports_name_slug)
             log.error(f"database has sport: {sport}")
-            return render(request, self.template_name, {'sports': sports, 'sports_name': sport})
+            return render(request, self.template_name, {'sport': sport})
         except ObjectDoesNotExist:
             log.critical("this sport does not exist")
             raise Http404
