@@ -1,6 +1,7 @@
 <html lang="en">
 
 {% load static %}
+{% load leaflet_tags %}
 
 <head>
     <title>Workoutizer</title>
@@ -14,6 +15,8 @@
     <link type="text/css" rel="stylesheet" href="{% static 'css/materialize.css' %}" media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="{% static 'css/style.css' %}"/>
     <script type="text/javascript" src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
+    {% leaflet_js %}
+    {% leaflet_css %}
 </head>
 
 <body>

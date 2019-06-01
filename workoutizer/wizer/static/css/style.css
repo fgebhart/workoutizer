@@ -11,3 +11,9 @@ a.btn {
 .dropdown-content {
     min-width: 200px;
 }
+
+
+.leaflet-container { /* all maps */
+    /*width: 600px;*/
+    height: 65%;
+}

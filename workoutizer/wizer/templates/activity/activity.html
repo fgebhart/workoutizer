@@ -1,31 +1,51 @@
 <title>Activity</title>
 {% extends 'base.html' %}
 {% load static %}
+{% load leaflet_tags %}
 {% block body %}
     <body>
     <div class="container">
-        <p class="flow-text">Activities</p>
-
-
-        <table class="highlight" style="width: 40%">
-            <tbody>
-            {% for k, v in activity.items %}
-                <tr>
-                    <th scope="row">{{ k }}</th>
-                    <td>{{ v }}</td>
-                <tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
-        <p></p>
-        {{ activity }}
-
+        <h3>{{ activity.title }}</h3>
+        <p>{{ activity.date }}</p>
+        <hr>
         <br>
-        <p></p>
 
-        <img src="{% static 'img/star.png' %}" alt="My image">
+        <div class="row">
+            <div class="col s2">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th scope="row">Duration</th>
+                        <td>{{ activity.duration }}</td>
+                    <tr>
+                    <tr>
+                        <th scope="row">Distance</th>
+                        <td>{{ activity.distance }}</td>
+                    <tr>
+                    <tr>
+                        <th scope="row">Sport</th>
+                        <td>{{ activity.sport }}</td>
+                    <tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col s10">
+                {#                {% leaflet_map "main" %}#}
+                <div id="mapid" style="height: 400px;"></div>
+                <script>
+                    var geojsonFeature = {{ track|safe }};
+                    var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+                    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(mymap);
 
+                    var myroads = L.geoJSON().addTo(mymap);
+                    myroads.addData(geojsonFeature);
+
+                </script>
+
+            </div>
+        </div>
     </div>
     </body>
 {% endblock %}
