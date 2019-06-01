@@ -26,11 +26,13 @@ class ActivityView(View):
     template_name = "activity/activity.html"
 
     def get(self, request, activity_id):
+        sports = Sport.objects.all().order_by('id')
+
         log.error(f"got activity_id: {activity_id}")
         try:
             activity = model_to_dict(Activity.objects.get(id=activity_id))
             log.error(f"database has activity: {activity}")
-            return render(request, self.template_name, {'activity': activity})
+            return render(request, self.template_name, {'activity': activity, 'sports': sports})
         except ObjectDoesNotExist:
             log.critical("this activity does not exist")
             raise Http404
@@ -49,10 +51,13 @@ class SportsView(View):
 
     def get(self, request, sports_name_slug):
         log.error(f"got sports name: {sports_name_slug}")
+        sport_id = Sport.objects.get(slug=sports_name_slug).id
+        activities = Activity.objects.filter(sport=sport_id)
+        sports = Sport.objects.all().order_by('id')
         try:
-            sport = Sport.objects.get(slug=sports_name_slug)
+            sport = model_to_dict(Sport.objects.get(slug=sports_name_slug))
             log.error(f"database has sport: {sport}")
-            return render(request, self.template_name, {'sport': sport})
+            return render(request, self.template_name, {'activities': activities, 'sport': sport, 'sports': sports})
         except ObjectDoesNotExist:
             log.critical("this sport does not exist")
             raise Http404

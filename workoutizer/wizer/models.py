@@ -27,4 +27,4 @@ class Activity(models.Model):
     date = models.DateTimeField()
     duration = models.FloatField()
     distance = models.FloatField()
-    track_file = models.CharField(max_length=400)
+    track_file = models.CharField(max_length=400, blank=True)
