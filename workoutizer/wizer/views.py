@@ -1,5 +1,4 @@
 import logging
-from json import loads, dumps
 
 from django.shortcuts import render
 from django.views.generic import View
@@ -10,7 +9,7 @@ from django.forms.models import model_to_dict
 from .models import Sport, Activity
 from .forms import AddSportsForm
 from .gpx_converter import GPXConverter
-from .geojson_dict import mydict
+
 
 log = logging.getLogger(__name__)
 
@@ -31,16 +30,20 @@ class ActivityView(View):
         sports = Sport.objects.all().order_by('id')
         log.error(f"got activity_id: {activity_id}")
         gjson = GPXConverter(path_to_gpx='../../../tracks/2019-05-30_13-31-01.gpx', activity="cycling")
-        track = gjson.get_geojson()
-        print(f"my track: {track}")
-
+        trace = gjson.get_geojson()
+        track_parameters = gjson.track_params
+        log.debug(f"my track: {trace}")
         try:
             activity = model_to_dict(Activity.objects.get(id=activity_id))
             log.error(f"database has activity: {activity}")
-            return render(request, self.template_name, {'activity': activity, 'sports': sports, 'track': track})
         except ObjectDoesNotExist:
             log.critical("this activity does not exist")
             raise Http404
+
+        return render(request, self.template_name, {'activity': activity,
+                                                    'sports': sports,
+                                                    'trace': trace,
+                                                    'track_params': track_parameters})
 
 
 class AddActivityView(View):
@@ -62,10 +65,11 @@ class SportsView(View):
         try:
             sport = model_to_dict(Sport.objects.get(slug=sports_name_slug))
             log.error(f"database has sport: {sport}")
-            return render(request, self.template_name, {'activities': activities, 'sport': sport, 'sports': sports})
         except ObjectDoesNotExist:
             log.critical("this sport does not exist")
             raise Http404
+
+        return render(request, self.template_name, {'activities': activities, 'sport': sport, 'sports': sports})
 
 
 class AddSportsView(View):

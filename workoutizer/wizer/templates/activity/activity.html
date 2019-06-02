@@ -11,7 +11,7 @@
         <br>
 
         <div class="row">
-            <div class="col s2">
+            <div class="col s2 hide-on-med-and-down">
                 <table class="table">
                     <tbody>
                     <tr>
@@ -30,17 +30,16 @@
                 </table>
             </div>
             <div class="col s10">
-                {#                {% leaflet_map "main" %}#}
-                <div id="mapid" style="height: 400px;"></div>
+                <div id="mapid"></div>
                 <script>
-                    var geojsonFeature = {{ track|safe }};
-                    var mymap = L.map('mapid').setView([47.919673, 7.903712], 13);
+                    var geojsonFeature = {{ trace|safe }};
+                    var mymap = L.map('mapid').setView([{{ track_params.center_lon }}, {{ track_params.center_lat }}], 12);
                     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     }).addTo(mymap);
 
-                    var myroads = L.geoJSON().addTo(mymap);
-                    myroads.addData(geojsonFeature);
+                    var mytrace = L.geoJSON().addTo(mymap);
+                    mytrace.addData(geojsonFeature);
 
                 </script>
 

@@ -1,11 +1,16 @@
-from django import forms
-from django.forms import ModelForm, Textarea
+from django.forms import ModelForm
 
-from .models import Sport
+from .models import Sport, Activity
 
 
 class AddSportsForm(ModelForm):
     class Meta:
         model = Sport
+        fields = '__all__'
+
+
+class AddActivityForm(ModelForm):
+    class Meta:
+        model = Activity
         fields = '__all__'
 

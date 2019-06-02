@@ -1,6 +1,36 @@
+import logging
+from math import cos, sin, atan2, sqrt, radians, degrees
+
 import gpxpy
 import gpxpy.gpx
 from geojson import MultiLineString
+
+log = logging.getLogger(__name__)
+
+
+def center_geolocation(geolocations):
+    """
+    Provide a relatively accurate center lat, lon returned as a list pair, given
+    a list of list pairs.
+    ex: in: geolocations = ((lat1,lon1), (lat2,lon2),)
+        out: (center_lat, center_lon)
+    """
+    x = 0
+    y = 0
+    z = 0
+
+    for lon, lat in geolocations:
+        lat = radians(float(lat))
+        lon = radians(float(lon))
+        x += cos(lat) * cos(lon)
+        y += cos(lat) * sin(lon)
+        z += sin(lat)
+
+    x = float(x / len(geolocations))
+    y = float(y / len(geolocations))
+    z = float(z / len(geolocations))
+
+    return degrees(atan2(y, x)), degrees(atan2(z, sqrt(x * x + y * y)))
 
 
 def fill_dict(name, activity, color, opacity, width, geometry):
@@ -29,6 +59,7 @@ class GPXConverter:
         self.gpx = None
         self.geojson_multilinestring = None
         self.geojson_dict = None
+        self.track_params = None
 
         # run converter
         self.read_gpx_file()
@@ -45,6 +76,9 @@ class GPXConverter:
             for segment in track.segments:
                 for point in segment.points:
                     list_of_points.append((point.longitude, point.latitude))
+        center = center_geolocation(list_of_points)
+        print(f"center points: {center}")
+        self.track_params = TrackParameters(center)
         self.geojson_multilinestring = MultiLineString([list_of_points])
 
     def insert_data_into_geojson_dict(self):
@@ -52,7 +86,6 @@ class GPXConverter:
             track_name = self.track_name
         else:
             track_name = self.gpx.tracks[0].name
-            print(f"gpx name: {self.track_name}")
         self.geojson_dict = fill_dict(
             name=track_name,
             activity=self.activity,
@@ -64,3 +97,14 @@ class GPXConverter:
 
     def get_geojson(self):
         return self.geojson_dict
+
+
+class TrackParameters:
+    def __init__(self, center):
+        self.center_lon = center[1]
+        self.center_lat = center[0]
+
+
+# gjson = GPXConverter(path_to_gpx='../../../../tracks/2019-05-30_13-31-01.gpx', activity="cycling")
+# print(gjson.get_geojson())
+
