@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.gis.db import models as gismodel
 
 
 class Sport(models.Model):
@@ -14,7 +13,8 @@ class Sport(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        self.sports_name_slug = self.name.lower().replace(" ", "-")
+        self.slug = self.name.lower().replace(" ", "-")
+        print(f"converting name {self.name} to slug {self.slug}")
         super(Sport, self).save()
 
 

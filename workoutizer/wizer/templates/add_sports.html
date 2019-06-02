@@ -6,7 +6,7 @@
 
     <body>
     <div class="container">
-        <p class="flow-text">Add new Sports</p>
+        <h3>Add new Sports</h3>
         <p>Use the following form to add a new sports type or pick a predefined template:</p>
 
         <div class="row">
@@ -19,27 +19,9 @@
                 </select>
             </div>
         </div>
-        <p>Or create your own new Sports Type:</p>
-        <form action="add-sports" method="post" accept-charset="utf-8">
+        <form action="/add-sports/" method="post" accept-charset="utf-8">
             {% csrf_token %}
-            <div class="row">
-                <div class="input-field col s6">
-                    <input id="sports_name" type="text" class="validate">
-                    <label for="sports_name">Sports Name</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s6">
-                    <input id="icon" type="text" class="validate">
-                    <label for="icon">Icon</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s6">
-                    <input id="color" type="text" class="validate">
-                    <label for="color">Color</label>
-                </div>
-            </div>
+            {{ form }}
             <button id="button" class="btn waves-effect waves-light" type="submit" name="action">Submit
                 <i class="material-icons right">send</i>
             </button>

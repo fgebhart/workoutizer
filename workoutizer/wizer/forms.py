@@ -6,7 +6,7 @@ from .models import Sport, Activity
 class AddSportsForm(ModelForm):
     class Meta:
         model = Sport
-        fields = '__all__'
+        fields = 'name', 'icon', 'color',
 
 
 class AddActivityForm(ModelForm):

@@ -13,6 +13,7 @@
                 <th>Name</th>
                 <th>Color</th>
                 <th>Icon</th>
+                <th>Slug</th>
             </tr>
             </thead>
             {% for s in sports %}
@@ -21,12 +22,13 @@
                     <td><a href="/sports/{{ s.slug }}">{{ s.name }}</a></td>
                     <td>{{ s.color }}</td>
                     <td>{{ s.icon }}</td>
+                    <td>{{ s.slug }}</td>
                 </tr>
                 </tbody>
             {% endfor %}
-
         </table>
-
+        <br>
+        <a href="/add-sports" class="waves-effect waves-light btn"><i class="material-icons left">add</i>Sport</a>
     </div>
     </body>
 {% endblock %}

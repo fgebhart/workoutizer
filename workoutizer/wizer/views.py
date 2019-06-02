@@ -55,7 +55,7 @@ class ActivityView(View):
 
 
 class AddActivityView(View):
-    template_name = "activity/add_activity.html"
+    template_name = "add_activity.html"
 
     def get(self, request):
         sports = Sport.objects.all().order_by('id')
@@ -81,18 +81,41 @@ class SportsView(View):
 
 
 class AddSportsView(View):
-    template_name = "sports/add_sports.html"
+    template_name = "add_sports.html"
 
     def get(self, request):
-        form = AddSportsForm(request.POST)
         sports = Sport.objects.all().order_by('id')
         return render(request, self.template_name, {'sports': sports})
 
     def post(self, request):
         form = AddSportsForm(request.POST)
+        print("here I am")
+        print(f"form errors: {form.errors}")
         if form.is_valid():
             print(f"got form: {form.cleaned_data}")
             sports_name = form.cleaned_data['sports_name']
             print(f"sports_name: {sports_name}")
             instance = form.save()
-        return HttpResponseRedirect('/')
+            instance.save()
+        return HttpResponseRedirect('/sports')
+
+
+def add_sports_view(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        print("got POST")
+        # create a form instance and populate it with data from the request:
+        form = AddSportsForm(request.POST)
+        print(f"form: {form}")
+        # check whether it's valid:
+        if form.is_valid():
+            print(f"got form: {form.cleaned_data}")
+            instance = form.save()
+            instance.save()
+            return HttpResponseRedirect('/sports/')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = AddSportsForm()
+
+    return render(request, 'add_sports.html', {'form': form})
