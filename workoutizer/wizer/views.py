@@ -81,7 +81,7 @@ def add_activity_view(request):
             print(f"got form: {form.cleaned_data}")
             instance = form.save()
             instance.save()
-            return HttpResponseRedirect('/sports/')
+            return HttpResponseRedirect('/')
     else:
         form = AddActivityForm()
     return render(request, 'add_activity.html', {'sports': sports, 'form': form})

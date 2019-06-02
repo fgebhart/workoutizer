@@ -36,19 +36,19 @@ $(document).ready(function () {
 
 
 // enable button when form is filled
-$('#button').attr('disabled', true);
-$('input:text').keyup(function () {
-    var disable = false;
-    $('input:text').each(function () {
-        if ($(this).val() == "") {
-            disable = true;
-        }
-    });
-    $('#button').prop('disabled', disable);
-});
+// $('#button').attr('disabled', true);
+// $('input:text').keyup(function () {
+//     var disable = false;
+//     $('input:text').each(function () {
+//         if ($(this).val() == "") {
+//             disable = true;
+//         }
+//     });
+//     $('#button').prop('disabled', disable);
+// });
 
 
-// enable jquery datepicker
-$(function () {
-    $("#datepicker").datepicker();
-});
+// // enable jquery datepicker
+// $(function () {
+//     $("#id_date").datepicker();
+// });

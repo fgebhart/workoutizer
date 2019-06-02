@@ -18,10 +18,10 @@
                 <label for="{{ form.sport.id_for_label }}">Sport</label>
                 {{ form.sport }}
             </div>
-            <div class="fieldWrapper" id="datepicker">
+            <div class="fieldWrapper">
                 {{ form.date.errors }}
                 <label for="{{ form.date.id_for_label }}">Date</label>
-                {{ form.date }}
+                <input name='date' type="date">
             </div>
             <div class="fieldWrapper">
                 {{ form.duration.errors }}
@@ -42,7 +42,6 @@
                 <i class="material-icons right">send</i>
             </button>
         </form>
-
 
 
     </div>
