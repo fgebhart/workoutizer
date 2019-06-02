@@ -8,8 +8,8 @@ class Sport(models.Model):
 
     name = models.CharField(max_length=24, unique=True)
     slug = models.CharField(max_length=24, unique=True, editable=False)
-    color = models.CharField(max_length=100, unique=True)
-    icon = models.CharField(max_length=100)
+    color = models.CharField(max_length=24, unique=True)
+    icon = models.CharField(max_length=24)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -28,4 +28,4 @@ class Activity(models.Model):
     date = models.DateTimeField()
     duration = models.FloatField()
     distance = models.FloatField()
-    track_file = models.CharField(max_length=400, blank=True)
+    trace_file = models.CharField(max_length=100, blank=True)

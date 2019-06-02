@@ -17,3 +17,8 @@ a.btn {
     /*width: 600px;*/
     height: 65%;
 }
+
+
+.errorlist {
+    color: red;
+}

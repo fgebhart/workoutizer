@@ -21,7 +21,22 @@
         </div>
         <form action="/add-sports/" method="post" accept-charset="utf-8">
             {% csrf_token %}
-            {{ form }}
+            {{ form.non_field_errors }}
+            <div class="fieldWrapper">
+                {{ form.name.errors }}
+                <label for="{{ form.name.id_for_label }}">Name</label>
+                {{ form.name }}
+            </div>
+            <div class="fieldWrapper">
+                {{ form.icon.errors }}
+                <label for="{{ form.message.id_for_label }}">Icon</label>
+                {{ form.icon }}
+            </div>
+            <div class="fieldWrapper">
+                {{ form.color.errors }}
+                <label for="{{ form.sender.id_for_label }}">Color</label>
+                {{ form.color }}
+            </div>
             <button id="button" class="btn waves-effect waves-light" type="submit" name="action">Submit
                 <i class="material-icons right">send</i>
             </button>

@@ -46,3 +46,9 @@ $('input:text').keyup(function () {
     });
     $('#button').prop('disabled', disable);
 });
+
+
+// enable jquery datepicker
+$(function () {
+    $("#datepicker").datepicker();
+});

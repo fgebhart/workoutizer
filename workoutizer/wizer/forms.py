@@ -13,4 +13,3 @@ class AddActivityForm(ModelForm):
     class Meta:
         model = Activity
         fields = '__all__'
-
