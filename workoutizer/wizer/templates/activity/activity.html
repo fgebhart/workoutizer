@@ -15,16 +15,16 @@
                 <table class="table">
                     <tbody>
                     <tr>
+                        <th scope="row">Sport</th>
+                        <td>{{ activity.sport }}</td>
+                    <tr>
+                    <tr>
                         <th scope="row">Duration</th>
                         <td>{{ activity.duration }}</td>
                     <tr>
                     <tr>
                         <th scope="row">Distance</th>
                         <td>{{ activity.distance }}</td>
-                    <tr>
-                    <tr>
-                        <th scope="row">Sport</th>
-                        <td>{{ activity.sport }}</td>
                     <tr>
                     </tbody>
                 </table>
@@ -34,7 +34,7 @@
                 <div id="mapid" style="height: 400px;"></div>
                 <script>
                     var geojsonFeature = {{ track|safe }};
-                    var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+                    var mymap = L.map('mapid').setView([47.919673, 7.903712], 13);
                     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     }).addTo(mymap);

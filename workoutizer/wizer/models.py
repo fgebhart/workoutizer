@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db import models as gismodel
 
 
 class Sport(models.Model):
