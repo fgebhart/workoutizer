@@ -1,0 +1,32 @@
+<title>All Sports - Workoutizer</title>
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+    <body>
+    <div class="container">
+
+        <h3>Your Sports</h3>
+
+        <table class="highlight">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Color</th>
+                <th>Icon</th>
+            </tr>
+            </thead>
+            {% for s in sports %}
+                <tbody>
+                <tr>
+                    <td><a href="/sports/{{ s.slug }}">{{ s.name }}</a></td>
+                    <td>{{ s.color }}</td>
+                    <td>{{ s.icon }}</td>
+                </tr>
+                </tbody>
+            {% endfor %}
+
+        </table>
+
+    </div>
+    </body>
+{% endblock %}

@@ -2,7 +2,7 @@ import logging
 
 from django.shortcuts import render
 from django.views.generic import View
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 
@@ -21,6 +21,14 @@ class DashboardView(View):
         sports = Sport.objects.all().order_by('id')
         activities = Activity.objects.all()
         return render(request, self.template_name, {'sports': sports, 'activities': activities})
+
+
+class AllSportsView(View):
+    template_name = "sports/all_sports.html"
+
+    def get(self, request):
+        sports = Sport.objects.all().order_by('id')
+        return render(request, self.template_name, {'sports': sports})
 
 
 class ActivityView(View):
@@ -76,6 +84,7 @@ class AddSportsView(View):
     template_name = "sports/add_sports.html"
 
     def get(self, request):
+        form = AddSportsForm(request.POST)
         sports = Sport.objects.all().order_by('id')
         return render(request, self.template_name, {'sports': sports})
 
@@ -85,3 +94,5 @@ class AddSportsView(View):
             print(f"got form: {form.cleaned_data}")
             sports_name = form.cleaned_data['sports_name']
             print(f"sports_name: {sports_name}")
+            instance = form.save()
+        return HttpResponseRedirect('/')

@@ -1,4 +1,4 @@
-<title>Add new Sports</title>
+<title>Add new Sports - Workoutizer</title>
 
 {% extends 'base.html' %}
 {% load static %}
@@ -20,7 +20,8 @@
             </div>
         </div>
         <p>Or create your own new Sports Type:</p>
-        <form>
+        <form action="add-sports" method="post" accept-charset="utf-8">
+            {% csrf_token %}
             <div class="row">
                 <div class="input-field col s6">
                     <input id="sports_name" type="text" class="validate">
@@ -39,12 +40,11 @@
                     <label for="color">Color</label>
                 </div>
             </div>
+            <button id="button" class="btn waves-effect waves-light" type="submit" name="action">Submit
+                <i class="material-icons right">send</i>
+            </button>
         </form>
 
-
-        <button id="button" class="btn waves-effect waves-light" type="submit" name="action">Submit
-            <i class="material-icons right">send</i>
-        </button>
     </div>
 
     </body>
