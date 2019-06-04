@@ -1,16 +1,15 @@
-from django.forms import ModelForm, DateInput
+from django import forms
 
 from .models import Sport, Activity
 
 
-class AddSportsForm(ModelForm):
+class AddSportsForm(forms.ModelForm):
     class Meta:
         model = Sport
         fields = 'name', 'icon', 'color',
 
 
-class AddActivityForm(ModelForm):
+class AddActivityForm(forms.ModelForm):
     class Meta:
         model = Activity
         fields = '__all__'
-        # widgets = {'date': DateInput(attrs={'class': 'datepicker'})}

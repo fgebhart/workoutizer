@@ -28,4 +28,4 @@ class Activity(models.Model):
     date = models.DateField(blank=False)
     duration = models.FloatField()
     distance = models.FloatField()
-    trace_file = models.CharField(max_length=100, blank=True)
+    trace_file = models.FileField(null=True, blank=True)

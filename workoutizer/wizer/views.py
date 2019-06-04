@@ -22,8 +22,17 @@ class DashboardView(View):
         return render(request, self.template_name, {'sports': sports, 'activities': activities})
 
 
+class AllActivitiesView(View):
+    template_name = "all_activities.html"
+
+    def get(self, request):
+        sports = Sport.objects.all().order_by('id')
+        activities = Activity.objects.all()
+        return render(request, self.template_name, {'sports': sports, 'activities': activities})
+
+
 class AllSportsView(View):
-    template_name = "sports/all_sports.html"
+    template_name = "all_sports.html"
 
     def get(self, request):
         sports = Sport.objects.all().order_by('id')
@@ -31,7 +40,7 @@ class AllSportsView(View):
 
 
 class ActivityView(View):
-    template_name = "activity/activity.html"
+    template_name = "activity.html"
 
     def get(self, request, activity_id):
         sports = Sport.objects.all().order_by('id')
@@ -54,7 +63,7 @@ class ActivityView(View):
 
 
 class SportsView(View):
-    template_name = "sports/sports.html"
+    template_name = "sport.html"
 
     def get(self, request, sports_name_slug):
         log.error(f"got sports name: {sports_name_slug}")
@@ -87,7 +96,7 @@ def add_activity_view(request):
     return render(request, 'add_activity.html', {'sports': sports, 'form': form})
 
 
-def add_sports_view(request):
+def add_sport_view(request):
     sports = Sport.objects.all().order_by('id')
     if request.method == 'POST':
         print("got POST")
@@ -100,4 +109,4 @@ def add_sports_view(request):
             return HttpResponseRedirect('/sports/')
     else:
         form = AddSportsForm()
-    return render(request, 'add_sports.html', {'sports': sports, 'form': form})
+    return render(request, 'add_sport.html', {'sports': sports, 'form': form})
