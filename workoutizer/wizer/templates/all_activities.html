@@ -1,0 +1,36 @@
+<title>All Activities - Workoutizer</title>
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+    <body>
+    <div class="container">
+
+        <p class="flow-text">Your Activities</p>
+
+        <table class="highlight">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Sport</th>
+                <th>Duration</th>
+                <th>Distance</th>
+            </tr>
+            </thead>
+            {% for a in activities %}
+                <tbody>
+                <tr>
+                    <td>{{ a.date }}</td>
+                    <td><a href="/activity/{{ a.id }}">{{ a.title }}</a></td>
+                    <td><a href="/sports/{{ a.sport.slug }}">{{ a.sport }}</a></td>
+                    <td>{{ a.duration }}</td>
+                    <td>{{ a.distance }}</td>
+                </tr>
+                </tbody>
+            {% endfor %}
+
+        </table>
+
+    </div>
+    </body>
+{% endblock %}
