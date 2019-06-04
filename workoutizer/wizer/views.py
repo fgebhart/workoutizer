@@ -10,7 +10,7 @@ from .models import Sport, Activity
 from .forms import AddSportsForm, AddActivityForm
 from .gpx_converter import GPXConverter
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('wizer')
 
 
 class DashboardView(View):
@@ -45,7 +45,7 @@ class ActivityView(View):
     def get(self, request, activity_id):
         sports = Sport.objects.all().order_by('id')
         log.error(f"got activity_id: {activity_id}")
-        gjson = GPXConverter(path_to_gpx='../../../tracks/2019-05-30_13-31-01.gpx', activity="cycling")
+        gjson = GPXConverter(path_to_gpx='../../../tracks/04.gpx', activity="cycling")
         trace = gjson.get_geojson()
         track_parameters = gjson.track_params
         log.debug(f"my track: {trace}")

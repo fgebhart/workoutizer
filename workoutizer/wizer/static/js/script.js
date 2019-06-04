@@ -34,21 +34,14 @@ $(document).ready(function () {
     $('select').formSelect();
 });
 
+// enable tooltips
+document.addEventListener('DOMContentLoaded', function() {
+var elems = document.querySelectorAll('.tooltipped');
+var instances = M.Tooltip.init(elems, options);
+});
 
-// enable button when form is filled
-// $('#button').attr('disabled', true);
-// $('input:text').keyup(function () {
-//     var disable = false;
-//     $('input:text').each(function () {
-//         if ($(this).val() == "") {
-//             disable = true;
-//         }
-//     });
-//     $('#button').prop('disabled', disable);
-// });
+// Or with jQuery
 
-
-// // enable jquery datepicker
-// $(function () {
-//     $("#id_date").datepicker();
-// });
+$(document).ready(function(){
+$('.tooltipped').tooltip();
+});

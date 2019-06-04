@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
+import coloredlogs
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -125,12 +127,19 @@ LEAFLET_CONFIG = {
     'MAX_ZOOM': 18,
 }
 
+format_console = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
+    'formatters': {
+        # install colored logs with 'pip install coloredlogs'
+        'colored': {'()': 'coloredlogs.ColoredFormatter', 'format': format_console, 'datefmt': '%m-%d %H:%M:%S'}
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'colored',
         },
     },
     'loggers': {
@@ -138,5 +147,9 @@ LOGGING = {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
         },
+        'wizer': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        }
     },
 }

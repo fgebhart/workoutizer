@@ -29,3 +29,8 @@ class Activity(models.Model):
     duration = models.FloatField()
     distance = models.FloatField()
     trace_file = models.FileField(null=True, blank=True)
+
+
+class Settings(models.Model):
+
+    path_to_trace_dir = models.FilePathField(max_length=120)
