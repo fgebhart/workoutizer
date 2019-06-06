@@ -30,8 +30,10 @@ class FileChecker:
 
     def start_listening(self):
         while True:
+            gpx_files = [os.path.join(root, name)
+                         for root, dirs, files in os.walk(self.path)
+                         for name in files if name.endswith(".gpx")]
+
             files_in_dir = os.listdir(path=self.path)
-            log.debug(f"found files: {files_in_dir}")
+            log.debug(f"found files: {gpx_files}")
             time.sleep(10)
-
-
