@@ -150,6 +150,10 @@ LOGGING = {
         'wizer': {
             'handlers': ['console'],
             'level': 'DEBUG',
+        },
+        'wizer.filechecker': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
         }
     },
 }
