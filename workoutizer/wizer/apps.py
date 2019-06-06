@@ -15,10 +15,11 @@ class WizerConfig(AppConfig):
     def ready(self):
         log.debug("apps successfully loaded")
         from .models import Settings
-        settings = Settings.objects.get(id=1)
+        settings = Settings.objects.all().order_by('-id').first()
+        print(settings.path_to_trace_dir)
         p = Process(target=FileChecker, args=(settings.path_to_trace_dir,))
         p.start()
-        log.warning("sent to background - starting django")
+        log.debug("sent file checker to background - starting django...")
 
 
 class FileChecker:
@@ -31,6 +32,6 @@ class FileChecker:
         while True:
             files_in_dir = os.listdir(path=self.path)
             log.debug(f"found files: {files_in_dir}")
-            time.sleep(3)
+            time.sleep(10)
 
 

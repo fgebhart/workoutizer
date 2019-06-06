@@ -6,8 +6,8 @@ from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 
-from .models import Sport, Activity
-from .forms import AddSportsForm, AddActivityForm
+from .models import Sport, Activity, Settings
+from .forms import AddSportsForm, AddActivityForm, SettingsForm
 from .gpx_converter import GPXConverter
 
 log = logging.getLogger('wizer')
@@ -110,3 +110,19 @@ def add_sport_view(request):
     else:
         form = AddSportsForm()
     return render(request, 'add_sport.html', {'sports': sports, 'form': form})
+
+
+def settings_view(request):
+    sports = Sport.objects.all().order_by('id')
+    settings = Settings.objects.all().order_by('-id').first()
+    if request.method == 'POST':
+        form = SettingsForm(request.POST)
+        if form.is_valid():
+            print(f"got form: {form.cleaned_data}")
+            instance = form.save()
+            instance.save()
+            return HttpResponseRedirect('/settings')
+    else:
+        form = SettingsForm()
+    return render(request, "settings.html", {'sports': sports, 'form': form, 'settings': settings})
+

@@ -33,4 +33,4 @@ class Activity(models.Model):
 
 class Settings(models.Model):
 
-    path_to_trace_dir = models.FilePathField(max_length=120)
+    path_to_trace_dir = models.CharField(max_length=120)
