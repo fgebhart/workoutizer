@@ -2,7 +2,6 @@ body {
     font-family: 'Ubuntu', sans-serif;
 }
 
-
 a.btn {
     font-family: 'Ubuntu', sans-serif;
     text-transform: none;
@@ -11,3 +10,4 @@ a.btn {
 .dropdown-content {
     min-width: 200px;
 }
+

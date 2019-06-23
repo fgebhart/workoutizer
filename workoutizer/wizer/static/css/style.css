@@ -22,3 +22,9 @@ a.btn {
 .errorlist {
     color: red;
 }
+
+
+.inline-icon {
+   vertical-align: bottom;
+   font-size: 18px !important;
+}

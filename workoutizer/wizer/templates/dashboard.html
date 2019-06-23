@@ -12,6 +12,7 @@
             <tr>
                 <th>Date</th>
                 <th>Name</th>
+                <th>Track</th>
                 <th>Sport</th>
                 <th>Duration</th>
                 <th>Distance</th>
@@ -22,6 +23,13 @@
                 <tr>
                     <td>{{ a.date }}</td>
                     <td><a href="/activity/{{ a.id }}">{{ a.title }}</a></td>
+                    <td>
+                        {% if a.trace_file %}
+                            <i class="inline-icon material-icons">map</i>
+                        {% else %}
+{#                            <i class="inline-icon material-icons">do_not_disturb</i>#}
+                        {% endif %}
+                    </td>
                     <td><a href="/sports/{{ a.sport.slug }}">{{ a.sport }}</a></td>
                     <td>{{ a.duration }}</td>
                     <td>{{ a.distance }}</td>
