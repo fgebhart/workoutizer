@@ -30,6 +30,10 @@ class TraceFiles(models.Model):
     path_to_file = models.CharField(max_length=200)
     file_name = models.CharField(max_length=100, editable=False)
     md5sum = models.CharField(max_length=32, unique=True)
+    center_lat = models.FloatField(max_length=20)
+    center_lon = models.FloatField(max_length=20)
+    zoom_level = models.IntegerField(blank=True, null=True)
+    geojson = models.CharField(max_length=100000)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

@@ -1,11 +1,14 @@
 import logging
+from dataclasses import dataclass
 from math import cos, sin, atan2, sqrt, radians, degrees
+from datetime import datetime
 
 import gpxpy
 import gpxpy.gpx
 from geojson import MultiLineString
+import xml.etree.ElementTree as ET
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('wizer.gpx-converter')
 
 
 def center_geolocation(geolocations):
@@ -48,27 +51,47 @@ def fill_dict(name, activity, color, opacity, width, geometry):
 
 
 class GPXConverter:
-    def __init__(self, path_to_gpx, activity, track_name=None, line_color="D700D7", line_opacity="0.59",
+    def __init__(self, path_to_gpx, track_name=None, line_color="D700D7", line_opacity="0.59",
                  line_width="4.0"):
         self.path = path_to_gpx
-        self.activity = activity
         self.color = line_color
         self.opacity = line_opacity
         self.width = line_width
         self.track_name = track_name
+        self.sport = None
+        self.duration = None
+        self.date = None
         self.gpx = None
         self.geojson_multilinestring = None
+        self.center = None
         self.geojson_dict = None
-        self.track_params = None
+        self.root = None
 
         # run converter
-        self.read_gpx_file()
-        self.parse_points()
-        self.insert_data_into_geojson_dict()
+        try:
+            self.read_gpx_file()
+            self.parse_points()
+            self.insert_data_into_geojson_dict()
+        except Exception as e:
+            log.error(f"got error: {e}", exc_info=True)
 
     def read_gpx_file(self):
         gpx_file = open(self.path, 'r')
+        tree = ET.parse(self.path)
+        self.root = tree.getroot()
         self.gpx = gpxpy.parse(gpx_file)
+        self.get_sport_from_gpx_file()
+        self.get_duration_from_gpx_file()
+
+    def get_sport_from_gpx_file(self):
+        self.sport = self.root.findall("./")[1][1][1].text
+
+    def get_duration_from_gpx_file(self):
+        time_string_format = '%Y-%m-%dT%I:%M:%S.000Z'
+        start_time = datetime.strptime(self.root.findall("./")[1][2][0][1].text, time_string_format)
+        self.date = start_time
+        end_time = datetime.strptime(self.root.findall("./")[1][2][-1][1].text, time_string_format)
+        self.duration = convert_timedelta_to_hours(end_time - start_time)
 
     def parse_points(self):
         list_of_points = []
@@ -76,9 +99,8 @@ class GPXConverter:
             for segment in track.segments:
                 for point in segment.points:
                     list_of_points.append((point.longitude, point.latitude))
-        center = center_geolocation(list_of_points)
-        print(f"center points: {center}")
-        self.track_params = TrackParameters(center)
+        self.center = center_geolocation(list_of_points)
+        log.debug(f"center points: {self.center}")
         self.geojson_multilinestring = MultiLineString([list_of_points])
 
     def insert_data_into_geojson_dict(self):
@@ -88,21 +110,41 @@ class GPXConverter:
             track_name = self.gpx.tracks[0].name
         self.geojson_dict = fill_dict(
             name=track_name,
-            activity=self.activity,
+            activity=self.sport,
             color=self.color,
             opacity=self.opacity,
             width=self.width,
             geometry=self.geojson_multilinestring,
         )
 
+    def get_gpx_metadata(self):
+        return GPXFileMetadata(
+            title=self.path.split(".gpx")[0].split("/")[-1],
+            sport=self.sport,
+            date=self.date,
+            duration=self.duration,
+            center_lon=self.center[1],
+            center_lat=self.center[0],
+        )
+
     def get_geojson(self):
         return self.geojson_dict
 
 
-class TrackParameters:
-    def __init__(self, center):
-        self.center_lon = center[1]
-        self.center_lat = center[0]
+@dataclass
+class GPXFileMetadata:
+    title: str
+    sport: str
+    date: str
+    duration: float
+    center_lon: float
+    center_lat: float
+    distance: float = None
+    zoom_level: int = 12
+
+
+def convert_timedelta_to_hours(td):
+    return td.total_seconds() / 3600
 
 
 # gjson = GPXConverter(path_to_gpx='../../../../tracks/2019-05-30_13-31-01.gpx', activity="cycling")

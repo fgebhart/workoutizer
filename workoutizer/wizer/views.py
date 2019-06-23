@@ -6,11 +6,10 @@ from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 
-from .models import Sport, Activity, Settings
+from .models import Sport, Activity, Settings, TraceFiles
 from .forms import AddSportsForm, AddActivityForm, SettingsForm
-from .gpx_converter import GPXConverter
 
-log = logging.getLogger('wizer')
+log = logging.getLogger('wizer.views')
 
 
 class DashboardView(View):
@@ -45,21 +44,13 @@ class ActivityView(View):
     def get(self, request, activity_id):
         sports = Sport.objects.all().order_by('id')
         log.error(f"got activity_id: {activity_id}")
-        gjson = GPXConverter(path_to_gpx='../../../tracks/04.gpx', activity="cycling")
-        trace = gjson.get_geojson()
-        track_parameters = gjson.track_params
-        log.debug(f"my track: {trace}")
         try:
-            activity = model_to_dict(Activity.objects.get(id=activity_id))
-            log.error(f"database has activity: {activity}")
+            activity = Activity.objects.get(id=activity_id)
+            log.debug(f"database has activity: {activity}")
         except ObjectDoesNotExist:
             log.critical("this activity does not exist")
             raise Http404
-
-        return render(request, self.template_name, {'activity': activity,
-                                                    'sports': sports,
-                                                    'trace': trace,
-                                                    'track_params': track_parameters})
+        return render(request, self.template_name, {'activity': activity, 'sports': sports})
 
 
 class SportsView(View):

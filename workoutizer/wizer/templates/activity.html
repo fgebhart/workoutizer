@@ -33,8 +33,8 @@
             <div class="col s10">
                 <div id="mapid"></div>
                 <script>
-                    var geojsonFeature = {{ trace|safe }};
-                    var mymap = L.map('mapid').setView([{{ track_params.center_lon }}, {{ track_params.center_lat }}], 12);
+                    var geojsonFeature = {{ activity.trace_file.geojson|safe }};
+                    var mymap = L.map('mapid').setView([{{ activity.trace_file.center_lon }}, {{ activity.trace_file.center_lat }}], 12);
                     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     }).addTo(mymap);
