@@ -17,8 +17,9 @@ class WizerConfig(AppConfig):
         from .models import Settings
         from .models import TraceFiles
         settings = Settings.objects.all().order_by('-id').first()
-        p = Process(target=FileChecker, args=(settings.path_to_trace_dir, TraceFiles))
-        p.start()
+        if settings:
+            p = Process(target=FileChecker, args=(settings.path_to_trace_dir, TraceFiles))
+            p.start()
 
 
 class FileChecker:

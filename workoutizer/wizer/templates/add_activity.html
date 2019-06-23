@@ -5,6 +5,7 @@
     <body>
     <div class="container">
         <h3>Add new Activity</h3>
+        <h5>Option 1</h5>
         <p>You can either import a .gpx file to add a new activity...</p>
         <br>
         <form action="/add-activity/" method="post" accept-charset="utf-8">
@@ -16,6 +17,7 @@
                 {{ form.trace_file }}
             </div>
             <br>
+            <h5>Option 2</h5>
             <p>...or enter the activity details below:</p>
             <div class="fieldWrapper">
                 {{ form.title.errors }}
@@ -41,6 +43,11 @@
                 {{ form.distance.errors }}
                 <label for="{{ form.distance.id_for_label }}">Distance</label>
                 {{ form.distance }}
+            </div>
+            <div class="fieldWrapper">
+                {{ form.description.errors }}
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
             </div>
             <br>
             <button id="button" class="btn waves-effect waves-light" type="submit" name="action">Submit
