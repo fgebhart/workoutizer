@@ -29,6 +29,7 @@
                     </tbody>
                 </table>
             </div>
+            {% if activity.trace_file %}
             <div class="col s10">
                 <div id="mapid"></div>
                 <script>
@@ -40,10 +41,9 @@
 
                     var mytrace = L.geoJSON().addTo(mymap);
                     mytrace.addData(geojsonFeature);
-
                 </script>
-
             </div>
+            {% endif %}
         </div>
     </div>
     </body>
