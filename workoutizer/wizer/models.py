@@ -2,6 +2,8 @@ import logging
 
 from django.db import models
 
+from .tools import sanitize
+
 log = logging.getLogger("wizer")
 
 
@@ -17,7 +19,7 @@ class Sport(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        self.slug = self.name.lower().replace(" ", "-")
+        self.slug = sanitize(self.name)
         log.debug(f"converting name {self.name} to slug {self.slug}")
         super(Sport, self).save()
 

@@ -87,7 +87,7 @@ class GPXConverter:
         self.sport = self.root.findall("./")[1][1][1].text
 
     def get_duration_from_gpx_file(self):
-        time_string_format = '%Y-%m-%dT%I:%M:%S.000Z'
+        time_string_format = '%Y-%m-%dT%H:%M:%S.000Z'
         start_time = datetime.strptime(self.root.findall("./")[1][2][0][1].text, time_string_format)
         self.date = start_time
         end_time = datetime.strptime(self.root.findall("./")[1][2][-1][1].text, time_string_format)
@@ -100,7 +100,7 @@ class GPXConverter:
                 for point in segment.points:
                     list_of_points.append((point.longitude, point.latitude))
         self.center = center_geolocation(list_of_points)
-        log.debug(f"center points: {self.center}")
+        # log.debug(f"center points: {self.center}")
         self.geojson_multilinestring = MultiLineString([list_of_points])
 
     def insert_data_into_geojson_dict(self):
@@ -144,7 +144,7 @@ class GPXFileMetadata:
 
 
 def convert_timedelta_to_hours(td):
-    return td.total_seconds() / 3600
+    return int(td.total_seconds() / 60)
 
 
 # gjson = GPXConverter(path_to_gpx='../../../../tracks/2019-05-30_13-31-01.gpx', activity="cycling")
