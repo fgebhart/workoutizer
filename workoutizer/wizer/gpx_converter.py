@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from math import cos, sin, atan2, sqrt, radians, degrees
 from datetime import datetime
 
+from geopy import distance
 import gpxpy
 import gpxpy.gpx
 from geojson import MultiLineString
@@ -60,6 +61,7 @@ class GPXConverter:
         self.track_name = track_name
         self.sport = None
         self.duration = None
+        self.distance = None
         self.date = None
         self.gpx = None
         self.geojson_multilinestring = None
@@ -102,6 +104,7 @@ class GPXConverter:
         self.center = center_geolocation(list_of_points)
         # log.debug(f"center points: {self.center}")
         self.geojson_multilinestring = MultiLineString([list_of_points])
+        self.distance = calc_distance_of_points(list_of_points)
 
     def insert_data_into_geojson_dict(self):
         if self.track_name:
@@ -125,6 +128,7 @@ class GPXConverter:
             duration=self.duration,
             center_lon=self.center[1],
             center_lat=self.center[0],
+            distance=round(self.distance, 1),
         )
 
     def get_geojson(self):
@@ -139,13 +143,25 @@ class GPXFileMetadata:
     duration: float
     center_lon: float
     center_lat: float
-    distance: float = None
+    distance: float
     zoom_level: int = 12
 
 
 def convert_timedelta_to_hours(td):
     return int(td.total_seconds() / 60)
 
+
+def calc_distance_of_points(list_of_tuples: list):
+    total_distance = 0
+    first_point = None
+    for point in list_of_tuples:
+        if first_point is None:
+            first_point = point
+        else:
+            dist = distance.geodesic(first_point, point)
+            first_point = point
+            total_distance += dist.km
+    return total_distance
 
 # gjson = GPXConverter(path_to_gpx='../../../../tracks/2019-05-30_13-31-01.gpx', activity="cycling")
 # print(gjson.get_geojson())
