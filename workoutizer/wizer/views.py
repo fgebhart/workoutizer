@@ -87,10 +87,24 @@ def add_activity_view(request):
     return render(request, 'add_activity.html', {'sports': sports, 'form': form})
 
 
+def edit_activity_view(request, activity_id):       # TODO this func and template needs rework
+    sports = Sport.objects.all().order_by('id')
+    if request.method == 'POST':
+        form = AddActivityForm(request.POST)
+        print(f"form: {form}")
+        if form.is_valid():
+            print(f"got form: {form.cleaned_data}")
+            instance = form.save()
+            instance.save()
+            return HttpResponseRedirect('/')
+    else:
+        form = AddActivityForm()
+    return render(request, 'edit_activity.html', {'sports': sports, 'form': form})
+
+
 def add_sport_view(request):
     sports = Sport.objects.all().order_by('id')
     if request.method == 'POST':
-        print("got POST")
         form = AddSportsForm(request.POST)
         print(f"form: {form}")
         if form.is_valid():
