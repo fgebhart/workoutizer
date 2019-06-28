@@ -162,7 +162,3 @@ def calc_distance_of_points(list_of_tuples: list):
             first_point = point
             total_distance += dist.km
     return total_distance
-
-# gjson = GPXConverter(path_to_gpx='../../../../tracks/2019-05-30_13-31-01.gpx', activity="cycling")
-# print(gjson.get_geojson())
-

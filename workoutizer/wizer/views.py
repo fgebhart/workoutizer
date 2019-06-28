@@ -5,9 +5,11 @@ from django.views.generic import View
 from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
+from bokeh.embed import components
 
 from .models import Sport, Activity, Settings, TraceFiles
 from .forms import AddSportsForm, AddActivityForm, SettingsForm
+from .plots import plot_activities
 
 log = logging.getLogger('wizer.views')
 
@@ -16,9 +18,11 @@ class DashboardView(View):
     template_name = "dashboard.html"
 
     def get(self, request):
+        script, div = components(plot_activities())
         sports = Sport.objects.all().order_by('id')
         activities = Activity.objects.all()
-        return render(request, self.template_name, {'sports': sports, 'activities': activities})
+        return render(request, self.template_name,
+                      {'sports': sports, 'activities': activities, 'script': script, 'div': div})
 
 
 class AllActivitiesView(View):
@@ -87,7 +91,7 @@ def add_activity_view(request):
     return render(request, 'add_activity.html', {'sports': sports, 'form': form})
 
 
-def edit_activity_view(request, activity_id):       # TODO this func and template needs rework
+def edit_activity_view(request, activity_id):  # TODO this func and template needs rework
     sports = Sport.objects.all().order_by('id')
     if request.method == 'POST':
         form = AddActivityForm(request.POST)
@@ -130,4 +134,3 @@ def settings_view(request):
     else:
         form = SettingsForm()
     return render(request, "settings.html", {'sports': sports, 'form': form, 'settings': settings})
-

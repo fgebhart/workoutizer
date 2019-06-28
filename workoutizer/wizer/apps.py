@@ -71,6 +71,12 @@ class FileChecker:
                     trace_file=trace_files_instance,
                 )
                 a.save()
+            else:   # means file is referenced in db already
+                trace_file_paths_model = self.trace_files_model.objects.get(md5sum=md5sum)
+                if trace_file_paths_model.path_to_file != file:
+                    log.debug(f"path of file: {trace_file_paths_model.path_to_file} has changed, updating to {file}")
+                    trace_file_paths_model.path_to_file = file
+                    trace_file_paths_model.save()
 
 
 def calc_md5(file):
