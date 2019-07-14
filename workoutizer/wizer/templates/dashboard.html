@@ -2,7 +2,6 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
-
     <body>
     <link href="https://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.css" rel="stylesheet" type="text/css">
     <link href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.2.0.min.css" rel="stylesheet" type="text/css">
@@ -13,42 +12,39 @@
 
     {{ script | safe }}
 
-    <div class="container">
-
-        <h3>Dashboard</h3>
-        {{ div | safe }}
-        <table class="highlight">
-            <thead>
+    <h3>Dashboard</h3>
+    {{ div | safe }}
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Track</th>
+            <th>Sport</th>
+            <th>Duration</th>
+            <th>Distance</th>
+        </tr>
+        </thead>
+        {% for a in activities %}
+            <tbody>
             <tr>
-                <th>Date</th>
-                <th>Name</th>
-                <th>Track</th>
-                <th>Sport</th>
-                <th>Duration</th>
-                <th>Distance</th>
+                <td>{{ a.date }}</td>
+                <td><a href="/activity/{{ a.id }}">{{ a.title }}</a></td>
+                <td>
+                    {% if a.trace_file %}
+                        <i class="inline-icon material-icons">map</i>
+                    {% else %}
+                        {#                            <i class="inline-icon material-icons">do_not_disturb</i>#}
+                    {% endif %}
+                </td>
+                <td><a href="/sport/{{ a.sport.slug }}">{{ a.sport }}</a></td>
+                <td>{{ a.duration }}</td>
+                <td>{{ a.distance }}</td>
             </tr>
-            </thead>
-            {% for a in activities %}
-                <tbody>
-                <tr>
-                    <td>{{ a.date }}</td>
-                    <td><a href="/activity/{{ a.id }}">{{ a.title }}</a></td>
-                    <td>
-                        {% if a.trace_file %}
-                            <i class="inline-icon material-icons">map</i>
-                        {% else %}
-                            {#                            <i class="inline-icon material-icons">do_not_disturb</i>#}
-                        {% endif %}
-                    </td>
-                    <td><a href="/sport/{{ a.sport.slug }}">{{ a.sport }}</a></td>
-                    <td>{{ a.duration }}</td>
-                    <td>{{ a.distance }}</td>
-                </tr>
-                </tbody>
-            {% endfor %}
+            </tbody>
+        {% endfor %}
 
-        </table>
+    </table>
 
-    </div>
     </body>
 {% endblock %}

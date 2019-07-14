@@ -1,47 +1,41 @@
 <nav>
-    <div class="nav-wrapper">
-        <a href="/" class="center brand-logo"><i class="material-icons">polymer</i><b
-                class="flow-text hide-on-med-and-down">Workoutizer</b></a>
-
-        <ul class="left">
-            <li>&nbsp; &nbsp;</li>
-            <li><a href="/add-activity" class="waves-effect waves-light btn"><i
-                    class="material-icons left">add</i>Activity</a></li>
+    <div class="navbar navbar-expand-sm bg-info navbar-dark">
+        <ul class="navbar-nav">
         </ul>
-        <ul class="right">
-            <li><a class="dropdown-trigger" href="#!" data-target="mysports-dd">
-                <i class="material-icons">directions_run expand_more</i></a></li>
-            <li><a class="dropdown-trigger" href="#!" data-target="notification-dd">
-                <i class="material-icons">notifications_none expand_more</i></a></li>
-            <li><a href="/settings"><i class="material-icons left">settings</i>&nbsp;</a></li>
+        <ul class="navbar-nav">
+            <li class="nav-item"><a href="/add-activity" class="btn btn-warning">Add Activity</a></li>
+            <li class="nav-item active"><a class="nav-link" href="/"><b>Workoutizer</b></a></li>
+            <li class="nav-item"><a class="nav-link" href="#!">My Sports</a></li>
+            <li class="nav-item"><a class="nav-link" href="#!">Notifications</a></li>
+            <li class="nav-item"><a class="nav-link" href="/settings">Settings</a></li>
         </ul>
     </div>
 </nav>
 
 {# Dropdowns #}
 {# Settings #}
-<ul id="settings-dd" class="dropdown-content">
-    <li><a href="#!">
-        <div><b>Fabian Gebhart</b>
-            <p>That's me</p></div>
-    </a></li>
-    <li class="divider"></li>
-    <li><a href="#!">Profile</a></li>
-    <li><a href="#!">Settings</a></li>
-    <li class="divider"></li>
-    <li><a href="#!"><i class="material-icons left">vpn_key</i>Sign out</a></li>
-</ul>
-
+{#<ul id="settings-dd" class="dropdown-content">#}
+{#    <li><a href="#!">#}
+{#        <div><b>Fabian Gebhart</b>#}
+{#            <p>That's me</p></div>#}
+{#    </a></li>#}
+{#    <li class="divider"></li>#}
+{#    <li><a href="#!">Profile</a></li>#}
+{#    <li><a href="#!">Settings</a></li>#}
+{#    <li class="divider"></li>#}
+{#    <li><a href="#!"><i class="material-icons left">vpn_key</i>Sign out</a></li>#}
+{#</ul>#}
+{##}
 {# My Sports #}
-<ul id="mysports-dd" class="dropdown-content">
-    {% for s in sports %}
-    <li><a href="/sports/{{ s.slug }}">{{ s.name }}</a></li>
-    {% endfor %}
-    <li class="divider"></li>
-    <li><a href="/add-sport"><i class="material-icons left">add</i>Sport</a></li>
-</ul>
-
+{#<ul id="mysports-dd" class="dropdown-content">#}
+{#    {% for s in sports %}#}
+{#        <li><a href="/sports/{{ s.slug }}">{{ s.name }}</a></li>#}
+{#    {% endfor %}#}
+{#    <li class="divider"></li>#}
+{#    <li><a href="/add-sport"><i class="material-icons left">add</i>Sport</a></li>#}
+{#</ul>#}
+{##}
 {# Notifications #}
-<ul id="notification-dd" class="dropdown-content">
-    <li><a href="#!"><i class="material-icons left">info_outline</i>nothing here</a></li>
-</ul>
+{#<ul id="notification-dd" class="dropdown-content">#}
+{#    <li><a href="#!"><i class="material-icons left">info_outline</i>nothing here</a></li>#}
+{#</ul>#}

@@ -1,5 +1,5 @@
 __pycache__/
 *.sqlite3
-wizer/static/
+workoutizer/static/
 .sass-cache
 .pytest_cache/
