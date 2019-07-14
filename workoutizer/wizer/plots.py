@@ -24,6 +24,7 @@ def plot_activities(activities, number_of_days, colors):
         # log.debug(f"a.date: {a.date}")
         pd.date.append(a.date)
         pd.sports.append(str(a.sport))
+        pd.sport_color.append(str(a.sport.color))
     for sport in pd.sports:
         pd.data[sport] = []
         for a in activities:
@@ -54,7 +55,7 @@ def plot_activities(activities, number_of_days, colors):
     # p.toolbar_location = None
     # p.vbar(x=all_dates, top=all_durations, width=0.9, color="#CAB2D6")
     p = figure(x_axis_type='datetime', x_range=(x_axis_date_range, today), plot_width=1200, plot_height=300)
-    p.varea_stack(pd.get_sports(), x='date_axis', color=["blue", "green", "red", "yellow"], source=source)
+    p.varea_stack(pd.get_sports(), x='date_axis', color=pd.sport_color, source=source)
 
     return p
 
@@ -63,6 +64,7 @@ class PlotData:
     def __init__(self):
         self.date = list()
         self.sports = list()
+        self.sport_color = list()
         self.data = dict()
 
     def get_dict(self):

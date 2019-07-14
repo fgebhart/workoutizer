@@ -5,6 +5,7 @@ import hashlib
 from multiprocessing import Process
 
 from django.apps import AppConfig
+from django.db.utils import OperationalError
 from .gpx_converter import GPXConverter
 from .tools import sanitize
 
@@ -24,10 +25,13 @@ class WizerConfig(AppConfig):
 
     def ready(self):
         from .models import Settings, TraceFiles, Activity, Sport
-        settings = Settings.objects.all().order_by('-id').first()
-        if settings:
-            p = Process(target=GPXFileImporter, args=(settings.path_to_trace_dir, TraceFiles, Activity, Sport))
-            p.start()
+        try:
+            settings = Settings.objects.all().order_by('-id').first()
+            if settings:
+                p = Process(target=GPXFileImporter, args=(settings.path_to_trace_dir, TraceFiles, Activity, Sport))
+                p.start()
+        except OperationalError:
+            log.warning(f"could not find table: wizer_settgins - won't run GPXFileImprter. Run django migrations first.")
 
 
 class GPXFileImporter:
