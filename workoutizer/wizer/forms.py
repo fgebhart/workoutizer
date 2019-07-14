@@ -6,13 +6,17 @@ from .models import Sport, Activity, Settings
 class AddSportsForm(forms.ModelForm):
     class Meta:
         model = Sport
-        fields = 'name', 'icon', 'color',
+        fields = '__all__'
 
 
 class AddActivityForm(forms.ModelForm):
     class Meta:
         model = Activity
-        fields = '__all__'
+        exclude = ('trace_file',)
+
+    def __init__(self, *args, **kwargs):
+        super(AddActivityForm, self).__init__(*args, **kwargs)
+        self.fields['sport'] = forms.ModelChoiceField(queryset=Sport.objects.all())
 
 
 class SettingsForm(forms.ModelForm):

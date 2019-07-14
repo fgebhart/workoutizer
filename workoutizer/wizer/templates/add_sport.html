@@ -3,44 +3,16 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
-
-    <body>
     <div class="container">
         <h3>Add new Sports</h3>
-        <p>Use the following form to add a new sports type or pick a predefined template:</p>
-
-        <div class="row">
-            <div class="input-field col s6">
-                <select>
-                    <option value="" disabled selected>Pick Sports template</option>
-                    <option value="1">Jogging</option>
-                    <option value="2">Swimming</option>
-                    <option value="4">Cycling</option>
-                </select>
-            </div>
-        </div>
-        <form action="/add-sport/" method="post" accept-charset="utf-8">
+        <p>Use the following form to add a new sport:</p>
+        <form action="/add-sport/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.non_field_errors }}
-            <div class="fieldWrapper">
-                {{ form.name.errors }}
-                <label for="{{ form.name.id_for_label }}">Name</label>
-                {{ form.name }}
-            </div>
-            <div class="fieldWrapper">
-                {{ form.icon.errors }}
-                <label for="{{ form.message.id_for_label }}">Icon</label>
-                {{ form.icon }}
-            </div>
-            <div class="fieldWrapper">
-                {{ form.color.errors }}
-                <label for="{{ form.sender.id_for_label }}">Color</label>
-                {{ form.color }}
-            </div>
+            {{ form }}
+            <br>
             <button id="button" class="btn waves-effect waves-light" type="submit" name="action">Submit
                 <i class="material-icons right">send</i>
             </button>
         </form>
     </div>
-    </body>
 {% endblock %}

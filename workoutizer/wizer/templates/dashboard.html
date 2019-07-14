@@ -1,20 +1,21 @@
 <title>Dashboard - Workoutizer</title>
 {% extends 'base.html' %}
 {% load static %}
-<head>
-    <link href=”http://cdn.pydata.org/bokeh/release/bokeh-1.0.4.min.css" rel=”stylesheet” type=”text/css”>
-    <link href=”http://cdn.pydata.org/bokeh/release/bokeh-widgets-1.0.4.min.css" rel=”stylesheet” type=”text/css”>
-
-    <script src=”http://cdn.pydata.org/bokeh/release/bokeh-1.0.4.min.js"></script>
-    <script src=”http://cdn.pydata.org/bokeh/release/bokeh-widgets-1.0.4.min.js"></script>
-    {{ script | safe }}
-</head>
 {% block body %}
+
     <body>
+    <link href="https://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.2.0.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.2.0.min.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.js"></script>
+    <script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.2.0.min.js"></script>
+    <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.2.0.min.js"></script>
+
+    {{ script | safe }}
+
     <div class="container">
 
         <h3>Dashboard</h3>
-
         {{ div | safe }}
         <table class="highlight">
             <thead>
@@ -39,7 +40,7 @@
                             {#                            <i class="inline-icon material-icons">do_not_disturb</i>#}
                         {% endif %}
                     </td>
-                    <td><a href="/sports/{{ a.sport.slug }}">{{ a.sport }}</a></td>
+                    <td><a href="/sport/{{ a.sport.slug }}">{{ a.sport }}</a></td>
                     <td>{{ a.duration }}</td>
                     <td>{{ a.distance }}</td>
                 </tr>

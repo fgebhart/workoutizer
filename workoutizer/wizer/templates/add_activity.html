@@ -1,61 +1,18 @@
 <title>Add new Activity - Workoutizer</title>
+
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
-    <body>
     <div class="container">
         <h3>Add new Activity</h3>
-        <h5>Option 1</h5>
-        <p>You can either import a .gpx file to add a new activity...</p>
-        <br>
-        <form action="/add-activity/" method="post" accept-charset="utf-8">
+
+        <form action="/add-activity/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.non_field_errors }}
-            <div class="fieldWrapper">
-                {{ form.trace_file.errors }}
-                <label for="{{ form.trace_file.id_for_label }}">Trace File</label>
-                {{ form.trace_file }}
-            </div>
-            <br>
-            <h5>Option 2</h5>
-            <p>...or enter the activity details below:</p>
-            <div class="fieldWrapper">
-                {{ form.title.errors }}
-                <label for="{{ form.name.id_for_label }}">Name</label>
-                {{ form.title }}
-            </div>
-            <div class="fieldWrapper">
-                {{ form.sport.errors }}
-                <label for="{{ form.sport.id_for_label }}">Sport</label>
-                {{ form.sport }}
-            </div>
-            <div class="fieldWrapper">
-                {{ form.date.errors }}
-                <label for="{{ form.date.id_for_label }}">Date</label>
-                <input name='date' type="date">
-            </div>
-            <div class="fieldWrapper">
-                {{ form.duration.errors }}
-                <label for="{{ form.duration.id_for_label }}">Duration</label>
-                {{ form.duration }}
-            </div>
-            <div class="fieldWrapper">
-                {{ form.distance.errors }}
-                <label for="{{ form.distance.id_for_label }}">Distance</label>
-                {{ form.distance }}
-            </div>
-            <div class="fieldWrapper">
-                {{ form.description.errors }}
-                <label for="{{ form.description.id_for_label }}">Description</label>
-                {{ form.description }}
-            </div>
+            {{ form }}
             <br>
             <button id="button" class="btn waves-effect waves-light" type="submit" name="action">Submit
                 <i class="material-icons right">send</i>
             </button>
         </form>
-
-
     </div>
-    </body>
 {% endblock %}

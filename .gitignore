@@ -2,3 +2,4 @@ __pycache__/
 *.sqlite3
 wizer/static/
 .sass-cache
+.pytest_cache/

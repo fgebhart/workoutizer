@@ -1,13 +1,14 @@
 import logging
 
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.views.generic import View
 from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
+
 from bokeh.embed import components
 
-from .models import Sport, Activity, Settings, TraceFiles
+from .models import Sport, Activity, Settings
 from .forms import AddSportsForm, AddActivityForm, SettingsForm
 from .plots import plot_activities
 
@@ -18,11 +19,12 @@ class DashboardView(View):
     template_name = "dashboard.html"
 
     def get(self, request):
-        script, div = components(plot_activities())
         sports = Sport.objects.all().order_by('id')
-        activities = Activity.objects.all()
-        return render(request, self.template_name,
-                      {'sports': sports, 'activities': activities, 'script': script, 'div': div})
+        activities = Activity.objects.all().order_by("-date")
+
+        script, div = components(plot_activities(activities, number_of_days=60, colors=None))
+        return render_to_response(self.template_name,
+                                  {'sports': sports, 'activities': activities, 'script': script, 'div': div})
 
 
 class AllActivitiesView(View):
@@ -77,6 +79,7 @@ class SportsView(View):
 
 def add_activity_view(request):
     sports = Sport.objects.all().order_by('id')
+    print(f"got sports: {sports}")
     if request.method == 'POST':
         print("got POST")
         form = AddActivityForm(request.POST)
@@ -87,6 +90,7 @@ def add_activity_view(request):
             instance.save()
             return HttpResponseRedirect('/')
     else:
+        print("got GET")
         form = AddActivityForm()
     return render(request, 'add_activity.html', {'sports': sports, 'form': form})
 
@@ -100,7 +104,7 @@ def edit_activity_view(request, activity_id):  # TODO this func and template nee
             print(f"got form: {form.cleaned_data}")
             instance = form.save()
             instance.save()
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/add-activity/')
     else:
         form = AddActivityForm()
     return render(request, 'edit_activity.html', {'sports': sports, 'form': form})
