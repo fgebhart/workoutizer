@@ -1,3 +1,8 @@
 body {
     font-family: 'Ubuntu', sans-serif;
 }
+
+.errorlist
+    {
+        color: red;
+    }

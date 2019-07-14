@@ -14,7 +14,7 @@ import pandas as pd
 log = logging.getLogger("wizer.plots")
 
 
-def plot_activities(activities, number_of_days, colors):
+def plot_activities(activities, number_of_days):
     today = datetime.now()
     x_axis_date_range = today - timedelta(days=number_of_days)
     pd = PlotData()
@@ -55,7 +55,7 @@ def plot_activities(activities, number_of_days, colors):
     # p.toolbar_location = None
     # p.vbar(x=all_dates, top=all_durations, width=0.9, color="#CAB2D6")
     p = figure(x_axis_type='datetime', x_range=(x_axis_date_range, today), plot_width=1200, plot_height=300)
-    p.varea_stack(pd.get_sports(), x='date_axis', color=pd.sport_color, source=source)
+    p.varea_stack(pd.get_sports(), x='date_axis', source=source)
 
     return p
 

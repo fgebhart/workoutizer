@@ -32,6 +32,7 @@ class WizerConfig(AppConfig):
                 p.start()
         except OperationalError:
             log.warning(f"could not find table: wizer_settgins - won't run GPXFileImprter. Run django migrations first.")
+            # TODO create notification here
 
 
 class GPXFileImporter:
@@ -51,7 +52,7 @@ class GPXFileImporter:
             log.debug(f"found {len(trace_files)} files in trace dir: {self.path}")
             self.add_objects_to_models(trace_files)
 
-            time.sleep(3)
+            time.sleep(5)
 
     def add_objects_to_models(self, trace_files):
         md5sums_from_db = list(self.trace_files_model.objects.all())
@@ -63,7 +64,11 @@ class GPXFileImporter:
                 mapped_sport = map_sport_name(gjson.get_gpx_metadata().sport, sport_map)
                 t = self._save_gpx_file_to_db(file=file, md5sum=md5sum, geojson=gjson)
                 trace_file_instance = self.trace_files_model.objects.get(pk=t.pk)
-                sport_instance = self.sport_model.objects.get(slug=sanitize(mapped_sport))
+                try:
+                    sport_instance = self.sport_model.objects.get(slug=sanitize(mapped_sport))
+                except self.sport_model.DoesNotExist:
+                    log.warning(f"could not find sport '{mapped_sport}' in model, needs to be inserted first")
+                    # TODO create notification here
                 self._save_activity_to_db(geojson=gjson, sport=sport_instance, trace_file=trace_file_instance)
             else:  # means file is stored in db already
                 trace_file_paths_model = self.trace_files_model.objects.get(md5sum=md5sum)

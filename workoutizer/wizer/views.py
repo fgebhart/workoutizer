@@ -22,7 +22,7 @@ class DashboardView(View):
         sports = Sport.objects.all().order_by('id')
         activities = Activity.objects.all().order_by("-date")
 
-        script, div = components(plot_activities(activities, number_of_days=60, colors=None))
+        script, div = components(plot_activities(activities, number_of_days=60))
         return render_to_response(self.template_name,
                                   {'sports': sports, 'activities': activities, 'script': script, 'div': div})
 
