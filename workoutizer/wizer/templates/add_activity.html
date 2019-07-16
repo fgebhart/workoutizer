@@ -7,10 +7,9 @@
         <h3>Add new Activity</h3>
 
         <form action="/add-activity/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
-            {% csrf_token %}
             <div class="container">
                 <div class="fieldWrapper">
-                    <table class="table table-borderless table-responsive-sm">
+                    <table class="table table-borderless table-responsive-sm table-sm">
                         {% for field in form %}
                             <tr>
                                 <td>{{ field.label_tag }}</td>

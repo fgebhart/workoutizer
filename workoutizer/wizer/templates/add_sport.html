@@ -7,12 +7,11 @@
         <h3>Add new Sports</h3>
         <p>Use the following form to add a new sport:</p>
         <form action="/add-sport/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form }}
+            <table>
+                {{ form.as_table }}
+            </table>
             <br>
-            <button id="button" class="btn waves-effect waves-light" type="submit" name="action">Submit
-                <i class="material-icons right">send</i>
-            </button>
+            <button id="button" class="btn btn-warning" type="submit" name="action">Submit</button>
         </form>
     </div>
 {% endblock %}
