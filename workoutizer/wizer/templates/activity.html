@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load static %}
 {% load leaflet_tags %}
 {% block body %}
     <title>{{ activity.title }} - Workoutizer</title>
@@ -9,11 +8,9 @@
         <p>{{ activity.date }}</p>
         <hr>
         <br>
-
         <div class="row">
-            <div class="col s2 hide-on-med-and-down">
-                <table class="table">
-                    <tbody>
+            <div class="col-sm-4">
+                <table class="table table-hover">
                     <tr>
                         <th scope="row">Sport</th>
                         <td>{{ activity.sport }}</td>
@@ -26,23 +23,25 @@
                         <th scope="row">Distance</th>
                         <td>{{ activity.distance }}</td>
                     <tr>
-                    </tbody>
+                    <tr>
+                        <th scope="row">Description</th>
+                        <td>{{ activity.description }}</td>
+                    <tr>
                 </table>
             </div>
             {% if activity.trace_file %}
-            <div class="col s10">
-                <div id="mapid"></div>
-                <script>
-                    var geojsonFeature = {{ activity.trace_file.geojson|safe }};
-                    var mymap = L.map('mapid').setView([{{ activity.trace_file.center_lon }}, {{ activity.trace_file.center_lat }}], 12);
-                    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    }).addTo(mymap);
-
-                    var mytrace = L.geoJSON().addTo(mymap);
-                    mytrace.addData(geojsonFeature);
-                </script>
-            </div>
+                <div class="col-sm-8">
+                    <div id="mapid"></div>
+                    <script type="text/javascript">
+                        var geojsonFeature = {{ activity.trace_file.geojson|safe }};
+                        var mymap = L.map('mapid').setView([{{ activity.trace_file.center_lon }}, {{ activity.trace_file.center_lat }}], 12);
+                        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                        }).addTo(mymap);
+                        var mytrace = L.geoJSON().addTo(mymap);
+                        mytrace.addData(geojsonFeature);
+                    </script>
+                </div>
             {% endif %}
         </div>
     </div>

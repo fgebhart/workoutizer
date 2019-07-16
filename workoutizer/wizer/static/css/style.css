@@ -2,7 +2,10 @@ body {
     font-family: 'Ubuntu', sans-serif;
 }
 
-.errorlist
-    {
-        color: red;
-    }
+.errorlist {
+    color: red;
+}
+
+.leaflet-container {
+    height: 400px;
+}

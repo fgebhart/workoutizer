@@ -52,7 +52,7 @@ class ActivityView(View):
         log.error(f"got activity_id: {activity_id}")
         try:
             activity = Activity.objects.get(id=activity_id)
-            log.debug(f"database has activity: {activity}")
+            log.debug(f"passing activity: {activity} from model to view")
         except ObjectDoesNotExist:
             log.critical("this activity does not exist")
             raise Http404
