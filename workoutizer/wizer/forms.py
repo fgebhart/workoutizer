@@ -19,6 +19,12 @@ class AddActivityForm(forms.ModelForm):
         self.fields['sport'] = forms.ModelChoiceField(queryset=Sport.objects.all())
 
 
+class EditActivityForm(forms.ModelForm):
+    class Meta:
+        model = Activity
+        exclude = ('trace_file',)
+
+
 class SettingsForm(forms.ModelForm):
     class Meta:
         model = Settings

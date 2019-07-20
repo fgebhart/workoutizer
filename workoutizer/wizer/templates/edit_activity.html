@@ -1,61 +1,82 @@
-<title>Add new Activity - Workoutizer</title>
+<title>Edit Activity - Workoutizer</title>
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
-    <body>
     <div class="container">
-        <h3>Add new Activity</h3>
-        <h5>Option 1</h5>
-        <p>You can either import a .gpx file to add a new activity...</p>
+        <h3>Edit {{ activity }}</h3>
         <br>
-        <form action="/add-activity/" method="post" accept-charset="utf-8">
-            {% csrf_token %}
-            {{ form.non_field_errors }}
-            <div class="fieldWrapper">
-                {{ form.trace_file.errors }}
-                <label for="{{ form.trace_file.id_for_label }}">Trace File</label>
-                {{ form.trace_file }}
-            </div>
-            <br>
-            <h5>Option 2</h5>
-            <p>...or enter the activity details below:</p>
-            <div class="fieldWrapper">
-                {{ form.title.errors }}
-                <label for="{{ form.name.id_for_label }}">Name</label>
-                {{ form.title }}
-            </div>
-            <div class="fieldWrapper">
-                {{ form.sport.errors }}
-                <label for="{{ form.sport.id_for_label }}">Sport</label>
-                {{ form.sport }}
-            </div>
-            <div class="fieldWrapper">
-                {{ form.date.errors }}
-                <label for="{{ form.date.id_for_label }}">Date</label>
-                <input name='date' type="date">
-            </div>
-            <div class="fieldWrapper">
-                {{ form.duration.errors }}
-                <label for="{{ form.duration.id_for_label }}">Duration</label>
-                {{ form.duration }}
-            </div>
-            <div class="fieldWrapper">
-                {{ form.distance.errors }}
-                <label for="{{ form.distance.id_for_label }}">Distance</label>
-                {{ form.distance }}
-            </div>
-            <div class="fieldWrapper">
-                {{ form.description.errors }}
-                <label for="{{ form.description.id_for_label }}">Description</label>
-                {{ form.description }}
-            </div>
-            <br>
-            <button id="button" class="btn waves-effect waves-light" type="submit" name="action">Submit
-                <i class="material-icons right">send</i>
-            </button>
-        </form>
+        <div class="container">
+            <form action="/activity/{{ activity.id }}/edit/" method="post" accept-charset="utf-8">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="form-group row">
+                    <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label">Title</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="name" value="{{ activity.title }}">
+                    </div>
+                    <div class="col-sm-4">
+                        {{ form.title.errors }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="{{ form.sport.id_for_label }}" class="col-sm-2 col-form-label">Sport</label>
+                    <div class="col-sm-6">
 
-
+                        <select name="sport">
+                            <option value="">{{ activity.sport }}</option>
+                            {% for sport in sports %}
+                                <option>
+                                    {{ sport.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        {{ form.title.errors }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="{{ form.date.id_for_label }}" class="col-sm-2 col-form-label">Date</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="date" value="{{ activity.date }}">
+                    </div>
+                    <div class="col-sm-4">
+                        {{ form.title.errors }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="{{ form.duration.id_for_label }}" class="col-sm-2 col-form-label">Duration</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="duration" value="{{ activity.duration }}">
+                    </div>
+                    <div class="col-sm-4">
+                        {{ form.title.errors }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="{{ form.distance.id_for_label }}" class="col-sm-2 col-form-label">Distance</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="distance" value="{{ activity.distance }}">
+                    </div>
+                    <div class="col-sm-4">
+                        {{ form.title.errors }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label">Description</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="description" value="{{ activity.description }}">
+                    </div>
+                    <div class="col-sm-4">
+                        {{ form.title.errors }}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-8">
+                        <button id="button" class="btn btn-warning" type="submit" name="action">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-    </body>
 {% endblock %}

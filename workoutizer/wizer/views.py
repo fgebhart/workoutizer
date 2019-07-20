@@ -9,7 +9,7 @@ from django.forms.models import model_to_dict
 from bokeh.embed import components
 
 from .models import Sport, Activity, Settings
-from .forms import AddSportsForm, AddActivityForm, SettingsForm
+from .forms import AddSportsForm, AddActivityForm, SettingsForm, EditActivityForm
 from .plots import plot_activities
 
 log = logging.getLogger('wizer.views')
@@ -97,17 +97,19 @@ def add_activity_view(request):
 
 def edit_activity_view(request, activity_id):  # TODO this func and template needs rework
     sports = Sport.objects.all().order_by('id')
+    activity = Activity.objects.get(id=activity_id)
     if request.method == 'POST':
-        form = AddActivityForm(request.POST)
-        print(f"form: {form}")
+        log.info(f"got post")
+        form = EditActivityForm(request.POST)
+        log.debug(f"form: {form}")
         if form.is_valid():
-            print(f"got form: {form.cleaned_data}")
+            log.debug(f"valid form: {form.cleaned_data}")
             instance = form.save()
             instance.save()
-            return HttpResponseRedirect('/add-activity/')
+            return HttpResponseRedirect(f'/activity/{activity.id}/edit/')
     else:
-        form = AddActivityForm()
-    return render(request, 'edit_activity.html', {'sports': sports, 'form': form})
+        form = EditActivityForm()
+    return render(request, 'edit_activity.html', {'activity': activity, 'sports': sports, 'form': form})
 
 
 def add_sport_view(request):
