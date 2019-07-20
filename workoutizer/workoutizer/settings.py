@@ -127,6 +127,10 @@ LEAFLET_CONFIG = {
     'MAX_ZOOM': 18,
 }
 
+
+GPX_CHECKER_INTERVAL = 10
+
+
 format_console = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 LOGGING = {

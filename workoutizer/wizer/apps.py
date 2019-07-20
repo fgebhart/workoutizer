@@ -6,6 +6,7 @@ from multiprocessing import Process
 
 from django.apps import AppConfig
 from django.db.utils import OperationalError
+from django.conf import settings
 from .gpx_converter import GPXConverter
 from .tools import sanitize
 
@@ -52,7 +53,7 @@ class GPXFileImporter:
             log.debug(f"found {len(trace_files)} files in trace dir: {self.path}")
             self.add_objects_to_models(trace_files)
 
-            time.sleep(5)
+            time.sleep(settings.GPX_CHECKER_INTERVAL)
 
     def add_objects_to_models(self, trace_files):
         md5sums_from_db = list(self.trace_files_model.objects.all())
