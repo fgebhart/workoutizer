@@ -6,13 +6,13 @@
         <h3>Edit {{ activity }}</h3>
         <br>
         <div class="container">
-            <form action="/activity/{{ activity.id }}/edit/" method="post" accept-charset="utf-8">
+            <form action="/activity/{{ activity.id }}/edit/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
                 <div class="form-group row">
                     <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label">Title</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="name" value="{{ activity.title }}">
+                        <input type="text" class="form-control" name="id_title" value="{{ activity.title }}">
                     </div>
                     <div class="col-sm-4">
                         {{ form.title.errors }}
@@ -21,13 +21,14 @@
                 <div class="form-group row">
                     <label for="{{ form.sport.id_for_label }}" class="col-sm-2 col-form-label">Sport</label>
                     <div class="col-sm-6">
-
-                        <select name="sport">
+                        <select name="id_sport">
                             <option value="">{{ activity.sport }}</option>
                             {% for sport in sports %}
-                                <option>
-                                    {{ sport.name }}
-                                </option>
+                                {% if sport != activity.sport %}
+                                    <option>
+                                        {{ sport.name }}
+                                    </option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>
@@ -38,7 +39,7 @@
                 <div class="form-group row">
                     <label for="{{ form.date.id_for_label }}" class="col-sm-2 col-form-label">Date</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="date" value="{{ activity.date }}">
+                        <input type="date" class="form-control" id="id_date" value="{{ activity.date }}">
                     </div>
                     <div class="col-sm-4">
                         {{ form.title.errors }}
@@ -47,7 +48,7 @@
                 <div class="form-group row">
                     <label for="{{ form.duration.id_for_label }}" class="col-sm-2 col-form-label">Duration</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="duration" value="{{ activity.duration }}">
+                        <input type="text" class="form-control" id="id_duration" value="{{ activity.duration }}">
                     </div>
                     <div class="col-sm-4">
                         {{ form.title.errors }}
@@ -56,7 +57,7 @@
                 <div class="form-group row">
                     <label for="{{ form.distance.id_for_label }}" class="col-sm-2 col-form-label">Distance</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="distance" value="{{ activity.distance }}">
+                        <input type="text" class="form-control" id="id_distance" value="{{ activity.distance }}">
                     </div>
                     <div class="col-sm-4">
                         {{ form.title.errors }}
@@ -65,7 +66,7 @@
                 <div class="form-group row">
                     <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label">Description</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" id="description" value="{{ activity.description }}">
+                        <input type="text" class="form-control" id="id_description" value="{{ activity.description }}">
                     </div>
                     <div class="col-sm-4">
                         {{ form.title.errors }}

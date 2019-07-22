@@ -1,6 +1,6 @@
 import logging
 
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, get_object_or_404, redirect
 from django.views.generic import View
 from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
@@ -11,6 +11,7 @@ from bokeh.embed import components
 from .models import Sport, Activity, Settings
 from .forms import AddSportsForm, AddActivityForm, SettingsForm, EditActivityForm
 from .plots import plot_activities
+
 
 log = logging.getLogger('wizer.views')
 
@@ -95,21 +96,32 @@ def add_activity_view(request):
     return render(request, 'add_activity.html', {'sports': sports, 'form': form})
 
 
-def edit_activity_view(request, activity_id):  # TODO this func and template needs rework
-    sports = Sport.objects.all().order_by('id')
+def edit_activity_view(request, activity_id):
     activity = Activity.objects.get(id=activity_id)
-    if request.method == 'POST':
-        log.info(f"got post")
-        form = EditActivityForm(request.POST)
-        log.debug(f"form: {form}")
-        if form.is_valid():
-            log.debug(f"valid form: {form.cleaned_data}")
-            instance = form.save()
-            instance.save()
-            return HttpResponseRedirect(f'/activity/{activity.id}/edit/')
-    else:
-        form = EditActivityForm()
-    return render(request, 'edit_activity.html', {'activity': activity, 'sports': sports, 'form': form})
+    sports = Sport.objects.all().order_by('id')
+    instance = get_object_or_404(Activity, id=activity_id)
+    form = EditActivityForm(request.POST or None, instance=instance)
+    if form.is_valid():
+        form.save()
+        return redirect('next_view')
+    return render(request, 'edit_activity.html', {'form': form, 'sports': sports, 'activity': activity})
+
+#
+# def edit_activity_view(request, activity_id):  # TODO this func and template needs rework
+#     sports = Sport.objects.all().order_by('id')
+#     activity = Activity.objects.get(id=activity_id)
+#     if request.method == 'POST':
+#         log.info(f"got post with request {request.POST}")
+#         form = EditActivityForm(request.POST or None)
+#         log.debug(f"form: {form}")
+#         if form.is_valid():
+#             log.debug(f"valid form: {form.cleaned_data}")
+#             instance = form.save()
+#             instance.save()
+#             return HttpResponseRedirect(f'/activity/{activity.id}/edit/')
+#     else:
+#         form = EditActivityForm()
+#     return render(request, 'edit_activity.html', {'activity': activity, 'sports': sports, 'form': form})
 
 
 def add_sport_view(request):
@@ -121,7 +133,9 @@ def add_sport_view(request):
             print(f"got form: {form.cleaned_data}")
             instance = form.save()
             instance.save()
-            return HttpResponseRedirect('/sports/')
+            return HttpResponseRedirect('/sports')
+        else:
+            log.warning(f"form invalid")
     else:
         form = AddSportsForm()
     return render(request, 'add_sport.html', {'sports': sports, 'form': form})
@@ -129,14 +143,16 @@ def add_sport_view(request):
 
 def settings_view(request):
     sports = Sport.objects.all().order_by('id')
-    settings = Settings.objects.all().order_by('-id').first()
+    user_id = request.user.id
+    settings = Settings.objects.get(user_id=user_id)
+    form = SettingsForm(request.POST or None, instance=settings)
+    log.debug(f"got form:\n{form}")
     if request.method == 'POST':
-        form = SettingsForm(request.POST)
         if form.is_valid():
-            print(f"got form: {form.cleaned_data}")
-            instance = form.save()
-            instance.save()
+            log.info(f"got valid form: {form.cleaned_data}")
+            form.save()
+            # instance.save()
             return HttpResponseRedirect('/settings')
-    else:
-        form = SettingsForm()
+        else:
+            log.warning(f"form invalid")
     return render(request, "settings.html", {'sports': sports, 'form': form, 'settings': settings})

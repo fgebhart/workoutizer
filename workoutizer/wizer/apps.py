@@ -6,13 +6,12 @@ from multiprocessing import Process
 
 from django.apps import AppConfig
 from django.db.utils import OperationalError
-from django.conf import settings
 from .gpx_converter import GPXConverter
 from .tools import sanitize
 
 log = logging.getLogger('wizer.apps')
 
-sport_map = {
+sport_naming_map = {
     'Jogging': ['jogging', 'running'],
     'Mountainbiking': ['mountainbiking', 'mountainbike', 'mountain biking', 'mountain bike', 'mountain-biking',
                        'mountain-bike', 'mtbing', 'mtb'],
@@ -27,9 +26,10 @@ class WizerConfig(AppConfig):
     def ready(self):
         from .models import Settings, TraceFiles, Activity, Sport
         try:
+            # TODO get settings of current logged in user, maybe start GPXFileImporter only after login?
             settings = Settings.objects.all().order_by('-id').first()
             if settings:
-                p = Process(target=GPXFileImporter, args=(settings.path_to_trace_dir, TraceFiles, Activity, Sport))
+                p = Process(target=GPXFileImporter, args=(settings, TraceFiles, Activity, Sport))
                 p.start()
         except OperationalError:
             log.warning(f"could not find table: wizer_settgins - won't run GPXFileImprter. Run django migrations first.")
@@ -37,11 +37,13 @@ class WizerConfig(AppConfig):
 
 
 class GPXFileImporter:
-    def __init__(self, path, trace_files_model, activities_model, sport_model):
-        self.path = path
+    def __init__(self, settings_model, trace_files_model, activities_model, sport_model):
+        self.settings = settings_model
+        self.path = self.settings.path_to_trace_dir
         self.trace_files_model = trace_files_model
         self.activities_model = activities_model
         self.sport_model = sport_model
+        self.interval = self.settings.gpx_checker_interval
         self.start_listening()
 
     def start_listening(self):
@@ -52,8 +54,7 @@ class GPXFileImporter:
                            for name in files if name.endswith(".gpx")]
             log.debug(f"found {len(trace_files)} files in trace dir: {self.path}")
             self.add_objects_to_models(trace_files)
-
-            time.sleep(settings.GPX_CHECKER_INTERVAL)
+            time.sleep(self.interval)
 
     def add_objects_to_models(self, trace_files):
         md5sums_from_db = list(self.trace_files_model.objects.all())
@@ -62,7 +63,7 @@ class GPXFileImporter:
             md5sum = calc_md5(file)
             if md5sum not in md5sums_from_db:   # current file is not stored in model yet
                 gjson = GPXConverter(path_to_gpx=file)
-                mapped_sport = map_sport_name(gjson.get_gpx_metadata().sport, sport_map)
+                mapped_sport = map_sport_name(gjson.get_gpx_metadata().sport, sport_naming_map)
                 t = self._save_gpx_file_to_db(file=file, md5sum=md5sum, geojson=gjson)
                 trace_file_instance = self.trace_files_model.objects.get(pk=t.pk)
                 try:

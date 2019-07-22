@@ -28,4 +28,4 @@ class EditActivityForm(forms.ModelForm):
 class SettingsForm(forms.ModelForm):
     class Meta:
         model = Settings
-        fields = '__all__'
+        exclude = ('user',)

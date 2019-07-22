@@ -1,6 +1,7 @@
 import logging
 
 from django.db import models
+from django.conf import settings
 
 from .tools import sanitize
 
@@ -60,4 +61,6 @@ class Activity(models.Model):
 
 class Settings(models.Model):
 
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=settings.AUTH_USER_MODEL)
     path_to_trace_dir = models.CharField(max_length=120)
+    gpx_checker_interval = models.IntegerField()
