@@ -9,3 +9,11 @@ body {
 .leaflet-container {
     height: 400px;
 }
+
+#id_path_to_trace_dir {
+    width: 70%;
+}
+
+#id_gpx_checker_interval {
+    width: 10%;
+}
