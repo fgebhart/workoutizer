@@ -2,7 +2,6 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
-    <body>
     <link href="https://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.css" rel="stylesheet" type="text/css">
     <link href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.2.0.min.css" rel="stylesheet" type="text/css">
     <link href="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.2.0.min.css" rel="stylesheet" type="text/css">
@@ -32,7 +31,7 @@
                 <td><a href="/activity/{{ a.id }}">{{ a.title }}</a></td>
                 <td>
                     {% if a.trace_file %}
-                        <i class="inline-icon material-icons">map</i>
+                        <i class="fas fa-map-marked-alt"></i>
                     {% else %}
                         {#                            <i class="inline-icon material-icons">do_not_disturb</i>#}
                     {% endif %}
@@ -43,8 +42,5 @@
             </tr>
             </tbody>
         {% endfor %}
-
     </table>
-
-    </body>
 {% endblock %}
