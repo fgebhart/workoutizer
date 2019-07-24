@@ -17,3 +17,20 @@ body {
 #id_gpx_checker_interval {
     width: 10%;
 }
+
+#id_duration {
+    width: 10%;
+}
+
+#id_distance{
+    width: 10%;
+}
+
+#id_description {
+    width: 70%;
+}
+
+#id_title {
+    width: 70%;
+}
+

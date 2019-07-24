@@ -91,46 +91,31 @@ def add_activity_view(request):
             instance.save()
             return HttpResponseRedirect('/')
     else:
-        print("got GET")
         form = AddActivityForm()
     return render(request, 'add_activity.html', {'sports': sports, 'form': form})
 
 
 def edit_activity_view(request, activity_id):
-    activity = Activity.objects.get(id=activity_id)
     sports = Sport.objects.all().order_by('id')
-    instance = get_object_or_404(Activity, id=activity_id)
-    form = EditActivityForm(request.POST or None, instance=instance)
-    if form.is_valid():
-        form.save()
-        return redirect('next_view')
+    log.debug(f"querying for activity id: {activity_id}")
+    activity = Activity.objects.get(id=activity_id)
+    form = EditActivityForm(request.POST or None, instance=activity)
+    log.debug(f"got form: {form}")
+    if request.method == 'POST':
+        if form.is_valid():
+            log.info(f"got valid form: {form.cleaned_data}")
+            form.save()
+            return HttpResponseRedirect(f"/activity/{activity_id}")
+        else:
+            log.warning(f"form invalid")
     return render(request, 'edit_activity.html', {'form': form, 'sports': sports, 'activity': activity})
-
-#
-# def edit_activity_view(request, activity_id):  # TODO this func and template needs rework
-#     sports = Sport.objects.all().order_by('id')
-#     activity = Activity.objects.get(id=activity_id)
-#     if request.method == 'POST':
-#         log.info(f"got post with request {request.POST}")
-#         form = EditActivityForm(request.POST or None)
-#         log.debug(f"form: {form}")
-#         if form.is_valid():
-#             log.debug(f"valid form: {form.cleaned_data}")
-#             instance = form.save()
-#             instance.save()
-#             return HttpResponseRedirect(f'/activity/{activity.id}/edit/')
-#     else:
-#         form = EditActivityForm()
-#     return render(request, 'edit_activity.html', {'activity': activity, 'sports': sports, 'form': form})
 
 
 def add_sport_view(request):
     sports = Sport.objects.all().order_by('id')
     if request.method == 'POST':
         form = AddSportsForm(request.POST)
-        print(f"form: {form}")
         if form.is_valid():
-            print(f"got form: {form.cleaned_data}")
             instance = form.save()
             instance.save()
             return HttpResponseRedirect('/sports')
@@ -146,12 +131,10 @@ def settings_view(request):
     user_id = request.user.id
     settings = Settings.objects.get(user_id=user_id)
     form = SettingsForm(request.POST or None, instance=settings)
-    log.debug(f"got form:\n{form}")
     if request.method == 'POST':
         if form.is_valid():
             log.info(f"got valid form: {form.cleaned_data}")
             form.save()
-            # instance.save()
             return HttpResponseRedirect('/settings')
         else:
             log.warning(f"form invalid")

@@ -55,7 +55,7 @@ class Activity(models.Model):
     date = models.DateField(blank=False)
     duration = models.FloatField()
     distance = models.FloatField(blank=True, null=True)
-    description = models.CharField(max_length=50, blank=True, null=True)
+    description = models.CharField(max_length=300, blank=True, null=True)
     trace_file = models.ForeignKey(TraceFiles, on_delete=models.CASCADE, blank=True, null=True)
 
 
