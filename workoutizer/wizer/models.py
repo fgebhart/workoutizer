@@ -1,7 +1,9 @@
 import logging
 
+
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 from .tools import sanitize
 
@@ -52,7 +54,7 @@ class Activity(models.Model):
 
     title = models.CharField(max_length=50)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE)
-    date = models.DateField(blank=False)
+    date = models.DateField(blank=False, default=timezone.now)
     duration = models.FloatField()
     distance = models.FloatField(blank=True, null=True)
     description = models.CharField(max_length=300, blank=True, null=True)
