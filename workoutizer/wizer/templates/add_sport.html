@@ -1,18 +1,31 @@
 <title>Add new Sports - Workoutizer</title>
-
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
     <div class="container">
         <h3>Add new Sports</h3>
-        <p>Use the following form to add a new sport:</p>
-        <form action="/add-sport/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
-            {% csrf_token %}
-            <table>
-                {{ form.as_table }}
-            </table>
-            <br>
-            <button id="button" class="btn btn-warning" type="submit" name="action">Submit</button>
-        </form>
+        <br>
+        <div class="container">
+
+            <p>Use the following form to add a new sport:</p>
+
+            <form action="/add-sport/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <div class="col-sm-2">{{ form.name.label }}</div>
+                    <div class="col-sm-10">{{ form.name }}</div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-2">{{ form.color.label }}</div>
+                    <div class="col-sm-10">{{ form.color }}</div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-2">{{ form.icon.label }}</div>
+                    <div class="col-sm-10">{{ form.icon }}</div>
+                </div>
+                <button id="button" class="btn btn-warning" type="submit" name="action">Submit</button>
+            </form>
+
+        </div>
     </div>
 {% endblock %}

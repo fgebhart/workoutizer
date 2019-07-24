@@ -7,8 +7,7 @@
         <br>
         <div class="container">
 
-            <form action="/add-activity/" method="post" accept-charset="utf-8"enctype="multipart/form-data">
-
+            <form action="/add-activity/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-group row">
                     <div class="col-sm-2">{{ form.title.label }}</div>
@@ -34,9 +33,9 @@
                     <div class="col-sm-2">{{ form.description.label }}</div>
                     <div class="col-sm-10">{{ form.description }}</div>
                 </div>
-
                 <button id="button" class="btn btn-warning" type="submit" name="action">Submit</button>
             </form>
+
         </div>
     </div>
 {% endblock %}
