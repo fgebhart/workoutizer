@@ -19,16 +19,16 @@
             {% for s in sports %}
                 <tbody>
                 <tr>
-                    <td><a href="/sports/{{ s.slug }}">{{ s.name }}</a></td>
+                    <td><a href="/sport/{{ s.slug }}">{{ s.name }}</a></td>
                     <td>{{ s.color }}</td>
-                    <td>{{ s.icon }}</td>
+                    <td><i class="fas fa-{{ s.icon }}"></i></td>
                     <td>{{ s.slug }}</td>
                 </tr>
                 </tbody>
             {% endfor %}
         </table>
         <br>
-        <a href="/add-sport" class="btn btn-warning">Add Sport</a>
+        <a href="/add-sport" class="btn btn-warning"><i class="fas fa-plus"></i>&nbsp;&nbsp;Sport</a>
     </div>
     </body>
 {% endblock %}
