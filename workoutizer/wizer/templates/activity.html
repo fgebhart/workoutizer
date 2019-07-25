@@ -4,7 +4,9 @@
     <title>{{ activity.title }} - Workoutizer</title>
     <body>
     <div class="container">
-        <h3>{{ activity.title }}</h3>
+        <h3 class="float-left">{{ activity.title }}</h3>
+        <a class="float-right btn btn-warning" href="{{ activity.id }}/edit"><i class="fas fa-pen"></i>&nbsp;&nbsp;Edit</a>
+        <div class="clearfix"></div>
         <p>{{ activity.date }}</p>
         <hr>
         <br>
@@ -28,7 +30,6 @@
                         <td>{{ activity.description }}</td>
                     <tr>
                 </table>
-                <a href="{{ activity.id }}/edit" class="btn btn-warning">Edit</a>
             </div>
             {% if activity.trace_file %}
                 <div class="col-sm-8">

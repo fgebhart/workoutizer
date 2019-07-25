@@ -70,6 +70,7 @@ class SportsView(View):
         sports = Sport.objects.all().order_by('id')
         try:
             sport = model_to_dict(Sport.objects.get(slug=sports_name_slug))
+            sport['slug'] = sports_name_slug
             log.error(f"database has sport: {sport}")
         except ObjectDoesNotExist:
             log.critical("this sport does not exist")
