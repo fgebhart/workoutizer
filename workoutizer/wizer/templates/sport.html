@@ -16,15 +16,23 @@
             <tr>
                 <th>Date</th>
                 <th>Name</th>
+                <th>Track</th>
                 <th>Duration</th>
                 <th>Distance</th>
             </tr>
             </thead>
-            <tbody>
             {% for a in activities %}
+                <tbody>
                 <tr>
                     <td>{{ a.date }}</td>
                     <td><a href="/activity/{{ a.id }}">{{ a.title }}</a></td>
+                    <td>
+                        {% if a.trace_file %}
+                            <i class="fas fa-map-marked-alt"></i>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
                     <td>{{ a.duration }}</td>
                     <td>{{ a.distance }}</td>
                 </tr>

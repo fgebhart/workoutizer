@@ -5,9 +5,8 @@
     <div class="container">
         <h3>Add new Sports</h3>
         <br>
+        <p>Use the following form to add a new sport:</p>
         <div class="container">
-
-            <p>Use the following form to add a new sport:</p>
 
             <form action="/add-sport/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -23,7 +22,7 @@
                     <div class="col-sm-2">{{ form.icon.label }}</div>
                     <div class="col-sm-10">{{ form.icon }}</div>
                 </div>
-                <button id="button" class="btn btn-warning" type="submit" name="action">Submit</button>
+                <button id="button" class="btn btn-warning" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Submit</button>
             </form>
 
         </div>

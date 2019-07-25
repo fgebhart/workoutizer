@@ -32,6 +32,8 @@
                 <td>
                     {% if a.trace_file %}
                         <i class="fas fa-map-marked-alt"></i>
+                        {% else %}
+                            -
                     {% endif %}
                 </td>
                 <td><a href="/sport/{{ a.sport.slug }}"><i class="fas fa-{{ a.sport.icon }}"></i></a></td>

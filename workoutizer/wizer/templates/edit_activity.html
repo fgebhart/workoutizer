@@ -35,8 +35,12 @@
                     <div class="col-sm-10">{{ form.description }}</div>
                 </div>
                 <br>
-                <a href="/activity/{{ activity.id }}" class="btn btn-danger">Cancel</a>
-                <button id="button" class="btn btn-warning" type="submit" name="action">Save</button>
+                <button id="button" class="float-left btn btn-warning" type="submit" name="action"><i
+                        class="fas fa-check"></i>&nbsp;&nbsp;Save
+                </button>
+                <a href="/activity/{{ activity.id }}" class="float-right btn btn-danger">Cancel</a>
+                <div class="clearfix"></div>
+
             </form>
         </div>
     </div>
