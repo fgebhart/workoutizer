@@ -1,6 +1,6 @@
 import logging
 
-from django.shortcuts import render, render_to_response, get_object_or_404, redirect
+from django.shortcuts import render, render_to_response
 from django.views.generic import View
 from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
