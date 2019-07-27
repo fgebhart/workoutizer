@@ -12,18 +12,20 @@
         <br>
         <div class="row">
             <div class="col-sm-4">
+                <p>Activity Details:</p>
                 <table class="table table-hover">
                     <tr>
                         <th scope="row">Sport</th>
-                        <td>{{ activity.sport }}</td>
+                        <td><a href="/sport/{{ activity.sport.slug }}"><i class="fas fa-{{ activity.sport.icon }}"></i></a>
+                        </td>
                     <tr>
                     <tr>
                         <th scope="row">Duration</th>
-                        <td>{{ activity.duration }}</td>
+                        <td>{{ activity.duration }} min</td>
                     <tr>
                     <tr>
                         <th scope="row">Distance</th>
-                        <td>{{ activity.distance }}</td>
+                        <td>{{ activity.distance }} km</td>
                     <tr>
                     <tr>
                         <th scope="row">Description</th>

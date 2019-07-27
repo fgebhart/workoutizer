@@ -1,7 +1,8 @@
 import logging
 
 from django.shortcuts import render, render_to_response
-from django.views.generic import View
+from django.views.generic import View, DeleteView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
@@ -112,6 +113,13 @@ def edit_activity_view(request, activity_id):
     return render(request, 'edit_activity.html', {'form': form, 'sports': sports, 'activity': activity})
 
 
+class ActivityDeleteView(DeleteView):
+    template_name = "activity_confirm_delete.html"
+    model = Activity
+    slug_field = 'activity_id'
+    success_url = "/"
+
+
 def add_sport_view(request):
     sports = Sport.objects.all().order_by('id')
     if request.method == 'POST':
@@ -125,6 +133,27 @@ def add_sport_view(request):
     else:
         form = AddSportsForm()
     return render(request, 'add_sport.html', {'sports': sports, 'form': form})
+
+
+def edit_sport_view(request, sports_name_slug):
+    sports = Sport.objects.all().order_by('id')
+    sport = Sport.objects.get(slug=sports_name_slug)
+    form = AddSportsForm(request.POST or None, instance=sport)
+    if request.method == 'POST':
+        if form.is_valid():
+            log.info(f"got valid form: {form.cleaned_data}")
+            form.save()
+            return HttpResponseRedirect(f'/sport/{sport.slug}/edit/')
+        else:
+            log.warning(f"form invalid")
+    return render(request, 'edit_sport.html', {'sports': sports, 'sport': sport, 'form': form})
+
+
+class SportDeleteView(DeleteView):
+    template_name = "sport_confirm_delete.html"
+    model = Sport
+    slug_field = 'slug'
+    success_url = "/sports/"
 
 
 def settings_view(request):

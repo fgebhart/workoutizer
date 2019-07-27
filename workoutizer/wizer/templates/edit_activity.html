@@ -34,14 +34,14 @@
                     <div class="col-sm-2">{{ form.description.label }}</div>
                     <div class="col-sm-10">{{ form.description }}</div>
                 </div>
-                <br>
-                <button id="button" class="float-left btn btn-warning" type="submit" name="action"><i
+                <button id="button" class="float-left btn btn-warning btn-space" type="submit" name="action"><i
                         class="fas fa-check"></i>&nbsp;&nbsp;Save
                 </button>
-                <a href="/activity/{{ activity.id }}" class="float-right btn btn-danger">Cancel</a>
+                <a href="/activity/{{ activity.id }}" class="float-left btn btn-outline-secondary">Cancel</a>
+                <a href="/activity/{{ activity.id }}/delete/" class="float-right btn btn-danger"><i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete</a>
                 <div class="clearfix"></div>
-
             </form>
+
         </div>
     </div>
 {% endblock %}

@@ -2,8 +2,8 @@ body {
     font-family: 'Ubuntu', sans-serif;
 }
 
-.errorlist {
-    color: red;
+.btn-space {
+    margin-right: 5px;
 }
 
 .leaflet-container {
