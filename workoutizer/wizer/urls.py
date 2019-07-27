@@ -1,14 +1,14 @@
 from django.urls import path
 from django.conf.urls import url
-from wizer.views import DashboardView, AllActivitiesView, add_activity_view, SportsView, AllSportsView, add_sport_view,\
-    ActivityView, settings_view, edit_activity_view, edit_sport_view, SportDeleteView, ActivityDeleteView
+from wizer.views import DashboardView, settings_view
+from wizer.activity_views import add_activity_view, edit_activity_view, ActivityDeleteView, ActivityView
+from wizer.sport_views import edit_sport_view, SportDeleteView, SportsView, AllSportsView, add_sport_view
 
 urlpatterns = [
     # home Dashboard
     path('', DashboardView.as_view(), name="home"),
 
     # Activities
-    path('activities/', AllActivitiesView.as_view(), name="activities"),
     path('activity/<slug:activity_id>', ActivityView.as_view(), name="activity"),
     path('activity/<slug:activity_id>/edit/', edit_activity_view, name="edit-activity"),
     path('add-activity/', add_activity_view, name="add-activity"),
