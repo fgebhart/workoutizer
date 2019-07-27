@@ -75,3 +75,11 @@ class SportDeleteView(DeleteView):
     model = Sport
     slug_field = 'slug'
     success_url = "/sports/"
+
+    def get(self, request, *args, **kwargs):
+        log.debug(f"kwargs: {kwargs}")
+        sports = Sport.objects.all().order_by('name')
+        sport = Sport.objects.get(slug=kwargs['slug'])
+        log.debug(f"my sports: {sports}")
+        log.debug(f"my sport: {sport}")
+        return render(request, self.template_name, {'sports': sports, 'sport': sport})

@@ -14,6 +14,7 @@ log = logging.getLogger('wizer.activity_views')
 
 class ActivityView(View):
     template_name = "activity/activity.html"
+
     def get(self, request, activity_id):
         sports = Sport.objects.all().order_by('name')
         log.error(f"got activity_id: {activity_id}")
@@ -60,3 +61,10 @@ class ActivityDeleteView(DeleteView):
     model = Activity
     slug_field = 'activity_id'
     success_url = "/"
+
+    def get(self, request, *args, **kwargs):
+        sports = Sport.objects.all().order_by('name')
+        activity = Activity.objects.get(id=kwargs['pk'])
+        log.debug(f"my sports: {sports}")
+        log.debug(f"activity: {activity}")
+        return render(request, self.template_name, {'sports': sports, 'activity': activity})
