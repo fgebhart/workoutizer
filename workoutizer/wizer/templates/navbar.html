@@ -19,11 +19,12 @@
                             Sports
                         </button>
                         <div class="dropdown-menu">
-                            {% for s in sports %}
-                                <a class="dropdown-item" href="/sport/{{ s.slug }}">{{ s.name }}&nbsp;&nbsp;<i class="fas fa-{{ s.icon }}"></i></a>
-                            {% endfor %}
-                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/sports/">All Sports</a>
+                            <div class="dropdown-divider"></div>
+                            {% for s in sports %}
+                                <a class="dropdown-item" href="/sport/{{ s.slug }}">{{ s.name }}&nbsp;&nbsp;<i
+                                        class="fas fa-{{ s.icon }}"></i></a>
+                            {% endfor %}
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/add-sport/"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Sport</a>
                         </div>

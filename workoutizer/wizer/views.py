@@ -18,7 +18,7 @@ class DashboardView(View):
     template_name = "dashboard.html"
 
     def get(self, request):
-        sports = Sport.objects.all().order_by('id')
+        sports = Sport.objects.all().order_by('name')
         activities = Activity.objects.all().order_by("-date")
 
         script, div = components(plot_activities(activities, number_of_days=60))
@@ -27,7 +27,7 @@ class DashboardView(View):
 
 
 def settings_view(request):
-    sports = Sport.objects.all().order_by('id')
+    sports = Sport.objects.all().order_by('name')
     user_id = request.user.id
     settings = Settings.objects.get(user_id=user_id)
     form = SettingsForm(request.POST or None, instance=settings)
