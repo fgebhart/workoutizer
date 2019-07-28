@@ -16,6 +16,7 @@ sport_naming_map = {
     'Mountainbiking': ['mountainbiking', 'mountainbike', 'mountain biking', 'mountain bike', 'mountain-biking',
                        'mountain-bike', 'mtbing', 'mtb'],
     'Hiking': ['hiking', 'hike', 'wander', 'walking', 'mountaineering'],
+    'Triathlon': ['triathlon', 'tria'],
 }
 
 
@@ -62,16 +63,17 @@ class GPXFileImporter:
         for file in trace_files:
             md5sum = calc_md5(file)
             if md5sum not in md5sums_from_db:   # current file is not stored in model yet
+                log.debug(f"importing file {file}...")
                 gjson = GPXConverter(path_to_gpx=file)
                 mapped_sport = map_sport_name(gjson.get_gpx_metadata().sport, sport_naming_map)
                 t = self._save_gpx_file_to_db(file=file, md5sum=md5sum, geojson=gjson)
                 trace_file_instance = self.trace_files_model.objects.get(pk=t.pk)
                 try:
                     sport_instance = self.sport_model.objects.get(slug=sanitize(mapped_sport))
+                    self._save_activity_to_db(geojson=gjson, sport=sport_instance, trace_file=trace_file_instance)
                 except self.sport_model.DoesNotExist:
                     log.warning(f"could not find sport '{mapped_sport}' in model, needs to be inserted first")
                     # TODO create notification here
-                self._save_activity_to_db(geojson=gjson, sport=sport_instance, trace_file=trace_file_instance)
             else:  # means file is stored in db already
                 trace_file_paths_model = self.trace_files_model.objects.get(md5sum=md5sum)
                 if trace_file_paths_model.path_to_file != file:

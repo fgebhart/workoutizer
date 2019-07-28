@@ -1,13 +1,13 @@
 import logging
 from dataclasses import dataclass
 from math import cos, sin, atan2, sqrt, radians, degrees
-from datetime import datetime
 
 from geopy import distance
 import gpxpy
 import gpxpy.gpx
 from geojson import MultiLineString
-import xml.etree.ElementTree as ET
+
+from django.conf import settings
 
 log = logging.getLogger('wizer.gpx-converter')
 
@@ -67,7 +67,7 @@ class GPXConverter:
         self.geojson_multilinestring = None
         self.center = None
         self.geojson_dict = None
-        self.root = None
+        # self.root = None
 
         # run converter
         try:
@@ -75,25 +75,31 @@ class GPXConverter:
             self.parse_points()
             self.insert_data_into_geojson_dict()
         except Exception as e:
-            log.error(f"got error: {e}", exc_info=True)
+            log.error(f"could not import file: {self.path}\n"
+                      f"got error: {e}", exc_info=True)
 
     def read_gpx_file(self):
         gpx_file = open(self.path, 'r')
-        tree = ET.parse(self.path)
-        self.root = tree.getroot()
         self.gpx = gpxpy.parse(gpx_file)
         self.get_sport_from_gpx_file()
         self.get_duration_from_gpx_file()
 
     def get_sport_from_gpx_file(self):
-        self.sport = self.root.findall("./")[1][1][1].text
+        for e in self.gpx.tracks[0].extensions:
+            if e.tag.split("}")[1] == "activity":
+                self.sport = e.text
+                log.debug(f"found sport: {self.sport}")
 
     def get_duration_from_gpx_file(self):
-        time_string_format = '%Y-%m-%dT%H:%M:%S.000Z'
-        start_time = datetime.strptime(self.root.findall("./")[1][2][0][1].text, time_string_format)
-        self.date = start_time
-        end_time = datetime.strptime(self.root.findall("./")[1][2][-1][1].text, time_string_format)
-        self.duration = convert_timedelta_to_hours(end_time - start_time)
+        all_points_time = []
+        for s in self.gpx.tracks[0].segments:
+            for p in s.points:
+                all_points_time.append(p.time)
+        start = all_points_time[0]
+        self.date = start
+        end = all_points_time[-1]
+        self.duration = convert_timedelta_to_hours(end - start)
+        log.debug(f"found duration: {self.duration}")
 
     def parse_points(self):
         list_of_points = []
@@ -105,6 +111,7 @@ class GPXConverter:
         # log.debug(f"center points: {self.center}")
         self.geojson_multilinestring = MultiLineString([list_of_points])
         self.distance = calc_distance_of_points(list_of_points)
+        log.debug(f"found distance: {self.distance}")
 
     def insert_data_into_geojson_dict(self):
         if self.track_name:
@@ -161,4 +168,4 @@ def calc_distance_of_points(list_of_tuples: list):
             dist = distance.geodesic(first_point, point)
             first_point = point
             total_distance += dist.km
-    return total_distance
+    return total_distance * settings.DISTANCE_CORRECTOR
