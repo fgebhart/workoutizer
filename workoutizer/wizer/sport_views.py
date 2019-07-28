@@ -33,7 +33,6 @@ class SportsView(View):
         try:
             sport = model_to_dict(Sport.objects.get(slug=sports_name_slug))
             sport['slug'] = sports_name_slug
-            log.error(f"database has sport: {sport}")
         except ObjectDoesNotExist:
             log.critical("this sport does not exist")
             raise Http404

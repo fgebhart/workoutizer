@@ -36,7 +36,11 @@
                             -
                     {% endif %}
                 </td>
-                <td><a href="/sport/{{ a.sport.slug }}"><i class="fas fa-{{ a.sport.icon }}"></i></a></td>
+                <td>
+                    <a href="/sport/{{ a.sport.slug }}" style="color: {{ a.sport.color }};">
+                        <i class="fas fa-{{ a.sport.icon }}"></i>
+                    </a>
+                </td>
                 <td>{{ a.duration }}</td>
                 <td>{{ a.distance }}</td>
             </tr>

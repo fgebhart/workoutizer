@@ -3,7 +3,7 @@
 {% load static %}
 {% block body %}
     <div class="container">
-        <h3 class="float-left"><i class="fas fa-{{ sport.icon }}"></i>&nbsp;&nbsp;&nbsp;{{ sport.name }}</h3>
+        <h3 class="float-left"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i>&nbsp;&nbsp;&nbsp;{{ sport.name }}</h3>
         <a class="float-right btn btn-warning" href="{{ sport.slug }}/edit"><i
                 class="fas fa-pen"></i>&nbsp;&nbsp;Edit</a>
         <div class="clearfix"></div>
