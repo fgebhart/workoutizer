@@ -127,6 +127,8 @@ LEAFLET_CONFIG = {
     'MAX_ZOOM': 18,
 }
 
+DISTANCE_CORRECTOR = 0.77
+
 format_console = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 LOGGING = {
