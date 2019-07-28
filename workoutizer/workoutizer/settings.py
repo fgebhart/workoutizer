@@ -117,8 +117,6 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
-PRIMARY_COLOR = "indigo darken-4"
-SECONDARY_COLOR = "orange accent-3"
 
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (49.408972, 8.683977),
@@ -128,6 +126,8 @@ LEAFLET_CONFIG = {
 }
 
 DISTANCE_CORRECTOR = 0.77
+PLOT_WIDTH = 1110
+PLOT_HEIGHT = 300
 
 format_console = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
@@ -135,7 +135,6 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'formatters': {
-        # install colored logs with 'pip install coloredlogs'
         'colored': {'()': 'coloredlogs.ColoredFormatter', 'format': format_console, 'datefmt': '%m-%d %H:%M:%S'}
     },
     'handlers': {
