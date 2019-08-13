@@ -12,7 +12,7 @@ def test_sanitze():
 
 
 def test_calc_distance_of_points():
-    assert int(calc_distance_of_points([(41.49008, -71.312796), (41.499498, -81.695391)])) == int(-667)
+    assert int(calc_distance_of_points([(41.49008, -71.312796), (41.499498, -81.695391)])) == int(667)
 
 
 sport_map = {
