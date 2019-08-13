@@ -7,7 +7,6 @@ import gpxpy
 import gpxpy.gpx
 from geojson import MultiLineString
 
-from django.conf import settings
 
 log = logging.getLogger('wizer.gpx-converter')
 
@@ -168,4 +167,4 @@ def calc_distance_of_points(list_of_tuples: list):
             dist = distance.geodesic(first_point, point)
             first_point = point
             total_distance += dist.km
-    return total_distance * settings.DISTANCE_CORRECTOR
+    return total_distance * 0.77
