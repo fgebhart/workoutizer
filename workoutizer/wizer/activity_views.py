@@ -17,7 +17,7 @@ class ActivityView(View):
 
     def get(self, request, activity_id):
         sports = Sport.objects.all().order_by('name')
-        log.error(f"got activity_id: {activity_id}")
+        log.debug(f"got activity_id: {activity_id}")
         try:
             activity = Activity.objects.get(id=activity_id)
             log.debug(f"passing activity: {activity} from model to view")
