@@ -1,5 +1,3 @@
 __pycache__/
-db.sqlite3
 workoutizer/static/
-.sass-cache
 .pytest_cache/
