@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import configparser
 
 import coloredlogs
 
@@ -74,10 +75,19 @@ WSGI_APPLICATION = 'workoutizer.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+config = configparser.ConfigParser()
+config.read(os.path.join(BASE_DIR, 'config.ini'))
+example_data = config.getboolean("CONFIG", "use_example_data")
+
+DB_NAME = os.path.join(BASE_DIR, 'db.sqlite3')
+
+if example_data:
+    DB_NAME = os.path.join(BASE_DIR, 'example_data.sqlite3')
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': DB_NAME,
     }
 }
 
