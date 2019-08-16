@@ -21,7 +21,7 @@ class DashboardView(View):
         activities = Activity.objects.all().order_by("-date")
         try:
             # TODO make user choose number_of_days in template
-            script, div = components(plot_activities(activities, number_of_days=40))
+            script, div = components(plot_activities(activities, sports, number_of_days=10))
         except AttributeError as e:
             log.error(f"Error rendering plot. Check if activity data is correct: {e}", exc_info=True)
             script = div = "Error rendering Plot"
