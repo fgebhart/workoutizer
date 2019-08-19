@@ -12,6 +12,30 @@
     {{ script | safe }}
 
     <h3>Dashboard</h3>
+    <br>
+    <div class="row">
+        <div class="col-sm-10">
+            <p>Overview of all your activities:</p>
+        </div>
+        <div class="col-sm-2">
+            Show last:
+            <div class="dropdown dropright float-right">
+                <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown">
+                    {{ days }} days
+                </button>
+                <div class="dropdown-menu">
+                    {% for k, v in choices %}
+                        {% if v == days %}
+                            <a class="dropdown-item" href="/"><b>{{ v }} days &nbsp;<i
+                                    class="fas fa-check"></i></b></a>
+                        {% else %}
+                            <a class="dropdown-item" href="/">{{ v }} days</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
     {{ div | safe }}
     <table class="table table-hover">
         <thead>
@@ -32,8 +56,8 @@
                 <td>
                     {% if a.trace_file %}
                         <i class="fas fa-map-marked-alt"></i>
-                        {% else %}
-                            -
+                    {% else %}
+                        -
                     {% endif %}
                 </td>
                 <td>
