@@ -19,21 +19,26 @@
         </div>
         <div class="col-sm-2">
             Show last:
-            <div class="dropdown dropright float-right">
-                <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown">
-                    {{ days }} days
-                </button>
-                <div class="dropdown-menu">
-                    {% for k, v in choices %}
-                        {% if v == days %}
-                            <a class="dropdown-item" href="/"><b>{{ v }} days &nbsp;<i
-                                    class="fas fa-check"></i></b></a>
-                        {% else %}
-                            <a class="dropdown-item" href="/">{{ v }} days</a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
+
+            <form action="" method="post">{% csrf_token %}
+                {{ form }}
+                <input type="submit" value="Create"/>
+            </form>
+            {#            <div class="dropdown dropright float-right">#}
+            {#                <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown">#}
+            {#                    {{ days }} days#}
+            {#                </button>#}
+            {#                <div class="dropdown-menu">#}
+            {#                    {% for k, v in choices %}#}
+            {#                        {% if v == days %}#}
+            {#                            <a class="dropdown-item" href="/"><b>{{ v }} days &nbsp;<i#}
+            {#                                    class="fas fa-check"></i></b></a>#}
+            {#                        {% else %}#}
+            {#                            <a class="dropdown-item" href="/">{{ v }} days</a>#}
+            {#                        {% endif %}#}
+            {#                    {% endfor %}#}
+            {#                </div>#}
+            {#            </div>#}
         </div>
     </div>
     {{ div | safe }}

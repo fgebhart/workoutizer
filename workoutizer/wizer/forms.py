@@ -29,3 +29,9 @@ class SettingsForm(forms.ModelForm):
     class Meta:
         model = Settings
         exclude = ('user',)
+
+
+class DaysDropDown(forms.ModelForm):
+    class Meta:
+        model = Settings
+        fields = ['number_of_days']

@@ -1,64 +1,63 @@
 import logging
-import datetime
+from datetime import datetime as dt
+from datetime import timedelta
+
+import pandas as pd
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 
 from django.conf import settings
 
-
 log = logging.getLogger("wizer.plots")
 
 
 def plot_activities(activities, sports, number_of_days):
-    today = datetime.datetime.now()
-    x_axis_date_range = list()
-    for i in range(number_of_days):
-        x_axis_date_range.append(today - datetime.timedelta(days=i))
-    log.debug(f"created x axis datetime list: {x_axis_date_range}")
-    log.debug(f"len x axis datetime list: {len(x_axis_date_range)}")
+    data = list()
+    columns = list()
+    dates = list()
+    colors = list()
 
-    data = {
-        'activity_data': list(),
-        'time_x_axis': list(),
-        'colors': [c.color for c in sports],
-        'sports': [s.name for s in sports],
-    }
+    for s in sports:
+        columns.append(s.name)
+        colors.append(s.color)
 
-    for sport in data['sports']:
+    for a in activities:
         durations = list()
-        for a in activities:
-            if str(a.sport) == sport:
+        dates.append(a.date)
+        for s in sports:
+            if a.sport == s:
                 durations.append(int(a.duration))
             else:
                 durations.append(0)
-        data['activity_data'].append(durations)
+        data.append(durations)
 
-    for i in range(len(data['sports'])):
-        data['time_x_axis'].append(x_axis_date_range)
+    log.info(f"data: {data}")
+    log.info(f"data: {len(data)}")
+    log.info(f"columns: {columns}")
+    log.info(f"columns: {len(columns)}")
+    log.info(f"dates: {dates}")
+    log.info(f"dates: {len(dates)}")
 
-    log.debug(f"data: {data}")
-    source = ColumnDataSource(data=data)
+    index = pd.date_range(start=dt.today() - timedelta(days=len(data) - 1), end=dt.today(), freq='d')
+    log.debug(f"index: {index}")
+    df = pd.DataFrame(data=data, columns=columns, index=dates)
 
     p = figure(
         x_axis_type='datetime',
         plot_width=settings.PLOT_WIDTH,
         plot_height=settings.PLOT_HEIGHT,
     )
-    p.multi_line(xs='time_x_axis', ys='activity_data', legend='sports', color='colors', source=source, line_width=3)
+
+    data = {
+        'xs': [df.index.values] * len(df.columns),
+        'ys': [df[name].values for name in df],
+        'legend': columns,
+        'colors': colors,
+    }
+    source = ColumnDataSource(data)
+
+    p.multi_line(xs='xs', ys='ys', color='colors',
+                 line_width=3, legend='legend', source=source)
     p.legend.location = "top_left"
 
     return p
-
-
-class PlotData:
-    def __init__(self):
-        self.date = list()
-        self.sports = list()
-        self.sport_color = list()
-        self.data = list()
-
-    def get_data(self):
-        return self.data
-
-    def get_uniques(self, attribute):
-        return list(dict.fromkeys(getattr(self, attribute)))

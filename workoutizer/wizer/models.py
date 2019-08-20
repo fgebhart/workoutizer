@@ -1,6 +1,5 @@
 import logging
 
-
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
@@ -50,7 +49,7 @@ class TraceFiles(models.Model):
 class Activity(models.Model):
 
     def __str__(self):
-        return self.title
+        return f"{self.title} ({self.sport})"
 
     title = models.CharField(max_length=50)
     sport = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True)
@@ -62,7 +61,9 @@ class Activity(models.Model):
 
 
 class Settings(models.Model):
+    days_choices = [(365, 365), (180, 180), (30, 30), (10, 10), (5, 5)]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=settings.AUTH_USER_MODEL)
     path_to_trace_dir = models.CharField(max_length=120)
     gpx_checker_interval = models.IntegerField()
+    number_of_days = models.IntegerField(choices=days_choices, default=30)
