@@ -28,7 +28,7 @@ class SportsView(View):
     def get(self, request, sports_name_slug):
         log.error(f"got sports name: {sports_name_slug}")
         sport_id = Sport.objects.get(slug=sports_name_slug).id
-        activities = Activity.objects.filter(sport=sport_id)
+        activities = Activity.objects.filter(sport=sport_id).order_by("-date")
         sports = Sport.objects.all().order_by('name')
         try:
             sport = model_to_dict(Sport.objects.get(slug=sports_name_slug))
