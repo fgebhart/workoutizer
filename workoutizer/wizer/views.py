@@ -1,7 +1,7 @@
 import logging
 
-from django.shortcuts import render, render_to_response
-from django.views.generic import View, CreateView, UpdateView
+from django.shortcuts import render
+from django.views.generic import View
 from django.http import HttpResponseRedirect
 from bokeh.embed import components
 
@@ -10,27 +10,6 @@ from .forms import SettingsForm, DaysDropDown
 from .plots import plot_activities
 
 log = logging.getLogger('wizer.views')
-
-
-class DashboardViewOLD(View):
-    template_name = "dashboard.html"
-
-    def get(self, request):
-        sports = Sport.objects.all().order_by('name')
-        activities = Activity.objects.all().order_by("-date")
-        user_id = request.user.id
-        settings = Settings.objects.get(user_id=user_id)
-        number_of_days = settings.number_of_days
-        days_choices = Settings.days_choices
-        log.debug(f"got number of days from db: {number_of_days}")
-        try:
-            script, div = components(plot_activities(activities, sports, number_of_days=number_of_days))
-        except AttributeError as e:
-            log.error(f"Error rendering plot. Check if activity data is correct: {e}", exc_info=True)
-            script = div = "Error rendering Plot"
-        return render_to_response(self.template_name,
-                                  {'sports': sports, 'activities': activities, 'script': script, 'div': div,
-                                   'days': number_of_days, 'choices': days_choices})
 
 
 class DashboardView(View):
