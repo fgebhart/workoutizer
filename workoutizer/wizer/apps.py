@@ -14,7 +14,7 @@ log = logging.getLogger('wizer.apps')
 sport_naming_map = {
     'Jogging': ['jogging', 'running'],
     'Mountainbiking': ['mountainbiking', 'mountainbike', 'mountain biking', 'mountain bike', 'mountain-biking',
-                       'mountain-bike', 'mtbing', 'mtb'],
+                       'mountain-bike', 'mtbing', 'mtb', 'cycling_mountain'],
     'Hiking': ['hiking', 'hike', 'wander', 'walking', 'mountaineering'],
     'Triathlon': ['triathlon', 'tria'],
 }
@@ -115,6 +115,8 @@ def map_sport_name(sport_name, map_dict):
         if sanitize(sport_name) in v:
             log.debug(f"mapped activity sport: {sport_name} to {k}")
             sport = k
+        else:
+            log.warning(f"could not map {sport_name} to given sport names, use name 'other'")
     return sport
 
 
