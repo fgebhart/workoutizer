@@ -36,6 +36,8 @@ class DashboardView(View):
             self.script = self.div = "Error rendering Plot"
 
     def get(self, request):
+        self.sports = Sport.objects.all().order_by('name')
+        self.activities = Activity.objects.all().order_by("-date")
         log.debug(f"got get from dashboard")
         self.get_days_config(request)
         self.create_plot()
