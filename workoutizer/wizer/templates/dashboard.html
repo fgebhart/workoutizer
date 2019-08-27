@@ -14,31 +14,18 @@
     <h3>Dashboard</h3>
     <br>
     <div class="row">
-        <div class="col-sm-10">
+        <div class="col-sm-8">
             <p>Overview of all your activities:</p>
         </div>
-        <div class="col-sm-2">
-            Show last:
-
-            <form action="" method="post">{% csrf_token %}
-                {{ form }}
-                <input type="submit" value="Create"/>
-            </form>
-            {#            <div class="dropdown dropright float-right">#}
-            {#                <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown">#}
-            {#                    {{ days }} days#}
-            {#                </button>#}
-            {#                <div class="dropdown-menu">#}
-            {#                    {% for k, v in choices %}#}
-            {#                        {% if v == days %}#}
-            {#                            <a class="dropdown-item" href="/"><b>{{ v }} days &nbsp;<i#}
-            {#                                    class="fas fa-check"></i></b></a>#}
-            {#                        {% else %}#}
-            {#                            <a class="dropdown-item" href="/">{{ v }} days</a>#}
-            {#                        {% endif %}#}
-            {#                    {% endfor %}#}
-            {#                </div>#}
-            {#            </div>#}
+        <div class="col-sm-4">
+            <div class="float-right">
+                <form action="" method="post">{% csrf_token %}
+                    {{ form }}
+                    <button id="button" class="btn btn-warning btn-sm" type="submit" name="action"><i
+                            class="fas fa-check"></i>&nbsp;&nbsp;Submit
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
     {{ div | safe }}

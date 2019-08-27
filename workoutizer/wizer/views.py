@@ -55,7 +55,7 @@ class DashboardView(View):
             form.save()
             return HttpResponseRedirect("/")
         else:
-            log.warning(f"form invalid")
+            log.warning(f"form invalid, form: \n {form.errors}")
         return render(request, self.template_name,
                       {'form': form, 'sports': self.sports, 'activities': self.activities,
                        'script': self.script, 'div': self.div, 'days': self.number_of_days,

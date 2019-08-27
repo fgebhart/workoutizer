@@ -42,11 +42,7 @@ def plot_activities(activities, sports, number_of_days):
     # log.debug(f"index: {index}")
     df = pd.DataFrame(data=data, columns=columns, index=dates)
 
-    p = figure(
-        x_axis_type='datetime',
-        plot_width=settings.PLOT_WIDTH,
-        plot_height=settings.PLOT_HEIGHT,
-    )
+    p = figure(x_axis_type='datetime', plot_width=settings.PLOT_WIDTH, plot_height=settings.PLOT_HEIGHT)
 
     data = {
         'xs': [df.index.values] * len(df.columns),
@@ -54,10 +50,8 @@ def plot_activities(activities, sports, number_of_days):
         'legend': columns,
         'colors': colors,
     }
-    source = ColumnDataSource(data)
 
-    p.multi_line(xs='xs', ys='ys', color='colors',
-                 line_width=3, legend='legend', source=source)
+    p.multi_line(xs='xs', ys='ys', color='colors', line_width=3, legend='legend', source=ColumnDataSource(data))
     p.legend.location = "top_left"
 
     return p
