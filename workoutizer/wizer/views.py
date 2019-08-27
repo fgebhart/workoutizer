@@ -38,7 +38,6 @@ class DashboardView(View):
     def get(self, request):
         self.sports = Sport.objects.all().order_by('name')
         self.activities = Activity.objects.all().order_by("-date")
-        log.debug(f"got get from dashboard")
         self.get_days_config(request)
         self.create_plot()
         form = DaysDropDown(request.POST or None, instance=self.settings)
@@ -48,7 +47,6 @@ class DashboardView(View):
                        'choices': self.days_choices})
 
     def post(self, request):
-        log.debug(f"got post from dashboard")
         self.get_days_config(request)
         self.create_plot()
         form = DaysDropDown(request.POST or None, instance=self.settings)

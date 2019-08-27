@@ -11,12 +11,11 @@
         <hr>
         <br>
         <div class="row">
-            <div class="col-sm-4">
-                <p>Activity Details:</p>
+            <div class="col-sm-3">
                 <table class="table table-hover">
                     <tr>
                         <th scope="row">Sport</th>
-                        <td><a href="/sport/{{ activity.sport.slug }}"><i class="fas fa-{{ activity.sport.icon }}"
+                        <td><a href="/sport/{{ activity.sport.slug }}">{{ activity.sport }}&nbsp;&nbsp;<i class="fas fa-{{ activity.sport.icon }}"
                                                                           style="color: {{ activity.sport.color }};"></i></a>
                         </td>
                     <tr>
@@ -35,7 +34,7 @@
                 </table>
             </div>
             {% if activity.trace_file %}
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     <div id="mapid"></div>
                     <script type="text/javascript">
                         var geojsonFeature = {{ activity.trace_file.geojson|safe }};
@@ -47,6 +46,7 @@
                         mytrace.addData(geojsonFeature);
                     </script>
                 </div>
+                <br>
             {% endif %}
         </div>
     </div>

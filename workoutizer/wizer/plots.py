@@ -31,15 +31,15 @@ def plot_activities(activities, sports, number_of_days):
                 durations.append(0)
         data.append(durations)
 
-    log.info(f"data: {data}")
-    log.info(f"data: {len(data)}")
-    log.info(f"columns: {columns}")
-    log.info(f"columns: {len(columns)}")
-    log.info(f"dates: {dates}")
-    log.info(f"dates: {len(dates)}")
+    # log.info(f"data: {data}")
+    # log.info(f"data: {len(data)}")
+    # log.info(f"columns: {columns}")
+    # log.info(f"columns: {len(columns)}")
+    # log.info(f"dates: {dates}")
+    # log.info(f"dates: {len(dates)}")
 
     index = pd.date_range(start=dt.today() - timedelta(days=len(data) - 1), end=dt.today(), freq='d')
-    log.debug(f"index: {index}")
+    # log.debug(f"index: {index}")
     df = pd.DataFrame(data=data, columns=columns, index=dates)
 
     p = figure(

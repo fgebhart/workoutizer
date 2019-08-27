@@ -7,7 +7,7 @@ body {
 }
 
 .leaflet-container {
-    height: 400px;
+    height: 500px;
 }
 
 #id_path_to_trace_dir {
