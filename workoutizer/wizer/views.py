@@ -1,6 +1,6 @@
 import logging
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.http import HttpResponseRedirect
 from bokeh.embed import components
@@ -75,3 +75,10 @@ def settings_view(request):
         else:
             log.warning(f"form invalid")
     return render(request, "settings.html", {'sports': sports, 'form': form, 'settings': settings})
+
+
+def set_number_of_days(request, number_of_days):
+    n = Settings.objects.get(user_id=request.user)
+    n.number_of_days = number_of_days
+    n.save()
+    return redirect('home')

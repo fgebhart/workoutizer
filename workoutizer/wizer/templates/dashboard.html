@@ -19,12 +19,23 @@
         </div>
         <div class="col-sm-4">
             <div class="float-right">
-                <form action="" method="post">{% csrf_token %}
-                    {{ form }}
-                    <button id="button" class="btn btn-warning btn-sm" type="submit" name="action"><i
-                            class="fas fa-check"></i>&nbsp;&nbsp;Submit
+                <div class="dropdown">
+                    display last
+                    <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown">
+                        {{ days }}
                     </button>
-                </form>
+                    <div class="dropdown-menu">
+                        {% for k, v in choices %}
+                            {% if v == days %}
+                                <a class="dropdown-item" href="/set_number_of_day/{{ v }}"><b>{{ v }}&nbsp;<i
+                                        class="fas fa-check"></i></b></a>
+                            {% else %}
+                                <a class="dropdown-item" href="/set_number_of_days/{{ v }}">{{ v }}</a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    days
+                </div>
             </div>
         </div>
     </div>
