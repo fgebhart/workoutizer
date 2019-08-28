@@ -54,7 +54,7 @@ class Activity(models.Model):
     title = models.CharField(max_length=50)
     sport = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True)
     date = models.DateField(blank=False, default=timezone.now)
-    duration = models.FloatField()
+    duration = models.IntegerField()
     distance = models.FloatField(blank=True, null=True)
     description = models.CharField(max_length=300, blank=True, null=True)
     trace_file = models.ForeignKey(TraceFiles, on_delete=models.CASCADE, blank=True, null=True)
