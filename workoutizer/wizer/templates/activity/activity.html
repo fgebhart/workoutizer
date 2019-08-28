@@ -4,7 +4,8 @@
     <title>{{ activity.title }} - Workoutizer</title>
     <body>
     <div class="container">
-        <h3 class="float-left">{{ activity.title }}</h3>
+        <h3 class="float-left">{{ activity.title }}&nbsp;&nbsp;<i class="fas fa-{{ activity.sport.icon }}"
+                                                                  style="color: {{ activity.sport.color }};"></i></h3>
         <a class="float-right btn btn-warning" href="{{ activity.id }}/edit"><i class="fas fa-pen"></i>&nbsp;&nbsp;Edit</a>
         <div class="clearfix"></div>
         <p>{{ activity.date }}</p>
@@ -15,8 +16,7 @@
                 <table class="table table-hover">
                     <tr>
                         <th scope="row">Sport</th>
-                        <td><a href="/sport/{{ activity.sport.slug }}">{{ activity.sport }}&nbsp;&nbsp;<i class="fas fa-{{ activity.sport.icon }}"
-                                                                          style="color: {{ activity.sport.color }};"></i></a>
+                        <td><a href="/sport/{{ activity.sport.slug }}">{{ activity.sport }}</a>
                         </td>
                     <tr>
                     <tr>

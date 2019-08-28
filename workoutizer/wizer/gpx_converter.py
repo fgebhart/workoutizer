@@ -51,7 +51,7 @@ def fill_dict(name, activity, color, opacity, width, geometry):
 
 
 class GPXConverter:
-    def __init__(self, path_to_gpx, track_name=None, line_color="D700D7", line_opacity="0.59",
+    def __init__(self, path_to_gpx, track_name=None, line_color="#ff0000", line_opacity="0.59",
                  line_width="4.0"):
         self.path = path_to_gpx
         self.color = line_color
