@@ -65,15 +65,11 @@ class GPXFileImporter:
             if md5sum not in md5sums_from_db:   # current file is not stored in model yet
                 log.debug(f"importing file {file}...")
                 gjson = GPXConverter(path_to_gpx=file)
-                mapped_sport = map_sport_name(gjson.get_gpx_metadata().sport, sport_naming_map)
+                sport = gjson.get_gpx_metadata().sport
+                mapped_sport = map_sport_name(sport, sport_naming_map)
                 t = self._save_gpx_file_to_db(file=file, md5sum=md5sum, geojson=gjson)
                 trace_file_instance = self.trace_files_model.objects.get(pk=t.pk)
-                try:
-                    sport_instance = self.sport_model.objects.get(slug=sanitize(mapped_sport))
-                except self.sport_model.DoesNotExist:
-                    log.warning(f"could not find sport '{mapped_sport}' in model, needs to be inserted first")
-                    sport_instance = None
-                    # TODO create notification here
+                sport_instance = self.sport_model.objects.filter(slug=sanitize(mapped_sport)).first()
                 self._save_activity_to_db(geojson=gjson, sport=sport_instance, trace_file=trace_file_instance)
             else:  # means file is stored in db already
                 trace_file_paths_model = self.trace_files_model.objects.get(md5sum=md5sum)
@@ -98,8 +94,9 @@ class GPXFileImporter:
 
     def _save_activity_to_db(self, geojson, sport, trace_file):
         gpx_metadata = geojson.get_gpx_metadata()
+        title = gpx_metadata.title
         a = self.activities_model(
-            title=gpx_metadata.title,
+            title=title,
             sport=sport,
             date=gpx_metadata.date,
             duration=gpx_metadata.duration,
@@ -107,6 +104,7 @@ class GPXFileImporter:
             trace_file=trace_file,
         )
         a.save()
+        log.info(f"created new activity: {title}")
         return a
 
 
@@ -116,8 +114,8 @@ def map_sport_name(sport_name, map_dict):
         if sanitize(sport_name) in v:
             log.debug(f"mapped activity sport: {sport_name} to {k}")
             sport = k
-        else:
-            log.warning(f"could not map {sport_name} to given sport names, use None instead")
+    if not sport:
+        log.warning(f"could not map {sport_name} to given sport names, use None instead")
     return sport
 
 
