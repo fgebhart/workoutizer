@@ -53,5 +53,6 @@ def plot_activities(activities, sports, number_of_days):
 
     p.multi_line(xs='xs', ys='ys', color='colors', line_width=3, legend='legend', source=ColumnDataSource(data))
     p.legend.location = "top_left"
+    p.legend.label_text_font = "Ubuntu"
 
     return p
