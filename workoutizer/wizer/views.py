@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from bokeh.embed import components
 
 from .models import Sport, Activity, Settings
-from .forms import SettingsForm, DaysDropDown
+from .forms import SettingsForm
 from .plots import plot_activities
 
 log = logging.getLogger('wizer.views')
@@ -40,9 +40,8 @@ class DashboardView(View):
         self.activities = Activity.objects.all().order_by("-date")
         self.get_days_config(request)
         self.create_plot()
-        form = DaysDropDown(request.POST or None, instance=self.settings)
         return render(request, self.template_name,
-                      {'form': form, 'sports': self.sports, 'activities': self.activities,
+                      {'sports': self.sports, 'activities': self.activities,
                        'script': self.script, 'div': self.div, 'days': self.number_of_days,
                        'choices': self.days_choices})
 
