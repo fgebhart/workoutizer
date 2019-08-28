@@ -70,10 +70,11 @@ class GPXFileImporter:
                 trace_file_instance = self.trace_files_model.objects.get(pk=t.pk)
                 try:
                     sport_instance = self.sport_model.objects.get(slug=sanitize(mapped_sport))
-                    self._save_activity_to_db(geojson=gjson, sport=sport_instance, trace_file=trace_file_instance)
                 except self.sport_model.DoesNotExist:
                     log.warning(f"could not find sport '{mapped_sport}' in model, needs to be inserted first")
+                    sport_instance = None
                     # TODO create notification here
+                self._save_activity_to_db(geojson=gjson, sport=sport_instance, trace_file=trace_file_instance)
             else:  # means file is stored in db already
                 trace_file_paths_model = self.trace_files_model.objects.get(md5sum=md5sum)
                 if trace_file_paths_model.path_to_file != file:
