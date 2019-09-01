@@ -13,6 +13,7 @@ log = logging.getLogger('wizer.apps')
 
 sport_naming_map = {
     'Jogging': ['jogging', 'running'],
+    'Cycling': ['cycle', 'cycling'],
     'Mountainbiking': ['mountainbiking', 'mountainbike', 'mountain biking', 'mountain bike', 'mountain-biking',
                        'mountain-bike', 'mtbing', 'mtb', 'cycling_mountain'],
     'Hiking': ['hiking', 'hike', 'wander', 'walking', 'mountaineering'],
