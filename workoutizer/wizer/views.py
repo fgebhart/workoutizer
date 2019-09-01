@@ -1,4 +1,5 @@
 import logging
+import datetime
 
 from django.shortcuts import render, redirect
 from django.views.generic import View
@@ -27,36 +28,23 @@ class DashboardView(View):
         self.number_of_days = self.settings.number_of_days
         self.days_choices = Settings.days_choices
 
-    def create_plot(self):
+    def create_plot(self, activities):
         try:
             self.script, self.div = components(
-                plot_activities(self.activities, self.sports, number_of_days=self.number_of_days))
+                plot_activities(activities, self.sports, number_of_days=self.number_of_days))
         except AttributeError as e:
             log.error(f"Error rendering plot. Check if activity data is correct: {e}", exc_info=True)
             self.script = self.div = "Error rendering Plot"
 
     def get(self, request):
         self.sports = Sport.objects.all().order_by('name')
-        self.activities = Activity.objects.all().order_by("-date")
         self.get_days_config(request)
-        self.create_plot()
+        today = datetime.datetime.today()
+        start_day = today - datetime.timedelta(days=self.number_of_days)
+        self.activities = Activity.objects.filter(date__range=[start_day, today]).order_by("-date")
+        self.create_plot(activities=self.activities)
         return render(request, self.template_name,
                       {'sports': self.sports, 'activities': self.activities,
-                       'script': self.script, 'div': self.div, 'days': self.number_of_days,
-                       'choices': self.days_choices})
-
-    def post(self, request):
-        self.get_days_config(request)
-        self.create_plot()
-        form = DaysDropDown(request.POST or None, instance=self.settings)
-        if form.is_valid():
-            log.info(f"got valid form: {form.cleaned_data}")
-            form.save()
-            return HttpResponseRedirect("/")
-        else:
-            log.warning(f"form invalid, form: \n {form.errors}")
-        return render(request, self.template_name,
-                      {'form': form, 'sports': self.sports, 'activities': self.activities,
                        'script': self.script, 'div': self.div, 'days': self.number_of_days,
                        'choices': self.days_choices})
 
