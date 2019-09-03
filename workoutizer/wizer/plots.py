@@ -21,7 +21,7 @@ def plot_activities(activities):
         activity_dates.append(a.date)
         sports.append(a.sport.name)
 
-    oldest = min(activity_dates)
+    oldest = min(activity_dates) - datetime.timedelta(days=1)
     today = datetime.datetime.today().date()
 
     while oldest <= today:
