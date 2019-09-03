@@ -30,11 +30,10 @@ class DashboardView(View):
 
     def create_plot(self, activities):
         try:
-            self.script, self.div = components(
-                plot_activities(activities, self.sports, number_of_days=self.number_of_days))
-        except AttributeError as e:
+            self.script, self.div = components(plot_activities(activities))
+        except AttributeError and TypeError as e:
             log.error(f"Error rendering plot. Check if activity data is correct: {e}", exc_info=True)
-            self.script = self.div = "Error rendering Plot"
+            self.script = self.div = "[Error rendering Plot]"
 
     def get(self, request):
         self.sports = Sport.objects.all().order_by('name')

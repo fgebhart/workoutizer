@@ -1,6 +1,5 @@
 import logging
-from datetime import datetime as dt
-from datetime import timedelta
+import datetime
 
 import pandas as pd
 from bokeh.models import ColumnDataSource
@@ -11,48 +10,53 @@ from django.conf import settings
 log = logging.getLogger("wizer.plots")
 
 
-def plot_activities(activities, sports, number_of_days):
+def plot_activities(activities):
     data = list()
-    columns = list()
+    sports = list()
     dates = list()
+    activity_dates = list()
     colors = list()
 
-    for s in sports:
-        columns.append(s.name)
-        colors.append(s.color)
-
     for a in activities:
+        activity_dates.append(a.date)
+        sports.append(a.sport.name)
+
+    oldest = min(activity_dates)
+    today = datetime.datetime.today().date()
+
+    while oldest <= today:
+        dates.append(oldest)
+        oldest = oldest + datetime.timedelta(days=1)
+
+    for date in dates:
         durations = list()
-        dates.append(a.date)
-        for s in sports:
-            if a.sport == s:
-                durations.append(int(a.duration))
+        for a in activities:
+            if a.date == date:
+                durations.append(a.duration)
             else:
                 durations.append(0)
         data.append(durations)
 
-    # log.info(f"data: {data}")
-    # log.info(f"data: {len(data)}")
-    # log.info(f"columns: {columns}")
-    # log.info(f"columns: {len(columns)}")
-    # log.info(f"dates: {dates}")
-    # log.info(f"dates: {len(dates)}")
-
-    index = pd.date_range(start=dt.today() - timedelta(days=len(data) - 1), end=dt.today(), freq='d')
-    # log.debug(f"index: {index}")
-    df = pd.DataFrame(data=data, columns=columns, index=dates)
-
+    df = pd.DataFrame(data=data, columns=sports, index=dates)
+    df = df.groupby(df.columns, axis=1).sum()
     p = figure(x_axis_type='datetime', plot_width=settings.PLOT_WIDTH, plot_height=settings.PLOT_HEIGHT)
+
+    for sport in df.columns:
+        for a in activities:
+            log.debug(f"sport {sport}, a.sport {a.sport}")
+            if str(sport) == str(a.sport):
+                colors.append(a.sport.color)
+                break
 
     data = {
         'xs': [df.index.values] * len(df.columns),
         'ys': [df[name].values for name in df],
-        'legend': columns,
+        'legend': df.columns,
         'colors': colors,
     }
 
     p.multi_line(xs='xs', ys='ys', color='colors', line_width=3, legend='legend', source=ColumnDataSource(data))
+    # p.legend.label_text_font = "Ubuntu"
     p.legend.location = "top_left"
-    p.legend.label_text_font = "Ubuntu"
 
     return p
