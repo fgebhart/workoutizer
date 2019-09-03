@@ -66,7 +66,6 @@ class GPXConverter:
         self.geojson_multilinestring = None
         self.center = None
         self.geojson_dict = None
-        # self.root = None
 
         # run converter
         try:

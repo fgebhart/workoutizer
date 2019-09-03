@@ -43,7 +43,6 @@ def plot_activities(activities):
 
     for sport in df.columns:
         for a in activities:
-            log.debug(f"sport {sport}, a.sport {a.sport}")
             if str(sport) == str(a.sport):
                 colors.append(a.sport.color)
                 break
@@ -56,7 +55,7 @@ def plot_activities(activities):
     }
 
     p.multi_line(xs='xs', ys='ys', color='colors', line_width=3, legend='legend', source=ColumnDataSource(data))
-    # p.legend.label_text_font = "Ubuntu"
+    p.legend.label_text_font = "Ubuntu"
     p.legend.location = "top_left"
 
     return p
