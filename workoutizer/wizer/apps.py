@@ -105,7 +105,7 @@ class GPXFileImporter:
             trace_file=trace_file,
         )
         a.save()
-        log.info(f"created new activity: {title}")
+        log.info(f"created new {sport} activity: {title}")
         return a
 
 
