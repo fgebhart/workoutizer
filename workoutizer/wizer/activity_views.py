@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Sport, Activity
 from .forms import AddActivityForm, EditActivityForm
-from wizer.gis.gis import GeoTrace
+from wizer.gis.gis import GeoTrace, bounding_coordinates
 from wizer.tools.utils import sanitize
 
 log = logging.getLogger('wizer.activity_views')
@@ -29,12 +29,14 @@ class ActivityView(View):
                 center_lat=activity.trace_file.center_lat,
                 center_lon=activity.trace_file.center_lon,
                 coordinates=json.loads(activity.trace_file.coordinates))
+            corner = bounding_coordinates(trace.coordinates)
             log.debug(f"passing activity: '{activity}' from model to view")
             log.debug(f"activity coordinates: {trace.coordinates}")
+            log.debug(f"bounding coordinates: {corner}")
         except ObjectDoesNotExist:
             log.critical("this activity does not exist")
             raise Http404
-        return render(request, self.template_name, {'activity': activity, 'sports': sports, 'trace': trace})
+        return render(request, self.template_name, {'activity': activity, 'sports': sports, 'trace': trace, 'corner': corner})
 
 
 def add_activity_view(request):

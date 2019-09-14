@@ -6,7 +6,7 @@ from multiprocessing import Process
 
 from django.apps import AppConfig
 from django.db.utils import OperationalError
-from .gpx_converter import GPXConverter
+from wizer.gis.gpx_converter import GPXConverter
 from wizer.tools.utils import sanitize
 
 log = logging.getLogger('wizer.apps')

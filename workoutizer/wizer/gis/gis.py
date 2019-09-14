@@ -1,5 +1,8 @@
 import logging
+from math import cos, sin, atan2, sqrt, radians, degrees
 from dataclasses import dataclass
+
+from geopy import distance
 
 log = logging.getLogger('wizer.gis')
 
@@ -15,15 +18,50 @@ class GeoTrace:
     weight: float = 3.0
 
 
-# geojson = {
-#     "type": "FeatureCollection",
-#     "name": "tracks",
-#     "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
-#     "features": [
-#         {"type": "Feature",
-#          "properties": {"name": name,
-#                         "gpx_style_line": "<gpx_style:color>#C71585</gpx_style:color>"
-#                                           f"<gpx_style:opacity>{opacity}</gpx_style:opacity>"
-#                                           f"<gpx_style:width>{width}</gpx_style:width>",
-#                         "locus_activity": sport},
-#          "geometry": gemoetry}]}
+def center_geolocation(geolocations):
+    """
+    Provide a relatively accurate center lat, lon returned as a list pair, given
+    a list of list pairs.
+    ex: in: geolocations = ((lat1,lon1), (lat2,lon2),)
+        out: (center_lat, center_lon)
+    """
+    x = 0
+    y = 0
+    z = 0
+
+    for lon, lat in geolocations:
+        lat = radians(float(lat))
+        lon = radians(float(lon))
+        x += cos(lat) * cos(lon)
+        y += cos(lat) * sin(lon)
+        z += sin(lat)
+
+    x = float(x / len(geolocations))
+    y = float(y / len(geolocations))
+    z = float(z / len(geolocations))
+
+    return degrees(atan2(y, x)), degrees(atan2(z, sqrt(x * x + y * y)))
+
+
+def calc_distance_of_points(list_of_tuples: list):
+    total_distance = 0
+    first_point = None
+    for point in list_of_tuples:
+        if first_point is None:
+            first_point = point
+        else:
+            dist = distance.geodesic(first_point, point)
+            first_point = point
+            total_distance += dist.km
+    return total_distance * 0.77
+
+
+def bounding_coordinates(list_of_coordinates: list):
+    lon = list()
+    lat = list()
+    for c in list_of_coordinates:
+        lat.append(c[0])
+        lon.append(c[1])
+    corner1 = [min(lon), max(lat)]
+    corner2 = [max(lon), min(lat)]
+    return [corner1, corner2]

@@ -1,5 +1,5 @@
 from workoutizer.wizer.tools import sanitize
-from workoutizer.wizer.gpx_converter import calc_distance_of_points
+from wizer.gis.gpx_converter import calc_distance_of_points
 from workoutizer.wizer.apps import map_sport_name
 
 
