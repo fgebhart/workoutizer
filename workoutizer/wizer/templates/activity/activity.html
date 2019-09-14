@@ -37,13 +37,31 @@
                 <div class="col-sm-9">
                     <div id="mapid"></div>
                     <script type="text/javascript">
-                        var geojsonFeature = {{ trace.geojson|safe }};
-                        var mymap = L.map('mapid').setView([{{ trace.center_lon }}, {{ trace.center_lat }}], 12);
+                        var mymap = L.map('mapid').setView([{{ trace.center_lon }}, {{ trace.center_lat }}], 13);
                         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         }).addTo(mymap);
-                        var mytrace = L.geoJSON().addTo(mymap);
-                        mytrace.addData(geojsonFeature);
+                        var myLines = [{
+                            {#"type": "LineString",#}
+                            {#"coordinates": [[-100, 40], [-105, 45], [-110, 55]]}, {#}
+                            "type": "LineString",
+                            "coordinates": {{ trace.coordinates }}
+                        }];
+                        var myStyle = {
+                            "color": "{{ trace.color }}",
+                            "weight": {{ trace.weight }},
+                            "opacity": {{ trace.opacity }}
+                        };
+
+                        numPts = {{ trace.coordinates }}.length;
+
+                        var beg = {{ trace.coordinates }}[0];
+                        var end = {{ trace.coordinates }}[numPts - 1];
+
+                        L.marker([beg[1],beg[0]]).addTo(mymap);
+                        L.marker([end[1],end[0]]).addTo(mymap);
+
+                        L.geoJSON(myLines, {style: myStyle}).addTo(mymap);
                     </script>
                 </div>
                 <br>

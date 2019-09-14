@@ -57,7 +57,7 @@ class Traces(models.Model):
     center_lat = models.FloatField(max_length=20)
     center_lon = models.FloatField(max_length=20)
     zoom_level = models.IntegerField(blank=True, null=True)
-    geometry = models.CharField(max_length=100000000)
+    coordinates = models.CharField(max_length=100000000)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

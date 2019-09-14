@@ -1,5 +1,6 @@
 import logging
 import json
+import matplotlib
 
 from django.shortcuts import render
 from django.views.generic import View, DeleteView
@@ -9,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Sport, Activity
 from .forms import AddActivityForm, EditActivityForm
 from wizer.gis.gis import GeoTrace
+from wizer.tools.utils import sanitize
 
 log = logging.getLogger('wizer.activity_views')
 
@@ -21,16 +23,14 @@ class ActivityView(View):
         log.debug(f"got activity_id: {activity_id}")
         try:
             activity = Activity.objects.get(id=activity_id)
-            trace = GeoTrace(name=activity.title,
-                             sport=activity.sport.name,
-                             color='#808080',
-                             opacity=0.59,
-                             width=20.0,
-                             center_lat=activity.trace_file.center_lat,
-                             center_lon=activity.trace_file.center_lon,
-                             geometry=json.loads(activity.trace_file.geometry.replace("'", "\"")))
+            trace = GeoTrace(
+                sport=activity.sport.name,
+                color=matplotlib.colors.cnames[sanitize(activity.sport.color)],
+                center_lat=activity.trace_file.center_lat,
+                center_lon=activity.trace_file.center_lon,
+                coordinates=json.loads(activity.trace_file.coordinates))
             log.debug(f"passing activity: '{activity}' from model to view")
-            log.debug(f"activity geometry: {trace.geojson}")
+            log.debug(f"activity coordinates: {trace.coordinates}")
         except ObjectDoesNotExist:
             log.critical("this activity does not exist")
             raise Http404

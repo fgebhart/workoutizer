@@ -26,12 +26,12 @@ class WizerConfig(AppConfig):
     verbose_name = 'wizer django app'
 
     def ready(self):
-        from .models import Settings, TraceFiles, Activity, Sport
+        from .models import Settings, Traces, Activity, Sport
         try:
             # TODO get settings of current logged in user, maybe start GPXFileImporter only after login?
             settings = Settings.objects.all().order_by('-id').first()
             if settings:
-                p = Process(target=GPXFileImporter, args=(settings, TraceFiles, Activity, Sport))
+                p = Process(target=GPXFileImporter, args=(settings, Traces, Activity, Sport))
                 p.start()
         except OperationalError:
             log.warning(f"could not find table: wizer_settgins - won't run GPXFileImprter. Run django migrations first.")
@@ -65,13 +65,13 @@ class GPXFileImporter:
             md5sum = calc_md5(file)
             if md5sum not in md5sums_from_db:   # current file is not stored in model yet
                 log.debug(f"importing file {file}...")
-                gjson = GPXConverter(path_to_gpx=file)
-                sport = gjson.get_gpx_metadata().sport
+                gpx_conv = GPXConverter(path_to_gpx=file)
+                sport = gpx_conv.get_gpx_metadata().sport
                 mapped_sport = map_sport_name(sport, sport_naming_map)
-                t = self._save_gpx_file_to_db(file=file, md5sum=md5sum, geojson=gjson)
+                t = self._save_gpx_file_to_db(file=file, md5sum=md5sum, geojson=gpx_conv)
                 trace_file_instance = self.trace_files_model.objects.get(pk=t.pk)
                 sport_instance = self.sport_model.objects.filter(slug=sanitize(mapped_sport)).first()
-                self._save_activity_to_db(geojson=gjson, sport=sport_instance, trace_file=trace_file_instance)
+                self._save_activity_to_db(geojson=gpx_conv, sport=sport_instance, trace_file=trace_file_instance)
             else:  # means file is stored in db already
                 trace_file_paths_model = self.trace_files_model.objects.get(md5sum=md5sum)
                 if trace_file_paths_model.path_to_file != file:
@@ -87,7 +87,7 @@ class GPXFileImporter:
             md5sum=md5sum,
             center_lon=gpx_metadata.center_lon,
             center_lat=gpx_metadata.center_lat,
-            geojson=geojson.get_geojson(),
+            coordinates=geojson.get_coordinates(),
             zoom_level=gpx_metadata.zoom_level,
         )
         t.save()
