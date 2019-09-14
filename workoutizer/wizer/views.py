@@ -6,9 +6,10 @@ from django.views.generic import View
 from django.http import HttpResponseRedirect
 from bokeh.embed import components
 
-from .models import Sport, Activity, Settings
+from .models import Sport, Activity, Settings, TraceFiles, Traces
 from .forms import SettingsForm
 from .plots import plot_activities
+from wizer.tools.migrate_db import migrate_traces
 
 log = logging.getLogger('wizer.views')
 
@@ -36,6 +37,9 @@ class DashboardView(View):
             self.script = self.div = "[Error rendering Plot]"
 
     def get(self, request):
+        # trace_files = TraceFiles
+        # traces = Traces
+        # migrate_traces(trace_files, traces)
         self.sports = Sport.objects.all().order_by('name')
         self.get_days_config(request)
         today = datetime.datetime.today()

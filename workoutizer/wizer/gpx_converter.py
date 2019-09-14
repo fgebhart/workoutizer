@@ -7,7 +7,6 @@ import gpxpy
 import gpxpy.gpx
 from geojson import MultiLineString
 
-
 log = logging.getLogger('wizer.gpx-converter')
 
 
@@ -42,11 +41,13 @@ def fill_dict(name, activity, color, opacity, width, geometry):
         "name": "tracks",
         "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
         "features": [
-            {"type": "Feature", "properties": {"name": name,
-                                               "gpx_style_line": f"<gpx_style:color>{color}</gpx_style:color>"
-                                               f"<gpx_style:opacity>{opacity}</gpx_style:opacity>"
-                                               f"<gpx_style:width>{width}</gpx_style:width>",
-                                               "locus_activity": activity}, "geometry": geometry}]}
+            {"type": "Feature",
+             "properties": {"name": name,
+                            "gpx_style_line": f"<gpx_style:color>{color}</gpx_style:color>"
+                                              f"<gpx_style:opacity>{opacity}</gpx_style:opacity>"
+                                              f"<gpx_style:width>{width}</gpx_style:width>",
+                            "locus_activity": activity},
+             "geometry": geometry}]}
     return filled_dict
 
 
