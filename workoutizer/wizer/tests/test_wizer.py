@@ -1,6 +1,6 @@
-from workoutizer.wizer.tools.utils import sanitize
-from workoutizer.wizer.gis.gpx_converter import calc_distance_of_points
-from workoutizer.wizer.apps import map_sport_name
+from wizer.tools.utils import sanitize
+from wizer.gis.gpx_converter import calc_distance_of_points
+from wizer.apps import map_sport_name
 
 
 def test_sanitze():
