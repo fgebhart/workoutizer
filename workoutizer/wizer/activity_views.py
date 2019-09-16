@@ -1,7 +1,7 @@
 import logging
 import json
-import matplotlib
 
+import webcolors
 from django.shortcuts import render
 from django.views.generic import View, DeleteView
 from django.http import Http404, HttpResponseRedirect
@@ -25,7 +25,7 @@ class ActivityView(View):
             activity = Activity.objects.get(id=activity_id)
             trace = GeoTrace(
                 sport=activity.sport.name,
-                color=matplotlib.colors.cnames[sanitize(activity.sport.color)],
+                color=webcolors.name_to_hex(activity.sport.color),
                 center_lat=activity.trace_file.center_lat,
                 center_lon=activity.trace_file.center_lon,
                 coordinates=json.loads(activity.trace_file.coordinates))
