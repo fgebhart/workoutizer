@@ -62,6 +62,6 @@ def bounding_coordinates(list_of_coordinates: list):
     for c in list_of_coordinates:
         lat.append(c[0])
         lon.append(c[1])
-    corner1 = [min(lon), max(lat)]
+    corner1 = [max(lon), min(lat)]
     corner2 = [max(lon), min(lat)]
     return [corner1, corner2]

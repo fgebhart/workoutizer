@@ -1,9 +1,6 @@
 <div id="mapid"></div>
 <script type="text/javascript">
-    let map = L.map('mapid').fitBounds({{ corner }});
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+
     var myLines = [{
         {% for line in traces %}
             "type": "LineString",
@@ -11,6 +8,16 @@
             }, {
         {% endfor %}
     }];
+
+    var geoJsonLayer = L.geoJson(myLines);
+    var myBounds = geoJsonLayer.getBounds();
+    console.log("Bounding Box: " + myBounds.toBBoxString());
+
+    let map = L.map('mapid').fitBounds(myBounds);
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
     {% for line in traces %}
         numPts ={{ line.coordinates }}.length;
         var beg = {{ line.coordinates }}[0];
