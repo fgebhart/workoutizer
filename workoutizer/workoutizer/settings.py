@@ -126,6 +126,7 @@ LEAFLET_CONFIG = {
 }
 
 PLOT_WIDTH = 1110
+SPORT_PLOT_WIDTH = 640
 PLOT_HEIGHT = 300
 
 format_console = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

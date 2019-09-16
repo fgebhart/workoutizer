@@ -1,42 +1,25 @@
 import logging
-import json
 
-import webcolors
 from django.shortcuts import render
-from django.views.generic import View, DeleteView
-from django.http import Http404, HttpResponseRedirect
-from django.core.exceptions import ObjectDoesNotExist
+from django.views.generic import DeleteView
+from django.http import HttpResponseRedirect
 
+from .views import MapView
 from .models import Sport, Activity
 from .forms import AddActivityForm, EditActivityForm
-from wizer.gis.gis import GeoTrace, bounding_coordinates
-from wizer.tools.utils import sanitize
 
 log = logging.getLogger('wizer.activity_views')
 
 
-class ActivityView(View):
+class ActivityView(MapView):
     template_name = "activity/activity.html"
 
     def get(self, request, activity_id):
-        sports = Sport.objects.all().order_by('name')
-        log.debug(f"got activity_id: {activity_id}")
-        try:
-            activity = Activity.objects.get(id=activity_id)
-            trace = GeoTrace(
-                sport=activity.sport.name,
-                color=webcolors.name_to_hex(activity.sport.color),
-                center_lat=activity.trace_file.center_lat,
-                center_lon=activity.trace_file.center_lon,
-                coordinates=json.loads(activity.trace_file.coordinates))
-            corner = bounding_coordinates(trace.coordinates)
-            log.debug(f"passing activity: '{activity}' from model to view")
-            log.debug(f"activity coordinates: {trace.coordinates}")
-            log.debug(f"bounding coordinates: {corner}")
-        except ObjectDoesNotExist:
-            log.critical("this activity does not exist")
-            raise Http404
-        return render(request, self.template_name, {'activity': activity, 'sports': sports, 'trace': trace, 'corner': corner})
+        activity = Activity.objects.get(id=activity_id)
+        context = super(ActivityView, self).get(request=request, list_of_activities=[activity])
+        context['sports'] = Sport.objects.all().order_by('name')
+        context['activity'] = activity
+        return render(request, self.template_name, context)
 
 
 def add_activity_view(request):
@@ -47,6 +30,8 @@ def add_activity_view(request):
             instance = form.save()
             instance.save()
             return HttpResponseRedirect('/')
+        else:
+            log.warning(f"form invalid: {form.errors}")
     else:
         form = AddActivityForm()
     return render(request, 'activity/add_activity.html', {'sports': sports, 'form': form})
@@ -64,7 +49,7 @@ def edit_activity_view(request, activity_id):
             form.save()
             return HttpResponseRedirect(f"/activity/{activity_id}")
         else:
-            log.warning(f"form invalid")
+            log.warning(f"form invalid: {form.errors}")
     return render(request, 'activity/edit_activity.html', {'form': form, 'sports': sports, 'activity': activity})
 
 

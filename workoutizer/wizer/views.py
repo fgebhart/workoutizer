@@ -1,13 +1,19 @@
 import logging
 import datetime
+import json
 
+import webcolors
 from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect, Http404
 from django.views.generic import View
-from django.http import HttpResponseRedirect
+from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
 from .models import Sport, Activity, Settings
 from .forms import SettingsForm
 from .plots import create_plot
+from wizer.gis.gis import GeoTrace, bounding_coordinates
+
 
 log = logging.getLogger('wizer.views')
 
@@ -30,7 +36,7 @@ class DashboardView(View):
         today = datetime.datetime.today()
         start_day = today - datetime.timedelta(days=self.number_of_days)
         activities = Activity.objects.filter(date__range=[start_day, today]).order_by("-date")
-        script, div = create_plot(activities=activities)
+        script, div = create_plot(activities=activities, plot_width=settings.PLOT_WIDTH)
         return render(request, self.template_name,
                       {'sports': self.sports, 'activities': activities, 'script': script, 'div': div,
                        'days': self.number_of_days, 'choices': self.days_choices})
@@ -47,7 +53,7 @@ def settings_view(request):
             form.save()
             return HttpResponseRedirect('/settings')
         else:
-            log.warning(f"form invalid")
+            log.warning(f"form invalid: {form.errors}")
     return render(request, "settings.html", {'sports': sports, 'form': form, 'settings': settings})
 
 
@@ -56,3 +62,41 @@ def set_number_of_days(request, number_of_days):
     n.number_of_days = number_of_days
     n.save()
     return redirect(request.META.get('HTTP_REFERER'))
+
+
+class MapView(View):
+    number_of_days = None
+    days_choices = None
+    settings = None
+    corner = None
+
+    def get(self, request, list_of_activities: list):
+        log.debug(f"got list_of_activity_ids: {list_of_activities}")
+        log.debug(f"user: {request.user.id}")
+        self.settings = Settings.objects.get(user_id=request.user.id)
+        self.number_of_days = self.settings.number_of_days
+        self.days_choices = Settings.days_choices
+        traces = []
+        try:
+            all_coordinates = []
+            color = '#ffa500'           # NOTE: Default Color
+            for a in list_of_activities:
+                if a.trace_file:
+                    coordinates = json.loads(a.trace_file.coordinates)
+                    all_coordinates.append(coordinates)
+                    self.corner = bounding_coordinates(coordinates)
+                    color = webcolors.name_to_hex(a.sport.color)    # NOTE: last activities color will be applied
+                    traces.append(GeoTrace(
+                        sport=a.sport.name,
+                        color=color,
+                        center_lat=a.trace_file.center_lat,
+                        center_lon=a.trace_file.center_lon,
+                        coordinates=coordinates))
+                    log.debug(f"stored coordinates of: '{a}' in traces list")
+            log.debug(f"all coordinates: {all_coordinates}")
+            log.debug(f"bounding box corners: {self.corner}")
+        except ObjectDoesNotExist:
+            log.critical("this activity does not exist")
+            raise Http404
+        return {'traces': traces, 'corner': self.corner, 'settings': self.settings, 'days': self.number_of_days,
+                'choices': self.days_choices, 'color': color}

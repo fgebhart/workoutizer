@@ -3,44 +3,61 @@
 {% load static %}
 {% block body %}
 
-    <div class="container">
-        <h3 class="float-left"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i>&nbsp;&nbsp;&nbsp;{{ sport.name }}
-        </h3>
-        <a class="float-right btn btn-warning" href="{{ sport.slug }}/edit"><i
-                class="fas fa-pen"></i>&nbsp;&nbsp;Edit</a>
-        <div class="clearfix"></div>
-        <br>
-
-        {% include 'plot.html' %}
-
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th>Date</th>
-                <th>Name</th>
-                <th>Track</th>
-                <th>Duration</th>
-                <th>Distance</th>
-            </tr>
-            </thead>
-            {% for a in activities %}
-                <tbody>
-                <tr>
-                    <td>{{ a.date }}</td>
-                    <td><a href="/activity/{{ a.id }}">{{ a.title }}</a></td>
-                    <td>
-                        {% if a.trace_file %}
-                            <i class="fas fa-map-marked-alt"></i>
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>{{ a.duration }}</td>
-                    <td>{{ a.distance }}</td>
-                </tr>
-                </tbody>
-            {% endfor %}
-        </table>
-
+    <h3 class="float-left"><i class="fas fa-{{ sport.icon }}"
+                              style="color: {{ sport.color }};"></i>&nbsp;&nbsp;&nbsp;{{ sport.name }}
+    </h3>
+    <a class="float-right btn btn-warning" href="{{ sport.slug }}/edit"><i
+            class="fas fa-pen"></i>&nbsp;&nbsp;Edit</a>
+    <div class="clearfix"></div>
+    <br>
+    <div class="row">
+        <div class="col-sm-7">
+            {% include 'plot.html' %}
+        </div>
+        {% if traces %}
+            <div class="col-sm-5">
+                {% include 'map.html' %}
+                sport: {{ sport }}
+                <br>
+                activities: {{ activities }}
+                <br>
+                corner: {{ corner }}
+                <br>
+                settings: {{ settings }}
+                <br>
+                color: {{ color }}
+            </div>
+        {% endif %}
     </div>
+
+
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Track</th>
+            <th>Duration</th>
+            <th>Distance</th>
+        </tr>
+        </thead>
+        {% for a in activities %}
+            <tbody>
+            <tr>
+                <td>{{ a.date }}</td>
+                <td><a href="/activity/{{ a.id }}">{{ a.title }}</a></td>
+                <td>
+                    {% if a.trace_file %}
+                        <i class="fas fa-map-marked-alt"></i>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ a.duration }}</td>
+                <td>{{ a.distance }}</td>
+            </tr>
+            </tbody>
+        {% endfor %}
+    </table>
+
 {% endblock %}

@@ -5,8 +5,10 @@ from django.views.generic import View, DeleteView
 from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
+from django.conf import settings
 
-from .models import Sport, Activity, Settings
+from .views import MapView
+from .models import Sport, Activity
 from .forms import AddSportsForm
 from .plots import create_plot
 
@@ -21,33 +23,31 @@ class AllSportsView(View):
         return render(request, self.template_name, {'sports': sports})
 
 
-class SportsView(View):
+class SportsView(MapView):
     template_name = "sport/sport.html"
-    number_of_days = None
-    days_choices = None
-    settings = None
-
-    def get_days_config(self, request):
-        self.settings = Settings.objects.get(user_id=request.user.id)
-        self.number_of_days = self.settings.number_of_days
-        self.days_choices = Settings.days_choices
 
     def get(self, request, sports_name_slug):
         log.debug(f"got sports name: {sports_name_slug}")
+        log.debug(f"request in sports view: {request.user}")
+        log.debug(f"sports_name_slug: {sports_name_slug}")
         sport_id = Sport.objects.get(slug=sports_name_slug).id
+        log.debug(f"sport id: {sport_id}")
         activities = Activity.objects.filter(sport=sport_id).order_by("-date")
-        sports = Sport.objects.all().order_by('name')
-        self.get_days_config(request)
-        script, div = create_plot(activities=activities)
+        log.debug(f"got activities: {activities}")
+        context = super(SportsView, self).get(request=request, list_of_activities=activities)
+        context['activities'] = activities
+        context['sports'] = Sport.objects.all().order_by('name')
+        script, div = create_plot(activities=activities, plot_width=settings.SPORT_PLOT_WIDTH)
+        context['script'] = script
+        context['div'] = div
         try:
             sport = model_to_dict(Sport.objects.get(slug=sports_name_slug))
             sport['slug'] = sports_name_slug
+            context['sport'] = sport
         except ObjectDoesNotExist:
             log.critical("this sport does not exist")
             raise Http404
-        return render(request, self.template_name, {'activities': activities, 'sport': sport, 'sports': sports,
-                                                    'script': script, 'div': div, 'days': self.number_of_days,
-                                                    'choices': self.days_choices})
+        return render(request, self.template_name, context)
 
 
 def add_sport_view(request):
@@ -59,7 +59,7 @@ def add_sport_view(request):
             instance.save()
             return HttpResponseRedirect('/sports')
         else:
-            log.warning(f"form invalid")
+            log.warning(f"form invalid: {form.errors}")
     else:
         form = AddSportsForm()
     return render(request, 'sport/add_sport.html', {'sports': sports, 'form': form})

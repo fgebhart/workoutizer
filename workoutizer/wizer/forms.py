@@ -28,4 +28,4 @@ class EditActivityForm(forms.ModelForm):
 class SettingsForm(forms.ModelForm):
     class Meta:
         model = Settings
-        exclude = ('user',)
+        exclude = ('user', 'number_of_days')
