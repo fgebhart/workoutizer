@@ -118,15 +118,7 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
-LEAFLET_CONFIG = {
-    'DEFAULT_CENTER': (49.408972, 8.683977),
-    'DEFAULT_ZOOM': 12,
-    'MIN_ZOOM': 3,
-    'MAX_ZOOM': 18,
-}
-
 PLOT_WIDTH = 1110
-SPORT_PLOT_WIDTH = 640
 PLOT_HEIGHT = 300
 
 format_console = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

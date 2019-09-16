@@ -9,27 +9,28 @@
     <a class="float-right btn btn-warning" href="{{ sport.slug }}/edit"><i
             class="fas fa-pen"></i>&nbsp;&nbsp;Edit</a>
     <div class="clearfix"></div>
-    <br>
+    <hr>
+    <style type="text/css" media="screen">
+        .leaflet-container {
+            height: 280px;
+        }
+    </style>
     <div class="row">
-        <div class="col-sm-7">
-            {% include 'plot.html' %}
-        </div>
         {% if traces %}
+            <div class="col-sm-7">
+                {% include 'plot.html' %}
+            </div>
             <div class="col-sm-5">
+                <p>Show <a href="">large map </a>of all {{ sport.name }} activities.</p>
                 {% include 'map.html' %}
-                sport: {{ sport }}
-                <br>
-                activities: {{ activities }}
-                <br>
-                corner: {{ corner }}
-                <br>
-                settings: {{ settings }}
-                <br>
-                color: {{ color }}
+            </div>
+        {% else %}
+            <div class="col-sm-12">
+                {% include 'plot.html' %}
             </div>
         {% endif %}
     </div>
-
+    <br>
 
     <table class="table table-hover">
         <thead>

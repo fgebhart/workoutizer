@@ -4,10 +4,8 @@ import json
 
 import webcolors
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect
 from django.views.generic import View
-from django.core.exceptions import ObjectDoesNotExist
-from django.conf import settings
 
 from .models import Sport, Activity, Settings
 from .forms import SettingsForm
@@ -36,7 +34,7 @@ class DashboardView(View):
         today = datetime.datetime.today()
         start_day = today - datetime.timedelta(days=self.number_of_days)
         activities = Activity.objects.filter(date__range=[start_day, today]).order_by("-date")
-        script, div = create_plot(activities=activities, plot_width=settings.PLOT_WIDTH)
+        script, div = create_plot(activities=activities)
         return render(request, self.template_name,
                       {'sports': self.sports, 'activities': activities, 'script': script, 'div': div,
                        'days': self.number_of_days, 'choices': self.days_choices})
@@ -77,26 +75,23 @@ class MapView(View):
         self.number_of_days = self.settings.number_of_days
         self.days_choices = Settings.days_choices
         traces = []
-        try:
-            all_coordinates = []
-            color = '#ffa500'           # NOTE: Default Color
-            for a in list_of_activities:
-                if a.trace_file:
-                    coordinates = json.loads(a.trace_file.coordinates)
-                    all_coordinates.append(coordinates)
-                    self.corner = bounding_coordinates(coordinates)
-                    color = webcolors.name_to_hex(a.sport.color)    # NOTE: last activities color will be applied
-                    traces.append(GeoTrace(
-                        sport=a.sport.name,
-                        color=color,
-                        center_lat=a.trace_file.center_lat,
-                        center_lon=a.trace_file.center_lon,
-                        coordinates=coordinates))
-                    log.debug(f"stored coordinates of: '{a}' in traces list")
-            log.debug(f"all coordinates: {all_coordinates}")
-            log.debug(f"bounding box corners: {self.corner}")
-        except ObjectDoesNotExist:
-            log.critical("this activity does not exist")
-            raise Http404
+        all_coordinates = []
+        color = '#ffa500'
+        for a in list_of_activities:
+            if a.trace_file:
+                coordinates = json.loads(a.trace_file.coordinates)
+                all_coordinates.append(coordinates)
+                color = webcolors.name_to_hex(a.sport.color)    # NOTE: last activity color will be applied
+                traces.append(GeoTrace(
+                    sport=a.sport.name,
+                    color=color,
+                    center_lat=a.trace_file.center_lat,
+                    center_lon=a.trace_file.center_lon,
+                    coordinates=coordinates))
+                log.debug(f"stored coordinates of: '{a}' in traces list")
+        if all_coordinates:
+            self.corner = bounding_coordinates(all_coordinates)
+        log.debug(f"all coordinates: {all_coordinates}")
+        log.debug(f"bounding box corners: {self.corner}")
         return {'traces': traces, 'corner': self.corner, 'settings': self.settings, 'days': self.number_of_days,
                 'choices': self.days_choices, 'color': color}

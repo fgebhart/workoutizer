@@ -11,7 +11,7 @@ from django.conf import settings
 log = logging.getLogger("wizer.plots")
 
 
-def plot_activities(activities, plot_width):
+def plot_activities(activities):
     data = list()
     sports = list()
     dates = list()
@@ -40,7 +40,7 @@ def plot_activities(activities, plot_width):
 
     df = pd.DataFrame(data=data, columns=sports, index=dates)
     df = df.groupby(df.columns, axis=1).sum()
-    p = figure(x_axis_type='datetime', plot_width=plot_width, plot_height=settings.PLOT_HEIGHT)
+    p = figure(x_axis_type='datetime', plot_height=settings.PLOT_HEIGHT, sizing_mode='stretch_width')
 
     for sport in df.columns:
         for a in activities:
@@ -73,9 +73,9 @@ def plot_activities(activities, plot_width):
     return p
 
 
-def create_plot(activities, plot_width):
+def create_plot(activities):
     try:
-        script, div = components(plot_activities(activities=activities, plot_width=plot_width))
+        script, div = components(plot_activities(activities=activities))
     except AttributeError and TypeError as e:
         log.error(f"Error rendering plot. Check if activity data is correct: {e}", exc_info=True)
         script = div = "Error rendering Plot"

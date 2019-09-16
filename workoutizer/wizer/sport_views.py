@@ -5,7 +5,6 @@ from django.views.generic import View, DeleteView
 from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
-from django.conf import settings
 
 from .views import MapView
 from .models import Sport, Activity
@@ -37,7 +36,7 @@ class SportsView(MapView):
         context = super(SportsView, self).get(request=request, list_of_activities=activities)
         context['activities'] = activities
         context['sports'] = Sport.objects.all().order_by('name')
-        script, div = create_plot(activities=activities, plot_width=settings.SPORT_PLOT_WIDTH)
+        script, div = create_plot(activities=activities)
         context['script'] = script
         context['div'] = div
         try:
