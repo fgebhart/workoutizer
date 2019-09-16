@@ -2,44 +2,11 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
-    <link href="https://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.css" rel="stylesheet" type="text/css">
-    <link href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.2.0.min.css" rel="stylesheet" type="text/css">
-    <link href="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.2.0.min.css" rel="stylesheet" type="text/css">
-    <script src="https://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.js"></script>
-    <script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.2.0.min.js"></script>
-    <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.2.0.min.js"></script>
-
-    {{ script | safe }}
-
     <h3>Dashboard</h3>
     <br>
-    <div class="row">
-        <div class="col-sm-8">
-            <p>Overview of all your activities:</p>
-        </div>
-        <div class="col-sm-4">
-            <div class="float-right">
-                <div class="dropdown">
-                    display last
-                    <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown">
-                        {{ days }}
-                    </button>
-                    <div class="dropdown-menu">
-                        {% for k, v in choices %}
-                            {% if v == days %}
-                                <a class="dropdown-item" href="/set_number_of_day/{{ v }}"><b>{{ v }}&nbsp;<i
-                                        class="fas fa-check"></i></b></a>
-                            {% else %}
-                                <a class="dropdown-item" href="/set_number_of_days/{{ v }}">{{ v }}</a>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    days
-                </div>
-            </div>
-        </div>
-    </div>
-    {{ div | safe }}
+
+    {% include 'plot.html' %}
+
     <table class="table table-hover">
         <thead>
         <tr>

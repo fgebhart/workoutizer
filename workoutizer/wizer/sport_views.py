@@ -6,10 +6,9 @@ from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 
-
-from .models import Sport, Activity
+from .models import Sport, Activity, Settings
 from .forms import AddSportsForm
-
+from .plots import create_plot
 
 log = logging.getLogger('wizer.sport_views')
 
@@ -24,20 +23,31 @@ class AllSportsView(View):
 
 class SportsView(View):
     template_name = "sport/sport.html"
+    number_of_days = None
+    days_choices = None
+    settings = None
+
+    def get_days_config(self, request):
+        self.settings = Settings.objects.get(user_id=request.user.id)
+        self.number_of_days = self.settings.number_of_days
+        self.days_choices = Settings.days_choices
 
     def get(self, request, sports_name_slug):
-        log.error(f"got sports name: {sports_name_slug}")
+        log.debug(f"got sports name: {sports_name_slug}")
         sport_id = Sport.objects.get(slug=sports_name_slug).id
         activities = Activity.objects.filter(sport=sport_id).order_by("-date")
         sports = Sport.objects.all().order_by('name')
+        self.get_days_config(request)
+        script, div = create_plot(activities=activities)
         try:
             sport = model_to_dict(Sport.objects.get(slug=sports_name_slug))
             sport['slug'] = sports_name_slug
         except ObjectDoesNotExist:
             log.critical("this sport does not exist")
             raise Http404
-
-        return render(request, self.template_name, {'activities': activities, 'sport': sport, 'sports': sports})
+        return render(request, self.template_name, {'activities': activities, 'sport': sport, 'sports': sports,
+                                                    'script': script, 'div': div, 'days': self.number_of_days,
+                                                    'choices': self.days_choices})
 
 
 def add_sport_view(request):

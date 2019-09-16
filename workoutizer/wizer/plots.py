@@ -4,6 +4,7 @@ import datetime
 import pandas as pd
 from bokeh.models import ColumnDataSource, HoverTool
 from bokeh.plotting import figure
+from bokeh.embed import components
 
 from django.conf import settings
 
@@ -70,3 +71,12 @@ def plot_activities(activities):
     ))
 
     return p
+
+
+def create_plot(activities):
+    try:
+        script, div = components(plot_activities(activities))
+    except AttributeError and TypeError as e:
+        log.error(f"Error rendering plot. Check if activity data is correct: {e}", exc_info=True)
+        script = div = "Error rendering Plot"
+    return script, div
