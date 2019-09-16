@@ -65,7 +65,7 @@ def edit_sport_view(request, sports_name_slug):
             form.save()
             return HttpResponseRedirect(f'/sport/{sport.slug}/edit/')
         else:
-            log.warning(f"form invalid")
+            log.warning(f"form invalid: {form.errors}")
     return render(request, 'sport/edit_sport.html', {'sports': sports, 'sport': sport, 'form': form})
 
 

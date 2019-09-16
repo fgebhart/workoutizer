@@ -3,7 +3,9 @@
 {% load static %}
 {% block body %}
     <div class="container">
-        <h3 class="float-left">Edit&nbsp;&nbsp;&nbsp;<i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i>&nbsp;&nbsp;&nbsp;{{ sport.name }}</h3>
+        <h3 class="float-left">Edit&nbsp;&nbsp;&nbsp;<i class="fas fa-{{ sport.icon }}"
+                                                        style="color: {{ sport.color }};"></i>&nbsp;&nbsp;&nbsp;{{ sport.name }}
+        </h3>
         <div class="clearfix"></div>
         <br>
 
@@ -11,8 +13,23 @@
 
         <div class="container">
 
-            <form action="/sport/{{ sport.slug }}/edit/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+            <form action="/sport/{{ sport.slug }}/edit/" method="post" accept-charset="utf-8"
+                  enctype="multipart/form-data">
                 {% csrf_token %}
+                {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <div class="form-group row">
                     <div class="col-sm-2">{{ form.name.label }}</div>
                     <div class="col-sm-10">{{ form.name }}</div>
@@ -29,7 +46,8 @@
                         class="fas fa-check"></i>&nbsp;&nbsp;Save
                 </button>
                 <a href="/sport/{{ sport.slug }}" class="float-left btn btn-outline-secondary">Cancel</a>
-                <a href="/sport/{{ sport.slug }}/delete/" class="float-right btn btn-danger"><i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete</a>
+                <a href="/sport/{{ sport.slug }}/delete/" class="float-right btn btn-danger"><i
+                        class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete</a>
                 <div class="clearfix"></div>
             </form>
 
