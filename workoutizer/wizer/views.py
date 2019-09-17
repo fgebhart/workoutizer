@@ -10,7 +10,7 @@ from django.views.generic import View
 from .models import Sport, Activity, Settings
 from .forms import SettingsForm
 from .plots import create_plot
-from wizer.gis.gis import GeoTrace, bounding_coordinates
+from wizer.gis.gis import GeoTrace
 
 
 log = logging.getLogger('wizer.views')
@@ -66,7 +66,6 @@ class MapView(View):
     number_of_days = None
     days_choices = None
     settings = None
-    corner = None
 
     def get(self, request, list_of_activities: list):
         log.debug(f"got list_of_activity_ids: {list_of_activities}")
@@ -75,12 +74,10 @@ class MapView(View):
         self.number_of_days = self.settings.number_of_days
         self.days_choices = Settings.days_choices
         traces = []
-        all_coordinates = []
         color = '#ffa500'
         for a in list_of_activities:
             if a.trace_file:
                 coordinates = json.loads(a.trace_file.coordinates)
-                all_coordinates.append(coordinates)
                 color = webcolors.name_to_hex(a.sport.color)    # NOTE: last activity color will be applied
                 traces.append(GeoTrace(
                     sport=a.sport.name,
@@ -89,9 +86,5 @@ class MapView(View):
                     center_lon=a.trace_file.center_lon,
                     coordinates=coordinates))
                 log.debug(f"stored coordinates of: '{a}' in traces list")
-        if all_coordinates:
-            self.corner = bounding_coordinates(all_coordinates)
-        log.debug(f"all coordinates: {all_coordinates}")
-        log.debug(f"bounding box corners: {self.corner}")
-        return {'traces': traces, 'corner': self.corner, 'settings': self.settings, 'days': self.number_of_days,
+        return {'traces': traces, 'settings': self.settings, 'days': self.number_of_days,
                 'choices': self.days_choices, 'color': color}

@@ -54,14 +54,3 @@ def calc_distance_of_points(list_of_tuples: list):
             first_point = point
             total_distance += dist.km
     return total_distance * 0.77
-
-
-def bounding_coordinates(list_of_coordinates: list):
-    lon = list()
-    lat = list()
-    for c in list_of_coordinates:
-        lat.append(c[0])
-        lon.append(c[1])
-    corner1 = [max(lon), min(lat)]
-    corner2 = [max(lon), min(lat)]
-    return [corner1, corner2]
