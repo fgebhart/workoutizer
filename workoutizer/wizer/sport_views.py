@@ -7,7 +7,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 
-from .views import MapView
+from .views import MapView, PlotView
 from .models import Sport, Activity, Settings
 from .forms import AddSportsForm
 from .plots import create_plot
@@ -23,23 +23,12 @@ class AllSportsView(View):
         return render(request, self.template_name, {'sports': sports})
 
 
-class SportsView(MapView):
+class SportsView(MapView, PlotView):
     template_name = "sport/sport.html"
-    number_of_days = None
-    days_choices = None
-    settings = None
-
-    def get_days_config(self, request):
-        self.settings = Settings.objects.get(user_id=request.user.id)
-        self.number_of_days = self.settings.number_of_days
-        self.days_choices = Settings.days_choices
 
     def get(self, request, sports_name_slug):
-        self.get_days_config(request)
-        today = datetime.datetime.today()
-        start_day = today - datetime.timedelta(days=self.number_of_days)
         sport_id = Sport.objects.get(slug=sports_name_slug).id
-        activities = Activity.objects.filter(date__range=[start_day, today], sport=sport_id).order_by("-date")
+        activities = self.get_activities(request=request, sport_id=sport_id)
         log.debug(f"got sports name: {sports_name_slug}")
         log.debug(f"request in sports view: {request.user}")
         log.debug(f"got activities: {activities}")
