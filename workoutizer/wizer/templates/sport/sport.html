@@ -21,7 +21,8 @@
                 {% include 'plot.html' %}
             </div>
             <div class="col-sm-5">
-                <p>Show <a href="">large map </a>of all {{ sport.name }} activities.</p>
+                <p>Map selected {{ sport.name }} activities:
+                </p>
                 {% include 'map.html' %}
             </div>
         {% else %}
@@ -62,3 +63,4 @@
     </table>
 
 {% endblock %}
+

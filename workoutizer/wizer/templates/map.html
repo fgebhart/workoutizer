@@ -11,9 +11,8 @@
 
     var geoJsonLayer = L.geoJson(myLines);
     var myBounds = geoJsonLayer.getBounds();
-    console.log("Bounding Box: " + myBounds.toBBoxString());
 
-    let map = L.map('mapid').fitBounds(myBounds);
+    var map = L.map('mapid').fitBounds(myBounds);
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
@@ -27,7 +26,7 @@
         L.marker([end[1], end[0]]).addTo(map);
     {% endfor %}
 
-    let myStyle = {
+    var myStyle = {
         "color": "{{ color }}",
         "weight": {{ settings.trace_width }},
         "opacity": {{ settings.trace_opacity }}
@@ -35,3 +34,4 @@
 
     L.geoJSON(myLines, {style: myStyle}).addTo(map);
 </script>
+<br>

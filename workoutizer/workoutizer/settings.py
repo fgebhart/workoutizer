@@ -121,7 +121,7 @@ STATIC_URL = '/static/'
 PLOT_WIDTH = 1110
 PLOT_HEIGHT = 300
 
-format_console = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+format_console = "%(name)s - %(levelname)s - %(message)s"   # optionally add time: "%(asctime)s -"
 
 LOGGING = {
     'version': 1,
