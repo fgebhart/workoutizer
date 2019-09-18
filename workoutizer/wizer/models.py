@@ -34,7 +34,8 @@ class Traces(models.Model):
     path_to_file = models.CharField(max_length=200)
     file_name = models.CharField(max_length=100, editable=False)
     md5sum = models.CharField(max_length=32, unique=True)
-    coordinates = models.CharField(max_length=100000000)
+    coordinates = models.CharField(max_length=10000000000)
+    altitude = models.CharField(max_length=10000000000, null=True, blank=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
