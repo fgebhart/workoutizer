@@ -9,8 +9,6 @@ log = logging.getLogger('wizer.gis')
 
 @dataclass
 class GeoTrace:
-    center_lon: float
-    center_lat: float
     coordinates: list
     sport: str
     color: str = '#808080'

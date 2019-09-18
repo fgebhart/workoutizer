@@ -36,8 +36,6 @@ class MapView(View):
                 traces.append(GeoTrace(
                     sport=a.sport.name,
                     color=color,
-                    center_lat=a.trace_file.center_lat,
-                    center_lon=a.trace_file.center_lon,
                     coordinates=coordinates))
                 log.debug(f"stored coordinates of: '{a}' in traces list")
         return {'traces': traces, 'settings': self.settings, 'days': self.number_of_days,

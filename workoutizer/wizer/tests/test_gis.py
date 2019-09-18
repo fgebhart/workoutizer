@@ -1,4 +1,4 @@
-from wizer.gis.gpx_converter import calc_distance_of_points
+from wizer.format.gpx_converter import calc_distance_of_points
 
 
 def test_calc_distance_of_points():
