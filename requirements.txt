@@ -8,6 +8,7 @@ cycler==0.10.0
 decorator==4.4.0
 Django==2.2.1
 django-leaflet==0.24.0
+fitparse==1.1.0
 geographiclib==1.49
 geojson==2.4.1
 geopy==1.20.0

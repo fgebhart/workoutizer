@@ -1,13 +1,13 @@
 import time
 import os
 import logging
-import hashlib
 from multiprocessing import Process
 
 from django.apps import AppConfig
 from django.db.utils import OperationalError
-from wizer.gis.gpx_converter import GPXConverter
-from wizer.tools.utils import sanitize
+from wizer.format.gpx import GPXParser
+from wizer.format.fit import FITParser
+from wizer.tools.utils import sanitize, calc_md5
 
 log = logging.getLogger('wizer.apps')
 
@@ -16,14 +16,19 @@ sport_naming_map = {
     'Cycling': ['cycle', 'cycling'],
     'Mountainbiking': ['mountainbiking', 'mountainbike', 'mountain biking', 'mountain bike', 'mountain-biking',
                        'mountain-bike', 'mtbing', 'mtb', 'cycling_mountain'],
-    'Hiking': ['hiking', 'hike', 'wander', 'walking', 'mountaineering'],
+    'Hiking': ['hiking', 'hike', 'wandern', 'walking', 'mountaineering'],
     'Triathlon': ['triathlon', 'tria'],
+    'Swimming': ['swimming', 'swim', 'pool'],
+    'Yoga': ['yoga', 'yogi'],
 }
 
 
-class WizerConfig(AppConfig):
+formats = [".gpx", ".fit"]
+
+
+class WizerFileDaemon(AppConfig):
     name = 'wizer'
-    verbose_name = 'wizer django app'
+    verbose_name = 'Workoutizer'
 
     def ready(self):
         from .models import Settings, Traces, Activity, Sport
@@ -31,14 +36,14 @@ class WizerConfig(AppConfig):
             # TODO get settings of current logged in user, maybe start GPXFileImporter only after login?
             settings = Settings.objects.all().order_by('-id').first()
             if settings:
-                p = Process(target=GPXFileImporter, args=(settings, Traces, Activity, Sport))
+                p = Process(target=FileImporter, args=(settings, Traces, Activity, Sport))
                 p.start()
         except OperationalError:
-            log.warning(f"could not find table: wizer_settgins - won't run GPXFileImprter. Run django migrations first.")
+            log.warning(f"could not find table: wizer_settings - won't run FileImporter. Run django migrations first.")
             # TODO create notification here
 
 
-class GPXFileImporter:
+class FileImporter:
     def __init__(self, settings_model, trace_files_model, activities_model, sport_model):
         self.settings = settings_model
         self.path = self.settings.path_to_trace_dir
@@ -50,10 +55,10 @@ class GPXFileImporter:
 
     def start_listening(self):
         while True:
-            # find trace files in dir
+            # find activity files in directory
             trace_files = [os.path.join(root, name)
                            for root, dirs, files in os.walk(self.path)
-                           for name in files if name.endswith(".gpx")]
+                           for name in files if name.endswith(tuple(formats))]
             log.debug(f"found {len(trace_files)} files in trace dir: {self.path}")
             self.add_objects_to_models(trace_files)
             time.sleep(self.interval)
@@ -65,48 +70,43 @@ class GPXFileImporter:
             md5sum = calc_md5(file)
             if md5sum not in md5sums_from_db:   # current file is not stored in model yet
                 log.debug(f"importing file {file}...")
-                gpx_conv = GPXConverter(path_to_gpx=file)
-                sport = gpx_conv.get_gpx_metadata().sport
+                if file.endswith(".gpx"):
+                    log.debug(f"parsing GPX file")
+                    parser = GPXParser(path_to_file=file)
+                elif file.endswith(".fit"):
+                    log.debug(f"parsing FIT file")
+                    parser = FITParser(path_to_file=file)
+                else:
+                    log.warning(f"file type: {file} unknown")
+                    parser = None
+                sport = parser.sport
                 mapped_sport = map_sport_name(sport, sport_naming_map)
-                t = self._save_gpx_file_to_db(file=file, md5sum=md5sum, geojson=gpx_conv)
+                log.info(f"saving trace file {file} to traces model")
+                t = self.trace_files_model(
+                    path_to_file=file,
+                    md5sum=md5sum,
+                    coordinates=parser.coordinates,
+                    altitude=parser.altitude,
+                )
+                t.save()
                 trace_file_instance = self.trace_files_model.objects.get(pk=t.pk)
                 sport_instance = self.sport_model.objects.filter(slug=sanitize(mapped_sport)).first()
-                self._save_activity_to_db(geojson=gpx_conv, sport=sport_instance, trace_file=trace_file_instance)
+                a = self.activities_model(
+                    title=parser.title,
+                    sport=sport_instance,
+                    date=parser.date,
+                    duration=parser.duration,
+                    distance=parser.distance,
+                    trace_file=trace_file_instance,
+                )
+                a.save()
+                log.info(f"created new {sport_instance} activity: {parser.title}")
             else:  # means file is stored in db already
                 trace_file_paths_model = self.trace_files_model.objects.get(md5sum=md5sum)
                 if trace_file_paths_model.path_to_file != file:
                     log.debug(f"path of file: {trace_file_paths_model.path_to_file} has changed, updating to {file}")
                     trace_file_paths_model.path_to_file = file
                     trace_file_paths_model.save()
-
-    def _save_gpx_file_to_db(self, file, md5sum, geojson):
-        log.info(f"saving gpx file {file} to trace_files")
-        gpx_metadata = geojson.get_gpx_metadata()
-        t = self.trace_files_model(
-            path_to_file=file,
-            md5sum=md5sum,
-            center_lon=gpx_metadata.center_lon,
-            center_lat=gpx_metadata.center_lat,
-            coordinates=geojson.get_coordinates(),
-            zoom_level=gpx_metadata.zoom_level,
-        )
-        t.save()
-        return t
-
-    def _save_activity_to_db(self, geojson, sport, trace_file):
-        gpx_metadata = geojson.get_gpx_metadata()
-        title = gpx_metadata.title
-        a = self.activities_model(
-            title=title,
-            sport=sport,
-            date=gpx_metadata.date,
-            duration=gpx_metadata.duration,
-            distance=gpx_metadata.distance,
-            trace_file=trace_file,
-        )
-        a.save()
-        log.info(f"created new {sport} activity: {title}")
-        return a
 
 
 def map_sport_name(sport_name, map_dict):
@@ -118,11 +118,3 @@ def map_sport_name(sport_name, map_dict):
     if not sport:
         log.warning(f"could not map {sport_name} to given sport names, use None instead")
     return sport
-
-
-def calc_md5(file):
-    hash_md5 = hashlib.md5()
-    with open(file, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()

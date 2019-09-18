@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from wizer.tools.utils import sanitize
 
-log = logging.getLogger("wizer")
+log = logging.getLogger("wizer.models")
 
 
 class Sport(models.Model):
@@ -26,26 +26,6 @@ class Sport(models.Model):
         super(Sport, self).save()
 
 
-class TraceFiles(models.Model):
-
-    def __str__(self):
-        return self.file_name
-
-    path_to_file = models.CharField(max_length=200)
-    file_name = models.CharField(max_length=100, editable=False)
-    md5sum = models.CharField(max_length=32, unique=True)
-    center_lat = models.FloatField(max_length=20)
-    center_lon = models.FloatField(max_length=20)
-    zoom_level = models.IntegerField(blank=True, null=True)
-    geojson = models.CharField(max_length=100000)
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.file_name = self.path_to_file.split("/")[-1]
-        log.debug(f"creating file name from path {self.path_to_file} -> {self.file_name}")
-        super(TraceFiles, self).save()
-
-
 class Traces(models.Model):
 
     def __str__(self):
@@ -54,10 +34,8 @@ class Traces(models.Model):
     path_to_file = models.CharField(max_length=200)
     file_name = models.CharField(max_length=100, editable=False)
     md5sum = models.CharField(max_length=32, unique=True)
-    center_lat = models.FloatField(max_length=20)
-    center_lon = models.FloatField(max_length=20)
-    zoom_level = models.IntegerField(blank=True, null=True)
-    coordinates = models.CharField(max_length=100000000)
+    coordinates = models.CharField(max_length=10000000000)
+    altitude = models.CharField(max_length=10000000000, null=True, blank=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

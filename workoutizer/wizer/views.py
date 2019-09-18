@@ -33,13 +33,12 @@ class MapView(View):
             if a.trace_file:
                 coordinates = json.loads(a.trace_file.coordinates)
                 color = webcolors.name_to_hex(a.sport.color)    # NOTE: last activity color will be applied
-                traces.append(GeoTrace(
-                    sport=a.sport.name,
-                    color=color,
-                    center_lat=a.trace_file.center_lat,
-                    center_lon=a.trace_file.center_lon,
-                    coordinates=coordinates))
-                log.debug(f"stored coordinates of: '{a}' in traces list")
+                if coordinates:
+                    traces.append(GeoTrace(
+                        sport=a.sport.name,
+                        color=color,
+                        coordinates=coordinates))
+                    log.debug(f"stored coordinates of: '{a}' in traces list")
         return {'traces': traces, 'settings': self.settings, 'days': self.number_of_days,
                 'choices': self.days_choices, 'color': color}
 
