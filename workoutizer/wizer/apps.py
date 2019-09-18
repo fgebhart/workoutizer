@@ -21,9 +21,9 @@ sport_naming_map = {
 }
 
 
-class WizerConfig(AppConfig):
+class WizerFileDaemon(AppConfig):
     name = 'wizer'
-    verbose_name = 'wizer django app'
+    verbose_name = 'wizer file importer daemon'
 
     def ready(self):
         from .models import Settings, Traces, Activity, Sport
@@ -31,14 +31,14 @@ class WizerConfig(AppConfig):
             # TODO get settings of current logged in user, maybe start GPXFileImporter only after login?
             settings = Settings.objects.all().order_by('-id').first()
             if settings:
-                p = Process(target=GPXFileImporter, args=(settings, Traces, Activity, Sport))
+                p = Process(target=FileImporter, args=(settings, Traces, Activity, Sport))
                 p.start()
         except OperationalError:
             log.warning(f"could not find table: wizer_settgins - won't run GPXFileImprter. Run django migrations first.")
             # TODO create notification here
 
 
-class GPXFileImporter:
+class FileImporter:
     def __init__(self, settings_model, trace_files_model, activities_model, sport_model):
         self.settings = settings_model
         self.path = self.settings.path_to_trace_dir
