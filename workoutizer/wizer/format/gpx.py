@@ -43,7 +43,9 @@ class GPXParser(Parser):
         for track in self.gpx.tracks:
             for segment in track.segments:
                 for point in segment.points:
+                    self.altitude.append(point.elevation)
                     self.coordinates.append([point.longitude, point.latitude])
-        log.debug(f"coordinates: {self.coordinates}")
+        log.debug(f"found number of coordinates: {len(self.coordinates)}")
+        log.debug(f"found number of altitudes: {len(self.altitude)}")
         self.distance = round(calc_distance_of_points(self.coordinates), 2)
         log.debug(f"found distance: {self.distance}")

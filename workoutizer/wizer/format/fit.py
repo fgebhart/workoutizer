@@ -6,7 +6,7 @@ from wizer.format.lib.generic import Parser
 log = logging.getLogger('wizer.fit')
 
 
-# coordinates_conversion_parameter
+# coordinates conversion parameter
 ccp = 11930464.71111111
 
 
