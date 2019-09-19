@@ -57,6 +57,7 @@ def plot_activities(activities):
 
     p.multi_line(xs='xs', ys='ys', color='colors', line_width=4, legend='legend', hover_line_color='colors',
                  hover_line_alpha=1.0, source=ColumnDataSource(data))
+    p.xaxis[0].ticker.desired_num_ticks = 12
     p.legend.label_text_font = "Ubuntu"
     p.legend.location = "top_left"
 
