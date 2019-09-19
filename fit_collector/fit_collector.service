@@ -1,0 +1,10 @@
+[Unit]
+Description=Collector of Garmin Fit Files
+
+[Service]
+Type=idle
+ExecStart=/home/fabian/make/workoutizer/repo/workoutizer/fit_collector/fit_collector.py
+User=fabian
+
+[Install]
+WantedBy=multi-user.target
