@@ -2,7 +2,7 @@
     <div class="navbar navbar-expand-sm bg-info navbar-dark">
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item order-0"><a href="/add-activity" class="btn btn-warning"><i
+                <li class="nav-item order-0"><a href="{% url 'add-activity' %}" class="btn btn-warning"><i
                         class="fas fa-plus"></i>&nbsp;&nbsp;Activity</a></li>
             </ul>
         </div>
@@ -12,21 +12,21 @@
         </div>
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item order-1"><a class="nav-link" href="/settings"><i class="fas fa-cogs"></i></a></li>
+                <li class="nav-item order-1"><a class="nav-link" href="{% url 'settings' %}"><i class="fas fa-cogs"></i></a></li>
                 <li>
                     <div class="dropdown">
                         <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
                             Sports
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="/sports/">All Sports</a>
+                            <a class="dropdown-item" href="{% url 'sports' %}">All Sports</a>
                             <div class="dropdown-divider"></div>
                             {% for s in sports %}
                                 <a class="dropdown-item" href="/sport/{{ s.slug }}">{{ s.name }}&nbsp;&nbsp;<i
-                                        class="fas fa-{{ s.icon }}"></i></a>
+                                        class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i></a>
                             {% endfor %}
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/add-sport/"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Sport</a>
+                            <a class="dropdown-item" href="{% url 'add-sport' %}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Sport</a>
                         </div>
                     </div>
                 </li>

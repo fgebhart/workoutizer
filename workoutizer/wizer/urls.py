@@ -16,7 +16,7 @@ urlpatterns = [
     url(r'^activity/(?P<pk>\d+)/delete/$', ActivityDeleteView.as_view(), name="delete-activity"),
 
     # Sports
-    path('sport/<slug:sports_name_slug>', SportsView.as_view(), name="sports"),
+    path('sport/<slug:sports_name_slug>', SportsView.as_view(), name="sport"),
     path('sports/', AllSportsView.as_view(), name="sports"),
     path('add-sport/', add_sport_view, name="add-sport"),
     path('sport/<slug:sports_name_slug>/edit/', edit_sport_view, name="edit-sport"),
