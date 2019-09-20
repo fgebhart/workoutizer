@@ -1,5 +1,4 @@
 import logging
-import datetime
 
 from django.shortcuts import render
 from django.views.generic import View, DeleteView
@@ -7,8 +6,8 @@ from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 
-from .views import MapView, PlotView
-from .models import Sport, Activity, Settings
+from .views import MapView, PlotView, get_summary_of_activities
+from .models import Sport
 from .forms import AddSportsForm
 from .plots import create_plot
 
@@ -35,8 +34,7 @@ class SportsView(MapView, PlotView):
         context = super(SportsView, self).get(request=request, list_of_activities=activities)
         context['activities'] = activities
         context['sports'] = Sport.objects.all().order_by('name')
-        summary = {'count': len(activities), 'duration': sum([n.duration for n in activities]),
-                   'distance': round(sum([n.distance for n in activities]), 2)}
+        summary = get_summary_of_activities(activities=activities)
         context['summary'] = summary
         if activities:
             script, div = create_plot(activities=activities)

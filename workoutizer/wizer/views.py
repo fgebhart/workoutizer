@@ -12,7 +12,6 @@ from .forms import SettingsForm
 from .plots import create_plot
 from wizer.gis.gis import GeoTrace
 
-
 log = logging.getLogger('wizer.views')
 
 
@@ -32,7 +31,7 @@ class MapView(View):
         for a in list_of_activities:
             if a.trace_file:
                 coordinates = json.loads(a.trace_file.coordinates)
-                color = webcolors.name_to_hex(a.sport.color)    # NOTE: last activity color will be applied
+                color = webcolors.name_to_hex(a.sport.color)  # NOTE: last activity color will be applied
                 if coordinates:
                     traces.append(GeoTrace(
                         sport=a.sport.name,
@@ -71,10 +70,11 @@ class DashboardView(View, PlotView):
     def get(self, request):
         self.sports = Sport.objects.all().order_by('name')
         activities = self.get_activities(request=request)
+        summary = get_summary_of_activities(activities=activities)
         script, div = create_plot(activities=activities)
         return render(request, self.template_name,
                       {'sports': self.sports, 'activities': activities, 'script': script, 'div': div,
-                       'days': self.number_of_days, 'choices': self.days_choices})
+                       'days': self.number_of_days, 'choices': self.days_choices, 'summary': summary})
 
 
 def settings_view(request):
@@ -97,3 +97,8 @@ def set_number_of_days(request, number_of_days):
     n.number_of_days = number_of_days
     n.save()
     return redirect(request.META.get('HTTP_REFERER'))
+
+
+def get_summary_of_activities(activities):
+    return {'count': len(activities), 'duration': sum([n.duration for n in activities]),
+            'distance': round(sum([n.distance for n in activities]), 2)}

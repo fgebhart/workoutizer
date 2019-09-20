@@ -22,7 +22,7 @@ body {
     width: 10%;
 }
 
-#id_distance{
+#id_distance {
     width: 10%;
 }
 
@@ -34,3 +34,6 @@ body {
     width: 70%;
 }
 
+.sidenav {
+    position: fixed;
+}

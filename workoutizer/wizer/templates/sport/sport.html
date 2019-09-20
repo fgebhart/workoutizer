@@ -12,10 +12,6 @@
         .leaflet-container {
             height: 280px;
         }
-
-        .sidenav {
-            position: fixed;
-        }
     </style>
     <hr>
     <div class="row">
@@ -36,11 +32,12 @@
     </div>
     <br>
     <div class="row">
-    <div class="col-sm-9">
-        {% include 'table.html' %}
-    </div>
-    <div class="col-sm-3">
-        {% include 'sidenav.html' %}
+        <div class="col-sm-9">
+            {% include 'table.html' %}
+        </div>
+        <div class="col-sm-3">
+            {% include 'sidenav.html' %}
+        </div>
     </div>
 {% endblock %}
 
