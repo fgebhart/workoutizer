@@ -3,40 +3,45 @@
 {% block body %}
 
     <title>{{ activity.title }} - Workoutizer</title>
-    <h3 class="float-left">{{ activity.title }}&nbsp;&nbsp;<i class="fas fa-{{ activity.sport.icon }}"
-                                                              style="color: {{ activity.sport.color }};"></i></h3>
-    <a class="float-right btn btn-warning" href="{{ activity.id }}/edit"><i class="fas fa-pen"></i>&nbsp;&nbsp;Edit</a>
+    <h3 class="float-left">{{ activity.title }}&nbsp;&nbsp; <a href="/sport/{{ activity.sport.slug }}"
+                                                               style="color: {{ activity.sport.color }};">
+        <i class="fas fa-{{ activity.sport.icon }}"></i>
+    </a></h3>
+    <a class="float-right btn btn-warning" href="{{ activity.id }}/edit"><i class="fas fa-pen"></i>&nbsp;&nbsp;Edit
+        Activity</a>
     <div class="clearfix"></div>
     <p>{{ activity.date }}</p>
     <hr>
     <br>
     <div class="row">
         <div class="col-sm-3">
-            <table class="table table-hover">
-                <tr>
-                    <th scope="row">Sport</th>
-                    <td><a href="/sport/{{ activity.sport.slug }}">{{ activity.sport }}</a>
-                    </td>
-                <tr>
-                <tr>
-                    <th scope="row">Duration</th>
-                    <td>{{ activity.duration }} min</td>
-                <tr>
-                <tr>
-                    <th scope="row">Distance</th>
-                    <td>{{ activity.distance }} km</td>
-                <tr>
-                <tr>
-                    <th scope="row">Description</th>
-                    <td>
-                        {% if activity.description %}
-                            {{ activity.description }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                <tr>
-            </table>
+            <div class="sidenav">
+                <div class="card-deck">
+                    <div class="card box-shadow">
+                        <div class="card-header">
+                            <h5 class="text-center">Facts</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <tr>
+                                    <th scope="row">Distance</th>
+                                    <td>{{ activity.distance }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Duration</th>
+                                    <td>{{ activity.duration }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Sport</th>
+                                    <td><a href="/sport/{{ activity.sport.slug }}" style="color: {{ activity.sport.color }};">
+                                        <i class="fas fa-{{ activity.sport.icon }}"></i>
+                                    </a></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         {% if traces %}
             <div class="col-sm-9">

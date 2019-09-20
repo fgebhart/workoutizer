@@ -6,7 +6,7 @@
     <br>
     <div class="container">
 
-        <form action="/add-activity/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+        <form action="{% url 'add-activity' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group row">
                 <div class="col-sm-2">{{ form.title.label }}</div>

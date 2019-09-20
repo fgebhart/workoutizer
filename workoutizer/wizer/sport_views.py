@@ -35,6 +35,9 @@ class SportsView(MapView, PlotView):
         context = super(SportsView, self).get(request=request, list_of_activities=activities)
         context['activities'] = activities
         context['sports'] = Sport.objects.all().order_by('name')
+        summary = {'count': len(activities), 'duration': sum([n.duration for n in activities]),
+                   'distance': round(sum([n.distance for n in activities]), 2)}
+        context['summary'] = summary
         if activities:
             script, div = create_plot(activities=activities)
             context['script'] = script
