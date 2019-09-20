@@ -22,7 +22,7 @@
                 {% endif %}
             </td>
             <td>
-                <a href="/sport/{{ a.sport.slug }}" style="color: {{ a.sport.color }};">
+                <a href="/sport/{{ a.sport.slug }}" data-toggle="tooltip" data-placement="bottom" title="to {{ a.sport.name }}" style="color: {{ a.sport.color }};">
                     <i class="fas fa-{{ a.sport.icon }}"></i>
                 </a>
             </td>

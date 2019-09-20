@@ -19,6 +19,11 @@
     <link type="text/css" rel="stylesheet" href="{% static 'css/style.css' %}"/>
     {% leaflet_js %}
     {% leaflet_css %}
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 </head>
 
 {% include 'navbar.html' %}
