@@ -20,6 +20,7 @@ pytest:
 django:
   stage: test
   script:
+    - python3 -m pip install -r requirements.txt
     - python3 workoutizer/manage.py collectstatic --noinput
     - python3 workoutizer/manage.py check
     - python3 workoutizer/manage.py makemigrations
