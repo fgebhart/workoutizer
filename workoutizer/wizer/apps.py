@@ -39,7 +39,7 @@ class WizerFileDaemon(AppConfig):
                 p = Process(target=FileImporter, args=(settings, Traces, Activity, Sport))
                 p.start()
         except OperationalError:
-            log.warning(f"could not find table - won't run FileImporter. Run django migrations first.")
+            log.debug(f"cannot run FileImporter. Run django migrations first.")
             # TODO create notification here
 
 
