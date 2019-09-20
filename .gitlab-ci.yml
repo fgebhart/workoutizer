@@ -16,3 +16,12 @@ pytest:
   script:
     - python3 -m pip install -r requirements.txt
     - python3 -m pytest workoutizer/wizer/tests -v
+
+django:
+  stage: test
+  script:
+    - python3 workoutizer/manage.py collectstatic --noinput
+    - python3 workoutizer/manage.py check
+    - python3 workoutizer/manage.py makemigrations
+    - python3 workoutizer/manage.py migrate
+#    - python3 workoutizer/manage.py loaddata inital_data.json
