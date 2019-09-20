@@ -2,40 +2,38 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
+    <h3>Add new Activity</h3>
+    <br>
     <div class="container">
-        <h3>Add new Activity</h3>
-        <br>
-        <div class="container">
 
-            <form action="/add-activity/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="form-group row">
-                    <div class="col-sm-2">{{ form.title.label }}</div>
-                    <div class="col-sm-10">{{ form.title }}</div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-2">{{ form.sport.label }}</div>
-                    <div class="col-sm-10">{{ form.sport }}</div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-2">{{ form.date.label }}</div>
-                    <div class="col-sm-10">{{ form.date }}</div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-2">{{ form.duration.label }}</div>
-                    <div class="col-sm-10">{{ form.duration }}&nbsp;&nbsp;min</div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-2">{{ form.distance.label }}</div>
-                    <div class="col-sm-10">{{ form.distance }}&nbsp;&nbsp;km</div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-2">{{ form.description.label }}</div>
-                    <div class="col-sm-10">{{ form.description }}</div>
-                </div>
-                <button id="button" class="btn btn-warning" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Submit</button>
-            </form>
-
-        </div>
+        <form action="/add-activity/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group row">
+                <div class="col-sm-2">{{ form.title.label }}</div>
+                <div class="col-sm-10">{{ form.title }}</div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">{{ form.sport.label }}</div>
+                <div class="col-sm-10">{{ form.sport }}</div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">{{ form.date.label }}</div>
+                <div class="col-sm-10">{{ form.date }}</div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">{{ form.duration.label }}</div>
+                <div class="col-sm-10">{{ form.duration }}&nbsp;&nbsp;min</div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">{{ form.distance.label }}</div>
+                <div class="col-sm-10">{{ form.distance }}&nbsp;&nbsp;km</div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">{{ form.description.label }}</div>
+                <div class="col-sm-10">{{ form.description }}</div>
+            </div>
+            <button id="button" class="btn btn-warning" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Submit
+            </button>
+        </form>
     </div>
 {% endblock %}

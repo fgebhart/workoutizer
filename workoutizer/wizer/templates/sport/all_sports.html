@@ -2,35 +2,30 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block body %}
-    <body>
-    <div class="container">
+    <h3>Your Sports</h3>
 
-        <h3>Your Sports</h3>
-
-        <br>
-        <p>List of all Sports:</p>
-        <table class="table table-hover">
-            <thead>
+    <br>
+    <p>List of all Sports:</p>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Color</th>
+            <th>Icon</th>
+            <th>Slug</th>
+        </tr>
+        </thead>
+        {% for s in sports %}
+            <tbody>
             <tr>
-                <th>Name</th>
-                <th>Color</th>
-                <th>Icon</th>
-                <th>Slug</th>
+                <td><a href="/sport/{{ s.slug }}">{{ s.name }}</a></td>
+                <td style="color:{{ s.color }}">{{ s.color }}</td>
+                <td><i class="fas fa-{{ s.icon }}"></i></td>
+                <td>{{ s.slug }}</td>
             </tr>
-            </thead>
-            {% for s in sports %}
-                <tbody>
-                <tr>
-                    <td><a href="/sport/{{ s.slug }}">{{ s.name }}</a></td>
-                    <td style="color:{{ s.color }}">{{ s.color }}</td>
-                    <td><i class="fas fa-{{ s.icon }}"></i></td>
-                    <td>{{ s.slug }}</td>
-                </tr>
-                </tbody>
-            {% endfor %}
-        </table>
-        <br>
-        <a href="/add-sport" class="btn btn-warning"><i class="fas fa-plus"></i>&nbsp;&nbsp;Sport</a>
-    </div>
-    </body>
+            </tbody>
+        {% endfor %}
+    </table>
+    <br>
+    <a href="/add-sport" class="btn btn-warning"><i class="fas fa-plus"></i>&nbsp;&nbsp;Sport</a>
 {% endblock %}
