@@ -35,9 +35,10 @@ class SportsView(MapView, PlotView):
         context = super(SportsView, self).get(request=request, list_of_activities=activities)
         context['activities'] = activities
         context['sports'] = Sport.objects.all().order_by('name')
-        script, div = create_plot(activities=activities)
-        context['script'] = script
-        context['div'] = div
+        if activities:
+            script, div = create_plot(activities=activities)
+            context['script'] = script
+            context['div'] = div
         try:
             sport = model_to_dict(Sport.objects.get(slug=sports_name_slug))
             sport['slug'] = sports_name_slug
