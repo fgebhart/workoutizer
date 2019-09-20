@@ -30,8 +30,6 @@ def plot_activities(activities, plotting_style="line"):
         dates.append(oldest)
         oldest = oldest + datetime.timedelta(days=1)
 
-    log.debug(f"dates: {dates}")
-
     for date in dates:
         durations = list()
         for a in activities:
@@ -50,10 +48,10 @@ def plot_activities(activities, plotting_style="line"):
                 colors.append(a.sport.color)
                 break
 
-    p = figure(x_axis_type='datetime', plot_height=settings.PLOT_HEIGHT, sizing_mode='stretch_width', tools="hover",
-               tooltips="$name: @$name min")
-    if plotting_style == "line":
+    p = figure(x_axis_type='datetime', plot_height=settings.PLOT_HEIGHT, sizing_mode='stretch_width',
+               tools="pan,wheel_zoom,box_zoom,reset,save")
 
+    if plotting_style == "line":
         data = {
             'xs': [df.index.values] * len(df.columns),
             'ys': [df[name].values for name in df],
@@ -73,8 +71,6 @@ def plot_activities(activities, plotting_style="line"):
             ],))
     else:
         sports = df.columns
-        log.debug(f"sports: {sports}")
-        log.debug(f"colors: {colors}")
 
         plot_data = {}
         for d, s in zip([df[name].values for name in df], sports):
@@ -83,6 +79,7 @@ def plot_activities(activities, plotting_style="line"):
 
         p.vbar_stack(sports, x='dates', width=70000000, color=colors, source=plot_data,
                      legend=[value(x) for x in sports])
+        p.add_tools(HoverTool(tooltips="$name: @$name min",))
 
     p.legend.label_text_font = "Ubuntu"
     p.legend.location = "top_left"
