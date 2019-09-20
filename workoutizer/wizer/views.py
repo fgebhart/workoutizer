@@ -101,5 +101,5 @@ def set_number_of_days(request, number_of_days):
 
 
 def get_summary_of_activities(activities):
-    return {'count': len(activities), 'duration': sum([n.duration for n in activities]),
-            'distance': round(sum([n.distance for n in activities]), 2)}
+    return {'count': len(activities), 'duration': round(sum([n.duration for n in activities])/60, 1),
+            'distance': round(sum([n.distance for n in activities]), 1)}
