@@ -16,15 +16,19 @@
             <div class="dropdown">
                 display last
                 <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown">
-                    {{ days }}
+                    {% for k, v in choices %}
+                        {% if days == k %}
+                            {{ v }}
+                        {% endif %}
+                    {% endfor %}
                 </button>
                 <div class="dropdown-menu">
                     {% for k, v in choices %}
-                        {% if v == days %}
-                            <a class="dropdown-item" href="/set_number_of_day/{{ v }}"><b>{{ v }}&nbsp;<i
+                        {% if k == days %}
+                            <a class="dropdown-item" href="/set_number_of_day/{{ k }}"><b>{{ v }}&nbsp;<i
                                     class="fas fa-check"></i></b></a>
                         {% else %}
-                            <a class="dropdown-item" href="/set_number_of_days/{{ v }}">{{ v }}</a>
+                            <a class="dropdown-item" href="/set_number_of_days/{{ k }}">{{ v }}</a>
                         {% endif %}
                     {% endfor %}
                 </div>

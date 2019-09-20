@@ -95,6 +95,7 @@ def settings_view(request):
 def set_number_of_days(request, number_of_days):
     n = Settings.objects.get(user_id=request.user)
     n.number_of_days = number_of_days
+    log.debug(f"number of days: {number_of_days}")
     n.save()
     return redirect(request.META.get('HTTP_REFERER'))
 
