@@ -60,6 +60,7 @@ class Activity(models.Model):
 
 class Settings(models.Model):
     days_choices = [(99999, 'all'), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10), (5, 5)]
+    plotting_choices = [('bar', 'stacked bar chart'), ('line', 'multiline')]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=settings.AUTH_USER_MODEL)
     path_to_trace_dir = models.CharField(max_length=120, verbose_name="Path to GPX Files Directory:")
@@ -67,3 +68,5 @@ class Settings(models.Model):
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     trace_width = models.FloatField(max_length=20, default=3.0, verbose_name="Width of Traces:")
     trace_opacity = models.FloatField(max_length=20, default=0.7, verbose_name="Opacity of Traces:")
+    plotting_style = models.CharField(choices=plotting_choices, default='line', max_length=120,
+                                      verbose_name="Plotting Style:")

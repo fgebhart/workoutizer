@@ -37,7 +37,7 @@ class SportsView(MapView, PlotView):
         summary = get_summary_of_activities(activities=activities)
         context['summary'] = summary
         if activities:
-            script, div = create_plot(activities=activities)
+            script, div = create_plot(activities=activities, plotting_style=self.settings.plotting_style)
             context['script'] = script
             context['div'] = div
         try:

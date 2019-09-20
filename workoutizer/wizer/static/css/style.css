@@ -37,3 +37,7 @@ body {
 .sidenav {
     position: fixed;
 }
+
+.dropdown-menu {
+  min-width:inherit;
+}

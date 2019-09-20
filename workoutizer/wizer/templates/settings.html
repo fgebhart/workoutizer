@@ -4,12 +4,12 @@
 {% load static %}
 {% block body %}
     <h3>Settings</h3>
+    <hr>
     <br>
     <div class="container">
-
-        <form action="/settings/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+        <form action="{% url 'settings' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
             {% csrf_token %}
-            <h5>General</h5>
+            <h5><b>General</b></h5>
             <hr>
             <div class="form-group row">
                 <div class="col-sm-3">{{ form.path_to_trace_dir.label }}</div>
@@ -17,10 +17,10 @@
             </div>
             <div class="form-group row">
                 <div class="col-sm-3">{{ form.gpx_checker_interval.label }}</div>
-                <div class="col-sm-9">{{ form.gpx_checker_interval }}&nbsp;&nbsp; seconds</div>
+                <div class="col-sm-9">{{ form.gpx_checker_interval }}&nbsp;&nbsp;seconds</div>
             </div>
             <br>
-            <h5>Maps</h5>
+            <h5><b>Maps</b></h5>
             <hr>
             <div class="form-group row">
                 <div class="col-sm-3">{{ form.trace_width.label }}</div>
@@ -30,10 +30,15 @@
                 <div class="col-sm-3">{{ form.trace_opacity.label }}</div>
                 <div class="col-sm-9">{{ form.trace_opacity }}</div>
             </div>
-
+            <br>
+            <h5><b>Maps</b></h5>
+            <hr>
+            <div class="form-group row">
+                <div class="col-sm-3">{{ form.plotting_style.label }}</div>
+                <div class="col-sm-9">{{ form.plotting_style }}</div>
+            </div>
             <br>
             <button id="button" class="btn btn-warning" type="submit" name="action">Save</button>
         </form>
-
     </div>
 {% endblock %}
