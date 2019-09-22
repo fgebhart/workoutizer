@@ -1,5 +1,5 @@
 <title>Sport</title>
-{% extends 'base.html' %}
+{% extends 'lib/base.html' %}
 {% load static %}
 {% block body %}
     <h3 class="float-left"><i class="fas fa-{{ sport.icon }}"
@@ -17,26 +17,26 @@
     <div class="row">
         {% if traces %}
             <div class="col-sm-7">
-                {% include 'plot.html' %}
+                {% include 'lib/plot.html' %}
             </div>
             <div class="col-sm-5">
                 <p>Map of selected {{ sport.name }} activities:
                 </p>
-                {% include 'map.html' %}
+                {% include 'lib/map.html' %}
             </div>
         {% else %}
             <div class="col-sm-12">
-                {% include 'plot.html' %}
+                {% include 'lib/plot.html' %}
             </div>
         {% endif %}
     </div>
     <br>
     <div class="row">
         <div class="col-sm-9">
-            {% include 'table.html' %}
+            {% include 'lib/table.html' %}
         </div>
         <div class="col-sm-3">
-            {% include 'sidenav.html' %}
+            {% include 'lib/sidenav.html' %}
         </div>
     </div>
 {% endblock %}

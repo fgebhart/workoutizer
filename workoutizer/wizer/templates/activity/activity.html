@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'lib/base.html' %}
 {% load static %}
 {% block body %}
 
@@ -45,7 +45,7 @@
         </div>
         {% if traces %}
             <div class="col-sm-9">
-                {% include "map.html" %}
+                {% include "lib/map.html" %}
             </div>
         {% endif %}
     </div>
