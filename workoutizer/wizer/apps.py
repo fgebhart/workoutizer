@@ -50,7 +50,7 @@ class FileImporter:
         self.trace_files_model = trace_files_model
         self.activities_model = activities_model
         self.sport_model = sport_model
-        self.interval = self.settings.gpx_checker_interval
+        self.interval = self.settings.file_checker_interval
         self.start_listening()
 
     def start_listening(self):

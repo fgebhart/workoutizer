@@ -63,7 +63,7 @@ class Settings(models.Model):
     plotting_choices = [('bar', 'stacked bar chart'), ('line', 'multiline')]
 
     path_to_trace_dir = models.CharField(max_length=120, verbose_name="Path to GPX Files Directory:")
-    gpx_checker_interval = models.IntegerField(default=60, verbose_name="GPX File Checker Time Interval:")
+    file_checker_interval = models.IntegerField(default=60, verbose_name="File Checker Time Interval:")
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     trace_width = models.FloatField(max_length=20, default=3.0, verbose_name="Width of Traces:")
     trace_opacity = models.FloatField(max_length=20, default=0.7, verbose_name="Opacity of Traces:")
