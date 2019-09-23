@@ -7,11 +7,11 @@ uploading all your sensitive health data to the world-wide-web.
 
 ### Getting Started
 
-1. clone the repository
+**1. clone the repository**
 ```shell script
 git clone git@gitlab.com:fgebhart/workoutizer.git
 ```
-2. create virtual environment and install pip requirements
+**2. create virtual environment and install pip requirements**
 ```shell script
 virtualenv -p python3.7 wkz
 source wkz/bin/activate
@@ -19,13 +19,16 @@ cd workoutizer
 pip install -r requirements.txt
 ```
 
-3. create super user account
+**3. prepare django application**
 ```shell script
 cd workoutizer
-python manage.py createsuperuser
+python manage.py collectstatic
+python manage.py makemigrations
+python manage.py migrate
+python manage.py loaddata wizer.settings.json
 ```
 
-4. run workoutizer django application
+**4. run workoutizer application**
 ```shell script
 python manage.py runserver
 ```
