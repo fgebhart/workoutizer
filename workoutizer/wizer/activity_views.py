@@ -3,6 +3,7 @@ import logging
 from django.shortcuts import render
 from django.views.generic import DeleteView
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 
 from .views import MapView
 from .models import Sport, Activity
@@ -29,6 +30,7 @@ def add_activity_view(request):
         if form.is_valid():
             instance = form.save()
             instance.save()
+            messages.success(request, f"Successfully added '{form.cleaned_data['title']}'")
             return HttpResponseRedirect('/')
         else:
             log.warning(f"form invalid: {form.errors}")
@@ -47,6 +49,7 @@ def edit_activity_view(request, activity_id):
         if form.is_valid():
             log.info(f"got valid form: {form.cleaned_data}")
             form.save()
+            messages.success(request, f"Successfully modified '{form.cleaned_data['title']}'")
             return HttpResponseRedirect(f"/activity/{activity_id}")
         else:
             log.warning(f"form invalid: {form.errors}")

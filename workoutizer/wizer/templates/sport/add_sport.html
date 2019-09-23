@@ -8,6 +8,8 @@
 
     <form action="{% url 'add-sport' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
         {% csrf_token %}
+        {% include "lib/form_erros.html" %}
+        {% include "lib/messages.html" %}
         <div class="form-group row">
             <div class="col-sm-2">{{ form.name.label }}</div>
             <div class="col-sm-10">{{ form.name }}</div>

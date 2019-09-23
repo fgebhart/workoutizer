@@ -3,8 +3,9 @@
 {% load static %}
 {% block body %}
     <h3>Your Sports</h3>
-
+    <hr>
     <br>
+    {% include "lib/messages.html" %}
     <p>List of all Sports:</p>
     <table class="table table-hover">
         <thead>
@@ -27,5 +28,5 @@
         {% endfor %}
     </table>
     <br>
-    <a href="/add-sport" class="btn btn-warning"><i class="fas fa-plus"></i>&nbsp;&nbsp;Sport</a>
+    <a href="{% url 'add-sport' %}" class="btn btn-warning"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add new Sport</a>
 {% endblock %}

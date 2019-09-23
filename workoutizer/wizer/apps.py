@@ -19,7 +19,7 @@ sport_naming_map = {
     'Hiking': ['hiking', 'hike', 'wandern', 'walking', 'mountaineering'],
     'Triathlon': ['triathlon', 'tria'],
     'Swimming': ['swimming', 'swim', 'pool'],
-    'Yoga': ['yoga', 'yogi'],
+    'Yoga': ['yoga', 'yogi', 'training'],
 }
 
 

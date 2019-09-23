@@ -1,6 +1,6 @@
 <title>Settings - Workoutizer</title>
 
-{% extends 'base.html' %}
+{% extends 'lib/base.html' %}
 {% load static %}
 {% block body %}
     <h3>Settings</h3>
@@ -9,7 +9,9 @@
     <div class="container">
         <form action="{% url 'settings' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
             {% csrf_token %}
-            <h5><b>General</b></h5>
+            {% include "lib/form_erros.html" %}
+            {% include "lib/messages.html" %}
+            <h5><b>File Importer</b></h5>
             <hr>
             <div class="form-group row">
                 <div class="col-sm-3">{{ form.path_to_trace_dir.label }}</div>
@@ -31,7 +33,7 @@
                 <div class="col-sm-9">{{ form.trace_opacity }}</div>
             </div>
             <br>
-            <h5><b>Maps</b></h5>
+            <h5><b>Plotting</b></h5>
             <hr>
             <div class="form-group row">
                 <div class="col-sm-3">{{ form.plotting_style.label }}</div>

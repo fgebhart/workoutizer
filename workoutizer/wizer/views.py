@@ -6,6 +6,7 @@ import webcolors
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.views.generic import View
+from django.contrib import messages
 
 from .models import Sport, Activity, Settings
 from .forms import SettingsForm
@@ -57,10 +58,15 @@ class PlotView:
         today = datetime.datetime.today()
         start_day = today - datetime.timedelta(days=self.number_of_days)
         if sport_id:
-            activities = Activity.objects.filter(date__range=[start_day, today], sport=sport_id).order_by("-date")
+            activities = Activity.objects.filter(date__range=[start_day, today], sport=sport_id).exclude(
+                sport_id=None).order_by("-date")
         else:
-            activities = Activity.objects.filter(date__range=[start_day, today]).order_by("-date")
+            activities = Activity.objects.filter(date__range=[start_day, today]).exclude(sport_id=None).order_by(
+                "-date")
         return activities
+
+    def create_plot(self, activities):
+        pass
 
 
 class DashboardView(View, PlotView):
@@ -86,6 +92,7 @@ def settings_view(request):
         if form.is_valid():
             log.info(f"got valid form: {form.cleaned_data}")
             form.save()
+            messages.success(request, 'Successfully saved Settings!')
             return HttpResponseRedirect('/settings')
         else:
             log.warning(f"form invalid: {form.errors}")
@@ -101,5 +108,5 @@ def set_number_of_days(request, number_of_days):
 
 
 def get_summary_of_activities(activities):
-    return {'count': len(activities), 'duration': int(sum([n.duration for n in activities])/60),
+    return {'count': len(activities), 'duration': int(sum([n.duration for n in activities]) / 60),
             'distance': int(sum([n.distance for n in activities]))}
