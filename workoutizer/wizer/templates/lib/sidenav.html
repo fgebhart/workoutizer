@@ -21,6 +21,14 @@
                         <th scope="row">Total Duration</th>
                         <td>{{ summary.duration }} h</td>
                     </tr>
+                    <tr>
+                        <th scope="row">First Activity</th>
+                        <td>{{ activities.last.date|date:'M d' }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Last Activity</th>
+                        <td>{{ activities.0.date|date:'M d' }}</td>
+                    </tr>
                 </table>
             </div>
         </div>
