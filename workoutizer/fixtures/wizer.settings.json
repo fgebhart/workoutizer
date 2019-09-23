@@ -1,1 +1,1 @@
-[{"model": "wizer.settings", "pk": 1, "fields": {"path_to_trace_dir": "/home/fabian/Documents/Dropbox/my_tracks", "gpx_checker_interval": 61, "number_of_days": 365, "trace_width": 4.0, "trace_opacity": 0.9, "plotting_style": "bar"}}]
+[{"model": "wizer.settings", "pk": 1, "fields": {"path_to_trace_dir": "/path/to/your/tracks", "file_checker_interval": 60, "number_of_days": 90, "trace_width": 4.0, "trace_opacity": 0.9, "plotting_style": "bar"}}]
