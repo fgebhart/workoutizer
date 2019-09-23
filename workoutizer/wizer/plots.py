@@ -91,7 +91,8 @@ def plot_activities(activities, plotting_style="line"):
 def create_plot(activities, plotting_style):
     try:
         script, div = components(plot_activities(activities=activities, plotting_style=plotting_style))
-    except AttributeError and TypeError as e:
-        log.error(f"Error rendering plot. Check if activity data is correct: {e}", exc_info=True)
-        script = div = "Error rendering Plot"
+    except AttributeError and TypeError and ValueError as e:
+        log.warning(f"Could not render plot. Check if activity data is correct: {e}", exc_info=True)
+        script = ""
+        div = "Could not render plot - no activity data found."
     return script, div

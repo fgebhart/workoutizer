@@ -5,8 +5,6 @@
 <script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.2.0.min.js"></script>
 <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.2.0.min.js"></script>
 
-{{ script | safe }}
-
 <div class="row">
     <div class="col-sm-8">
         <p>Overview of all your {{ sport.name }} activities:</p>
@@ -37,4 +35,7 @@
         </div>
     </div>
 </div>
-{{ div | safe }}
+{{ script | safe }}
+{% if div %}
+    {{ div | safe }}
+{% endif %}
