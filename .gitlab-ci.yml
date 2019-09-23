@@ -25,4 +25,4 @@ django:
     - python3 workoutizer/manage.py check
     - python3 workoutizer/manage.py makemigrations
     - python3 workoutizer/manage.py migrate
-#    - python3 workoutizer/manage.py loaddata inital_data.json
+    - python3 workoutizer/manage.py loaddata wizer.settings.json
