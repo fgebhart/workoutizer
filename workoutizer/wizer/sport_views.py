@@ -28,7 +28,7 @@ class SportsView(MapView, PlotView):
 
     def get(self, request, sports_name_slug):
         sport_id = Sport.objects.get(slug=sports_name_slug).id
-        activities = self.get_activities(request=request, sport_id=sport_id)
+        activities = self.get_activities(sport_id=sport_id)
         log.debug(f"got sports name: {sports_name_slug}")
         log.debug(f"request in sports view: {request.user}")
         log.debug(f"got activities: {activities}")

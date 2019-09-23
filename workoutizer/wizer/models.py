@@ -62,7 +62,6 @@ class Settings(models.Model):
     days_choices = [(99999, 'all'), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10), (5, 5)]
     plotting_choices = [('bar', 'stacked bar chart'), ('line', 'multiline')]
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=settings.AUTH_USER_MODEL)
     path_to_trace_dir = models.CharField(max_length=120, verbose_name="Path to GPX Files Directory:")
     gpx_checker_interval = models.IntegerField(default=60, verbose_name="GPX File Checker Time Interval:")
     number_of_days = models.IntegerField(choices=days_choices, default=30)

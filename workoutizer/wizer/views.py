@@ -23,8 +23,7 @@ class MapView(View):
 
     def get(self, request, list_of_activities: list):
         log.debug(f"got list_of_activity_ids: {list_of_activities}")
-        log.debug(f"user: {request.user.id}")
-        self.settings = Settings.objects.get(user_id=request.user.id)
+        self.settings = Settings.objects.get(pk=1)
         self.number_of_days = self.settings.number_of_days
         self.days_choices = Settings.days_choices
         traces = []
@@ -48,13 +47,13 @@ class PlotView:
     days_choices = None
     settings = None
 
-    def get_days_config(self, request):
-        self.settings = Settings.objects.get(user_id=request.user.id)
+    def get_days_config(self):
+        self.settings = Settings.objects.get(pk=1)
         self.number_of_days = self.settings.number_of_days
         self.days_choices = Settings.days_choices
 
-    def get_activities(self, request, sport_id=None):
-        self.get_days_config(request)
+    def get_activities(self, sport_id=None):
+        self.get_days_config()
         today = datetime.datetime.today()
         start_day = today - datetime.timedelta(days=self.number_of_days)
         if sport_id:
@@ -75,7 +74,7 @@ class DashboardView(View, PlotView):
 
     def get(self, request):
         self.sports = Sport.objects.all().order_by('name')
-        activities = self.get_activities(request=request)
+        activities = self.get_activities()
         summary = get_summary_of_activities(activities=activities)
         script, div = create_plot(activities=activities, plotting_style=self.settings.plotting_style)
         return render(request, self.template_name,
@@ -85,8 +84,7 @@ class DashboardView(View, PlotView):
 
 def settings_view(request):
     sports = Sport.objects.all().order_by('name')
-    user_id = request.user.id
-    settings = Settings.objects.get(user_id=user_id)
+    settings = Settings.objects.get(pk=1)
     form = SettingsForm(request.POST or None, instance=settings)
     if request.method == 'POST':
         if form.is_valid():
@@ -100,7 +98,7 @@ def settings_view(request):
 
 
 def set_number_of_days(request, number_of_days):
-    n = Settings.objects.get(user_id=request.user)
+    n = Settings.objects.get(pk=1)
     n.number_of_days = number_of_days
     log.debug(f"number of days: {number_of_days}")
     n.save()
