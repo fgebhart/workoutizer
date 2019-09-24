@@ -32,11 +32,8 @@ class WizerFileDaemon(AppConfig):
 
     def ready(self):
         from .models import Settings, Traces, Activity, Sport
-        try:
-            p = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
-            p.start()
-        except OperationalError:
-            log.debug(f"cannot run FileImporter. Run django migrations first.")
+        p = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
+        p.start()
 
 
 class FileImporter:
@@ -48,20 +45,23 @@ class FileImporter:
         self.start_listening()
 
     def start_listening(self):
-        while True:
-            settings = self.settings.objects.all().order_by('-id').first()
-            path = settings.path_to_trace_dir
-            interval = settings.file_checker_interval
-            # find activity files in directory
-            trace_files = [os.path.join(root, name)
-                           for root, dirs, files in os.walk(path)
-                           for name in files if name.endswith(tuple(formats))]
-            if os.path.isdir(path):
-                log.debug(f"found {len(trace_files)} files in trace dir: {path}")
-                self.add_objects_to_models(trace_files)
-            else:
-                log.warning(f"path: {path} is not a valid directory!")
-            time.sleep(interval)
+        try:
+            while True:
+                settings = self.settings.objects.all().order_by('-id').first()
+                path = settings.path_to_trace_dir
+                interval = settings.file_checker_interval
+                # find activity files in directory
+                trace_files = [os.path.join(root, name)
+                               for root, dirs, files in os.walk(path)
+                               for name in files if name.endswith(tuple(formats))]
+                if os.path.isdir(path):
+                    log.debug(f"found {len(trace_files)} files in trace dir: {path}")
+                    self.add_objects_to_models(trace_files)
+                else:
+                    log.warning(f"path: {path} is not a valid directory!")
+                time.sleep(interval)
+        except OperationalError and AttributeError:
+            log.debug(f"cannot run FileImporter. Run django migrations first.")
 
     def add_objects_to_models(self, trace_files):
         md5sums_from_db = list(self.traces_model.objects.all())
