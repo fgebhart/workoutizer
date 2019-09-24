@@ -59,8 +59,11 @@ class FileImporter:
             trace_files = [os.path.join(root, name)
                            for root, dirs, files in os.walk(self.path)
                            for name in files if name.endswith(tuple(formats))]
-            log.debug(f"found {len(trace_files)} files in trace dir: {self.path}")
-            self.add_objects_to_models(trace_files)
+            if os.path.isdir(self.path):
+                log.debug(f"found {len(trace_files)} files in trace dir: {self.path}")
+                self.add_objects_to_models(trace_files)
+            else:
+                log.warning(f"path: {self.path} is not a valid directory!")
             time.sleep(self.interval)
 
     def add_objects_to_models(self, trace_files):
