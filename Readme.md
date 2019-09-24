@@ -22,10 +22,9 @@ pip install -r requirements.txt
 **3. prepare django application**
 ```shell script
 cd workoutizer
-python manage.py collectstatic
 python manage.py makemigrations
 python manage.py migrate
-python manage.py loaddata wizer.settings.json
+python manage.py loaddata wizer.json
 ```
 
 **4. run workoutizer application**
