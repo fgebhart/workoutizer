@@ -43,7 +43,9 @@
                                 <td></td>
                             </tr>
                         </table>
-                        {{ activity.description }}
+                        {% if activity.description %}
+                            {{ activity.description }}
+                        {% endif %}
                     </div>
                 </div>
             </div>
