@@ -59,7 +59,7 @@ class Activity(models.Model):
 
 
 class Settings(models.Model):
-    days_choices = [(0, 'all'), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10), (5, 5)]
+    days_choices = [(9999, 'all'), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10), (5, 5)]
     plotting_choices = [('bar', 'stacked bar chart'), ('line', 'multiline')]
 
     path_to_trace_dir = models.CharField(max_length=120, verbose_name="Path to GPX Files Directory:")

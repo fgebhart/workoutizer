@@ -26,7 +26,7 @@ def plot_activities(activities, plotting_style="line"):
 
     number_of_days = Settings.objects.get(pk=1).number_of_days
     today = datetime.datetime.today().date()
-    if number_of_days == 0:
+    if number_of_days == 9999:
         oldest = min(activity_dates) - datetime.timedelta(days=1)
     else:
         oldest = today - datetime.timedelta(days=number_of_days)
