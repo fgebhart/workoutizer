@@ -102,11 +102,11 @@ class FileImporter:
                 a.save()
                 log.info(f"created new {sport_instance} activity: {parser.title}")
             else:  # means file is stored in db already
-                trace_file_paths_model = self.traces_model.objects.get(md5sum=md5sum)
-                if trace_file_paths_model.path_to_file != file:
-                    log.debug(f"path of file: {trace_file_paths_model.path_to_file} has changed, updating to {file}")
-                    trace_file_paths_model.path_to_file = file
-                    trace_file_paths_model.save()
+                trace_file_path_instance = self.traces_model.objects.get(md5sum=md5sum)
+                if trace_file_path_instance.path_to_file != file:
+                    log.debug(f"path of file: {trace_file_path_instance.path_to_file} has changed, updating to {file}")
+                    trace_file_path_instance.path_to_file = file
+                    trace_file_path_instance.save()
 
 
 def map_sport_name(sport_name, map_dict):
