@@ -7,6 +7,7 @@ from django.apps import AppConfig
 from django.db.utils import OperationalError
 from wizer.format.gpx import GPXParser
 from wizer.format.fit import FITParser
+from wizer.format.fit_collector import FitCollector
 from wizer.tools.utils import sanitize, calc_md5
 
 log = logging.getLogger('wizer.apps')
@@ -32,8 +33,10 @@ class WizerFileDaemon(AppConfig):
 
     def ready(self):
         from .models import Settings, Traces, Activity, Sport
-        p = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
-        p.start()
+        fc = Process(target=FitCollector, args=(Settings,))
+        fc.start()
+        fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
+        fi.start()
 
 
 class FileImporter:
@@ -47,7 +50,7 @@ class FileImporter:
     def start_listening(self):
         try:
             while True:
-                settings = self.settings.objects.all().order_by('-id').first()
+                settings = self.settings.objects.get(pk=1)
                 path = settings.path_to_trace_dir
                 interval = settings.file_checker_interval
                 # find activity files in directory

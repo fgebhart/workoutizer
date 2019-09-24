@@ -1,7 +1,6 @@
 import logging
 
 from django.db import models
-from django.conf import settings
 from django.utils import timezone
 
 from wizer.tools.utils import sanitize
@@ -62,7 +61,10 @@ class Settings(models.Model):
     days_choices = [(9999, 'all'), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10), (5, 5)]
     plotting_choices = [('bar', 'stacked bar chart'), ('line', 'multiline')]
 
-    path_to_trace_dir = models.CharField(max_length=120, verbose_name="Path to Traces Directory:")
+    path_to_trace_dir = models.CharField(max_length=120, default="/path/to/your/traces/",
+                                         verbose_name="Path to Traces Directory:")
+    path_to_garmin_device = models.CharField(max_length=120, default="/path/to/your/garmin-device/",
+                                             verbose_name="Path to Garmin Device:")
     file_checker_interval = models.IntegerField(default=60, verbose_name="File Checker Time Interval:")
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     trace_width = models.FloatField(max_length=20, default=3.0, verbose_name="Width of Traces:")
