@@ -26,7 +26,10 @@ def plot_activities(activities, plotting_style="line"):
 
     number_of_days = Settings.objects.get(pk=1).number_of_days
     today = datetime.datetime.today().date()
-    oldest = today - datetime.timedelta(days=number_of_days)
+    if number_of_days == 0:
+        oldest = min(activity_dates) - datetime.timedelta(days=1)
+    else:
+        oldest = today - datetime.timedelta(days=number_of_days)
 
     while oldest <= today:
         dates.append(oldest)
@@ -83,7 +86,6 @@ def plot_activities(activities, plotting_style="line"):
                      legend=[value(x) for x in sports])
         p.add_tools(HoverTool(tooltips="$name: @$name min",))
 
-    log.debug(f"dates: {dates}")
     p.legend.label_text_font = "Ubuntu"
     p.legend.location = "top_left"
     p.xaxis[0].ticker.desired_num_ticks = 12

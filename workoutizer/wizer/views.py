@@ -64,9 +64,6 @@ class PlotView:
                 "-date")
         return activities
 
-    def create_plot(self, activities):
-        pass
-
 
 class DashboardView(View, PlotView):
     template_name = "dashboard.html"
