@@ -1,4 +1,5 @@
 import logging
+import datetime
 
 from django.db import models
 from django.utils import timezone
@@ -46,12 +47,13 @@ class Traces(models.Model):
 class Activity(models.Model):
 
     def __str__(self):
-        return f"{self.title} ({self.sport})"
+        return f"{self.name} ({self.sport})"
 
-    title = models.CharField(max_length=50, verbose_name="Activity Name:")
+    name = models.CharField(max_length=50, verbose_name="Activity Name:")
     sport = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True, verbose_name="Sport:")
     date = models.DateField(blank=False, default=timezone.now, verbose_name="Date:")
-    duration = models.IntegerField(verbose_name="Duration:")
+    duration_old = models.IntegerField(verbose_name="duration-old:")
+    duration = models.DurationField(verbose_name="Duration:", default=datetime.timedelta(minutes=30))
     distance = models.FloatField(blank=True, null=True, verbose_name="Distance:")
     description = models.CharField(max_length=300, blank=True, null=True, verbose_name="Description:")
     trace_file = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=True, null=True)

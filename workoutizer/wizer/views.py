@@ -103,5 +103,9 @@ def set_number_of_days(request, number_of_days):
 
 
 def get_summary_of_activities(activities):
-    return {'count': len(activities), 'duration': int(sum([n.duration for n in activities]) / 60),
+    total_duration = datetime.timedelta(minutes=0)
+    for a in activities:
+        total_duration += a.duration
+    log.debug(f"total duration: {total_duration}")
+    return {'count': len(activities), 'duration': total_duration,
             'distance': int(sum([n.distance for n in activities]))}

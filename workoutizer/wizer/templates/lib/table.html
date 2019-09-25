@@ -13,7 +13,7 @@
     {% for a in activities %}
         <tr>
             <td>{{ a.date }}</td>
-            <td><a href="/activity/{{ a.id }}">{{ a.title }}</a></td>
+            <td><a href="/activity/{{ a.id }}">{{ a.name }}</a></td>
             <td>
                 {% if a.trace_file.coordinates|length > 2 %}
                     <i class="fas fa-map-marked-alt"></i>
