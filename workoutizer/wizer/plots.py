@@ -20,6 +20,8 @@ def plot_activities(activities, plotting_style="line"):
     activity_dates = list()
     colors = list()
 
+    activities = activities.exclude(sport_id=None)
+
     for a in activities:
         activity_dates.append(a.date)
         sports.append(a.sport.name)

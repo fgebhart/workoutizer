@@ -52,7 +52,6 @@ class Activity(models.Model):
     name = models.CharField(max_length=50, verbose_name="Activity Name:")
     sport = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True, verbose_name="Sport:")
     date = models.DateField(blank=False, default=timezone.now, verbose_name="Date:")
-    duration_old = models.IntegerField(verbose_name="duration-old:")
     duration = models.DurationField(verbose_name="Duration:", default=datetime.timedelta(minutes=30))
     distance = models.FloatField(blank=True, null=True, verbose_name="Distance:")
     description = models.CharField(max_length=300, blank=True, null=True, verbose_name="Description:")

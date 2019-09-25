@@ -8,10 +8,6 @@ def sanitize(text):
     return str(text).lower().replace(" ", "-")
 
 
-def convert_timedelta_to_hours(td):
-    return int(td.total_seconds() / 60)
-
-
 def calc_md5(file):
     hash_md5 = hashlib.md5()
     with open(file, "rb") as f:

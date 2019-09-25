@@ -16,7 +16,7 @@ class FITParser(Parser):
         self.fit = None
 
     def parse_metadata(self):
-        self.title = self.path.split(".fit")[0].split("/")[-1]
+        self.name = self.path.split(".fit")[0].split("/")[-1]
         self.fit = FitFile(self.path)
         self.get_sport_duration_distance()
         # log.debug(f"fit file: {self.fit.messages}")
@@ -38,7 +38,7 @@ class FITParser(Parser):
                     date = v
         self.distance = round(float(distance)/1000, 2)
         self.sport = sport
-        self.duration = round(float(duration)/60, 2)
+        self.duration = duration
         self.date = date
         log.debug(f"found sport: {self.sport}")
         log.debug(f"found distance: {self.distance} km")

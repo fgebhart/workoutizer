@@ -24,9 +24,14 @@
                 {% endif %}
             </td>
             <td>
-                <a href="/sport/{{ a.sport.slug }}" data-toggle="tooltip" data-placement="bottom" title="{{ a.sport.name }}" style="color: {{ a.sport.color }};">
-                    <i class="fas fa-{{ a.sport.icon }}"></i>
-                </a>
+                {% if a.sport %}
+                    <a href="/sport/{{ a.sport.slug }}" data-toggle="tooltip" data-placement="bottom"
+                       title="{{ a.sport.name }}" style="color: {{ a.sport.color }};">
+                        <i class="fas fa-{{ a.sport.icon }}"></i>
+                    </a>
+                {% else %}
+                    ?
+                {% endif %}
             </td>
             <td>{{ a.duration|table_duration }}</td>
             <td>{{ a.distance }}</td>

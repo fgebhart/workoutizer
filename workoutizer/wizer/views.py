@@ -28,13 +28,18 @@ class MapView(View):
         self.days_choices = Settings.days_choices
         traces = []
         color = '#ffa500'
+        sport = None
         for a in list_of_activities:
             if a.trace_file:
                 coordinates = json.loads(a.trace_file.coordinates)
-                color = webcolors.name_to_hex(a.sport.color)  # NOTE: last activity color will be applied
+                try:
+                    color = webcolors.name_to_hex(a.sport.color)  # NOTE: last activity color will be applied
+                    sport = a.sport.name
+                except AttributeError as e:
+                    log.warning(f"could not find color of sport: {sport}, using default color instead: {e}")
                 if coordinates:
                     traces.append(GeoTrace(
-                        sport=a.sport.name,
+                        sport=sport,
                         color=color,
                         coordinates=coordinates))
                     log.debug(f"stored coordinates of: '{a}' in traces list")
@@ -57,11 +62,9 @@ class PlotView:
         today = datetime.datetime.today()
         start_day = today - datetime.timedelta(days=self.number_of_days)
         if sport_id:
-            activities = Activity.objects.filter(date__range=[start_day, today], sport=sport_id).exclude(
-                sport_id=None).order_by("-date")
+            activities = Activity.objects.filter(date__range=[start_day, today], sport=sport_id).order_by("-date")
         else:
-            activities = Activity.objects.filter(date__range=[start_day, today]).exclude(sport_id=None).order_by(
-                "-date")
+            activities = Activity.objects.filter(date__range=[start_day, today]).order_by("-date")
         return activities
 
 
@@ -74,6 +77,8 @@ class DashboardView(View, PlotView):
         activities = self.get_activities()
         summary = get_summary_of_activities(activities=activities)
         script, div = create_plot(activities=activities, plotting_style=self.settings.plotting_style)
+        for a in activities:
+            print(f"{a.name}")
         return render(request, self.template_name,
                       {'sports': self.sports, 'activities': activities, 'script': script, 'div': div,
                        'days': self.number_of_days, 'choices': self.days_choices, 'summary': summary})
