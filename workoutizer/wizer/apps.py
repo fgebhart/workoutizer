@@ -33,8 +33,6 @@ class WizerFileDaemon(AppConfig):
 
     def ready(self):
         from .models import Settings, Traces, Activity, Sport
-        fc = Process(target=FitCollector, args=(Settings,))
-        fc.start()
         fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
         fi.start()
 
@@ -48,8 +46,10 @@ class FileImporter:
         self.start_listening()
 
     def start_listening(self):
+        fit_collector = FitCollector(settings_model=self.settings)
         try:
             while True:
+                fit_collector.look_for_fit_files()
                 settings = self.settings.objects.get(pk=1)
                 path = settings.path_to_trace_dir
                 interval = settings.file_checker_interval
