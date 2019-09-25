@@ -39,7 +39,7 @@ class FITParser(Parser):
                     date = v
         self.distance = round(float(distance)/1000, 2)
         self.sport = sport
-        self.duration = datetime.timedelta(seconds=duration)
+        self.duration = datetime.timedelta(seconds=int(duration))
         self.date = date
         log.debug(f"found sport: {self.sport}")
         log.debug(f"found distance: {self.distance} km")
