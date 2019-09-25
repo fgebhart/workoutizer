@@ -77,8 +77,6 @@ class DashboardView(View, PlotView):
         activities = self.get_activities()
         summary = get_summary_of_activities(activities=activities)
         script, div = create_plot(activities=activities, plotting_style=self.settings.plotting_style)
-        for a in activities:
-            print(f"{a.name}")
         return render(request, self.template_name,
                       {'sports': self.sports, 'activities': activities, 'script': script, 'div': div,
                        'days': self.number_of_days, 'choices': self.days_choices, 'summary': summary})
