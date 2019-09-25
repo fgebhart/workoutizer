@@ -1,6 +1,6 @@
 import logging
 import json
-
+import datetime
 
 log = logging.getLogger('wizer.migrate_db')
 
@@ -26,3 +26,12 @@ def migrate_traces(source_model, target_model):
         )
         target.save()
 
+
+def migrate_duration(activities):
+    for activity in activities:
+        timedelta = datetime.timedelta(minutes=activity.duration_old)
+        log.debug(f"timedelta: {timedelta}")
+        activity.duration = timedelta
+        activity.save()
+        log.debug(
+            f"modified activity: {activity.pk}, duration_old: {activity.duration_old}, duration: {activity.duration}")

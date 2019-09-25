@@ -30,7 +30,7 @@ def add_activity_view(request):
         if form.is_valid():
             instance = form.save()
             instance.save()
-            messages.success(request, f"Successfully added '{form.cleaned_data['title']}'")
+            messages.success(request, f"Successfully added '{form.cleaned_data['name']}'")
             return HttpResponseRedirect('/')
         else:
             log.warning(f"form invalid: {form.errors}")
@@ -49,7 +49,7 @@ def edit_activity_view(request, activity_id):
         if form.is_valid():
             log.info(f"got valid form: {form.cleaned_data}")
             form.save()
-            messages.success(request, f"Successfully modified '{form.cleaned_data['title']}'")
+            messages.success(request, f"Successfully modified '{form.cleaned_data['name']}'")
             return HttpResponseRedirect(f"/activity/{activity_id}")
         else:
             log.warning(f"form invalid: {form.errors}")

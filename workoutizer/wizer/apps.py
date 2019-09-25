@@ -7,13 +7,14 @@ from django.apps import AppConfig
 from django.db.utils import OperationalError
 from wizer.format.gpx import GPXParser
 from wizer.format.fit import FITParser
+from wizer.format.fit_collector import FitCollector
 from wizer.tools.utils import sanitize, calc_md5
 
 log = logging.getLogger('wizer.apps')
 
 sport_naming_map = {
     'Jogging': ['jogging', 'running'],
-    'Cycling': ['cycle', 'cycling'],
+    'Cycling': ['cycle', 'cycling', 'biking'],
     'Mountainbiking': ['mountainbiking', 'mountainbike', 'mountain biking', 'mountain bike', 'mountain-biking',
                        'mountain-bike', 'mtbing', 'mtb', 'cycling_mountain'],
     'Hiking': ['hiking', 'hike', 'wandern', 'walking', 'mountaineering'],
@@ -32,8 +33,8 @@ class WizerFileDaemon(AppConfig):
 
     def ready(self):
         from .models import Settings, Traces, Activity, Sport
-        p = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
-        p.start()
+        fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
+        fi.start()
 
 
 class FileImporter:
@@ -46,8 +47,10 @@ class FileImporter:
 
     def start_listening(self):
         try:
+            fit_collector = FitCollector(settings_model=self.settings)
             while True:
-                settings = self.settings.objects.all().order_by('-id').first()
+                fit_collector.look_for_fit_files()
+                settings = self.settings.objects.get(pk=1)
                 path = settings.path_to_trace_dir
                 interval = settings.file_checker_interval
                 # find activity files in directory
@@ -60,8 +63,8 @@ class FileImporter:
                 else:
                     log.warning(f"path: {path} is not a valid directory!")
                 time.sleep(interval)
-        except OperationalError and AttributeError:
-            log.debug(f"cannot run FileImporter. Run django migrations first.")
+        except OperationalError as e:
+            log.debug(f"cannot run FileImporter. Run django migrations first: {e}")
 
     def add_objects_to_models(self, trace_files):
         md5sums_from_db = list(self.traces_model.objects.all())
@@ -92,7 +95,7 @@ class FileImporter:
                 trace_file_instance = self.traces_model.objects.get(pk=t.pk)
                 sport_instance = self.sport_model.objects.filter(slug=sanitize(mapped_sport)).first()
                 a = self.activities_model(
-                    title=parser.title,
+                    name=parser.name,
                     sport=sport_instance,
                     date=parser.date,
                     duration=parser.duration,
@@ -100,7 +103,7 @@ class FileImporter:
                     trace_file=trace_file_instance,
                 )
                 a.save()
-                log.info(f"created new {sport_instance} activity: {parser.title}")
+                log.info(f"created new {sport_instance} activity: {parser.name}")
             else:  # means file is stored in db already
                 trace_file_path_instance = self.traces_model.objects.get(md5sum=md5sum)
                 if trace_file_path_instance.path_to_file != file:

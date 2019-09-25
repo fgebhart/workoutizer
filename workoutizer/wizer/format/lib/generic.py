@@ -2,7 +2,7 @@
 class Parser:
     def __init__(self, path_to_file):
         self.path = path_to_file
-        self.title = None
+        self.name = None
         self.sport = None
         self.duration = None
         self.distance = None

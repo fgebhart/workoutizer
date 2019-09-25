@@ -4,7 +4,6 @@ import gpxpy
 import gpxpy.gpx
 
 from wizer.gis.gis import calc_distance_of_points
-from wizer.tools.utils import convert_timedelta_to_hours
 from .lib.generic import Parser
 
 log = logging.getLogger('wizer.gpx')
@@ -17,7 +16,7 @@ class GPXParser(Parser):
 
     def parse_metadata(self):
         gpx_file = open(self.path, 'r')
-        self.title = self.path.split(".gpx")[0].split("/")[-1]
+        self.name = self.path.split(".gpx")[0].split("/")[-1]
         self.gpx = gpxpy.parse(gpx_file)
         self.get_sport_from_gpx_file()
         self.get_duration_from_gpx_file()
@@ -36,7 +35,7 @@ class GPXParser(Parser):
         start = all_points_time[0]
         self.date = start
         end = all_points_time[-1]
-        self.duration = convert_timedelta_to_hours(end - start)
+        self.duration = end - start
         log.debug(f"found duration: {self.duration}")
 
     def parse_coordinates(self):

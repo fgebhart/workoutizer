@@ -20,6 +20,8 @@ def plot_activities(activities, plotting_style="line"):
     activity_dates = list()
     colors = list()
 
+    activities = activities.exclude(sport_id=None)
+
     for a in activities:
         activity_dates.append(a.date)
         sports.append(a.sport.name)
@@ -44,7 +46,7 @@ def plot_activities(activities, plotting_style="line"):
                 durations.append(0)
         data.append(durations)
 
-    df = pd.DataFrame(data=data, columns=sports, index=dates)
+    df = pd.DataFrame(data=data, columns=sports, index=dates, dtype='timedelta64[ns]')
     df = df.groupby(df.columns, axis=1).sum()
 
     for sport in df.columns:
@@ -53,7 +55,7 @@ def plot_activities(activities, plotting_style="line"):
                 colors.append(a.sport.color)
                 break
 
-    p = figure(x_axis_type='datetime', plot_height=settings.PLOT_HEIGHT, sizing_mode='stretch_width',
+    p = figure(x_axis_type='datetime', y_axis_type='datetime', plot_height=settings.PLOT_HEIGHT, sizing_mode='stretch_width',
                tools="pan,wheel_zoom,box_zoom,reset,save")
 
     if plotting_style == "line":

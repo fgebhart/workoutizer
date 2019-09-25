@@ -1,7 +1,7 @@
 import logging
+import datetime
 
 from django.db import models
-from django.conf import settings
 from django.utils import timezone
 
 from wizer.tools.utils import sanitize
@@ -47,12 +47,12 @@ class Traces(models.Model):
 class Activity(models.Model):
 
     def __str__(self):
-        return f"{self.title} ({self.sport})"
+        return f"{self.name} ({self.sport})"
 
-    title = models.CharField(max_length=50, verbose_name="Activity Name:")
+    name = models.CharField(max_length=50, verbose_name="Activity Name:", default="unknown")
     sport = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True, verbose_name="Sport:")
     date = models.DateField(blank=False, default=timezone.now, verbose_name="Date:")
-    duration = models.IntegerField(verbose_name="Duration:")
+    duration = models.DurationField(verbose_name="Duration:", default=datetime.timedelta(minutes=30))
     distance = models.FloatField(blank=True, null=True, verbose_name="Distance:")
     description = models.CharField(max_length=300, blank=True, null=True, verbose_name="Description:")
     trace_file = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=True, null=True)
@@ -62,7 +62,10 @@ class Settings(models.Model):
     days_choices = [(9999, 'all'), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10), (5, 5)]
     plotting_choices = [('bar', 'stacked bar chart'), ('line', 'multiline')]
 
-    path_to_trace_dir = models.CharField(max_length=120, verbose_name="Path to Traces Directory:")
+    path_to_trace_dir = models.CharField(max_length=120, default="/path/to/your/traces/",
+                                         verbose_name="Path to Traces Directory:")
+    path_to_garmin_device = models.CharField(max_length=120, default="/path/to/your/garmin-device/",
+                                             verbose_name="Path to Garmin Device:")
     file_checker_interval = models.IntegerField(default=60, verbose_name="File Checker Time Interval:")
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     trace_width = models.FloatField(max_length=20, default=3.0, verbose_name="Width of Traces:")
