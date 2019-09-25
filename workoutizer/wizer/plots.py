@@ -42,8 +42,6 @@ def plot_activities(activities, plotting_style="line"):
                 durations.append(a.duration)
             else:
                 durations.append(0)
-        log.debug(f"durations: {durations}")
-
         data.append(durations)
 
     df = pd.DataFrame(data=data, columns=sports, index=dates, dtype='timedelta64[ns]')
