@@ -1,10 +1,11 @@
 {% extends 'lib/base.html' %}
+{% load filters %}
 {% load static %}
 {% block body %}
 
     <title>{{ activity.name }} - Workoutizer</title>
     <h3 class="float-left">{{ activity.name }}&nbsp;&nbsp; <a href="/sport/{{ activity.sport.slug }}"
-                                                               style="color: {{ activity.sport.color }};">
+                                                              style="color: {{ activity.sport.color }};">
         <i class="fas fa-{{ activity.sport.icon }}"></i>
     </a></h3>
     <a class="float-right btn btn-warning" href="{{ activity.id }}/edit"><i class="fas fa-pen"></i>&nbsp;&nbsp;Edit
@@ -24,12 +25,14 @@
                     <div class="card-body">
                         <table class="table">
                             <tr>
-                                <th scope="row">Distance</th>
+                                <th scope="row"><i class="fas fa-road" data-toggle="tooltip" data-placement="bottom"
+                                                   title="Distance"></i></th>
                                 <td>{{ activity.distance }}</td>
                             </tr>
                             <tr>
-                                <th scope="row">Duration</th>
-                                <td>{{ activity.duration }}</td>
+                                <th scope="row"><i class="fas fa-history" data-toggle="tooltip" data-placement="bottom"
+                                                   title="Duration"></i></th>
+                                <td>{{ activity.duration|table_duration }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">Sport</th>
@@ -38,10 +41,12 @@
                                     <i class="fas fa-{{ activity.sport.icon }}"></i>
                                 </a></td>
                             </tr>
-                            <tr>
-                                <th scope="row">Description</th>
-                                <td></td>
-                            </tr>
+                            {% if activity.description %}
+                                <tr>
+                                    <th scope="row">Description</th>
+                                    <td></td>
+                                </tr>
+                            {% endif %}
                         </table>
                         {% if activity.description %}
                             {{ activity.description }}

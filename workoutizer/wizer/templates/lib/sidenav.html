@@ -12,25 +12,28 @@
                 <p>Sum of all selected Activities:</p>
                 <table class="table">
                     <tr>
-                        <th scope="row">Activities</th>
+                        <th scope="row"><i class="fas fa-hashtag" data-toggle="tooltip" data-placement="bottom"
+                                           title="Number of Activities"></i></th>
                         <td>{{ summary.count }}</td>
                     </tr>
                     <tr>
-                        <th scope="row">Total Distance</th>
+                        <th scope="row"><i class="fas fa-road" data-toggle="tooltip" data-placement="bottom"
+                                           title="Total Distance"></i></th>
                         <td>{{ summary.distance }} km</td>
                     </tr>
                     <tr>
-                        <th scope="row">Total Duration</th>
+                        <th scope="row"><i class="fas fa-history" data-toggle="tooltip" data-placement="bottom"
+                                           title="Total Duration"></i></th>
                         <td>{{ summary.duration|duration }}</td>
                     </tr>
-                    <tr>
-                        <th scope="row">First Activity</th>
-                        <td>{{ activities.last.date|date:'M d' }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Last Activity</th>
-                        <td>{{ activities.0.date|date:'M d' }}</td>
-                    </tr>
+                    {#                    <tr>#}
+                    {#                        <th scope="row">First Activity</th>#}
+                    {#                        <td>{{ activities.last.date|date:'M d' }}</td>#}
+                    {#                    </tr>#}
+                    {#                    <tr>#}
+                    {#                        <th scope="row">Last Activity</th>#}
+                    {#                        <td>{{ activities.0.date|date:'M d' }}</td>#}
+                    {#                    </tr>#}
                 </table>
             </div>
         </div>
