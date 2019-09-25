@@ -49,7 +49,7 @@ class Activity(models.Model):
     def __str__(self):
         return f"{self.name} ({self.sport})"
 
-    name = models.CharField(max_length=50, verbose_name="Activity Name:")
+    name = models.CharField(max_length=50, verbose_name="Activity Name:", default="unknown")
     sport = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True, verbose_name="Sport:")
     date = models.DateField(blank=False, default=timezone.now, verbose_name="Date:")
     duration = models.DurationField(verbose_name="Duration:", default=datetime.timedelta(minutes=30))
