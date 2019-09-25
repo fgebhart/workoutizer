@@ -61,6 +61,7 @@ class Activity(models.Model):
 class Settings(models.Model):
     days_choices = [(9999, 'all'), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10), (5, 5)]
     plotting_choices = [('bar', 'stacked bar chart'), ('line', 'multiline')]
+    map_type_choices = [('osm', 'Open Street Map'), ('opentopomap', 'Open Topo Map')]
 
     path_to_trace_dir = models.CharField(max_length=120, default="/path/to/your/traces/",
                                          verbose_name="Path to Traces Directory:")
@@ -68,6 +69,8 @@ class Settings(models.Model):
                                              verbose_name="Path to Garmin Device:")
     file_checker_interval = models.IntegerField(default=60, verbose_name="File Checker Time Interval:")
     number_of_days = models.IntegerField(choices=days_choices, default=30)
+    map_type = models.CharField(choices=map_type_choices, default='opentopomap', max_length=120,
+                                verbose_name="Map Type:")
     trace_width = models.FloatField(max_length=20, default=3.0, verbose_name="Width of Traces:")
     trace_opacity = models.FloatField(max_length=20, default=0.7, verbose_name="Opacity of Traces:")
     plotting_style = models.CharField(choices=plotting_choices, default='line', max_length=120,

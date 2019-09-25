@@ -13,7 +13,7 @@
     var myBounds = geoJsonLayer.getBounds();
 
     var map = L.map('mapid').fitBounds(myBounds);
-    L.tileLayer('http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('http://{s}.tile.{{ settings.map_type }}.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
