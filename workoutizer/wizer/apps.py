@@ -46,8 +46,8 @@ class FileImporter:
         self.start_listening()
 
     def start_listening(self):
-        fit_collector = FitCollector(settings_model=self.settings)
         try:
+            fit_collector = FitCollector(settings_model=self.settings)
             while True:
                 fit_collector.look_for_fit_files()
                 settings = self.settings.objects.get(pk=1)
