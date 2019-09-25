@@ -9,13 +9,15 @@ class FitCollector:
     def __init__(self, settings_model):
         self.settings = settings_model
         self.activity_path = "/Primary/GARMIN/Activity/"
-        settings = self.settings.objects.get(pk=1)
-        self.path_to_gvfs = settings.path_to_garmin_device
+        self.settings = self.settings.objects.get(pk=1)
+        self.path_to_gvfs = self.settings.path_to_garmin_device
+        self.target_location = os.path.join(self.settings.path_to_trace_dir, 'garmin')
         log.debug(f"looking for garmin device at: {self.path_to_gvfs}")
-        settings = self.settings.objects.all().order_by('-id').first()
-        self.target_location = os.path.join(settings.path_to_trace_dir, 'garmin')
 
     def look_for_fit_files(self):
+        self.path_to_gvfs = self.settings.path_to_garmin_device
+        self.target_location = os.path.join(self.settings.path_to_trace_dir, 'garmin')
+
         garmin_watch = [os.path.join(root, name) for root, dirs, files in os.walk(self.path_to_gvfs)
                         for name in dirs if name.startswith("mtp:host")]
         if garmin_watch:
