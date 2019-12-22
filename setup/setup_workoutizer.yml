@@ -1,6 +1,6 @@
 ---
 
-- name: setup tubipy`
+- name: setup workoutizer
   hosts: workoutizer
   remote_user: pi
 
@@ -12,6 +12,11 @@
 
   - name: test connection
     ping:
+
+  - name: Set timezone to Europe/Berlin
+    become: yes
+    timezone:
+      name: Europe/Berlin
 
   - name: install workoutizer
     include: "ansible/workoutizer.yml"
