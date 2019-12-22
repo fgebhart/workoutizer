@@ -1,0 +1,70 @@
+---
+
+- name: install workoutizer git repo
+  git:
+    repo: 'https://gitlab.com/fgebhart/workoutizer.git'
+    dest: "{{ path_to_workoutizer }}"
+    clone: yes
+    force: yes
+
+- name: install required apt packages
+  become: yes
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+  vars:
+    packages:
+      - virtualenv
+      - libatlas3-base
+      - libopenjp2-7
+      - libglib2.0-dev
+      - gvfs
+      - gvfs-fuse
+      - gvfs-bin
+      - gvfs-backends
+      - ifuse
+
+- name: copy udev rule for automated mounting
+  become: yes
+  copy:
+    src: config/5-mount.rules
+    dest: /etc/udev/rules.d/5-mount.rules
+
+- name: create venv
+  pip:
+    virtualenv: "/home/pi/wkz"
+    requirements: "{{ path_to_workoutizer }}requirements.txt"
+    virtualenv_python: python3.7
+
+- name: export dropbox token
+  shell: "echo $DROPBOXTOKEN"
+  environment:
+    DROPBOXTOKEN: "{{ dropbox_token }}"
+
+- debug:
+    msg: "dropbox token: {{ dropbox_token }}"
+
+- name: download database from dropbox
+  shell: "/home/pi/wkz/bin/python {{ path_to_workoutizer }}dbx/download_db.py"
+  args:
+    creates: "{{ path_to_workoutizer }}workoutizer/db.sqlite3"
+
+- name: backup database with cron schedule
+  become: yes
+  lineinfile:
+    path: "/etc/crontab"
+    line: "16 17	* * 7	pi	/home/pi/wkz/bin/python {{ path_to_workoutizer }}dbx/upload_db.py"
+
+- name: copy workoutizer systemd service file to pi
+  become: yes
+  copy:
+    src: config/workoutizer.service
+    dest: /etc/systemd/system/workoutizer.service
+
+- name: enable workoutizer systemd service
+  become: yes
+  systemd:
+    enabled: yes
+    name: workoutizer.service
+    state: restarted
+...

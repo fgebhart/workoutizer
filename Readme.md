@@ -31,3 +31,5 @@ python manage.py loaddata wizer.json
 ```shell script
 python manage.py runserver
 ```
+
+If you want to run workoutizer on a Raspberry Pi, see the [Setup section](https://gitlab.com/fgebhart/workoutizer/tree/master/setup).
