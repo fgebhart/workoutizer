@@ -92,6 +92,7 @@ class FileImporter:
                     md5sum=md5sum,
                     coordinates=parser.coordinates,
                     altitude=parser.altitude,
+                    heart_rate=parser.heart_rate,
                 )
                 t.save()
                 trace_file_instance = self.traces_model.objects.get(pk=t.pk)

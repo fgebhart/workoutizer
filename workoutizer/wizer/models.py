@@ -36,6 +36,7 @@ class Traces(models.Model):
     md5sum = models.CharField(max_length=32, unique=True)
     coordinates = models.CharField(max_length=10000000000)
     altitude = models.CharField(max_length=10000000000, null=True, blank=True)
+    heart_rate = models.CharField(max_length=10000000000, null=True, blank=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

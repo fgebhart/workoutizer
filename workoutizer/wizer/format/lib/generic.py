@@ -9,7 +9,7 @@ class Parser:
         self.date = None
         self.coordinates = []
         self.altitude = []
-        self.heart_rate = None
+        self.heart_rate = []
 
         # run parser
         self._parse_metadata()
