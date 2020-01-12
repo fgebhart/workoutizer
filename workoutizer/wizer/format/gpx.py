@@ -14,7 +14,7 @@ class GPXParser(Parser):
         super(GPXParser, self).__init__(path_to_file)
         self.gpx = None
 
-    def parse_metadata(self):
+    def _parse_metadata(self):
         gpx_file = open(self.path, 'r')
         self.name = self.path.split(".gpx")[0].split("/")[-1]
         self.gpx = gpxpy.parse(gpx_file)
@@ -38,7 +38,7 @@ class GPXParser(Parser):
         self.duration = end - start
         log.debug(f"found duration: {self.duration}")
 
-    def parse_coordinates(self):
+    def _parse_coordinates(self):
         for track in self.gpx.tracks:
             for segment in track.segments:
                 for point in segment.points:

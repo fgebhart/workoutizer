@@ -80,6 +80,7 @@ class FileImporter:
                 elif file.endswith(".fit"):
                     log.debug(f"parsing FIT file")
                     parser = FITParser(path_to_file=file)
+                    parser.parse_heart_rate()
                 else:
                     log.warning(f"file type: {file} unknown")
                     parser = None
