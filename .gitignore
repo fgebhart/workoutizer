@@ -1,5 +1,4 @@
 __pycache__/
 workoutizer/static/
-workoutizer/wizer/migrations/
 .pytest_cache/
 *.sqlite3
