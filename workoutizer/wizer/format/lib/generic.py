@@ -9,13 +9,14 @@ class Parser:
         self.date = None
         self.coordinates = []
         self.altitude = []
+        self.heart_rate = None
 
         # run parser
-        self.parse_metadata()
-        self.parse_coordinates()
+        self._parse_metadata()
+        self._parse_coordinates()
 
-    def parse_metadata(self):
+    def _parse_metadata(self):
         raise NotImplementedError
 
-    def parse_coordinates(self):
+    def _parse_coordinates(self):
         raise NotImplementedError

@@ -13,16 +13,16 @@ ccp = 11930464.71111111
 
 class FITParser(Parser):
     def __init__(self, path_to_file):
-        super(FITParser, self).__init__(path_to_file)
         self.fit = None
+        super(FITParser, self).__init__(path_to_file)
 
-    def parse_metadata(self):
+    def _parse_metadata(self):
         self.name = self.path.split(".fit")[0].split("/")[-1]
         self.fit = FitFile(self.path)
-        self.get_sport_duration_distance()
+        self._get_sport_duration_distance()
         # log.debug(f"fit file: {self.fit.messages}")
 
-    def get_sport_duration_distance(self):
+    def _get_sport_duration_distance(self):
         sport = None
         distance = None
         duration = None
@@ -46,7 +46,7 @@ class FITParser(Parser):
         log.debug(f"found duration: {self.duration} min")
         log.debug(f"found date: {self.date}")
 
-    def parse_coordinates(self):
+    def _parse_coordinates(self):
         coordinates = []
         lon = None
         lat = None
@@ -65,3 +65,11 @@ class FITParser(Parser):
         # NOTE: no GPS signal yet...
         log.debug(f"found number of coordinates: {len(self.coordinates)}")
         log.debug(f"found number of altitudes: {len(self.altitude)}")
+
+    def parse_heart_rate(self):
+        heart_rate = []
+        for record in self.fit.get_messages('record'):
+            for record_data in record:
+                if record_data.name == "heart_rate":
+                    heart_rate.append(record_data.value)
+        self.heart_rate = heart_rate
