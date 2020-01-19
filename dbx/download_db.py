@@ -1,9 +1,19 @@
 import os
 from pathlib import Path
+import configparser
+
 import dropbox
 
 
-dbx = dropbox.Dropbox(os.environ['DROPBOXTOKEN'])
+cwd = Path(os.path.abspath(__file__))
+parent = cwd.parent.parent
+
+config = configparser.ConfigParser()
+config.read(os.path.join(parent, 'config.ini'))
+
+dropbox_token = config.get('DROPBOX', 'dropbox_token')
+dbx = dropbox.Dropbox(dropbox_token)
+
 file = "workoutizer/db.sqlite3"
 
 

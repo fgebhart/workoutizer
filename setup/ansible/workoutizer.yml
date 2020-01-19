@@ -23,6 +23,7 @@
       - gvfs-bin
       - gvfs-backends
       - ifuse
+  register: installed
 
 - name: install workoutizer git repo
   git:
@@ -43,28 +44,17 @@
     requirements: "{{ path_to_workoutizer }}requirements.txt"
     virtualenv_python: python3.7
 
-- name: export dropbox token
-  shell: "export DROPBOXTOKEN={{ dropbox_token }}"
-  environment:
-    DROPBOXTOKEN: "{{ dropbox_token }}"
-
-- name: export dropbox token by including in /etc/environment
-  become: yes
+- name: insert dropbox token into remote config file
   lineinfile:
-    path: "/etc/environment"
-    line: "DROPBOXTOKEN='{{ dropbox_token }}'"
-  register: envvar
-
-- name: export dropbox token for user pi by including in /home/pi/.profile
-  lineinfile:
-    path: "/home/pi/.profile"
-    line: "export DROPBOXTOKEN='{{ dropbox_token }}'"
+    path: "{{ path_to_workoutizer }}/setup/config.ini"
+    regex: "^dropbox_token="
+    line: "dropbox_token    = {{ dropbox_token }}"
 
 - name: reboot to apply changes
   become: yes
   reboot:
     reboot_timeout: 80
-  when: envvar.changed
+  when: installed.changed
 
 - name: download database from dropbox
   shell: "/home/pi/wkz/bin/python {{ path_to_workoutizer }}dbx/download_db.py"
