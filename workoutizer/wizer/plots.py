@@ -103,3 +103,17 @@ def create_plot(activities, plotting_style):
         script = ""
         div = "Could not render plot - no activity data found."
     return script, div
+
+
+def plot_pie_chart(activities):
+    log.debug(f"plot pie chart got activities: {activities}")
+    activities_sport = {}
+    for activity in activities:
+        activities_sport[activity.sport] = 0
+    for activity in activities:
+        if activity.sport in activities_sport:
+            activities_sport[activity.sport] += 1
+    log.debug(f"activity sports: {activities_sport}")
+    script_pc = 1
+    div_pc = 2
+    return script_pc, div_pc
