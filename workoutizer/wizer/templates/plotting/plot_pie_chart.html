@@ -1,0 +1,12 @@
+<link href="https://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.css" rel="stylesheet" type="text/css">
+<link href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.2.0.min.css" rel="stylesheet" type="text/css">
+<link href="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.2.0.min.css" rel="stylesheet" type="text/css">
+<script src="https://cdn.pydata.org/bokeh/release/bokeh-1.2.0.min.js"></script>
+<script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.2.0.min.js"></script>
+<script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.2.0.min.js"></script>
+
+{{ script_pc | safe }}
+
+{% if div_pc %}
+    {{ div_pc | safe }}
+{% endif %}
