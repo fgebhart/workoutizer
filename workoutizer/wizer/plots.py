@@ -7,7 +7,6 @@ from bokeh.core.properties import value
 from bokeh.models import ColumnDataSource, HoverTool
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.palettes import Category20c
 from bokeh.transform import cumsum
 
 from django.conf import settings
@@ -110,27 +109,19 @@ def create_plot(activities, plotting_style):
 
 
 def plot_pie_chart(activities):
-    log.debug(f"plot pie chart got activities: {activities}")
     sport_distribution = {}
+    color_list = []
     for activity in activities:
         sport_distribution[activity.sport.name] = 0
+        if activity.sport.color not in color_list:
+            color_list.append(activity.sport.color)
     for activity in activities:
         if activity.sport.name in sport_distribution:
             sport_distribution[activity.sport.name] += 1
-    log.debug(f"activity sports: {sport_distribution}")
-
-    x = {
-        'United States': 157,
-        'United Kingdom': 93,
-        'Japan': 89,
-        'China': 63,
-        'Germany': 44,
-        'India': 42,
-    }
 
     data = pd.Series(sport_distribution).reset_index(name='value').rename(columns={'index': 'country'})
     data['angle'] = data['value'] / data['value'].sum() * 2 * pi
-    data['color'] = Category20c[len(x)]
+    data['color'] = color_list
 
     p = figure(plot_height=150, toolbar_location=None, sizing_mode='stretch_width',
                tools="hover", tooltips="@country: @value", x_range=(-0.5, 1.0))
