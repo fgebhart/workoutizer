@@ -9,7 +9,7 @@
     <div class="container">
         <form action="{% url 'settings' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
             {% csrf_token %}
-            {% include "lib/form_erros.html" %}
+            {% include "lib/form_errors.html" %}
             {% include "lib/messages.html" %}
             <h5><b>File Importer</b></h5>
             <hr>
