@@ -123,7 +123,7 @@ def plot_pie_chart(activities):
     data['angle'] = data['value'] / data['value'].sum() * 2 * pi
     data['color'] = color_list
 
-    p = figure(plot_height=150, toolbar_location=None, sizing_mode='stretch_width',
+    p = figure(plot_height=120, toolbar_location=None, sizing_mode='stretch_width',
                tools="hover", tooltips="@country: @value", x_range=(-0.5, 1.0))
 
     p.wedge(x=0.3, y=0.5, radius=0.4,
