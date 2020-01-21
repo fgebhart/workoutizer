@@ -7,12 +7,16 @@
             <h3>Dashboard</h3>
             <hr>
             {% include "lib/messages.html" %}
-            {% include 'lib/plot.html' %}
+            {% include 'plotting/plot_activity_history.html' %}
             <br>
             {% include 'lib/table.html' %}
         </div>
         <div class="col-sm-3">
-            {% include 'lib/sidenav.html' %}
+            <div class="sidenav">
+                {% include 'lib/sidenav/summary_facts.html' %}
+                <br>
+                {% include 'lib/sidenav/pie_chart.html' %}
+            </div>
         </div>
     </div>
 {% endblock %}

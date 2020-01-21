@@ -10,7 +10,7 @@ from django.contrib import messages
 
 from .models import Sport, Activity, Settings
 from .forms import SettingsForm
-from .plots import create_plot
+from .plots import create_plot, plot_pie_chart
 from wizer.gis.gis import GeoTrace
 
 log = logging.getLogger('wizer.views')
@@ -77,9 +77,11 @@ class DashboardView(View, PlotView):
         activities = self.get_activities()
         summary = get_summary_of_activities(activities=activities)
         script, div = create_plot(activities=activities, plotting_style=self.settings.plotting_style)
+        script_pc, div_pc = plot_pie_chart(activities=activities)
         return render(request, self.template_name,
                       {'sports': self.sports, 'activities': activities, 'script': script, 'div': div,
-                       'days': self.number_of_days, 'choices': self.days_choices, 'summary': summary})
+                       'days': self.number_of_days, 'choices': self.days_choices, 'summary': summary,
+                       'script_pc': script_pc, 'div_pc': div_pc})
 
 
 def settings_view(request):

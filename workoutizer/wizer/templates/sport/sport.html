@@ -17,7 +17,7 @@
     <div class="row">
         {% if traces %}
             <div class="col-sm-7">
-                {% include 'lib/plot.html' %}
+                {% include 'lib/../plotting/plot_activity_history.html' %}
             </div>
             <div class="col-sm-5">
                 <p>Map of selected {{ sport.name }} activities:
@@ -26,7 +26,7 @@
             </div>
         {% else %}
             <div class="col-sm-12">
-                {% include 'lib/plot.html' %}
+                {% include 'lib/../plotting/plot_activity_history.html' %}
             </div>
         {% endif %}
     </div>
@@ -36,7 +36,7 @@
             {% include 'lib/table.html' %}
         </div>
         <div class="col-sm-3">
-            {% include 'lib/sidenav.html' %}
+            {% include 'lib/sidenav/summary_facts.html' %}
         </div>
     </div>
 {% endblock %}
