@@ -10,6 +10,7 @@ class Parser:
         self.coordinates = []
         self.altitude = []
         self.heart_rate = []
+        self.calories = int
 
         # run parser
         self._parse_metadata()

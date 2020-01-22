@@ -57,6 +57,7 @@ class Activity(models.Model):
     distance = models.FloatField(blank=True, null=True, verbose_name="Distance:", default=0)
     description = models.CharField(max_length=300, blank=True, null=True, verbose_name="Description:")
     trace_file = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=True, null=True)
+    calories = models.IntegerField(null=True, blank=True)
 
 
 class Settings(models.Model):
