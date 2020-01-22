@@ -24,3 +24,8 @@ def test_parse_heart_rate(fit_parser):
     parser.parse_heart_rate()
     assert parser.heart_rate[:3] == [100, 99, 96]
 
+
+def test_parse_calories(fit_parser):
+    parser = fit_parser()
+    parser.parse_calories()
+    assert parser.calories == 432

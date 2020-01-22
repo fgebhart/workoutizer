@@ -28,15 +28,15 @@ class FITParser(Parser):
         duration = None
         date = None
         for record in self.fit.get_messages():
-            for k, v in record.get_values().items():
-                if k == 'sport':
-                    sport = v
-                elif k == "total_distance":
-                    distance = v
-                elif k == "total_elapsed_time":
-                    duration = v
-                elif k == "timestamp":
-                    date = v
+            for label, value in record.get_values().items():
+                if label == 'sport':
+                    sport = value
+                elif label == "total_distance":
+                    distance = value
+                elif label == "total_elapsed_time":
+                    duration = value
+                elif label == "timestamp":
+                    date = value
         self.distance = round(float(distance)/1000, 2)
         self.sport = sport
         self.duration = datetime.timedelta(seconds=int(duration))
@@ -73,3 +73,9 @@ class FITParser(Parser):
                 if record_data.name == "heart_rate":
                     heart_rate.append(record_data.value)
         self.heart_rate = heart_rate
+
+    def parse_calories(self):
+        for record in self.fit.get_messages():
+            for label, value in record.get_values().items():
+                if label == 'total_calories':
+                    self.calories = value

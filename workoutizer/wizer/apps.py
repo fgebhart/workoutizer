@@ -81,6 +81,7 @@ class FileImporter:
                     log.debug(f"parsing FIT file")
                     parser = FITParser(path_to_file=file)
                     parser.parse_heart_rate()
+                    parser.parse_calories()
                 else:
                     log.warning(f"file type: {file} unknown")
                     parser = None
@@ -93,6 +94,7 @@ class FileImporter:
                     coordinates=parser.coordinates,
                     altitude=parser.altitude,
                     heart_rate=parser.heart_rate,
+                    calories=parser.calories,
                 )
                 t.save()
                 trace_file_instance = self.traces_model.objects.get(pk=t.pk)
