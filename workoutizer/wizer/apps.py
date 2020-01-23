@@ -106,6 +106,7 @@ class FileImporter:
                     duration=parser.duration,
                     distance=parser.distance,
                     trace_file=trace_file_instance,
+                    calories=parser.calories,
                 )
                 a.save()
                 log.info(f"created new {sport_instance} activity: {parser.name}")
