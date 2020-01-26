@@ -1,14 +1,15 @@
-version: '1'
+version: '3.3'
 
 services:
   db:
     image: postgres
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python workoutizer/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/workoutizer
     ports:
       - "8000:8000"
     depends_on:
       - db
+    container_name: workoutizer
