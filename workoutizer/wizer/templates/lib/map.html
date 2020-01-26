@@ -12,10 +12,25 @@
     var geoJsonLayer = L.geoJson(myLines);
     var myBounds = geoJsonLayer.getBounds();
 
+
+    var osm = L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png"),
+        topo = L.tileLayer("http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png");
+
+
+    var baseMaps = {
+        "OpenStreetMap": osm,
+        "OpenTopoMap": topo
+    };
+
+    var overlays = {
+        //add any overlays here
+    };
+
     var map = L.map('mapid').fitBounds(myBounds);
-    L.tileLayer('http://{s}.tile.{{ settings.map_type }}.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+
+    topo.addTo(map);
+
+    L.control.layers(baseMaps, overlays, {position: 'topright'}).addTo(map);
 
     {% for line in traces %}
         numPts ={{ line.coordinates }}.length;
