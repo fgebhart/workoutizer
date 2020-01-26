@@ -1,0 +1,23 @@
+version: '3.3'
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    container_name: workoutizer_postgres
+  django:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: python workoutizer/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/workoutizer
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    container_name: workoutizer_django
+    stdin_open: true
+    tty: true

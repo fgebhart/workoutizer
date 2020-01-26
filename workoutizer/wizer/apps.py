@@ -63,6 +63,7 @@ class FileImporter:
                     self.add_objects_to_models(trace_files)
                 else:
                     log.warning(f"path: {path} is not a valid directory!")
+                    break
                 time.sleep(interval)
         except OperationalError as e:
             log.debug(f"cannot run FileImporter. Run django migrations first: {e}")
