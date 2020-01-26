@@ -27,7 +27,6 @@
     };
 
     var map = L.map('mapid').fitBounds(myBounds);
-
     topo.addTo(map);
 
     L.control.layers(baseMaps, overlays, {position: 'topright'}).addTo(map);
