@@ -6,3 +6,4 @@ COPY requirements.txt /workoutizer/
 RUN ls
 RUN pwd
 RUN pip install -r requirements.txt
+CMD ["/bin/bash"]
