@@ -1,5 +1,6 @@
 import time
 import os
+import sys
 import logging
 from multiprocessing import Process
 
@@ -33,9 +34,10 @@ class WizerFileDaemon(AppConfig):
     verbose_name = 'Workoutizer'
 
     def ready(self):
-        from .models import Settings, Traces, Activity, Sport
-        fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
-        fi.start()
+        if 'runserver' in sys.argv:
+            from .models import Settings, Traces, Activity, Sport
+            fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
+            fi.start()
 
 
 class FileImporter:
