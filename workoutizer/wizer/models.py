@@ -34,7 +34,7 @@ class Traces(models.Model):
     path_to_file = models.CharField(max_length=200)
     file_name = models.CharField(max_length=100, editable=False)
     md5sum = models.CharField(max_length=32, unique=True)
-    coordinates = models.CharField(max_length=10000000000)
+    coordinates = models.CharField(max_length=10000000000, null=True, blank=True)
     altitude = models.CharField(max_length=10000000000, null=True, blank=True)
     heart_rate = models.CharField(max_length=10000000000, null=True, blank=True)
 
@@ -72,5 +72,5 @@ class Settings(models.Model):
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     trace_width = models.FloatField(max_length=20, default=3.0, verbose_name="Width of Traces:")
     trace_opacity = models.FloatField(max_length=20, default=0.7, verbose_name="Opacity of Traces:")
-    plotting_style = models.CharField(choices=plotting_choices, default='line', max_length=120,
+    plotting_style = models.CharField(choices=plotting_choices, default='bar', max_length=120,
                                       verbose_name="Plotting Style:")

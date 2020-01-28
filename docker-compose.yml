@@ -1,29 +1,22 @@
 version: '3.3'
 
 services:
-  db:
-    container_name: workoutizer_postgres
-    image: postgres
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
   django:
-    container_name: workoutizer_django
+    container_name: workoutizer
     environment:
       - DEVENV=docker
     build:
       context: .
       dockerfile: docker/Dockerfile
     command: bash -xc "
-      ls -larht
-      && python workoutizer/manage.py makemigrations
-      && python workoutizer/manage.py migrate
-      && python workoutizer/manage.py runserver 0.0.0.0:8000"
+      cd workoutizer
+      && python manage.py makemigrations
+      && python manage.py migrate
+      && python manage.py runserver 0.0.0.0:8000
+      "
     volumes:
       - .:/workoutizer
     ports:
       - "8000:8000"
-    depends_on:
-      - db
     stdin_open: true
     tty: true

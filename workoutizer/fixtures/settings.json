@@ -1,1 +1,0 @@
-[{"model": "wizer.settings", "pk": 1, "fields": {"path_to_trace_dir": "/home/fabian/Documents/Dropbox/tracks/my_tracks/", "path_to_garmin_device": "/run/user/1000/gvfs/", "file_checker_interval": 60, "number_of_days": 365, "trace_width": 4.0, "trace_opacity": 0.9, "plotting_style": "bar"}}]

@@ -81,12 +81,8 @@ if os.environ.get('DEVENV') == 'docker':
     # print(f"using postgres db backend")
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres',
-            'PASSWORD': 'password',
-            'HOST': 'db',
-            'PORT': 5432,
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join('/tmp/db.sqlite3'),
         }
     }
 else:
@@ -97,7 +93,6 @@ else:
             'NAME': os.path.join(BASE_DIR, sqlite_file),
         }
     }
-
 
 
 # Password validation
