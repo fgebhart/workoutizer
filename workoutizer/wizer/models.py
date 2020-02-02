@@ -3,8 +3,7 @@ import datetime
 
 from django.db import models
 from django.utils import timezone
-
-from wizer.tools.utils import sanitize
+from django.template.defaultfilters import slugify
 
 log = logging.getLogger("wizer.models")
 
@@ -15,15 +14,13 @@ class Sport(models.Model):
         return self.name
 
     name = models.CharField(max_length=24, unique=True, verbose_name="Sport Name:")
-    slug = models.CharField(max_length=24, unique=True, editable=False)
     color = models.CharField(max_length=24, verbose_name="Color:")
     icon = models.CharField(max_length=24, verbose_name="Icon:")
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.slug = sanitize(self.name)
-        log.debug(f"converting name {self.name} to slug {self.slug}")
-        super(Sport, self).save()
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Sport, self).save(*args, **kwargs)
 
 
 class Traces(models.Model):

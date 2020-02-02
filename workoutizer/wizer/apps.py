@@ -34,7 +34,7 @@ formats = [".gpx", ".fit"]
 def insert_initial_presentation_values_to_model(settings_model, sport_model):
     data_dir = os.path.join(settings.BASE_DIR, 'data')
     settings_model.objects.get_or_create(path_to_trace_dir=data_dir)
-    sport_model.objects.create(name='Hiking', color='FireBrick', icon='hiking')
+    sport_model.objects.create(name='Hiking', color='FireBrick', icon='hiking', slug='hiking')
 
 
 class WizerFileDaemon(AppConfig):
@@ -42,11 +42,13 @@ class WizerFileDaemon(AppConfig):
     verbose_name = 'Workoutizer'
 
     def ready(self):
-        if 'runserver' in sys.argv:
+        if 'runserver' in sys.argv and os.environ.get('RUN_MAIN', None) != 'true':
+            # ensure to only run with 'manage.py runserver' and not in auto reload thread
             from .models import Settings, Traces, Activity, Sport
-            insert_initial_presentation_values_to_model(
-                settings_model=Settings,
-                sport_model=Sport)
+            if os.environ.get('DEVENV') == 'docker':
+                insert_initial_presentation_values_to_model(
+                    settings_model=Settings,
+                    sport_model=Sport)
             fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
             fi.start()
 
