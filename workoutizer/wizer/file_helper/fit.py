@@ -2,7 +2,7 @@ import logging
 import datetime
 
 from fitparse import FitFile
-from wizer.format.lib.generic import Parser
+from wizer.file_helper.lib.generic import Parser
 
 log = logging.getLogger('wizer.fit')
 

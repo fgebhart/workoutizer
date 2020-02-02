@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from wizer.format.fit import FITParser
+from wizer.file_helper.fit import FITParser
 
 
 @pytest.fixture(scope="module")

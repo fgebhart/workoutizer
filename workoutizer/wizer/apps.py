@@ -8,9 +8,9 @@ from django.apps import AppConfig
 from django.db.utils import OperationalError
 from django.conf import settings
 
-from wizer.format.gpx import GPXParser
-from wizer.format.fit import FITParser
-from wizer.format.fit_collector import FitCollector
+from wizer.file_helper.gpx import GPXParser
+from wizer.file_helper.fit import FITParser
+from wizer.file_helper.fit_collector import FitCollector
 from wizer.tools.utils import sanitize, calc_md5
 
 log = logging.getLogger('wizer.apps')
