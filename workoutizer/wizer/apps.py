@@ -1,10 +1,13 @@
 import time
 import os
+import sys
 import logging
 from multiprocessing import Process
 
 from django.apps import AppConfig
 from django.db.utils import OperationalError
+from django.conf import settings
+
 from wizer.format.gpx import GPXParser
 from wizer.format.fit import FITParser
 from wizer.format.fit_collector import FitCollector
@@ -28,14 +31,26 @@ sport_naming_map = {
 formats = [".gpx", ".fit"]
 
 
+def insert_initial_presentation_values_to_model(settings_model, sport_model):
+    data_dir = os.path.join(settings.BASE_DIR, 'data')
+    settings_model.objects.get_or_create(path_to_trace_dir=data_dir)
+    sport_model.objects.create(name='Hiking', color='FireBrick', icon='hiking', slug='hiking')
+
+
 class WizerFileDaemon(AppConfig):
     name = 'wizer'
     verbose_name = 'Workoutizer'
 
     def ready(self):
-        from .models import Settings, Traces, Activity, Sport
-        fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
-        fi.start()
+        if 'runserver' in sys.argv and os.environ.get('RUN_MAIN', None) != 'true':
+            # ensure to only run with 'manage.py runserver' and not in auto reload thread
+            from .models import Settings, Traces, Activity, Sport
+            if os.environ.get('DEVENV') == 'docker':
+                insert_initial_presentation_values_to_model(
+                    settings_model=Settings,
+                    sport_model=Sport)
+            fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
+            fi.start()
 
 
 class FileImporter:
@@ -95,7 +110,6 @@ class FileImporter:
                     coordinates=parser.coordinates,
                     altitude=parser.altitude,
                     heart_rate=parser.heart_rate,
-                    calories=parser.calories,
                 )
                 t.save()
                 trace_file_instance = self.traces_model.objects.get(pk=t.pk)

@@ -22,6 +22,7 @@ packaging==19.2
 pandas==0.25.1
 Pillow==6.1.0
 pluggy==0.13.0
+psycopg2-binary==2.8.4
 py==1.8.0
 pyparsing==2.4.2
 pytest==5.1.2

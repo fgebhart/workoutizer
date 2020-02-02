@@ -3,8 +3,7 @@ import datetime
 
 from django.db import models
 from django.utils import timezone
-
-from wizer.tools.utils import sanitize
+from django.template.defaultfilters import slugify
 
 log = logging.getLogger("wizer.models")
 
@@ -15,15 +14,13 @@ class Sport(models.Model):
         return self.name
 
     name = models.CharField(max_length=24, unique=True, verbose_name="Sport Name:")
-    slug = models.CharField(max_length=24, unique=True, editable=False)
     color = models.CharField(max_length=24, verbose_name="Color:")
     icon = models.CharField(max_length=24, verbose_name="Icon:")
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.slug = sanitize(self.name)
-        log.debug(f"converting name {self.name} to slug {self.slug}")
-        super(Sport, self).save()
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Sport, self).save(*args, **kwargs)
 
 
 class Traces(models.Model):
@@ -34,7 +31,7 @@ class Traces(models.Model):
     path_to_file = models.CharField(max_length=200)
     file_name = models.CharField(max_length=100, editable=False)
     md5sum = models.CharField(max_length=32, unique=True)
-    coordinates = models.CharField(max_length=10000000000)
+    coordinates = models.CharField(max_length=10000000000, null=True, blank=True)
     altitude = models.CharField(max_length=10000000000, null=True, blank=True)
     heart_rate = models.CharField(max_length=10000000000, null=True, blank=True)
 
@@ -72,5 +69,5 @@ class Settings(models.Model):
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     trace_width = models.FloatField(max_length=20, default=3.0, verbose_name="Width of Traces:")
     trace_opacity = models.FloatField(max_length=20, default=0.7, verbose_name="Opacity of Traces:")
-    plotting_style = models.CharField(choices=plotting_choices, default='line', max_length=120,
+    plotting_style = models.CharField(choices=plotting_choices, default='bar', max_length=120,
                                       verbose_name="Plotting Style:")
