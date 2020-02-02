@@ -20,7 +20,7 @@
             <div class="card-deck">
                 <div class="card box-shadow">
                     <div class="card-header">
-                        <h5 class="text-center">Facts</h5>
+                        <h5 class="text-center">Summary</h5>
                     </div>
                     <div class="card-body">
                         <table class="table">
@@ -60,6 +60,11 @@
                     </div>
                 </div>
             </div>
+            {% if traces %}
+                <br>
+                <a class="btn-sm btn-warning" href="{{ activity.id }}/download">Download GPX&nbsp;&nbsp;<i
+                        class="fas fa-download"></i></a>
+            {% endif %}
         </div>
         {% if traces %}
             <div class="col-sm-9">

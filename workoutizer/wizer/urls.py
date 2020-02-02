@@ -1,7 +1,8 @@
 from django.urls import path
 from django.conf.urls import url
 from wizer.views import DashboardView, settings_view, set_number_of_days
-from wizer.activity_views import add_activity_view, edit_activity_view, ActivityDeleteView, ActivityView
+from wizer.activity_views import add_activity_view, edit_activity_view, ActivityDeleteView, ActivityView,\
+    download_activity
 from wizer.sport_views import edit_sport_view, SportDeleteView, SportsView, AllSportsView, add_sport_view
 
 urlpatterns = [
@@ -12,6 +13,7 @@ urlpatterns = [
     # Activities
     path('activity/<slug:activity_id>', ActivityView.as_view(), name="activity"),
     path('activity/<slug:activity_id>/edit/', edit_activity_view, name="edit-activity"),
+    path('activity/<slug:activity_id>/download/', download_activity, name="download-activity"),
     path('add-activity/', add_activity_view, name="add-activity"),
     url(r'^activity/(?P<pk>\d+)/delete/$', ActivityDeleteView.as_view(), name="delete-activity"),
 
