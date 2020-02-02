@@ -4,6 +4,9 @@ import hashlib
 log = logging.getLogger('wizer.utils')
 
 
+timestamp_format = "%Y-%m-%dT%H:%M:%S%Z"
+
+
 def sanitize(text):
     return str(text).lower().replace(" ", "-")
 
