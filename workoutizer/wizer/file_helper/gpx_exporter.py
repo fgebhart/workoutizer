@@ -18,6 +18,9 @@ def _gpx_file(time, name, track_points):
     return f"""{gpx_header}
     <metadata>
         <time>{time}</time>
+        <link href="https://gitlab.com/fgebhart/workoutizer">
+            <text>Workoutizer</text>
+        </link>
     </metadata>
     <trk>
         <name>{name}</name>
