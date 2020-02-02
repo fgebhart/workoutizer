@@ -1,4 +1,5 @@
 __pycache__/
 workoutizer/static/
+workoutizer/media/
 .pytest_cache/
 *.sqlite3
