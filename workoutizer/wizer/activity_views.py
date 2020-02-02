@@ -1,13 +1,16 @@
+import os
 import logging
 
 from django.shortcuts import render
 from django.views.generic import DeleteView
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.http import HttpResponse, Http404
 
 from .views import MapView
 from .models import Sport, Activity
 from .forms import AddActivityForm, EditActivityForm
+from .file_helper.gpx_exporter import save_activity_to_gpx_file
 
 log = logging.getLogger('wizer.activity_views')
 
@@ -54,6 +57,18 @@ def edit_activity_view(request, activity_id):
         else:
             log.warning(f"form invalid: {form.errors}")
     return render(request, 'activity/edit_activity.html', {'form': form, 'sports': sports, 'activity': activity})
+
+
+def download_activity(request, activity_id):
+    print(f"got activity id: {activity_id}")
+    activity = Activity.objects.get(id=activity_id)
+    path = save_activity_to_gpx_file(activity=activity)
+    if os.path.exists(path):
+        with open(path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(path)
+            return response
+    raise Http404
 
 
 class ActivityDeleteView(DeleteView):
