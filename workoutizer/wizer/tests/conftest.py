@@ -2,7 +2,8 @@ import os
 import pytest
 
 from wizer.file_helper.gpx_exporter import gpx_header
-from wizer.file_helper.fit import FITParser
+from wizer.file_helper.fit_parser import FITParser
+from wizer.file_helper.gpx_parser import GPXParser
 
 
 @pytest.fixture(scope="module")
@@ -15,35 +16,49 @@ def fit_parser():
     return _pass_path
 
 
+@pytest.fixture(scope="module")
+def gpx_parser():
+    test_file_path = os.path.join(os.path.dirname(__file__), "data/example.gpx")
+
+    def _pass_path(path=test_file_path):
+        return GPXParser(path_to_file=path)
+
+    return _pass_path
+
+
 @pytest.fixture(scope='session')
 def trace_coordinates():
     return [[8.476648433133962, 49.48468884453178], [8.476595375686886, 49.48457719758154],
             [8.47659705206752, 49.48453864082695], [8.47659654915333, 49.48450796306134]]
 
 
-# @pytest.fixture(scope='session')
-# def trace_altitude():
-#     return [365.9, 365.9, 365.9, 366.0]
-#
-#
-# @pytest.fixture(scope='session')
-# def trace_heart_rate():
-#     return [96, 96, 93, 99]
-
-
 @pytest.fixture(scope='session')
 def gpx_string():
     return f"""{gpx_header}
     <metadata>
-        <time>2019-12-03T18:53:44Z</time>
+        <time>2019-07-12T00:00:00Z</time>
+        <link href="https://gitlab.com/fgebhart/workoutizer">
+            <text>Workoutizer</text>
+        </link>
     </metadata>
     <trk>
         <name>test</name>
+        <extensions>
+            <locus:activity>Running</locus:activity>
+        </extensions>
         <trkseg>
-            <trkpt lat="49.48468884453178" lon="8.476648433133962"></trkpt>
-            <trkpt lat="49.48457719758154" lon="8.476595375686886"></trkpt>
-            <trkpt lat="49.48453864082695" lon="8.47659705206752"></trkpt>
-            <trkpt lat="49.48450796306134" lon="8.47659654915333"></trkpt>
+            <trkpt lat="49.48468884453178" lon="8.476648433133962">
+                <time>2019-07-12T12:00:00Z</time>
+            </trkpt>
+            <trkpt lat="49.48457719758154" lon="8.476595375686886">
+                <time>2019-07-12T12:01:00Z</time>
+            </trkpt>
+            <trkpt lat="49.48453864082695" lon="8.47659705206752">
+                <time>2019-07-12T12:02:00Z</time>
+            </trkpt>
+            <trkpt lat="49.48450796306134" lon="8.47659654915333">
+                <time>2019-07-12T12:03:00Z</time>
+            </trkpt>
             
         </trkseg>
     </trk>

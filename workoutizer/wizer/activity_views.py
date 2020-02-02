@@ -60,7 +60,6 @@ def edit_activity_view(request, activity_id):
 
 
 def download_activity(request, activity_id):
-    print(f"got activity id: {activity_id}")
     activity = Activity.objects.get(id=activity_id)
     path = save_activity_to_gpx_file(activity=activity)
     if os.path.exists(path):

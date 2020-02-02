@@ -2,9 +2,9 @@ import logging
 import datetime
 
 from fitparse import FitFile
-from wizer.file_helper.lib.generic import Parser
+from wizer.file_helper.lib.parser import Parser
 
-log = logging.getLogger('wizer.fit')
+log = logging.getLogger(__name__)
 
 
 # coordinates conversion parameter
@@ -20,7 +20,6 @@ class FITParser(Parser):
         self.name = self.path.split(".fit")[0].split("/")[-1]
         self.fit = FitFile(self.path)
         self._get_sport_duration_distance()
-        # log.debug(f"fit file: {self.fit.messages}")
 
     def _get_sport_duration_distance(self):
         sport = None

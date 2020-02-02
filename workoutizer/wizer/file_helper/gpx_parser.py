@@ -4,9 +4,9 @@ import gpxpy
 import gpxpy.gpx
 
 from wizer.gis.gis import calc_distance_of_points
-from .lib.generic import Parser
+from .lib.parser import Parser
 
-log = logging.getLogger('wizer.gpx')
+log = logging.getLogger(__name__)
 
 
 class GPXParser(Parser):
@@ -33,10 +33,13 @@ class GPXParser(Parser):
             for p in s.points:
                 all_points_time.append(p.time)
         start = all_points_time[0]
-        self.date = start
         end = all_points_time[-1]
         self.duration = end - start
         log.debug(f"found duration: {self.duration}")
+        if self.gpx.time:
+            self.date = self.gpx.time
+        else:
+            self.date = start
 
     def _parse_coordinates(self):
         for track in self.gpx.tracks:
