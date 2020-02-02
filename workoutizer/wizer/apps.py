@@ -8,8 +8,8 @@ from django.apps import AppConfig
 from django.db.utils import OperationalError
 from django.conf import settings
 
-from wizer.file_helper.gpx import GPXParser
-from wizer.file_helper.fit import FITParser
+from wizer.file_helper.gpx_parser import GPXParser
+from wizer.file_helper.fit_parser import FITParser
 from wizer.file_helper.fit_collector import FitCollector
 from wizer.tools.utils import sanitize, calc_md5
 

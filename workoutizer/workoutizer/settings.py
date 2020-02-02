@@ -78,7 +78,6 @@ WSGI_APPLICATION = 'workoutizer.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 sqlite_file = 'db.sqlite3'
 if os.environ.get('DEVENV') == 'docker':
-    # print(f"using postgres db backend")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -86,7 +85,6 @@ if os.environ.get('DEVENV') == 'docker':
         }
     }
 else:
-    # print(f"using sqlite file: {sqlite_file}")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

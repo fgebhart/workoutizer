@@ -1,4 +1,4 @@
-from wizer.file_helper.gpx import calc_distance_of_points
+from wizer.file_helper.gpx_parser import calc_distance_of_points
 
 
 def test_calc_distance_of_points():

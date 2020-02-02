@@ -4,7 +4,7 @@ import hashlib
 log = logging.getLogger('wizer.utils')
 
 
-timestamp_format = "%Y-%m-%dT%H:%M:%S%Z"
+timestamp_format = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def sanitize(text):

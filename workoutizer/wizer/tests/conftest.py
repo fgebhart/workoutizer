@@ -2,8 +2,8 @@ import os
 import pytest
 
 from wizer.file_helper.gpx_exporter import gpx_header
-from wizer.file_helper.fit import FITParser
-from wizer.file_helper.gpx import GPXParser
+from wizer.file_helper.fit_parser import FITParser
+from wizer.file_helper.gpx_parser import GPXParser
 
 
 @pytest.fixture(scope="module")
@@ -36,25 +36,28 @@ def trace_coordinates():
 def gpx_string():
     return f"""{gpx_header}
     <metadata>
-        <time>2019-07-12T17:05:36Z</time>
+        <time>2019-07-12T00:00:00Z</time>
         <link href="https://gitlab.com/fgebhart/workoutizer">
             <text>Workoutizer</text>
         </link>
     </metadata>
     <trk>
         <name>test</name>
+        <extensions>
+            <locus:activity>Running</locus:activity>
+        </extensions>
         <trkseg>
             <trkpt lat="49.48468884453178" lon="8.476648433133962">
-                <time>2019-07-12T17:05:36Z</time>
+                <time>2019-07-12T12:00:00Z</time>
             </trkpt>
             <trkpt lat="49.48457719758154" lon="8.476595375686886">
-                <time>2019-07-12T17:06:36Z</time>
+                <time>2019-07-12T12:01:00Z</time>
             </trkpt>
             <trkpt lat="49.48453864082695" lon="8.47659705206752">
-                <time>2019-07-12T17:07:36Z</time>
+                <time>2019-07-12T12:02:00Z</time>
             </trkpt>
             <trkpt lat="49.48450796306134" lon="8.47659654915333">
-                <time>2019-07-12T17:08:36Z</time>
+                <time>2019-07-12T12:03:00Z</time>
             </trkpt>
             
         </trkseg>

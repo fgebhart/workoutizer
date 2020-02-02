@@ -4,9 +4,9 @@ import gpxpy
 import gpxpy.gpx
 
 from wizer.gis.gis import calc_distance_of_points
-from .lib.generic import Parser
+from .lib.parser import Parser
 
-log = logging.getLogger('wizer.gpx')
+log = logging.getLogger(__name__)
 
 
 class GPXParser(Parser):
