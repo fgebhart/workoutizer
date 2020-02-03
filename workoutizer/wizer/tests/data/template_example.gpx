@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<gpx version="1.1" creator="Locus Map, Android"
+     xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+     xmlns:gpx_style="http://www.topografix.com/GPX/gpx_style/0/2">
+    <metadata>
+        <time>2019-12-29T00:00:00</time>
+        <link href="https://gitlab.com/fgebhart/workoutizer">
+            <text>Workoutizer</text>
+        </link>
+    </metadata>
+    <trk>
+        <name>2019-07-12 19:04:29</name>
+        <trkseg>
+            <trkpt lat="49.405446" lon="8.687453">
+                <time>2019-07-12T17:05:36.000Z</time>
+            </trkpt>
+            <trkpt lat="49.405562" lon="8.687577">
+                <time>2019-07-12T17:30:38.000Z</time>
+            </trkpt>
+        </trkseg>
+    </trk>
+</gpx>
