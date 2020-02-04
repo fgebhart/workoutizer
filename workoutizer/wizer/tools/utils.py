@@ -1,8 +1,7 @@
 import logging
 import hashlib
 
-log = logging.getLogger('wizer.utils')
-
+log = logging.getLogger(__name__)
 
 timestamp_format = "%Y-%m-%dT%H:%M:%SZ"
 

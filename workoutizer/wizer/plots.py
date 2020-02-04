@@ -112,7 +112,11 @@ def plot_pie_chart(activities):
     sport_distribution = {}
     color_list = []
     for activity in activities:
-        sport_distribution[activity.sport.name] = 0
+        try:
+            sport_distribution[activity.sport.name] = 0
+        except AttributeError as e:
+            log.error(f"activity {activity} has unknown sport '{activity.sport}'.")
+            raise e
         if activity.sport.color not in color_list:
             color_list.append(activity.sport.color)
     for activity in activities:
