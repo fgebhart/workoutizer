@@ -6,14 +6,15 @@ from multiprocessing import Process
 
 from django.apps import AppConfig
 from django.db.utils import OperationalError
-from django.conf import settings
 
 from wizer.file_helper.gpx_parser import GPXParser
 from wizer.file_helper.fit_parser import FITParser
 from wizer.file_helper.fit_collector import FitCollector
 from wizer.tools.utils import sanitize, calc_md5
+from wizer.tools.initial_trace_data_handler import insert_settings_and_sports_to_model, \
+    create_initial_trace_data_with_recent_time
 
-log = logging.getLogger('wizer.apps')
+log = logging.getLogger(__name__)
 
 sport_naming_map = {
     'Jogging': ['jogging', 'running'],
@@ -27,14 +28,7 @@ sport_naming_map = {
     'Workout': ['training'],
 }
 
-
 formats = [".gpx", ".fit"]
-
-
-def insert_initial_presentation_values_to_model(settings_model, sport_model):
-    data_dir = os.path.join(settings.BASE_DIR, 'data')
-    settings_model.objects.get_or_create(path_to_trace_dir=data_dir)
-    sport_model.objects.create(name='Hiking', color='FireBrick', icon='hiking', slug='hiking')
 
 
 class WizerFileDaemon(AppConfig):
@@ -46,9 +40,10 @@ class WizerFileDaemon(AppConfig):
             # ensure to only run with 'manage.py runserver' and not in auto reload thread
             from .models import Settings, Traces, Activity, Sport
             if os.environ.get('DEVENV') == 'docker':
-                insert_initial_presentation_values_to_model(
+                insert_settings_and_sports_to_model(
                     settings_model=Settings,
                     sport_model=Sport)
+                create_initial_trace_data_with_recent_time()
             fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
             fi.start()
 
@@ -88,7 +83,7 @@ class FileImporter:
         md5sums_from_db = [m.md5sum for m in md5sums_from_db]
         for file in trace_files:
             md5sum = calc_md5(file)
-            if md5sum not in md5sums_from_db:   # current file is not stored in model yet
+            if md5sum not in md5sums_from_db:  # current file is not stored in model yet
                 log.debug(f"importing file {file}...")
                 if file.endswith(".gpx"):
                     log.debug(f"parsing GPX file")
@@ -103,7 +98,7 @@ class FileImporter:
                     parser = None
                 sport = parser.sport
                 mapped_sport = map_sport_name(sport, sport_naming_map)
-                log.info(f"saving trace file {file} to traces model")
+                log.debug(f"saving trace file {file} to traces model")
                 t = self.traces_model(
                     path_to_file=file,
                     md5sum=md5sum,

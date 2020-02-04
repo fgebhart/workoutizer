@@ -1,4 +1,4 @@
-from wizer.tools.utils import sanitize, insert_current_date_into_gpx
+from wizer.tools.utils import sanitize
 
 
 def test_sanitze():
@@ -7,7 +7,3 @@ def test_sanitze():
     assert sanitize(1) == "1"
     assert sanitize(0.123) == "0.123"
     assert sanitize(True) == "true"
-
-
-def test_insert_current_date_into_gpx():
-    assert insert_current_date_into_gpx

@@ -3,7 +3,6 @@ import hashlib
 
 log = logging.getLogger(__name__)
 
-
 timestamp_format = "%Y-%m-%dT%H:%M:%SZ"
 
 
@@ -17,7 +16,3 @@ def calc_md5(file):
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
-
-
-def insert_current_date_into_gpx(path_to_gpx):
-    pass
