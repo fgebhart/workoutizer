@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from geopy import distance
 
-log = logging.getLogger('wizer.gis')
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -52,3 +52,20 @@ def calc_distance_of_points(list_of_tuples: list):
             first_point = point
             total_distance += dist.km
     return total_distance * 0.77
+
+
+def add_elevation_data_to_coordinates(coordinates: list, elevation: list):
+    if len(elevation) > len(coordinates):
+        log.debug(f"found more elevation points than, cut beginning of elevation list")
+        elevation = elevation[len(coordinates)-1:]
+    while len(coordinates) > len(elevation):
+        log.debug(f"found more coordinates than elevation points, add elevation to end of coordinates list")
+        elevation.insert(0, None)
+    coordinates_with_elevation = []
+    for coordinate, altitude in zip(coordinates, elevation):
+        if altitude:
+            coordinate.append(altitude)
+        coordinates_with_elevation.append(coordinate)
+    return coordinates_with_elevation
+
+

@@ -12,7 +12,7 @@ from .models import Sport, Activity
 from .forms import AddActivityForm, EditActivityForm
 from .file_helper.gpx_exporter import save_activity_to_gpx_file
 
-log = logging.getLogger('wizer.activity_views')
+log = logging.getLogger(__name__)
 
 
 class ActivityView(MapView):

@@ -12,7 +12,7 @@ from .models import Sport
 from .forms import AddSportsForm
 from .plots import create_plot
 
-log = logging.getLogger('wizer.sport_views')
+log = logging.getLogger(__name__)
 
 
 class AllSportsView(View):

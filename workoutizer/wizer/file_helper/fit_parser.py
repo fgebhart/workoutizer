@@ -56,14 +56,14 @@ class FITParser(Parser):
                 if record_data.name == "position_lat":
                     lat = record_data.value
                 if record_data.name == "altitude":
-                    self.altitude.append(float(record_data.value)/10)
+                    self.elevation.append(float(record_data.value)/10)
             if lat and lon:
                 coordinates.append([float(lon)/ccp, float(lat)/ccp])
         self.coordinates = coordinates
         # NOTE: There might be more altitude values than coordinates, since garmin start activity even if there is
         # NOTE: no GPS signal yet...
         log.debug(f"found number of coordinates: {len(self.coordinates)}")
-        log.debug(f"found number of altitudes: {len(self.altitude)}")
+        log.debug(f"found number of elevation: {len(self.elevation)}")
 
     def parse_heart_rate(self):
         heart_rate = []
