@@ -32,10 +32,10 @@ class MapView(View):
         for activity in list_of_activities:
             if activity.trace_file:
                 coordinates = json.loads(activity.trace_file.coordinates)
-                elevation = json.loads(activity.trace_file.elevation)
-                if elevation:
+                if activity.trace_file.elevation:
+                    elevation = json.loads(activity.trace_file.elevation)
                     coordinates = add_elevation_data_to_coordinates(coordinates, elevation)
-                log.debug(f"activity: {activity.name} also has elevation data: {elevation}")
+                    log.debug(f"activity: {activity.name} also has elevation data: {elevation}")
                 try:
                     color = webcolors.name_to_hex(activity.sport.color)  # NOTE: last activity color will be applied
                     sport = activity.sport.name

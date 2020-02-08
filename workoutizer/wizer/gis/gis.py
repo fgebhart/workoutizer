@@ -55,12 +55,14 @@ def calc_distance_of_points(list_of_tuples: list):
 
 
 def add_elevation_data_to_coordinates(coordinates: list, elevation: list):
+    log.debug(f"len(coordinates) = {len(coordinates)}; len(elevation) = {len(elevation)}")
     if len(elevation) > len(coordinates):
-        log.debug(f"found more elevation points than, cut beginning of elevation list")
-        elevation = elevation[len(coordinates)-1:]
-    while len(coordinates) > len(elevation):
+        log.debug(f"found more elevation points than coordinates, cut beginning of elevation list")
+        elevation = elevation[-len(coordinates):]
+    if len(coordinates) > len(elevation):
         log.debug(f"found more coordinates than elevation points, add elevation to end of coordinates list")
-        elevation.insert(0, None)
+        while len(coordinates) > len(elevation):
+            elevation.insert(0, None)
     coordinates_with_elevation = []
     for coordinate, altitude in zip(coordinates, elevation):
         if altitude:

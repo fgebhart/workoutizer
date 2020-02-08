@@ -61,6 +61,10 @@
     // Load track from url (allowed data types: "*.geojson", "*.gpx")
     {#controlElevation.load("https://raruto.github.io/examples/leaflet-elevation/via-emilia.gpx");#}
 
+    {% for line in traces %}
+        var coordinates = {{ line.coordinates }};
+    {% endfor %}
+
     var data = {
         "name": "demo.geojson",
         "type": "FeatureCollection",
@@ -68,28 +72,10 @@
             "type": "Feature",
             "geometry": {
                 "type": "LineString",
-                "coordinates": [
-                    [169.13693, -44.696476],
-                    [169.134602, -44.69764],
-                    [169.129983, -44.701164, 299],
-                    [169.131292, -44.702382, 303],
-                    [169.13376, -44.704533, 315],
-                    [169.135568, -44.705574, 336],
-                    [169.136179, -44.70934, 338],
-                    [169.137011, -44.714066, 344],
-                    [169.136984, -44.719489, 342],
-                    [169.136898, -44.725235, 350],
-                    [169.136801, -44.730143, 353],
-                    [169.135632, -44.734853, 354],
-                    [169.131882, -44.738989, 363],
-                    [169.129688, -44.744241, 363],
-                    [169.123937, -44.746982, 361],
-                    [169.118509, -44.750286, 371]
-                ]
+                "coordinates": coordinates,
             }
         }]
     };
-
 
     // initialize your elevation control variable.
     var control = L.control.elevation(elevation_options);
