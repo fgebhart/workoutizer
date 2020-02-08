@@ -29,10 +29,12 @@ class MapView(View):
         traces = []
         color = '#ffa500'
         sport = None
+        has_elevation = False
         for activity in list_of_activities:
             if activity.trace_file:
                 coordinates = json.loads(activity.trace_file.coordinates)
                 if activity.trace_file.elevation:
+                    has_elevation = True
                     elevation = json.loads(activity.trace_file.elevation)
                     coordinates = add_elevation_data_to_coordinates(coordinates, elevation)
                     log.debug(f"activity: {activity.name} also has elevation data: {elevation}")
@@ -48,7 +50,7 @@ class MapView(View):
                         coordinates=coordinates))
                     log.debug(f"stored coordinates of: '{activity}' in traces list")
         return {'traces': traces, 'settings': self.settings, 'days': self.number_of_days,
-                'choices': self.days_choices, 'color': color}
+                'choices': self.days_choices, 'color': color, 'has_elevation': has_elevation}
 
 
 class PlotView:

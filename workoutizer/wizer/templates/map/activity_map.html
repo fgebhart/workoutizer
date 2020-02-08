@@ -5,23 +5,29 @@
     <!-- leaflet-elevation -->
     <link rel="stylesheet" href="https://unpkg.com/@raruto/leaflet-elevation@latest/leaflet-elevation.css"/>
     <script src="https://unpkg.com/@raruto/leaflet-elevation@latest/leaflet-elevation.js"></script>
+
+    <style>
+        .elevation-control.elevation .area {
+            fill: {{ color }};
+        }
+
+        .elevation-control.elevation .background {
+            background-color: white;
+        }
+    </style>
+
 </head>
+
 <div id="map"></div>
 <script>
     // Full list options at "leaflet-elevation.js"
     var elevation_options = {
         // Default chart colors: theme lime-theme, magenta-theme, ...
-        theme: "lightblue-theme",
+        theme: "custom-theme",
         // Chart container outside/inside map container
         detached: true,
         // if (detached), the elevation chart container
         elevationDiv: "#elevation-div",
-        // if (!detached) autohide chart profile on chart mouseleave
-        autohide: false,
-        // if (!detached) initial state of chart profile control
-        collapsed: false,
-        // if (!detached) control position on one of map corners
-        position: "topright",
         // Autoupdate map center on chart mouseover.
         followMarker: false,
         // Chart distance/elevation units.
@@ -34,8 +40,8 @@
 
     // config options of leaflet-ui plugin: https://github.com/Raruto/leaflet-ui
     var map = L.map('map', {
-        center: [41.4583, 12.7059],
-        zoom: 5,
+        center: [41.4583, 12.7059],  // needs value to initialize
+        zoom: 5,                     // needs value to initialize
         mapTypeId: 'topo',
         mapTypeIds: ['osm', 'terrain', 'satellite', 'topo'],
         gestureHandling: false,     // zoom with Cmd + Scroll
@@ -50,16 +56,10 @@
         searchControl: false,
         disableDefaultUI: false,
         printControl: false,
+
     });
     map.once('idle', function () { /* Waiting for map init */
     });
-
-    // Instantiate elevation control.
-    {#var controlElevation = L.control.elevation(elevation_options);#}
-    {#controlElevation.addTo(map);#}
-
-    // Load track from url (allowed data types: "*.geojson", "*.gpx")
-    {#controlElevation.load("https://raruto.github.io/examples/leaflet-elevation/via-emilia.gpx");#}
 
     {% for line in traces %}
         var coordinates = {{ line.coordinates }};
@@ -80,11 +80,20 @@
     // initialize your elevation control variable.
     var control = L.control.elevation(elevation_options);
 
+    var Style = {
+        "color": "{{ color }}",
+        "weight": {{ settings.trace_width }},
+        "opacity": {{ settings.trace_opacity }}
+    };
+
     control.geojson = L.geoJson(data, {
         onEachFeature: control.addData.bind(control),
+        style: Style,
     });
 
-    control.loadChart(map); // initialize your #elevation-div container
+    {% if has_elevation %}
+        control.loadChart(map); // initialize your #elevation-div container
+    {% endif %}
 
     // Really rough trick used to detect when your geojson data is fully loaded
     map.once('layeradd', function (e) {
@@ -92,5 +101,4 @@
     });
 
     control.geojson.addTo(map);
-
 </script>
