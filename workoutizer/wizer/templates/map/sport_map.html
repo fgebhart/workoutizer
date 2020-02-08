@@ -1,6 +1,33 @@
-<div id="mapid"></div>
-<script type="text/javascript">
+<head>
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
+    <!-- Leaflet-UI -->
+    <script src="https://unpkg.com/leaflet-ui@latest/dist/leaflet-ui.js"></script>
+</head>
 
+<div id="map"></div>
+
+<script>
+    // config options of leaflet-ui plugin: https://github.com/Raruto/leaflet-ui
+    var map = L.map('map', {
+        mapTypeId: 'topo',
+        mapTypeIds: ['osm', 'terrain', 'satellite', 'topo'],
+        gestureHandling: false,     // zoom with Cmd + Scroll
+        zoomControl: true,          // plus minus buttons
+        pegmanControl: false,
+        locateControl: false,
+        fullscreenControl: true,
+        layersControl: true,
+        minimapControl: false,
+        editInOSMControl: false,
+        loadingControl: false,
+        searchControl: false,
+        disableDefaultUI: false,
+    });
+    map.once('idle', function () { /* Waiting for map init */
+    });
+
+    // workoutizer settings for adding traces to map
     var Traces = [{
         {% for line in traces %}
             "type": "LineString",
@@ -11,25 +38,7 @@
 
     var geoJsonLayer = L.geoJson(Traces);
     var Bounds = geoJsonLayer.getBounds();
-
-
-    var osm = L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png"),
-        topo = L.tileLayer("http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png");
-
-
-    var baseMaps = {
-        "OpenStreetMap": osm,
-        "OpenTopoMap": topo
-    };
-
-    var overlays = {
-        // add any overlays here, maybe traces could be used as overlay to toggle them off and on
-    };
-
-    var map = L.map('mapid').fitBounds(Bounds);
-    topo.addTo(map);
-
-    L.control.layers(baseMaps, overlays, {position: 'topright'}).addTo(map);
+    map.fitBounds(Bounds);
 
     {% for line in traces %}
         numPts ={{ line.coordinates }}.length;
@@ -47,5 +56,6 @@
     };
 
     L.geoJSON(Traces, {style: Style}).addTo(map);
+
 </script>
 <br>
