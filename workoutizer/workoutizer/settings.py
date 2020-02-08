@@ -144,7 +144,8 @@ LEAFLET_CONFIG = {
     'MAX_ZOOM': 18,
 }
 
-format_console = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"   # optionally add time: "%(asctime)s -"
+# format_console = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"   # optionally add time: "%(asctime)s -"
+format_console = "%(levelname)s - %(name)s - %(message)s"   # optionally add time: "%(asctime)s -"
 
 LOGGING = {
     'version': 1,

@@ -103,7 +103,7 @@ class FileImporter:
                     path_to_file=file,
                     md5sum=md5sum,
                     coordinates=parser.coordinates,
-                    altitude=parser.altitude,
+                    elevation=parser.elevation,
                     heart_rate=parser.heart_rate,
                 )
                 t.save()

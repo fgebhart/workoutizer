@@ -26,4 +26,4 @@ def test_get_date_from_metadata(gpx_parser):
 def test__parse_coordinates(gpx_parser):
     parser = gpx_parser()
     assert parser.coordinates[0] == [8.687453, 49.405446]
-    assert parser.altitude[0] == 128.94
+    assert parser.elevation[0] == 128.94

@@ -16,7 +16,7 @@ def test__get_sport_duration_distance(fit_parser):
 def test__parse_coordinates(fit_parser):
     parser = fit_parser()
     assert parser.coordinates[0] == [8.694167453795673, 49.40601873211563]
-    assert parser.altitude[0] == 248.7
+    assert parser.elevation[0] == 248.7
 
 
 def test_parse_heart_rate(fit_parser):

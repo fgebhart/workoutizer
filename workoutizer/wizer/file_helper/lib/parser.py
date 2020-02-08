@@ -8,7 +8,7 @@ class Parser:
         self.distance = None
         self.date = None
         self.coordinates = []
-        self.altitude = []
+        self.elevation = []
         self.heart_rate = []
         self.calories = int()
 

@@ -8,12 +8,12 @@ from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.contrib import messages
 
-from .models import Sport, Activity, Settings
-from .forms import SettingsForm
-from .plots import create_plot, plot_pie_chart
-from wizer.gis.gis import GeoTrace
+from wizer.models import Sport, Activity, Settings
+from wizer.forms import SettingsForm
+from wizer.plots import create_plot, plot_pie_chart
+from wizer.gis.gis import GeoTrace, add_elevation_data_to_coordinates
 
-log = logging.getLogger('wizer.views')
+log = logging.getLogger(__name__)
 
 
 class MapView(View):
@@ -29,12 +29,18 @@ class MapView(View):
         traces = []
         color = '#ffa500'
         sport = None
-        for a in list_of_activities:
-            if a.trace_file:
-                coordinates = json.loads(a.trace_file.coordinates)
+        has_elevation = False
+        for activity in list_of_activities:
+            if activity.trace_file:
+                coordinates = json.loads(activity.trace_file.coordinates)
+                if activity.trace_file.elevation:
+                    has_elevation = True
+                    elevation = json.loads(activity.trace_file.elevation)
+                    coordinates = add_elevation_data_to_coordinates(coordinates, elevation)
+                    log.debug(f"activity: {activity.name} also has elevation data: {elevation}")
                 try:
-                    color = webcolors.name_to_hex(a.sport.color)  # NOTE: last activity color will be applied
-                    sport = a.sport.name
+                    color = webcolors.name_to_hex(activity.sport.color)  # NOTE: last activity color will be applied
+                    sport = activity.sport.name
                 except AttributeError as e:
                     log.warning(f"could not find color of sport: {sport}, using default color instead: {e}")
                 if coordinates:
@@ -42,9 +48,9 @@ class MapView(View):
                         sport=sport,
                         color=color,
                         coordinates=coordinates))
-                    log.debug(f"stored coordinates of: '{a}' in traces list")
+                    log.debug(f"stored coordinates of: '{activity}' in traces list")
         return {'traces': traces, 'settings': self.settings, 'days': self.number_of_days,
-                'choices': self.days_choices, 'color': color}
+                'choices': self.days_choices, 'color': color, 'has_elevation': has_elevation}
 
 
 class PlotView:
