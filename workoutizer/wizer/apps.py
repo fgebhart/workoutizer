@@ -12,7 +12,7 @@ from wizer.file_helper.fit_parser import FITParser
 from wizer.file_helper.fit_collector import FitCollector
 from wizer.tools.utils import sanitize, calc_md5
 from wizer.tools.initial_trace_data_handler import insert_settings_and_sports_to_model, \
-    create_initial_trace_data_with_recent_time
+    create_initial_trace_data_with_recent_time, insert_activities_to_model
 
 log = logging.getLogger(__name__)
 
@@ -44,6 +44,9 @@ class WizerFileDaemon(AppConfig):
                     settings_model=Settings,
                     sport_model=Sport)
                 create_initial_trace_data_with_recent_time()
+                insert_activities_to_model(
+                    sport_model=Sport,
+                    activity_model=Activity)
             fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
             fi.start()
 
