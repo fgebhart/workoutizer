@@ -63,7 +63,7 @@ class FITParser(Parser):
         # NOTE: There might be more altitude values than coordinates, since garmin start activity even if there is
         # NOTE: no GPS signal yet...
         log.debug(f"found number of coordinates: {len(self.coordinates)}")
-        log.debug(f"found number of elevation: {len(self.elevation)}")
+        log.debug(f"found number of elevation points: {len(self.elevation)}")
 
     def parse_heart_rate(self):
         heart_rate = []

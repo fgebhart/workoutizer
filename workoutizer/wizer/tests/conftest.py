@@ -49,9 +49,7 @@ def gpx_string():
     </metadata>
     <trk>
         <name>test</name>
-        <extensions>
-            <locus:activity>Running</locus:activity>
-        </extensions>
+            <type>Running</type>
         <trkseg>
             <trkpt lat="49.48468884453178" lon="8.476648433133962">
                 <time>2019-07-12T12:00:00Z</time>
@@ -83,9 +81,7 @@ def gpx_string_with_elevation():
     </metadata>
     <trk>
         <name>test</name>
-        <extensions>
-            <locus:activity>Running</locus:activity>
-        </extensions>
+            <type>Running</type>
         <trkseg>
             <trkpt lat="49.48468884453178" lon="8.476648433133962">
                 <time>2019-07-12T12:00:00Z</time>

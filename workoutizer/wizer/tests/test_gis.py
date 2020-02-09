@@ -3,7 +3,14 @@ from wizer.gis.gis import add_elevation_data_to_coordinates
 
 
 def test_calc_distance_of_points():
-    assert int(calc_distance_of_points([(41.49008, -71.312796), (41.499498, -81.695391)])) == int(667)
+    assert calc_distance_of_points([(48, 8), (48, 9)]) == 110.6
+    assert calc_distance_of_points([(48, -8), (48, -9)]) == 110.6
+    assert calc_distance_of_points([(-48, -8), (-48, -9)]) == 110.6
+    assert calc_distance_of_points([(-48, 8), (-48, 9)]) == 110.6
+
+
+def test_calc_distance_of_points_reversed_points():
+    assert calc_distance_of_points([(99, 16), (98, 16)]) == 107.03
 
 
 def test_add_elevation_data_to_coordinates():

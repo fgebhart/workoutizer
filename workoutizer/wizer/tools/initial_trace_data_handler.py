@@ -19,10 +19,10 @@ def insert_settings_and_sports_to_model(settings_model, sport_model):
 
 def create_initial_trace_data_with_recent_time():
     for i, trace_file in enumerate(_get_all_initial_trace_files()):
-        _insert_current_date_into_gpx(
-            gpx=trace_file,
-            strf_timestamp=(datetime.datetime.now() - datetime.timedelta(days=i)).strftime(timestamp_format),
-        )
+        if not os.path.isfile(os.path.join(settings.TRACKS_DIR, trace_file)):
+            _insert_current_date_into_gpx(
+                gpx=trace_file,
+                strf_timestamp=(datetime.datetime.now() - datetime.timedelta(days=i)).strftime(timestamp_format))
 
 
 def _insert_current_date_into_gpx(gpx, strf_timestamp: str):

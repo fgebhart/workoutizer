@@ -11,11 +11,10 @@ from wizer.gis.gis import add_elevation_data_to_coordinates
 gpx_header = """<?xml version="1.0" encoding="UTF-8"?>
 <gpx creator="Fabian Gebhart" version="1.1" xmlns="http://www.topografix.com/GPX/1/1"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd"
+xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
 xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
 xmlns:gpxtrkx="http://www.garmin.com/xmlschemas/TrackStatsExtension/v1"
-xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3"
-xmlns:locus="http://www.locusmap.eu">"""
+xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3">"""
 
 
 def _gpx_file(time, name, track_points, sport):
@@ -28,9 +27,7 @@ def _gpx_file(time, name, track_points, sport):
     </metadata>
     <trk>
         <name>{name}</name>
-        <extensions>
-            <locus:activity>{sport}</locus:activity>
-        </extensions>
+            <type>{sport}</type>
         <trkseg>
             {track_points}
         </trkseg>

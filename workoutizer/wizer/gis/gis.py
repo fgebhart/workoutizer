@@ -48,10 +48,10 @@ def calc_distance_of_points(list_of_tuples: list):
         if first_point is None:
             first_point = point
         else:
-            dist = distance.geodesic(first_point, point)
+            dist = distance.geodesic([p for p in reversed(first_point)], [p for p in reversed(point)])
             first_point = point
             total_distance += dist.km
-    return total_distance * 0.77
+    return round(total_distance, 2)
 
 
 def add_elevation_data_to_coordinates(coordinates: list, elevation: list):

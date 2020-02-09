@@ -84,42 +84,45 @@ class FileImporter:
         for file in trace_files:
             md5sum = calc_md5(file)
             if md5sum not in md5sums_from_db:  # current file is not stored in model yet
-                log.debug(f"importing file {file}...")
-                if file.endswith(".gpx"):
-                    log.debug(f"parsing GPX file")
-                    parser = GPXParser(path_to_file=file)
-                elif file.endswith(".fit"):
-                    log.debug(f"parsing FIT file")
-                    parser = FITParser(path_to_file=file)
-                    parser.parse_heart_rate()
-                    parser.parse_calories()
-                else:
-                    log.warning(f"file type: {file} unknown")
-                    parser = None
-                sport = parser.sport
-                mapped_sport = map_sport_name(sport, sport_naming_map)
-                log.debug(f"saving trace file {file} to traces model")
-                t = self.traces_model(
-                    path_to_file=file,
-                    md5sum=md5sum,
-                    coordinates=parser.coordinates,
-                    elevation=parser.elevation,
-                    heart_rate=parser.heart_rate,
-                )
-                t.save()
-                trace_file_instance = self.traces_model.objects.get(pk=t.pk)
-                sport_instance = self.sport_model.objects.filter(slug=sanitize(mapped_sport)).first()
-                a = self.activities_model(
-                    name=parser.name,
-                    sport=sport_instance,
-                    date=parser.date,
-                    duration=parser.duration,
-                    distance=parser.distance,
-                    trace_file=trace_file_instance,
-                    calories=parser.calories,
-                )
-                a.save()
-                log.info(f"created new {sport_instance} activity: {parser.name}")
+                try:
+                    log.debug(f"importing file {file}...")
+                    if file.endswith(".gpx"):
+                        log.debug(f"parsing GPX file")
+                        parser = GPXParser(path_to_file=file)
+                    elif file.endswith(".fit"):
+                        log.debug(f"parsing FIT file")
+                        parser = FITParser(path_to_file=file)
+                        parser.parse_heart_rate()
+                        parser.parse_calories()
+                    else:
+                        log.warning(f"file type: {file} unknown")
+                        parser = None
+                    sport = parser.sport
+                    mapped_sport = map_sport_name(sport, sport_naming_map)
+                    log.debug(f"saving trace file {file} to traces model")
+                    t = self.traces_model(
+                        path_to_file=file,
+                        md5sum=md5sum,
+                        coordinates=parser.coordinates,
+                        elevation=parser.elevation,
+                        heart_rate=parser.heart_rate,
+                    )
+                    t.save()
+                    trace_file_instance = self.traces_model.objects.get(pk=t.pk)
+                    sport_instance = self.sport_model.objects.filter(slug=sanitize(mapped_sport)).first()
+                    a = self.activities_model(
+                        name=parser.name,
+                        sport=sport_instance,
+                        date=parser.date,
+                        duration=parser.duration,
+                        distance=parser.distance,
+                        trace_file=trace_file_instance,
+                        calories=parser.calories,
+                    )
+                    a.save()
+                    log.info(f"created new {sport_instance} activity: {parser.name}")
+                except Exception as e:
+                    log.error(f"could not import activity of file: {file}. {e}", exc_info=True)
             else:  # means file is stored in db already
                 trace_file_path_instance = self.traces_model.objects.get(md5sum=md5sum)
                 if trace_file_path_instance.path_to_file != file:

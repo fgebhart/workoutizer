@@ -22,10 +22,13 @@ class GPXParser(Parser):
         self.get_duration_from_gpx_file()
 
     def get_sport_from_gpx_file(self):
-        for e in self.gpx.tracks[0].extensions:
-            if e.tag.split("}")[1] == "activity":
-                self.sport = e.text
-                log.debug(f"found sport: {self.sport}")
+        if self.gpx.tracks[0].type:
+            self.sport = self.gpx.tracks[0].type
+        else:
+            for e in self.gpx.tracks[0].extensions:
+                if e.tag.split("}")[1] == "activity":
+                    self.sport = e.text
+                    log.debug(f"found sport: {self.sport}")
 
     def get_duration_from_gpx_file(self):
         all_points_time = []
@@ -34,8 +37,12 @@ class GPXParser(Parser):
                 all_points_time.append(p.time)
         start = all_points_time[0]
         end = all_points_time[-1]
-        self.duration = end - start
-        log.debug(f"found duration: {self.duration}")
+        if start and end:
+            self.duration = end - start
+            log.debug(f"found duration: {self.duration}")
+        else:
+            self.duration = None
+            log.debug(f"could not find duration")
         if self.gpx.time:
             self.date = self.gpx.time
         else:
@@ -48,6 +55,6 @@ class GPXParser(Parser):
                     self.elevation.append(point.elevation)
                     self.coordinates.append([point.longitude, point.latitude])
         log.debug(f"found number of coordinates: {len(self.coordinates)}")
-        log.debug(f"found number of elevation: {len(self.elevation)}")
-        self.distance = round(calc_distance_of_points(self.coordinates), 2)
+        log.debug(f"found number of elevation points: {len(self.elevation)}")
+        self.distance = calc_distance_of_points(self.coordinates)
         log.debug(f"found distance: {self.distance}")

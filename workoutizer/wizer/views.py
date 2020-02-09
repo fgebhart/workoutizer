@@ -37,7 +37,6 @@ class MapView(View):
                     has_elevation = True
                     elevation = json.loads(activity.trace_file.elevation)
                     coordinates = add_elevation_data_to_coordinates(coordinates, elevation)
-                    log.debug(f"activity: {activity.name} also has elevation data: {elevation}")
                 try:
                     color = webcolors.name_to_hex(activity.sport.color)  # NOTE: last activity color will be applied
                     sport = activity.sport.name
@@ -117,6 +116,6 @@ def get_summary_of_activities(activities):
     total_duration = datetime.timedelta(minutes=0)
     for a in activities:
         total_duration += a.duration
-    log.debug(f"total duration: {total_duration}")
+    log.debug(f"total duration of selected activities: {total_duration}")
     return {'count': len(activities), 'duration': total_duration,
             'distance': int(sum([n.distance for n in activities]))}
