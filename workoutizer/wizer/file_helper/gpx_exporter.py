@@ -3,10 +3,10 @@ import os
 import datetime
 
 from django.conf import settings
-
-from wizer.tools.utils import sanitize, timestamp_format
 from django.utils.duration import duration_microseconds
 
+from wizer.tools.utils import sanitize, timestamp_format
+from wizer.gis.gis import add_elevation_data_to_coordinates
 
 gpx_header = """<?xml version="1.0" encoding="UTF-8"?>
 <gpx creator="Fabian Gebhart" version="1.1" xmlns="http://www.topografix.com/GPX/1/1"
@@ -42,7 +42,14 @@ def _gpx_file(time, name, track_points, sport):
 def _track_points(coordinates: list, timestamps: list):
     track_points = ""
     for c, ts in zip(coordinates, timestamps):
-        point = f"""<trkpt lat="{c[1]}" lon="{c[0]}">
+        if len(c) > 2:
+            point = f"""<trkpt lat="{c[1]}" lon="{c[0]}">
+                <time>{ts}</time>
+                <ele>{c[2]}</ele>
+            </trkpt>
+            """
+        else:
+            point = f"""<trkpt lat="{c[1]}" lon="{c[0]}">
                 <time>{ts}</time>
             </trkpt>
             """
@@ -51,7 +58,11 @@ def _track_points(coordinates: list, timestamps: list):
 
 
 def _build_gpx(time, file_name, coordinates: list, timestamps: list, sport: str):
-    return _gpx_file(time=time, name=file_name, track_points=_track_points(coordinates, timestamps), sport=sport)
+    return _gpx_file(
+        time=time,
+        name=file_name,
+        track_points=_track_points(coordinates, timestamps),
+        sport=sport)
 
 
 def _fill_list_of_timestamps(start: datetime.date, duration, length: int):
@@ -70,12 +81,14 @@ def save_activity_to_gpx_file(activity):
     file_name = f"{activity.date}_{sanitize(activity.name)}.gpx"
     path = os.path.join(settings.MEDIA_ROOT, file_name)
     coordinates = json.loads(activity.trace_file.coordinates)
+    if activity.trace_file.elevation:
+        coordinates = add_elevation_data_to_coordinates(coordinates, json.loads(activity.trace_file.elevation))
     file_content = _build_gpx(
         time=activity.date,
         file_name=activity.name,
         coordinates=coordinates,
         timestamps=_fill_list_of_timestamps(start=activity.date, duration=activity.duration, length=len(coordinates)),
-        sport=activity.sport.name
+        sport=activity.sport.name,
     )
     with open(path, "w+") as f:
         f.write(file_content)
