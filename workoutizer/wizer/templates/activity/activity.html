@@ -8,8 +8,15 @@
                                                               style="color: {{ activity.sport.color }};">
         <i class="fas fa-{{ activity.sport.icon }}"></i>
     </a></h3>
-    <a class="float-right btn btn-warning" href="{{ activity.id }}/edit"><i class="fas fa-pen"></i>&nbsp;&nbsp;Edit
-        Activity</a>
+    <div class="btn-group float-right">
+        <a class="btn btn-warning" href="{{ activity.id }}/edit" data-toggle="tooltip" data-placement="bottom"
+           title="Edit Activity"><i class="fas fa-pen"></i></a>
+        {% if traces %}
+            <a class="btn btn-warning" href="{{ activity.id }}/download" data-toggle="tooltip" data-placement="bottom"
+               title="Download GPX File"><i class="fas fa-download"></i></a>
+        {% endif %}
+    </div>
+
     <div class="clearfix"></div>
     <p>{{ activity.date }}</p>
     <hr>
@@ -60,11 +67,6 @@
                     </div>
                 </div>
             </div>
-            {% if traces %}
-                <br>
-                <a class="btn-sm btn-warning" href="{{ activity.id }}/download">Download GPX&nbsp;&nbsp;<i
-                        class="fas fa-download"></i></a>
-            {% endif %}
         </div>
         {% if traces %}
             <div class="col-sm-9">
