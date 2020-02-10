@@ -5,7 +5,7 @@ locally on any system running Python. Track your activities to get an overview y
 platforms like [strava](https://www.strava.com/) or [garmin connect](https://connect.garmin.com/) - but without
 uploading all your sensitive health data to some 3rd party cloud.
 
-### Getting Started
+## Getting Started
 
 To run the application, just clone the repo, navigate into the root of the repo and run
 
@@ -13,5 +13,19 @@ To run the application, just clone the repo, navigate into the root of the repo 
 docker-compose up
 ```
 
-It comes bundled with some initial dummy activity data. Enjoy!
+## Preview
 
+It comes bundled with some initial dummy activity data:
+
+<div align="center">
+    <h3>Dashboard</h3>
+    <img src="https://i.imgur.com/Dbb7DmB.png" width="800" alt="Dashboard">
+    <hr>
+    <h3>Sport View</h3>
+    <img src="https://i.imgur.com/dHMGy9v.png" width="800" alt="Sport View">
+    <hr>
+    <h3>Activity View</h3>
+    <img src="https://i.imgur.com/nD2D1uq.png" width="800" alt="Activity View">
+</div>
+
+Enjoy!
