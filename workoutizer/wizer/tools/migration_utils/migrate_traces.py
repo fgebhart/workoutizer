@@ -2,7 +2,7 @@ import logging
 import json
 import datetime
 
-log = logging.getLogger('wizer.migrate_db')
+log = logging.getLogger(__name__)
 
 
 def migrate_traces(source_model, target_model):
