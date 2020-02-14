@@ -64,14 +64,13 @@
                                     <td>{{ activity.trace_file.min_altitude }}</td>
                                 </tr>
                             {% endif %}
-                            {% if activity.description %}
-                                <tr>
-                                    <th scope="row">Description</th>
-                                    <td></td>
-                                </tr>
-                            {% endif %}
+                            <tr>
+                                <th></th>
+                            </tr>
                         </table>
                         {% if activity.description %}
+                            <b>Description</b>
+                            <hr>
                             {{ activity.description }}
                         {% endif %}
                     </div>
