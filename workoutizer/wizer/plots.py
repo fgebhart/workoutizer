@@ -4,7 +4,7 @@ import datetime
 from math import pi
 import pandas as pd
 from bokeh.core.properties import value
-from bokeh.models import ColumnDataSource, HoverTool
+from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.transform import cumsum
@@ -72,13 +72,6 @@ def plot_activities(activities, plotting_style="line"):
         p.multi_line(xs='xs', ys='ys', color='colors', line_width=4, legend='legend', hover_line_color='colors',
                      hover_line_alpha=1.0, source=ColumnDataSource(data))
 
-        p.add_tools(HoverTool(
-            show_arrow=True,
-            line_policy='next',
-            tooltips=[
-                ('Sport', '@legend'),
-                ('Duration', '$y'),
-            ], ))
     else:
         sports = df.columns
 
@@ -89,7 +82,6 @@ def plot_activities(activities, plotting_style="line"):
 
         p.vbar_stack(sports, x='dates', width=70000000, color=colors, source=plot_data,
                      legend=[value(x) for x in sports])
-        p.add_tools(HoverTool(tooltips="$name: @$name min", ))
 
     p.legend.label_text_font = "Ubuntu"
     p.legend.location = "top_left"
