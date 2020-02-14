@@ -158,7 +158,7 @@ LOGGING = {
         },
         'wizer': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'DEBUG',
         },
     },
 }
