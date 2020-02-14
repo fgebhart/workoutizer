@@ -77,20 +77,12 @@ WSGI_APPLICATION = 'workoutizer.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 sqlite_file = 'db.sqlite3'
-if os.environ.get('DEVENV') == 'docker':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join('/tmp/db.sqlite3'),
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, sqlite_file),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, sqlite_file),
-        }
-    }
+}
 
 
 # Password validation

@@ -41,8 +41,8 @@ class WizerFileDaemon(AppConfig):
             from .models import Settings, Traces, Activity, Sport
 
             # ensure all trace objects have the min and max altitude value
-            from wizer.tools.migration_utils.migrate_altitudes import migrate_altitudes
-            migrate_altitudes(Traces)
+            # from wizer.tools.migration_utils.migrate_altitudes import migrate_altitudes
+            # migrate_altitudes(Traces)
 
             if os.environ.get('DEVENV') == 'docker':
                 insert_settings_and_sports_to_model(

@@ -18,22 +18,52 @@ sport_data = {
 
 def _activity_data(sport_model, counter):
     return {
-        'name': ['Indoor Club Training', 'Cycling on Hometrainer', 'Indoor Club Training'],
-        'sport': [sport_model.objects.get(name='Swimming'),
-                  sport_model.objects.get(name='Cycling'),
-                  sport_model.objects.get(name='Swimming')],
-        'date': [datetime.datetime.now() - datetime.timedelta(days=3*counter+2),
-                 datetime.datetime.now() - datetime.timedelta(days=3*counter+2),
-                 datetime.datetime.now() - datetime.timedelta(days=3*counter+2)],
-        'duration': [datetime.timedelta(minutes=90),
-                     datetime.timedelta(minutes=48),
-                     datetime.timedelta(minutes=82)],
-        'calories': [571, 432, 620]
+        'name': [
+            'Indoor Club Training', 'Cycling on Hometrainer', 'Indoor Club Training',
+            'Indoor Club Training', 'Cycling on Hometrainer', 'Indoor Club Training',
+            'Indoor Club Training', 'Cycling on Hometrainer', 'Indoor Club Training',
+        ],
+        'sport': [
+            sport_model.objects.get(name='Swimming'),
+            sport_model.objects.get(name='Cycling'),
+            sport_model.objects.get(name='Swimming'),
+            sport_model.objects.get(name='Swimming'),
+            sport_model.objects.get(name='Cycling'),
+            sport_model.objects.get(name='Swimming'),
+            sport_model.objects.get(name='Swimming'),
+            sport_model.objects.get(name='Cycling'),
+            sport_model.objects.get(name='Swimming'),
+        ],
+        'date': [
+            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
+            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
+            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
+            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
+            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
+            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
+            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
+            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
+            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
+        ],
+        'duration': [
+            datetime.timedelta(minutes=90),
+            datetime.timedelta(minutes=48),
+            datetime.timedelta(minutes=82),
+            datetime.timedelta(minutes=90),
+            datetime.timedelta(minutes=48),
+            datetime.timedelta(minutes=82),
+            datetime.timedelta(minutes=90),
+            datetime.timedelta(minutes=48),
+            datetime.timedelta(minutes=82),
+        ],
+        'calories': [571, 432, 620,
+                     571, 432, 620,
+                     571, 432, 620]
     }
 
 
 def insert_settings_and_sports_to_model(settings_model, sport_model):
-    settings_model.objects.get_or_create(path_to_trace_dir=settings.TRACKS_DIR, number_of_days=10)
+    settings_model.objects.get_or_create(pk=1, path_to_trace_dir=settings.TRACKS_DIR, number_of_days=30)
     log.info(f"created initial settings")
     for i in range(len(sport_data['name'])):
         sport_model.objects.get_or_create(
