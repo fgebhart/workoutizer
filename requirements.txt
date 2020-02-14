@@ -4,7 +4,7 @@ bokeh==1.4.0
 certifi==2019.11.28
 chardet==3.0.4
 coloredlogs==10.0
-Django==2.2.5
+Django==3.0.3
 django-leaflet==0.26.0
 dropbox==9.4.0
 fitparse==1.1.0
