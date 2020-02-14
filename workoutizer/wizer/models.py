@@ -1,5 +1,6 @@
 import logging
 import datetime
+import json
 
 from django.db import models
 from django.utils import timezone
@@ -34,11 +35,19 @@ class Traces(models.Model):
     coordinates = models.CharField(max_length=10000000000, null=True, blank=True)
     elevation = models.CharField(max_length=10000000000, null=True, blank=True)
     heart_rate = models.CharField(max_length=10000000000, null=True, blank=True)
+    max_altitude = models.FloatField(blank=True, null=True)
+    min_altitude = models.FloatField(blank=True, null=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         self.file_name = self.path_to_file.split("/")[-1]
         log.debug(f"creating file name from path {self.path_to_file} -> {self.file_name}")
+        if self.elevation:
+            ele = json.loads(self.elevation)
+            ele = list(ele)
+            self.max_altitude = round(float(max(ele)), 2)
+            self.min_altitude = round(float(min(ele)), 2)
+            log.debug(f"found min: {self.min_altitude} and max: {self.max_altitude} altitude")
         super(Traces, self).save()
 
 

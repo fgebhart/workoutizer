@@ -39,6 +39,11 @@ class WizerFileDaemon(AppConfig):
         if 'runserver' in sys.argv and os.environ.get('RUN_MAIN', None) != 'true':
             # ensure to only run with 'manage.py runserver' and not in auto reload thread
             from .models import Settings, Traces, Activity, Sport
+
+            # ensure all trace objects have the min and max altitude value
+            from wizer.tools.migration_utils.migrate_altitudes import migrate_altitudes
+            migrate_altitudes(Traces)
+
             if os.environ.get('DEVENV') == 'docker':
                 insert_settings_and_sports_to_model(
                     settings_model=Settings,

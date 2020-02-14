@@ -7,7 +7,7 @@ from wizer.file_helper.lib.parser import Parser
 log = logging.getLogger(__name__)
 
 
-# coordinates conversion parameter
+# coordinates conversion parameter, not sure why this was needed, maybe due to swapping lat with lon
 ccp = 11930464.71111111
 
 

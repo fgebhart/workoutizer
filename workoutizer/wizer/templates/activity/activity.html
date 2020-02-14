@@ -54,6 +54,16 @@
                                     <td>{{ activity.calories }} kcal</td>
                                 </tr>
                             {% endif %}
+                            {% if activity.trace_file.elevation %}
+                                <tr>
+                                    <th scope="row">Max Altitude</th>
+                                    <td>{{ activity.trace_file.max_altitude }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Min Altitude</th>
+                                    <td>{{ activity.trace_file.min_altitude }}</td>
+                                </tr>
+                            {% endif %}
                             {% if activity.description %}
                                 <tr>
                                     <th scope="row">Description</th>
@@ -75,3 +85,4 @@
         {% endif %}
     </div>
 {% endblock %}
+
