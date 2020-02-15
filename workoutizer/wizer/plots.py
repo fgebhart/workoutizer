@@ -3,7 +3,6 @@ import datetime
 
 from math import pi
 import pandas as pd
-from bokeh.core.properties import value
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.embed import components
@@ -69,7 +68,7 @@ def plot_activities(activities, plotting_style="line"):
             'colors': colors,
         }
 
-        p.multi_line(xs='xs', ys='ys', color='colors', line_width=4, legend='legend', hover_line_color='colors',
+        p.multi_line(xs='xs', ys='ys', color='colors', line_width=3, legend_group='legend', hover_line_color='colors',
                      hover_line_alpha=1.0, source=ColumnDataSource(data))
 
     else:
@@ -81,7 +80,7 @@ def plot_activities(activities, plotting_style="line"):
         plot_data['dates'] = dates
 
         p.vbar_stack(sports, x='dates', width=70000000, color=colors, source=plot_data,
-                     legend=[value(x) for x in sports])
+                     legend_label=[s for s in sports])
 
     p.legend.label_text_font = "Ubuntu"
     p.legend.location = "top_left"
