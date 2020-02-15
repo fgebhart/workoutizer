@@ -103,7 +103,9 @@ def _insert_current_date_into_gpx(gpx, strf_timestamp: str):
     output_from_parsed_template = template.render(time=strf_timestamp)
 
     # to save the results
-    with open(os.path.join(settings.TRACKS_DIR, os.path.basename(gpx)), "w") as fh:
+    new_file = os.path.join(settings.TRACKS_DIR, os.path.basename(gpx))
+    with open(new_file, "w") as fh:
+        log.debug(f"saving {new_file}")
         fh.write(output_from_parsed_template)
 
 
