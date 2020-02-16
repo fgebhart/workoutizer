@@ -41,7 +41,7 @@
     var Bounds = geoJsonLayer.getBounds();
     map.fitBounds(Bounds);
 
-    {#-------------------------#}
+    {# custom hover popup marksers, from: http://jsfiddle.net/sowelie/3JbNY/ #}
     var MyCustomMarker = L.Marker.extend({
         bindPopup: function (htmlContent, options) {
             if (options && options.showOnMouseOver) {
@@ -102,39 +102,22 @@
     });
     var markers = new L.FeatureGroup();
 
-    function getRandomLatLng(map) {
-        var bounds = map.getBounds(),
-            southWest = bounds.getSouthWest(),
-            northEast = bounds.getNorthEast(),
-            lngSpan = northEast.lng - southWest.lng,
-            latSpan = northEast.lat - southWest.lat;
-        return new L.LatLng(
-            southWest.lat + latSpan * Math.random(),
-            southWest.lng + lngSpan * Math.random());
-    }
-
-    {#-------------------------#}
-
     {% for line in traces %}
         numPts ={{ line.coordinates }};
         beg = {{ line.coordinates }}[0];
         end = {{ line.coordinates }}[numPts.length - 1];
 
-        L.marker([beg[1], beg[0]]).addTo(map);
-        L.marker([end[1], end[0]]).addTo(map);
-
-        function populate() {
-            for (var i = 0; i < 10; i++) {
-                var marker = new MyCustomMarker(getRandomLatLng(map));
-                marker.bindPopup("<p>ASDFASDF</p>", {
-                    showOnMouseOver: true
-                });
-                markers.addLayer(marker);
-            }
-            return false;
-        }
+        var begin_marker = new MyCustomMarker([beg[1], beg[0]]).addTo(map);
+        begin_marker.bindPopup("<p>Begin</p>", {
+            showOnMouseOver: true
+        });
+        var end_marker = new MyCustomMarker([end[1], end[0]]).addTo(map);
+        end_marker.bindPopup("<p>End</p>", {
+            showOnMouseOver: true
+        });
+        markers.addLayer(begin_marker);
+        markers.addLayer(end_marker);
         map.addLayer(markers);
-        populate();
 
     {% endfor %}
 
