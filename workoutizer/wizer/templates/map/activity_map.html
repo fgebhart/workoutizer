@@ -5,12 +5,10 @@
     <!-- leaflet-elevation -->
     <link rel="stylesheet" href="https://unpkg.com/@raruto/leaflet-elevation@latest/leaflet-elevation.css"/>
     <script src="https://unpkg.com/@raruto/leaflet-elevation@latest/leaflet-elevation.js"></script>
-
     <style>
         .elevation-control.elevation .area {
             fill: {{ color }};
         }
-
         .elevation-control.elevation .background {
             background-color: white;
         }
@@ -66,8 +64,8 @@
         beg = {{ line.coordinates }}[0];
         end = {{ line.coordinates }}[numPts.length - 1];
 
-        L.marker([beg[1], beg[0]]).addTo(map);
-        L.marker([end[1], end[0]]).addTo(map);
+        L.marker([beg[1], beg[0]], {icon: greenIcon}).addTo(map);
+        L.marker([end[1], end[0]], {icon: redIcon}).addTo(map);
     {% endfor %}
 
 
