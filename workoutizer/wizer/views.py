@@ -44,6 +44,8 @@ class MapView(View):
                     log.warning(f"could not find color of sport: {sport}, using default color instead: {e}")
                 if coordinates:
                     traces.append(GeoTrace(
+                        pk=activity.pk,
+                        name=activity.name,
                         sport=sport,
                         color=color,
                         coordinates=coordinates))

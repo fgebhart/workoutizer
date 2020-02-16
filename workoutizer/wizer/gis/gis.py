@@ -9,6 +9,8 @@ log = logging.getLogger(__name__)
 
 @dataclass
 class GeoTrace:
+    pk: int
+    name: str
     coordinates: list
     sport: str
     color: str = '#808080'
