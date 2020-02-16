@@ -1,9 +1,8 @@
 {% extends 'lib/base.html' %}
 {% load filters %}
-{% load static %}
 {% block body %}
 
-    <title>{{ activity.name }} - Workoutizer</title>
+    <title>{{ activity.name }} | Workoutizer</title>
     <h3 class="float-left">{{ activity.name }}&nbsp;&nbsp; <a href="/sport/{{ activity.sport.slug }}"
                                                               style="color: {{ activity.sport.color }};">
         <i class="fas fa-{{ activity.sport.icon }}"></i>

@@ -1,7 +1,6 @@
-<title>Sport</title>
 {% extends 'lib/base.html' %}
-{% load static %}
 {% block body %}
+    <title>{{ sport.name }} | Workoutizer</title>
     <h3 class="float-left"><i class="fas fa-{{ sport.icon }}"
                               style="color: {{ sport.color }};"></i>&nbsp;&nbsp;&nbsp;{{ sport.name }}
     </h3>

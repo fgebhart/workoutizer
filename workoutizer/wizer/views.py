@@ -3,7 +3,7 @@ import datetime
 import json
 
 import webcolors
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.contrib import messages
@@ -121,3 +121,9 @@ def get_summary_of_activities(activities):
     log.debug(f"total duration of selected activities: {total_duration}")
     return {'count': len(activities), 'duration': total_duration,
             'distance': int(sum([n.distance for n in activities]))}
+
+
+def custom_404_view(request, exception=None):
+    response = render_to_response("lib/404.html")
+    response.status_code = 404
+    return response

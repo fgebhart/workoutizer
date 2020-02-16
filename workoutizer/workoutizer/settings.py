@@ -126,6 +126,10 @@ INITIAL_TRACE_DATA_DIR = os.path.join(os.path.dirname(BASE_DIR), 'setup', 'initi
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    "wizer/static",
+]
+
 PLOT_WIDTH = 1110
 PLOT_HEIGHT = 300
 
