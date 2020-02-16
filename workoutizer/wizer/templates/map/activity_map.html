@@ -62,10 +62,17 @@
     });
 
     {% for line in traces %}
-        var coordinates = {{ line.coordinates }};
+        coordinates = {{ line.coordinates }};
+        numPts = {{ line.coordinates }};
+        beg = {{ line.coordinates }}[0];
+        end = {{ line.coordinates }}[numPts.length - 1];
+
+        L.marker([beg[1], beg[0]]).addTo(map);
+        L.marker([end[1], end[0]]).addTo(map);
     {% endfor %}
 
-    var data = {
+
+    data = {
         "name": "demo.geojson",
         "type": "FeatureCollection",
         "features": [{
