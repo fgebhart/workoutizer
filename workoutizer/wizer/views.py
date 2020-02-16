@@ -3,7 +3,7 @@ import datetime
 import json
 
 import webcolors
-from django.shortcuts import render, redirect, render_to_response
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.contrib import messages
@@ -124,6 +124,4 @@ def get_summary_of_activities(activities):
 
 
 def custom_404_view(request, exception=None):
-    response = render_to_response("lib/404.html")
-    response.status_code = 404
-    return response
+    return render(None, "lib/404.html", status=404)
