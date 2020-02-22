@@ -41,15 +41,16 @@ class Traces(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        self.file_name = self.path_to_file.split("/")[-1]
         log.debug(f"creating file name from path {self.path_to_file} -> {self.file_name}")
+        self.file_name = self.path_to_file.split("/")[-1]
         if self.elevation:
             if not isinstance(self.elevation, list):
                 ele = json.loads(self.elevation)
                 self.elevation = list(ele)
-            self.max_altitude = round(float(max(self.elevation)), 2)
-            self.min_altitude = round(float(min(self.elevation)), 2)
-            log.debug(f"found min: {self.min_altitude} and max: {self.max_altitude} altitude")
+            if len(self.elevation) > 0:
+                self.max_altitude = round(float(max(self.elevation)), 2)
+                self.min_altitude = round(float(min(self.elevation)), 2)
+                log.debug(f"found min: {self.min_altitude} and max: {self.max_altitude} altitude")
         super(Traces, self).save()
 
 
