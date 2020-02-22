@@ -1,13 +1,13 @@
 {% if messages %}
     {% for message in messages %}
         {% if message.level_tag == "success" %}
-            <div class="alert alert-success">
+            <div class="alert alert-success"><i class="fas fa-check"></i>&nbsp;&nbsp;
         {% elif message.level_tag == "info" %}
-            <div class="alert alert-info">
+            <div class="alert alert-info"><i class="fas fa-info"></i>&nbsp;&nbsp;
         {% elif message.level_tag == "warning" %}
-            <div class="alert alert-warning">
+            <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;
         {% elif message.level_tag == "error" %}
-            <div class="alert alert-danger">
+            <div class="alert alert-danger"><i class="fas fa-times-circle"></i>&nbsp;&nbsp;
         {% endif %}
     {{ message }}
     <button type="button" class="close" data-dismiss="alert">&times;</button>
