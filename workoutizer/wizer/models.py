@@ -1,3 +1,4 @@
+import os
 import logging
 import datetime
 import json
@@ -6,7 +7,7 @@ from django.db import models
 from django.utils import timezone
 from django.template.defaultfilters import slugify
 
-log = logging.getLogger("wizer.models")
+log = logging.getLogger(__name__)
 
 
 class Sport(models.Model):
@@ -65,6 +66,14 @@ class Activity(models.Model):
     description = models.CharField(max_length=300, blank=True, null=True, verbose_name="Description:")
     trace_file = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=True, null=True)
     calories = models.IntegerField(null=True, blank=True)
+
+    def delete(self, *args, **kwargs):
+        self.trace_file.delete()
+        log.debug(f"deleted trace object {self.trace_file}")
+        os.remove(self.trace_file.path_to_file)
+        log.debug(f"deleted trace file also: {self.name}")
+        super(Activity, self).delete(*args, **kwargs)
+        log.debug(f"deleted activity: {self.name}")
 
 
 class Settings(models.Model):

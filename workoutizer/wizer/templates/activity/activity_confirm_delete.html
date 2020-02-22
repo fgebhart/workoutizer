@@ -5,7 +5,22 @@
     <h3>Delete "{{ activity }}"?</h3>
 
     <br>
-    <p>Are you sure you want to delete "{{ activity }}"?</p>
+    <p>
+        Are you sure you want to delete "{{ activity }}"?
+    </p>
+    <br>
+    {% if activity.trace_file %}
+        <div class="alert alert-warning">
+            <strong>
+                <i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Warning&nbsp;&nbsp;<i
+                    class="fas fa-exclamation-triangle"></i>
+            </strong>
+            <br>
+            This will also delete the trace file of this activity located at:
+            <br>
+            <code>{{ activity.trace_file.path_to_file }}</code>
+        </div>
+    {% endif %}
 
     <form method="post">{% csrf_token %}
         <br>
