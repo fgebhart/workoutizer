@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 sport_naming_map = {
     'Jogging': ['jogging', 'running'],
-    'Cycling': ['cycle', 'cycling', 'biking'],
+    'Cycling': ['cycle', 'cycling', 'biking', '1'],
     'Mountainbiking': ['mountainbiking', 'mountainbike', 'mountain biking', 'mountain bike', 'mountain-biking',
                        'mountain-bike', 'mtbing', 'mtb', 'cycling_mountain'],
     'Hiking': ['hiking', 'hike', 'wandern', 'walking', 'mountaineering'],
