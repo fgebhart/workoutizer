@@ -33,9 +33,9 @@ class MapView(View):
         for activity in list_of_activities:
             if activity.trace_file:
                 coordinates = json.loads(activity.trace_file.coordinates)
-                if activity.trace_file.elevation:
+                elevation = json.loads(activity.trace_file.elevation)
+                if elevation:
                     has_elevation = True
-                    elevation = json.loads(activity.trace_file.elevation)
                     coordinates = add_elevation_data_to_coordinates(coordinates, elevation)
                 try:
                     color = webcolors.name_to_hex(activity.sport.color)  # NOTE: last activity color will be applied
@@ -97,7 +97,7 @@ def settings_view(request):
     form = SettingsForm(request.POST or None, instance=settings)
     if request.method == 'POST':
         if form.is_valid():
-            log.info(f"got valid form: {form.cleaned_data}")
+            log.debug(f"got valid form: {form.cleaned_data}")
             form.save()
             messages.success(request, 'Successfully saved Settings!')
             return HttpResponseRedirect('/settings')

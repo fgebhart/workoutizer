@@ -53,7 +53,7 @@
                                     <td>{{ activity.calories }} kcal</td>
                                 </tr>
                             {% endif %}
-                            {% if activity.trace_file.elevation %}
+                            {% if has_elevation %}
                                 <tr>
                                     <th scope="row">Max Altitude</th>
                                     <td>{{ activity.trace_file.max_altitude }}</td>

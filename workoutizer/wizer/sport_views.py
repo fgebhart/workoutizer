@@ -71,7 +71,7 @@ def edit_sport_view(request, sports_name_slug):
     form = AddSportsForm(request.POST or None, instance=sport)
     if request.method == 'POST':
         if form.is_valid():
-            log.info(f"got valid form: {form.cleaned_data}")
+            log.debug(f"got valid form: {form.cleaned_data}")
             form.save()
             messages.success(request, f"Successfully modified '{form.cleaned_data['name']}'")
             return HttpResponseRedirect(f'/sport/{sport.slug}/edit/')
