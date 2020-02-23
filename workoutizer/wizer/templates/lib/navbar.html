@@ -14,7 +14,8 @@
         </div>
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item order-1"><a class="nav-link" href="{% url 'settings' %}" data-toggle="tooltip" data-placement="bottom" title="Settings"><i class="fas fa-cogs"></i></a>
+                <li class="nav-item order-1"><a class="nav-link" href="{% url 'settings' %}" data-toggle="tooltip"
+                                                data-placement="bottom" title="Settings"><i class="fas fa-cogs"></i></a>
                 </li>
                 <li>
                     <div class="dropdown">
@@ -24,9 +25,11 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="{% url 'sports' %}">All Sports</a>
                             <div class="dropdown-divider"></div>
-                            {% for s in sports %}
-                                <a class="dropdown-item" href="/sport/{{ s.slug }}">{{ s.name }}&nbsp;&nbsp;<i
-                                        class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i></a>
+                            {% for sport in sports %}
+                                {% if sport.slug != 'unknown' %}
+                                    <a class="dropdown-item" href="/sport/{{ sport.slug }}">{{ sport.name }}&nbsp;&nbsp;<i
+                                            class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a>
+                                {% endif %}
                             {% endfor %}
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'add-sport' %}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add
@@ -34,7 +37,8 @@
                         </div>
                     </div>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="#!" data-toggle="tooltip" data-placement="bottom" title="Notifications"><i class="fas fa-bell"></i></a></li>
+                <li class="nav-item"><a class="nav-link" href="#!" data-toggle="tooltip" data-placement="bottom"
+                                        title="Notifications"><i class="fas fa-bell"></i></a></li>
             </ul>
         </div>
     </div>
