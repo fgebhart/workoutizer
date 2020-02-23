@@ -52,7 +52,8 @@ class GPXParser(Parser):
         for track in self.gpx.tracks:
             for segment in track.segments:
                 for point in segment.points:
-                    self.elevation.append(point.elevation)
+                    if point.elevation:
+                        self.elevation.append(point.elevation)
                     self.coordinates.append([point.longitude, point.latitude])
         log.debug(f"found number of coordinates: {len(self.coordinates)}")
         log.debug(f"found number of elevation points: {len(self.elevation)}")
