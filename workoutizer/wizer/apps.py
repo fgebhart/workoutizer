@@ -131,12 +131,20 @@ class FileImporter:
                     log.info(f"created new {sport_instance} activity: {parser.name}")
                 except Exception as e:
                     log.error(f"could not import activity of file: {file}. {e}", exc_info=True)
-            else:  # means file is stored in db already
+            else:  # checksum is in db already
+                file_name = file.split("/")[-1]
                 trace_file_path_instance = self.traces_model.objects.get(md5sum=md5sum)
-                if trace_file_path_instance.path_to_file != file:
+                if trace_file_path_instance.file_name == file_name and trace_file_path_instance.path_to_file != file:
                     log.debug(f"path of file: {trace_file_path_instance.path_to_file} has changed, updating to {file}")
                     trace_file_path_instance.path_to_file = file
                     trace_file_path_instance.save()
+                elif trace_file_path_instance.file_name != file_name and trace_file_path_instance.path_to_file != file:
+                    log.warning(f"The following two files have the same checksum, "
+                                f"you might want to remove one of them:\n"
+                                f"{file}\n"
+                                f"{trace_file_path_instance.path_to_file}")
+                else:
+                    pass  # means file is already in db
 
 
 def map_sport_name(sport_name, map_dict):
