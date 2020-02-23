@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 sport_naming_map = {
     'Jogging': ['jogging', 'running'],
-    'Cycling': ['cycle', 'cycling', 'biking', '1'],
+    'Cycling': ['cycle', 'cycling', 'biking'],
     'Mountainbiking': ['mountainbiking', 'mountainbike', 'mountain biking', 'mountain bike', 'mountain-biking',
                        'mountain-bike', 'mtbing', 'mtb', 'cycling_mountain'],
     'Hiking': ['hiking', 'hike', 'wandern', 'walking', 'mountaineering'],
@@ -140,11 +140,11 @@ class FileImporter:
 
 
 def map_sport_name(sport_name, map_dict):
-    sport = None
+    sport = 'unknown'
     for k, v in map_dict.items():
         if sanitize(sport_name) in v:
             log.debug(f"mapped activity sport: {sport_name} to {k}")
             sport = k
     if not sport:
-        log.warning(f"could not map {sport_name} to given sport names, use None instead")
+        log.warning(f"could not map {sport_name} to given sport names, use unknown instead")
     return sport

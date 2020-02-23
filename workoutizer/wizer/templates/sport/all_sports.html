@@ -16,15 +16,17 @@
             <th>Slug</th>
         </tr>
         </thead>
-        {% for s in sports %}
-            <tbody>
-            <tr>
-                <td><a href="/sport/{{ s.slug }}">{{ s.name }}</a></td>
-                <td style="color:{{ s.color }}">{{ s.color }}</td>
-                <td><i class="fas fa-{{ s.icon }}"></i></td>
-                <td>{{ s.slug }}</td>
-            </tr>
-            </tbody>
+        {% for sport in sports %}
+            {% if sport.slug != 'unknown' %}
+                <tbody>
+                <tr>
+                    <td><a href="/sport/{{ sport.slug }}">{{ sport.name }}</a></td>
+                    <td style="color:{{ sport.color }}">{{ sport.color }}</td>
+                    <td><i class="fas fa-{{ sport.icon }}"></i></td>
+                    <td>{{ sport.slug }}</td>
+                </tr>
+                </tbody>
+            {% endif %}
         {% endfor %}
     </table>
     <br>
