@@ -69,13 +69,12 @@ class Activity(models.Model):
     calories = models.IntegerField(null=True, blank=True)
 
     def delete(self, *args, **kwargs):
-        self.trace_file.delete()
-        log.debug(f"deleted trace object {self.trace_file}")
-        try:
-            os.remove(self.trace_file.path_to_file)
-            log.debug(f"deleted trace file also: {self.name}")
-        except FileNotFoundError:
-            log.debug(f"no trace file found for deletion")
+        if self.trace_file:
+            self.trace_file.delete()
+            log.debug(f"deleted trace object {self.trace_file}")
+            if os.path.isfile(self.trace_file.path_to_file):
+                os.remove(self.trace_file.path_to_file)
+                log.debug(f"deleted trace file also: {self.name}")
         super(Activity, self).delete(*args, **kwargs)
         log.debug(f"deleted activity: {self.name}")
 
