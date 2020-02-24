@@ -6,6 +6,7 @@ from multiprocessing import Process
 
 from django.apps import AppConfig
 from django.db.utils import OperationalError
+from django.core.exceptions import ObjectDoesNotExist
 
 from wizer.file_helper.gpx_parser import GPXParser
 from wizer.file_helper.fit_parser import FITParser
@@ -131,6 +132,13 @@ class FileImporter:
                     log.info(f"created new {sport_instance} activity: {parser.name}")
                 except Exception as e:
                     log.error(f"could not import activity of file: {file}. {e}", exc_info=True)
+                    # It might be the case, that the trace file object was created, but no activity.
+                    # Delete the trace file object again, to enable reimporting
+                    try:
+                        log.debug(f"removed {trace_file_instance} from model, since activity was not created")
+                        trace_file_instance.delete()
+                    except Exception as e:
+                        log.debug(f"could not delete trace file object, since it was not created yet, {e}")
             else:  # checksum is in db already
                 file_name = file.split("/")[-1]
                 trace_file_path_instance = self.traces_model.objects.get(md5sum=md5sum)
