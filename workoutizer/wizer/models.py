@@ -71,8 +71,11 @@ class Activity(models.Model):
     def delete(self, *args, **kwargs):
         self.trace_file.delete()
         log.debug(f"deleted trace object {self.trace_file}")
-        os.remove(self.trace_file.path_to_file)
-        log.debug(f"deleted trace file also: {self.name}")
+        try:
+            os.remove(self.trace_file.path_to_file)
+            log.debug(f"deleted trace file also: {self.name}")
+        except FileNotFoundError:
+            log.debug(f"no trace file found for deletion")
         super(Activity, self).delete(*args, **kwargs)
         log.debug(f"deleted activity: {self.name}")
 
