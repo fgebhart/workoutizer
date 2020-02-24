@@ -41,3 +41,14 @@ body {
 .dropdown-menu {
   min-width:inherit;
 }
+
+.table td.limit {
+    max-width: 350px;
+}
+.table td.limit span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 100%;
+}
