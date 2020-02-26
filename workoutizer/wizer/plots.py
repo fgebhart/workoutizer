@@ -11,10 +11,10 @@ from bokeh.transform import cumsum
 from django.conf import settings
 from .models import Settings
 
-log = logging.getLogger("wizer.plots")
+log = logging.getLogger(__name__)
 
 
-def plot_activities(activities, plotting_style="line"):
+def _plot_activities(activities, plotting_style="line"):
     data = list()
     sports = list()
     dates = list()
@@ -91,7 +91,7 @@ def plot_activities(activities, plotting_style="line"):
 
 def create_plot(activities, plotting_style):
     try:
-        script, div = components(plot_activities(activities=activities, plotting_style=plotting_style))
+        script, div = components(_plot_activities(activities=activities, plotting_style=plotting_style))
     except AttributeError and TypeError and ValueError as e:
         log.warning(f"Could not render plot. Check if activity data is correct: {e}", exc_info=True)
         script = ""
@@ -133,3 +133,16 @@ def plot_pie_chart(activities):
     script_pc, div_pc = components(p)
 
     return script_pc, div_pc
+
+
+def plot_activity_trend(activities):
+    # data = {}
+    p = figure(x_axis_type='datetime', y_axis_type='datetime', plot_height=200,
+               sizing_mode='stretch_width')
+
+    # p.multi_line(xs='xs', ys='ys', color='colors', line_width=3, legend_group='legend', hover_line_color='colors',
+    #              hover_line_alpha=1.0, source=ColumnDataSource(data))
+
+    script_trend, div_trend = components(p)
+
+    return script_trend, div_trend
