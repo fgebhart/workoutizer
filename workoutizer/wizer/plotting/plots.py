@@ -9,7 +9,7 @@ from bokeh.embed import components
 from bokeh.transform import cumsum
 
 from django.conf import settings
-from .models import Settings
+from wizer.models import Settings
 
 log = logging.getLogger(__name__)
 
@@ -135,13 +135,31 @@ def plot_pie_chart(activities):
     return script_pc, div_pc
 
 
-def plot_activity_trend(activities):
-    # data = {}
-    p = figure(x_axis_type='datetime', y_axis_type='datetime', plot_height=200,
-               sizing_mode='stretch_width')
+def plot_activity_trend(activity_model):
+    time_interval_in_days = 7
+    activity_df = pd.DataFrame.from_records(activity_model.objects.all().values())
+    from bokeh.palettes import Spectral11
 
-    # p.multi_line(xs='xs', ys='ys', color='colors', line_width=3, legend_group='legend', hover_line_color='colors',
-    #              hover_line_alpha=1.0, source=ColumnDataSource(data))
+    data = {
+        pd.to_datetime('2020-03-01'): [2, 23],
+        pd.to_datetime('2020-03-02'): [4, 28],
+        pd.to_datetime('2020-03-03'): [8, 28],
+    }
+
+    # TODO: get activity data in format of above 'data' to plot it
+
+    log.debug(f"{data}")
+    toy_df = pd.DataFrame.from_dict(data=data, columns=('sport_id', 'hours_per_sport'), orient='index')
+
+    numlines = len(toy_df.columns)
+    mypalette = Spectral11[0:numlines]
+    log.debug(f"mypalette: {mypalette}")
+
+    p = figure(width=500, height=300, x_axis_type="datetime")
+    p.multi_line(xs=[toy_df.index.values] * numlines,
+                 ys=[toy_df[name].values for name in toy_df],
+                 line_color=mypalette,
+                 line_width=5)
 
     script_trend, div_trend = components(p)
 

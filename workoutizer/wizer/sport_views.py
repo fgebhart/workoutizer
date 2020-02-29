@@ -7,10 +7,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 from django.contrib import messages
 
-from .views import MapView, PlotView, get_summary_of_activities
-from .models import Sport
-from .forms import AddSportsForm
-from .plots import create_plot
+from wizer.views import MapView, PlotView, get_summary_of_activities
+from wizer.models import Sport
+from wizer.forms import AddSportsForm
+from wizer.plotting.plots import create_plot
 
 log = logging.getLogger(__name__)
 
