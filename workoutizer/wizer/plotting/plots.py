@@ -3,6 +3,7 @@ import datetime
 
 from math import pi
 import pandas as pd
+import numpy as np
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.embed import components
@@ -136,28 +137,35 @@ def plot_pie_chart(activities):
 
 
 def plot_activity_trend(activity_model):
-    time_interval_in_days = 7
-    activity_df = pd.DataFrame.from_records(activity_model.objects.all().values())
-    from bokeh.palettes import Spectral11
+    df = pd.DataFrame.from_records(activity_model.objects.values('sport_id', 'duration', 'date'))
+    df['date'] = pd.to_datetime(df['date'])
 
-    data = {
-        pd.to_datetime('2020-03-01'): [2, 23],
-        pd.to_datetime('2020-03-02'): [4, 28],
-        pd.to_datetime('2020-03-03'): [8, 28],
-    }
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        log.debug(f"df:\n{df.head()}")
+        df = df.set_index('date')
+        grouped = df.groupby([pd.Grouper(freq="1Y"), "sport_id"]).agg({"duration": np.sum})
+        log.debug(f"grouped:\n{grouped}")
+        grouped.reset_index(inplace=True)
+        log.debug(f"resetted:\n{grouped.set_index('date')}")
+        log.debug(f"columns\n{grouped.columns}")
 
-    # TODO: get activity data in format of above 'data' to plot it
+        pivoted = grouped.pivot(index='date', columns='sport_id', values='duration')
+        log.debug(f"pivoted:\n{pivoted}")
+        df = pivoted.fillna(0)
 
-    log.debug(f"{data}")
-    toy_df = pd.DataFrame.from_dict(data=data, columns=('sport_id', 'hours_per_sport'), orient='index')
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        log.debug(f"toy_df: \n{df}")
 
-    numlines = len(toy_df.columns)
-    mypalette = Spectral11[0:numlines]
-    log.debug(f"mypalette: {mypalette}")
+    num_lines = len(df.columns)
+    mypalette = Spectral11[0:num_lines]
 
-    p = figure(width=500, height=300, x_axis_type="datetime")
-    p.multi_line(xs=[toy_df.index.values] * numlines,
-                 ys=[toy_df[name].values for name in toy_df],
+    p = figure(width=500, height=300, x_axis_type="datetime", y_axis_type='linear')
+    xs = [df.index.values] * num_lines
+    ys = [df[name].values for name in df]
+    log.debug(f"xs: {xs}")
+    log.debug(f"ys: {ys}")
+    p.multi_line(xs=xs,
+                 ys=ys,
                  line_color=mypalette,
                  line_width=5)
 
