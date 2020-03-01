@@ -10,7 +10,7 @@ from django.contrib import messages
 
 from wizer.models import Sport, Activity, Settings
 from wizer.forms import SettingsForm
-from wizer.plots import create_plot, plot_pie_chart
+from wizer.plotting.plots import create_plot, plot_pie_chart, plot_activity_trend
 from wizer.gis.gis import GeoTrace, add_elevation_data_to_coordinates
 
 log = logging.getLogger(__name__)
@@ -85,10 +85,12 @@ class DashboardView(View, PlotView):
         summary = get_summary_of_activities(activities=activities)
         script, div = create_plot(activities=activities, plotting_style=self.settings.plotting_style)
         script_pc, div_pc = plot_pie_chart(activities=activities)
+        script_trend, div_trend = plot_activity_trend(activities=activities, sport_model=Sport)
         return render(request, self.template_name,
                       {'sports': self.sports, 'activities': activities, 'script': script, 'div': div,
                        'days': self.number_of_days, 'choices': self.days_choices, 'summary': summary,
-                       'script_pc': script_pc, 'div_pc': div_pc})
+                       'script_pc': script_pc, 'div_pc': div_pc, 'script_trend': script_trend,
+                       'div_trend': div_trend})
 
 
 def settings_view(request):
@@ -111,7 +113,7 @@ def set_number_of_days(request, number_of_days):
     n.number_of_days = number_of_days
     log.debug(f"number of days: {number_of_days}")
     n.save()
-    return redirect(request.META.get('HTTP_REFERER'))
+    return HttpResponseRedirect('/')
 
 
 def get_summary_of_activities(activities):

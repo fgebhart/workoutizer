@@ -3,18 +3,19 @@ import datetime
 
 from math import pi
 import pandas as pd
+import numpy as np
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.transform import cumsum
 
 from django.conf import settings
-from .models import Settings
+from wizer.models import Settings
 
-log = logging.getLogger("wizer.plots")
+log = logging.getLogger(__name__)
 
 
-def plot_activities(activities, plotting_style="line"):
+def _plot_activities(activities, plotting_style="line"):
     data = list()
     sports = list()
     dates = list()
@@ -85,13 +86,15 @@ def plot_activities(activities, plotting_style="line"):
     p.legend.label_text_font = "Ubuntu"
     p.legend.location = "top_left"
     p.xaxis[0].ticker.desired_num_ticks = 12
+    p.toolbar.logo = None
+    p.toolbar_location = None
 
     return p
 
 
 def create_plot(activities, plotting_style):
     try:
-        script, div = components(plot_activities(activities=activities, plotting_style=plotting_style))
+        script, div = components(_plot_activities(activities=activities, plotting_style=plotting_style))
     except AttributeError and TypeError and ValueError as e:
         log.warning(f"Could not render plot. Check if activity data is correct: {e}", exc_info=True)
         script = ""
@@ -121,7 +124,7 @@ def plot_pie_chart(activities):
     p = figure(plot_height=120, toolbar_location=None, sizing_mode='stretch_width',
                tools="hover", tooltips="@country: @value", x_range=(-0.5, 1.0))
 
-    p.wedge(x=0.3, y=0.5, radius=0.4,
+    p.wedge(x=0.3, y=0.5, radius=0.3,
             start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
             line_color="white", fill_color='color', source=data)
 
@@ -133,3 +136,31 @@ def plot_pie_chart(activities):
     script_pc, div_pc = components(p)
 
     return script_pc, div_pc
+
+
+def plot_activity_trend(activities, sport_model):
+    number_of_days = Settings.objects.get(pk=1).number_of_days
+
+    df = pd.DataFrame.from_records(activities.values('sport_id', 'duration', 'date'))
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.set_index('date')
+    days = int(number_of_days / 5)
+    freq = days if days > 1 else 1
+    df = df.groupby([pd.Grouper(freq=f"{freq}D"), "sport_id"]).agg({"duration": np.sum}).reset_index()
+    df = df.pivot(index='date', columns='sport_id', values='duration').fillna('0')
+    sports = sport_model.objects.exclude(name='unknown').order_by("id").values('id', 'name', 'color')
+    id_color_mapping = {}
+    for sport in sports:
+        id_color_mapping[sport['id']] = sport['color']
+    df = df.rename(columns=id_color_mapping)
+
+    p = figure(width=280, height=200, x_axis_type="datetime", y_axis_type='datetime')
+    p.multi_line(xs=[df.index.values] * len(df.columns), ys=[df[name].values for name in df],
+                 line_color=df.columns, line_width=2)
+
+    p.toolbar.logo = None
+    p.toolbar_location = None
+
+    script_trend, div_trend = components(p)
+
+    return script_trend, div_trend

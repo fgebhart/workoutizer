@@ -6,11 +6,12 @@
 <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.4.0.min.js"></script>
 
 <p class="text-center">
-    Distribution of Sports Count:
+    Sport Trend over last {{ days }} days:
 </p>
 
-{{ script_pc | safe }}
 
-{% if div_pc %}
-    {{ div_pc | safe }}
+{{ script_trend | safe }}
+
+{% if div_trend %}
+    {{ div_trend | safe }}
 {% endif %}
