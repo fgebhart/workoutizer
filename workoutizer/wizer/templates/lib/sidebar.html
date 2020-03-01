@@ -1,0 +1,12 @@
+<div class="sidebar" style="margin-top: 50px;">
+    <a href="/">Dashboard</a>
+    <a href="{% url 'sports' %}">All Sports</a>
+    {% for sport in sports %}
+        {% if sport.slug != 'unknown' %}
+            <a href="/sport/{{ sport.slug }}"><i
+                    class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i>&nbsp;&nbsp;{{ sport.name }}
+            </a>
+        {% endif %}
+    {% endfor %}
+    <a href="{% url 'add-sport' %}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Sport</a>
+</div>

@@ -52,3 +52,26 @@ body {
     display: inline-block;
     max-width: 100%;
 }
+
+.sidebar {
+  height: 100%;
+  width: 170px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: whitesmoke;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.sidebar a {
+  padding: 6px 8px 16px 16px;
+  text-decoration: none;
+  color: grey;
+  display: block;
+}
+
+.sidebar a:hover {
+  color: black;
+}
