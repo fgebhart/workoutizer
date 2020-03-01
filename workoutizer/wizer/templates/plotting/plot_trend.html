@@ -5,6 +5,11 @@
 <script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.4.0.min.js"></script>
 <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.4.0.min.js"></script>
 
+<p class="text-center">
+    Sport Trend over last {{ days }} days:
+</p>
+
+
 {{ script_trend | safe }}
 
 {% if div_trend %}

@@ -124,7 +124,7 @@ def plot_pie_chart(activities):
     p = figure(plot_height=120, toolbar_location=None, sizing_mode='stretch_width',
                tools="hover", tooltips="@country: @value", x_range=(-0.5, 1.0))
 
-    p.wedge(x=0.3, y=0.5, radius=0.4,
+    p.wedge(x=0.3, y=0.5, radius=0.3,
             start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
             line_color="white", fill_color='color', source=data)
 
@@ -144,7 +144,8 @@ def plot_activity_trend(activities, sport_model):
     df = pd.DataFrame.from_records(activities.values('sport_id', 'duration', 'date'))
     df['date'] = pd.to_datetime(df['date'])
     df = df.set_index('date')
-    freq = int(number_of_days / 5) if int(number_of_days / 5) > 1 else 1
+    days = int(number_of_days / 5)
+    freq = days if days > 1 else 1
     df = df.groupby([pd.Grouper(freq=f"{freq}D"), "sport_id"]).agg({"duration": np.sum}).reset_index()
     df = df.pivot(index='date', columns='sport_id', values='duration').fillna('0')
     sports = sport_model.objects.exclude(name='unknown').order_by("id").values('id', 'name', 'color')
@@ -153,9 +154,9 @@ def plot_activity_trend(activities, sport_model):
         id_color_mapping[sport['id']] = sport['color']
     df = df.rename(columns=id_color_mapping)
 
-    p = figure(width=300, height=200, x_axis_type="datetime", y_axis_type='datetime')
+    p = figure(width=280, height=200, x_axis_type="datetime", y_axis_type='datetime')
     p.multi_line(xs=[df.index.values] * len(df.columns), ys=[df[name].values for name in df],
-                 line_color=df.columns, line_width=3)
+                 line_color=df.columns, line_width=2)
 
     p.toolbar.logo = None
     p.toolbar_location = None
