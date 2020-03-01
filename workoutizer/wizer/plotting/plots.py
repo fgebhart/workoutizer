@@ -86,6 +86,8 @@ def _plot_activities(activities, plotting_style="line"):
     p.legend.label_text_font = "Ubuntu"
     p.legend.location = "top_left"
     p.xaxis[0].ticker.desired_num_ticks = 12
+    p.toolbar.logo = None
+    p.toolbar_location = None
 
     return p
 
@@ -136,38 +138,27 @@ def plot_pie_chart(activities):
     return script_pc, div_pc
 
 
-def plot_activity_trend(activity_model):
-    df = pd.DataFrame.from_records(activity_model.objects.values('sport_id', 'duration', 'date'))
+def plot_activity_trend(activities, sport_model):
+    number_of_days = Settings.objects.get(pk=1).number_of_days
+
+    df = pd.DataFrame.from_records(activities.values('sport_id', 'duration', 'date'))
     df['date'] = pd.to_datetime(df['date'])
+    df = df.set_index('date')
+    freq = int(number_of_days / 5) if int(number_of_days / 5) > 1 else 1
+    df = df.groupby([pd.Grouper(freq=f"{freq}D"), "sport_id"]).agg({"duration": np.sum}).reset_index()
+    df = df.pivot(index='date', columns='sport_id', values='duration').fillna('0')
+    sports = sport_model.objects.exclude(name='unknown').order_by("id").values('id', 'name', 'color')
+    id_color_mapping = {}
+    for sport in sports:
+        id_color_mapping[sport['id']] = sport['color']
+    df = df.rename(columns=id_color_mapping)
 
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-        log.debug(f"df:\n{df.head()}")
-        df = df.set_index('date')
-        grouped = df.groupby([pd.Grouper(freq="1Y"), "sport_id"]).agg({"duration": np.sum})
-        log.debug(f"grouped:\n{grouped}")
-        grouped.reset_index(inplace=True)
-        log.debug(f"resetted:\n{grouped.set_index('date')}")
-        log.debug(f"columns\n{grouped.columns}")
+    p = figure(width=300, height=200, x_axis_type="datetime", y_axis_type='datetime')
+    p.multi_line(xs=[df.index.values] * len(df.columns), ys=[df[name].values for name in df],
+                 line_color=df.columns, line_width=3)
 
-        pivoted = grouped.pivot(index='date', columns='sport_id', values='duration')
-        log.debug(f"pivoted:\n{pivoted}")
-        df = pivoted.fillna(0)
-
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-        log.debug(f"toy_df: \n{df}")
-
-    num_lines = len(df.columns)
-    mypalette = Spectral11[0:num_lines]
-
-    p = figure(width=500, height=300, x_axis_type="datetime", y_axis_type='linear')
-    xs = [df.index.values] * num_lines
-    ys = [df[name].values for name in df]
-    log.debug(f"xs: {xs}")
-    log.debug(f"ys: {ys}")
-    p.multi_line(xs=xs,
-                 ys=ys,
-                 line_color=mypalette,
-                 line_width=5)
+    p.toolbar.logo = None
+    p.toolbar_location = None
 
     script_trend, div_trend = components(p)
 

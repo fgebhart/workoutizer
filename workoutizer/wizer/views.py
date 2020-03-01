@@ -85,7 +85,7 @@ class DashboardView(View, PlotView):
         summary = get_summary_of_activities(activities=activities)
         script, div = create_plot(activities=activities, plotting_style=self.settings.plotting_style)
         script_pc, div_pc = plot_pie_chart(activities=activities)
-        script_trend, div_trend = plot_activity_trend(activity_model=Activity)
+        script_trend, div_trend = plot_activity_trend(activities=activities, sport_model=Sport)
         return render(request, self.template_name,
                       {'sports': self.sports, 'activities': activities, 'script': script, 'div': div,
                        'days': self.number_of_days, 'choices': self.days_choices, 'summary': summary,
