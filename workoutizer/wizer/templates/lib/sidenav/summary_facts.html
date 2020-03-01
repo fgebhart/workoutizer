@@ -1,10 +1,10 @@
 {% load filters %}
 
 {% if sport.icon %}
-<h5 class="text-center">
-    <i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i>&nbsp;&nbsp;Summary&nbsp;&nbsp;
-</h5>
-<br>
+    <h5 class="text-center">
+        <i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i>&nbsp;&nbsp;Summary&nbsp;&nbsp;
+    </h5>
+    <br>
 {% endif %}
 <p class="text-center">
     Sum of all selected Activities:
@@ -26,3 +26,4 @@
         <td>{{ summary.duration|duration }}</td>
     </tr>
 </table>
+<br>

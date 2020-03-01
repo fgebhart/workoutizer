@@ -1,0 +1,20 @@
+<div class="sidebar" style="margin-top: 50px;">
+    <table class="table table-hover table-borderless">
+        <tr onclick="window.location='/';">
+            <td><i class="fas fa-chart-line"></i></td>
+            <td>Dashboard</td>
+        <tr onclick="window.location='{% url "sports" %}';">
+            <td><i class="fas fa-list"></i></td>
+            <td>All Sports</td>
+            {% for sport in sports %}
+                {% if sport.slug != 'unknown' %}
+                    <tr onclick="window.location='/sport/{{ sport.slug }}';">
+                    <td><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></td>
+                    <td>{{ sport.name }}</td>
+                {% endif %}
+            {% endfor %}
+        <tr onclick="window.location='{% url 'add-sport' %}';">
+            <td><i class="fas fa-plus"></i></td>
+            <td>Add Sport</td>
+    </table>
+</div>

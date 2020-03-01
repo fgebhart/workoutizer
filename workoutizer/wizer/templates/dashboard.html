@@ -4,19 +4,14 @@
 {% block body %}
     <div class="row">
         <div class="col-sm-9">
-            <h3>Dashboard</h3>
-            <hr>
             {% include "lib/messages.html" %}
             {% include 'plotting/plot_activity_history.html' %}
-            <br>
             {% include 'lib/table.html' %}
         </div>
         <div class="col-sm-3">
             <div class="sidenav">
                 {% include 'plotting/plot_pie_chart.html' %}
-                <br>
                 {% include 'lib/sidenav/summary_facts.html' %}
-                <br>
                 {% include 'plotting/plot_trend.html' %}
             </div>
         </div>
