@@ -113,7 +113,7 @@ def set_number_of_days(request, number_of_days):
     n.number_of_days = number_of_days
     log.debug(f"number of days: {number_of_days}")
     n.save()
-    return HttpResponseRedirect('/')
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 def get_summary_of_activities(activities):
