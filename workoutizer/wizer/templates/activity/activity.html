@@ -15,73 +15,34 @@
                title="Download GPX File"><i class="fas fa-download"></i></a>
         {% endif %}
     </div>
-
     <div class="clearfix"></div>
-    <p>{{ activity.date }}</p>
-    <hr>
+    <p class="text-muted">{{ activity.date }}</p>
+    <br>
+    <table class="table table-bordered table-responsive-xl">
+        <thead class="thead-secondary">
+        <tr>
+            <th><i class="fas fa-road"></i>&nbsp;&nbsp;Distance:&nbsp;&nbsp;{{ activity.distance }} km</th>
+            <th><i class="fas fa-history"></i>&nbsp;&nbsp;Duration:&nbsp;&nbsp;{{ activity.duration|table_duration }} h
+            </th>
+            {% if activity.calories %}
+                <th><i class="fas fa-fire"></i>&nbsp;&nbsp;Calories:&nbsp;&nbsp;{{ activity.calories }} kcal</th>
+            {% endif %}
+        </tr>
+        </thead>
+    </table>
     <br>
     {% include "lib/messages.html" %}
-    <div class="row">
-        <div class="col-sm-3">
-            <div class="card-deck">
-                <div class="card box-shadow">
-                    <div class="card-header">
-                        <h5 class="text-center">Summary</h5>
-                    </div>
-                    <div class="card-body">
-                        <table class="table">
-                            <tr>
-                                <th scope="row"><i class="fas fa-road" data-toggle="tooltip" data-placement="bottom"
-                                                   title="Distance"></i></th>
-                                <td>{{ activity.distance }} km</td>
-                            </tr>
-                            <tr>
-                                <th scope="row"><i class="fas fa-history" data-toggle="tooltip" data-placement="bottom"
-                                                   title="Duration"></i></th>
-                                <td>{{ activity.duration|table_duration }} h</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Sport</th>
-                                <td><a href="/sport/{{ activity.sport.slug }}"
-                                       style="color: {{ activity.sport.color }};">
-                                    <i class="fas fa-{{ activity.sport.icon }}"></i>
-                                </a></td>
-                            </tr>
-                            {% if activity.calories %}
-                                <tr>
-                                    <th scope="row">Calories</th>
-                                    <td>{{ activity.calories }} kcal</td>
-                                </tr>
-                            {% endif %}
-                            {% if has_elevation %}
-                                <tr>
-                                    <th scope="row">Max Altitude</th>
-                                    <td>{{ activity.trace_file.max_altitude }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Min Altitude</th>
-                                    <td>{{ activity.trace_file.min_altitude }}</td>
-                                </tr>
-                            {% endif %}
-                            <tr>
-                                <td colspan="100%"></td>
-                            </tr>
-                        </table>
-                        {% if activity.description %}
-                            <br>
-                            <b>Description</b>
-                            <hr>
-                            {{ activity.description }}
-                        {% endif %}
-                    </div>
-                </div>
+    {% if traces %}
+        <div class="row">
+            <div class="col-sm-5">
+                {% include "activity/activity_data.html" %}
             </div>
-        </div>
-        {% if traces %}
-            <div class="col-sm-9">
+            <div class="col-sm-7">
                 {% include "map/activity_map.html" %}
             </div>
-        {% endif %}
-    </div>
+        </div>
+    {% else %}
+        {% include "activity/activity_data.html" %}
+    {% endif %}
 {% endblock %}
 
