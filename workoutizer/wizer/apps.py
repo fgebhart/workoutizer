@@ -94,15 +94,13 @@ class FileImporter:
             md5sum = calc_md5(file)
             if md5sum not in md5sums_from_db:  # current file is not stored in model yet
                 try:
-                    log.debug(f"importing file {file}...")
+                    log.debug(f"importing file {file} ...")
                     if file.endswith(".gpx"):
-                        log.debug(f"parsing GPX file")
+                        log.debug(f"parsing GPX file ...")
                         parser = GPXParser(path_to_file=file)
                     elif file.endswith(".fit"):
-                        log.debug(f"parsing FIT file")
+                        log.debug(f"parsing FIT file ...")
                         parser = FITParser(path_to_file=file)
-                        parser.parse_heart_rate()
-                        parser.parse_calories()
                     else:
                         log.warning(f"file type: {file} unknown")
                         parser = None
@@ -114,7 +112,25 @@ class FileImporter:
                         md5sum=md5sum,
                         coordinates=parser.coordinates,
                         elevation=parser.elevation,
-                        heart_rate=parser.heart_rate,
+                        # heart rate
+                        heart_rate_list=parser.heart_rate_list,
+                        avg_heart_rate=parser.avg_heart_rate,
+                        max_heart_rate=parser.max_heart_rate,
+                        # cadence
+                        cadence_list=parser.cadence_list,
+                        avg_cadence=parser.avg_cadence,
+                        max_cadence=parser.max_cadence,
+                        # speed
+                        speed_list=parser.speed_list,
+                        avg_speed=parser.avg_speed,
+                        max_speed=parser.max_speed,
+                        # temperature
+                        temperature_list=parser.temperature_list,
+                        avg_temperature=parser.avg_temperature,
+                        max_temperature=parser.max_temperature,
+                        # training effect
+                        aerobic_training_effect=parser.aerobic_training_effect,
+                        anaerobic_training_effect=parser.anaerobic_training_effect,
                     )
                     t.save()
                     trace_file_instance = self.traces_model.objects.get(pk=t.pk)
