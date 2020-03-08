@@ -34,10 +34,29 @@ class Traces(models.Model):
     file_name = models.CharField(max_length=100, editable=False)
     md5sum = models.CharField(max_length=32, unique=True)
     coordinates = models.CharField(max_length=10000000000, null=True, blank=True)
+    # elevation
     elevation = models.CharField(max_length=10000000000, null=True, blank=True)
-    heart_rate = models.CharField(max_length=10000000000, null=True, blank=True)
     max_altitude = models.FloatField(blank=True, null=True)
     min_altitude = models.FloatField(blank=True, null=True)
+    # heart rate
+    heart_rate_list = models.CharField(max_length=10000000000, null=True, blank=True)
+    avg_heart_rate = models.IntegerField(null=True, blank=True)
+    max_heart_rate = models.IntegerField(null=True, blank=True)
+    # cadence
+    cadence_list = models.CharField(max_length=10000000000, null=True, blank=True)
+    avg_cadence = models.IntegerField(null=True, blank=True)
+    max_cadence = models.IntegerField(null=True, blank=True)
+    # speed
+    speed_list = models.CharField(max_length=10000000000, null=True, blank=True)
+    avg_speed = models.IntegerField(null=True, blank=True)
+    max_speed = models.IntegerField(null=True, blank=True)
+    # temperature
+    temperature_list = models.CharField(max_length=10000000000, null=True, blank=True)
+    avg_temperature = models.IntegerField(null=True, blank=True)
+    max_temperature = models.IntegerField(null=True, blank=True)
+    # training effect
+    aerobic_training_effect = models.FloatField(blank=True, null=True)
+    anaerobic_training_effect = models.FloatField(blank=True, null=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

@@ -18,10 +18,10 @@ class GPXParser(Parser):
         gpx_file = open(self.path, 'r')
         self.name = self.path.split(".gpx")[0].split("/")[-1]
         self.gpx = gpxpy.parse(gpx_file)
-        self.get_sport_from_gpx_file()
-        self.get_duration_from_gpx_file()
+        self._get_sport_from_gpx_file()
+        self._get_duration_from_gpx_file()
 
-    def get_sport_from_gpx_file(self):
+    def _get_sport_from_gpx_file(self):
         if self.gpx.tracks[0].type:
             self.sport = self.gpx.tracks[0].type
         else:
@@ -30,7 +30,7 @@ class GPXParser(Parser):
                     self.sport = e.text
                     log.debug(f"found sport: {self.sport}")
 
-    def get_duration_from_gpx_file(self):
+    def _get_duration_from_gpx_file(self):
         all_points_time = []
         for s in self.gpx.tracks[0].segments:
             for p in s.points:
@@ -51,7 +51,7 @@ class GPXParser(Parser):
             log.debug(f"could not find date in GPX file, will use OS file created date")
             self.get_file_created_datetime()
 
-    def _parse_coordinates(self):
+    def _parse_records(self):
         for track in self.gpx.tracks:
             for segment in track.segments:
                 for point in segment.points:
