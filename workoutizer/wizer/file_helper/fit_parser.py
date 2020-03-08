@@ -26,7 +26,6 @@ class FITParser(Parser):
         lat = None
         for record in self.fit.get_messages():
             for label, value in record.get_values().items():
-                # print(f"{label}: {value}")
                 if label == 'sport':
                     self.sport = value
                 if label == "total_distance":

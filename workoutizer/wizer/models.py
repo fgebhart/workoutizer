@@ -33,27 +33,31 @@ class Traces(models.Model):
     path_to_file = models.CharField(max_length=200)
     file_name = models.CharField(max_length=100, editable=False)
     md5sum = models.CharField(max_length=32, unique=True)
-    coordinates = models.CharField(max_length=10000000000, null=True, blank=True)
+    coordinates = models.CharField(max_length=10000000000, default="[]")
     # elevation
-    elevation = models.CharField(max_length=10000000000, null=True, blank=True)
+    elevation = models.CharField(max_length=10000000000, default="[]")
     max_altitude = models.FloatField(blank=True, null=True)
     min_altitude = models.FloatField(blank=True, null=True)
     # heart rate
-    heart_rate_list = models.CharField(max_length=10000000000, null=True, blank=True)
+    heart_rate_list = models.CharField(max_length=10000000000, default="[]")
     avg_heart_rate = models.IntegerField(null=True, blank=True)
     max_heart_rate = models.IntegerField(null=True, blank=True)
+    min_heart_rate = models.IntegerField(null=True, blank=True)
     # cadence
-    cadence_list = models.CharField(max_length=10000000000, null=True, blank=True)
+    cadence_list = models.CharField(max_length=10000000000, default="[]")
     avg_cadence = models.IntegerField(null=True, blank=True)
     max_cadence = models.IntegerField(null=True, blank=True)
+    min_cadence = models.IntegerField(null=True, blank=True)
     # speed
-    speed_list = models.CharField(max_length=10000000000, null=True, blank=True)
-    avg_speed = models.IntegerField(null=True, blank=True)
-    max_speed = models.IntegerField(null=True, blank=True)
+    speed_list = models.CharField(max_length=10000000000, default="[]")
+    avg_speed = models.FloatField(null=True, blank=True)
+    max_speed = models.FloatField(null=True, blank=True)
+    min_speed = models.FloatField(null=True, blank=True)
     # temperature
-    temperature_list = models.CharField(max_length=10000000000, null=True, blank=True)
+    temperature_list = models.CharField(max_length=10000000000, default="[]")
     avg_temperature = models.IntegerField(null=True, blank=True)
     max_temperature = models.IntegerField(null=True, blank=True)
+    min_temperature = models.IntegerField(null=True, blank=True)
     # training effect
     aerobic_training_effect = models.FloatField(blank=True, null=True)
     anaerobic_training_effect = models.FloatField(blank=True, null=True)
@@ -70,6 +74,14 @@ class Traces(models.Model):
                 self.max_altitude = round(float(max(self.elevation)), 2)
                 self.min_altitude = round(float(min(self.elevation)), 2)
                 log.debug(f"found min: {self.min_altitude} and max: {self.max_altitude} altitude")
+        if self.heart_rate_list:
+            self.min_heart_rate = min(self.heart_rate_list)
+        if self.cadence_list:
+            self.min_cadence = min(self.cadence_list)
+        if self.speed_list:
+            self.min_speed = min(self.speed_list)
+        if self.temperature_list:
+            self.min_temperature = min(self.temperature_list)
         super(Traces, self).save()
 
 
