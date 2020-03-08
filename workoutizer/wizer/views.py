@@ -85,7 +85,12 @@ class DashboardView(View, PlotView):
         summary = get_summary_of_activities(activities=activities)
         script, div = create_plot(activities=activities, plotting_style=self.settings.plotting_style)
         script_pc, div_pc = plot_pie_chart(activities=activities)
-        script_trend, div_trend = plot_activity_trend(activities=activities, sport_model=Sport)
+        try:
+            script_trend, div_trend = plot_activity_trend(activities=activities, sport_model=Sport)
+        except KeyError as e:
+            log.warning(f"could not create trend plot. Probably time range is set to narrow and no activity data was"
+                        f"found. KeyError: {e}")
+            div_trend = script_trend = None
         return render(request, self.template_name,
                       {'sports': self.sports, 'activities': activities, 'script': script, 'div': div,
                        'days': self.number_of_days, 'choices': self.days_choices, 'summary': summary,
@@ -113,7 +118,10 @@ def set_number_of_days(request, number_of_days):
     n.number_of_days = number_of_days
     log.debug(f"number of days: {number_of_days}")
     n.save()
-    return redirect(request.META.get('HTTP_REFERER'))
+    if request.META.get('HTTP_REFERER'):
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return HttpResponseRedirect('/')
 
 
 def get_summary_of_activities(activities):
