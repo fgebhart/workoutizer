@@ -65,7 +65,6 @@ def _plot_activities(activities, plotting_style="line"):
         data = {
             'xs': [df.index.values] * len(df.columns),
             'ys': [df[name].values for name in df],
-            'legend': df.columns,
             'colors': colors,
         }
 
@@ -82,8 +81,6 @@ def _plot_activities(activities, plotting_style="line"):
 
         p.vbar_stack(sports, x='dates', width=70000000, color=colors, source=plot_data)
 
-    p.legend.label_text_font = "Ubuntu"
-    p.legend.location = "top_left"
     p.xaxis[0].ticker.desired_num_ticks = 12
     p.toolbar.logo = None
     p.toolbar_location = None
