@@ -4,25 +4,47 @@ import datetime
 
 class Parser:
     def __init__(self, path_to_file):
+        # basic activity info
         self.path = path_to_file
         self.name = None
         self.sport = None
+        self.date = None
         self.duration = datetime.timedelta(minutes=0)
         self.distance = 0
-        self.date = None
+        self.calories = None
+        # trace file infos
+        # coordinates
         self.coordinates = []
+        # elevation
         self.elevation = []
-        self.heart_rate = []
-        self.calories = int()
+        # heart rate
+        self.heart_rate_list = []
+        self.avg_heart_rate = None   # int()
+        self.max_heart_rate = None   # int()
+        # cadence
+        self.cadence_list = []
+        self.avg_cadence = None     # int()
+        self.max_cadence = None     # int()
+        # speed
+        self.speed_list = []
+        self.avg_speed = None       # float()
+        self.max_speed = None       # float()
+        # temperature
+        self.temperature_list = []
+        self.avg_temperature = None     # int()
+        self.max_temperature = None     # int()
+        # training effect
+        self.aerobic_training_effect = None     # float()
+        self.anaerobic_training_effect = None   # float()
 
         # run parser
         self._parse_metadata()
-        self._parse_coordinates()
+        self._parse_records()
 
     def _parse_metadata(self):
         raise NotImplementedError
 
-    def _parse_coordinates(self):
+    def _parse_records(self):
         raise NotImplementedError
 
     def get_file_created_datetime(self):
