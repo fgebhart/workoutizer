@@ -18,9 +18,12 @@
             <td class="limit"><a href="/activity/{{ a.id }}">{{ a.name }}</a></td>
             <td>
                 {% if a.trace_file.coordinates|length > 2 %}
-                    <i class="fas fa-map-marked-alt"></i>
+                    <a href="/activity/{{ a.id }}" data-toggle="tooltip" data-placement="bottom"
+                       title="Show on Map" style="color: black;">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </a>
                 {% else %}
-                    -
+
                 {% endif %}
             </td>
             <td>
@@ -34,7 +37,13 @@
                 {% endif %}
             </td>
             <td>{{ a.duration|table_duration }}</td>
-            <td>{{ a.distance }}</td>
+            <td>
+                {% if a.distance == 0.0 %}
+
+                {% else %}
+                    {{ a.distance }}
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
     </tbody>
