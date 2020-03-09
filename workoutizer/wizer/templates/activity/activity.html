@@ -21,7 +21,9 @@
     <table class="table table-bordered table-responsive-xl">
         <thead class="thead-secondary">
         <tr>
-            <th><i class="fas fa-road"></i>&nbsp;&nbsp;Distance:&nbsp;&nbsp;{{ activity.distance }} km</th>
+            {% if activity.calories %}
+                <th><i class="fas fa-road"></i>&nbsp;&nbsp;Distance:&nbsp;&nbsp;{{ activity.distance }} km</th>
+            {% endif %}
             <th><i class="fas fa-history"></i>&nbsp;&nbsp;Duration:&nbsp;&nbsp;{{ activity.duration|table_duration }} h
             </th>
             {% if activity.calories %}
@@ -32,17 +34,21 @@
     </table>
     <br>
     {% include "lib/messages.html" %}
-    {% if traces %}
-        <div class="row">
-            <div class="col-sm-5">
-                {% include "activity/activity_data.html" %}
+    {% if activity.trace_file %}
+        {% if traces %}
+            <div class="row">
+                <div class="col-sm-5">
+                    {% include "activity/activity_data.html" %}
+                </div>
+                <div class="col-sm-7">
+                    {% include "map/activity_map.html" %}
+                </div>
             </div>
-            <div class="col-sm-7">
-                {% include "map/activity_map.html" %}
-            </div>
-        </div>
-    {% else %}
-        {% include "activity/activity_data.html" %}
+        {% else %}
+            {% include "activity/activity_data.html" %}
+        {% endif %}
+    {% elif not activity.trace_file and traces %}
+        {% include "map/activity_map.html" %}
     {% endif %}
 {% endblock %}
 

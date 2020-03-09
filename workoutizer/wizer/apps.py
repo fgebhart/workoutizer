@@ -63,9 +63,9 @@ class FileImporter:
         self.traces_model = traces_model
         self.activities_model = activities_model
         self.sport_model = sport_model
-        self.start_listening()
+        self._start_listening()
 
-    def start_listening(self):
+    def _start_listening(self):
         try:
             fit_collector = FitCollector(settings_model=self.settings)
             while True:
@@ -79,7 +79,7 @@ class FileImporter:
                                for name in files if name.endswith(tuple(formats))]
                 if os.path.isdir(path):
                     log.debug(f"found {len(trace_files)} files in trace dir: {path}")
-                    self.add_objects_to_models(trace_files)
+                    self._run_parser(trace_files)
                 else:
                     log.warning(f"path: {path} is not a valid directory!")
                     break
@@ -87,7 +87,7 @@ class FileImporter:
         except OperationalError as e:
             log.debug(f"cannot run FileImporter. Run django migrations first: {e}")
 
-    def add_objects_to_models(self, trace_files):
+    def _run_parser(self, trace_files):
         md5sums_from_db = list(self.traces_model.objects.all())
         md5sums_from_db = [m.md5sum for m in md5sums_from_db]
         for file in trace_files:
