@@ -37,11 +37,11 @@
     {% if activity.trace_file %}
         {% if traces %}
             <div class="row">
-                <div class="col-sm-5">
-                    {% include "activity/activity_data.html" %}
-                </div>
-                <div class="col-sm-7">
+                <div class="col-sm-8">
                     {% include "map/activity_map.html" %}
+                </div>
+                <div class="col-sm-4">
+                    {% include "activity/activity_data.html" %}
                 </div>
             </div>
         {% else %}
