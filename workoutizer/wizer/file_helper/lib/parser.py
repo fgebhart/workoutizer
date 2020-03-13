@@ -5,8 +5,9 @@ import datetime
 class Parser:
     def __init__(self, path_to_file):
         # basic activity info
-        self.path = path_to_file
-        self.name = None
+        self.path_to_file = path_to_file
+        self.file_name = None
+        self.activity_name = None
         self.sport = None
         self.date = None
         self.duration = datetime.timedelta(minutes=0)
@@ -48,4 +49,4 @@ class Parser:
         raise NotImplementedError
 
     def get_file_created_datetime(self):
-        self.date = datetime.datetime.fromtimestamp(os.path.getctime(self.path)).date()
+        self.date = datetime.datetime.fromtimestamp(os.path.getctime(self.path_to_file)).date()

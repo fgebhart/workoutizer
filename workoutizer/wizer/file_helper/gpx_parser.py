@@ -15,8 +15,9 @@ class GPXParser(Parser):
         self.gpx = None
 
     def _parse_metadata(self):
-        gpx_file = open(self.path, 'r')
-        self.name = self.path.split(".gpx")[0].split("/")[-1]
+        gpx_file = open(self.path_to_file, 'r')
+        self.activity_name = self.path_to_file.split("/")[-1]
+        self.file_name = self.activity_name.split(".gpx")[0]
         self.gpx = gpxpy.parse(gpx_file)
         self._get_sport_from_gpx_file()
         self._get_duration_from_gpx_file()

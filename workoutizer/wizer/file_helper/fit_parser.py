@@ -17,8 +17,9 @@ class FITParser(Parser):
         super(FITParser, self).__init__(path_to_file)
 
     def _parse_metadata(self):
-        self.name = self.path.split(".fit")[0].split("/")[-1]
-        self.fit = FitFile(self.path)
+        self.activity_name = self.path_to_file.split("/")[-1]
+        self.file_name = self.activity_name.split(".gpx")[0]
+        self.fit = FitFile(self.path_to_file)
 
     def _parse_records(self):
         coordinates = []

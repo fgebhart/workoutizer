@@ -62,6 +62,12 @@ class FileImporter:
         self.traces_model = traces_model
         self.activities_model = activities_model
         self.sport_model = sport_model
+        reparse_activity_data(
+            activity_model=self.activities_model,
+            sport_model=self.sport_model,
+            settings_model=self.settings,
+            traces_model=self.traces_model,
+        )
         self._start_listening()
 
     def _start_listening(self):
@@ -82,7 +88,7 @@ class FileImporter:
                     break
                 time.sleep(interval)
         except OperationalError as e:
-            log.debug(f"cannot run FileImporter. Run django migrations first: {e}")
+            log.debug(f"cannot run FileImporter. Maybe run django migrations first: {e}")
 
     def _run_parser(self, trace_files):
         md5sums_from_db = _get_md5sums_from_model(traces_model=self.traces_model)
@@ -134,13 +140,13 @@ def parse_and_save_to_model(traces_model, sport_model, activity_model, md5sum, t
     _save_to_activity_model(
         activities_model=activity_model, parser=parser,
         sport_instance=sport_instance, trace_file_instance=trace_file_instance)
-    log.info(f"created new {sport_instance} activity: {parser.name}")
+    log.info(f"created new {sport_instance} activity: {parser.file_name}")
     return trace_file_instance
 
 
 def _save_to_activity_model(activities_model, parser, sport_instance, trace_file_instance):
     activity_object = activities_model(
-        name=parser.name,
+        name=parser.file_name,
         sport=sport_instance,
         date=parser.date,
         duration=parser.duration,
@@ -239,29 +245,16 @@ def reparse_activity_data(settings_model, traces_model, activity_model, sport_mo
         else:   # trace file is in db already
             parser = parse_activity_data(file=trace_file)
             corresponding_trace_object = traces_model.objects.get(md5sum=md5sum)
-            log.debug(f"updating values for {trace_file}...")
-            corresponding_trace_object.update(
-                coordinates=parser.coordinates,
-                elevation=parser.elevation,
-                # heart rate
-                heart_rate_list=parser.heart_rate_list,
-                avg_heart_rate=parser.avg_heart_rate,
-                max_heart_rate=parser.max_heart_rate,
-                # cadence
-                cadence_list=parser.cadence_list,
-                avg_cadence=parser.avg_cadence,
-                max_cadence=parser.max_cadence,
-                # speed
-                speed_list=parser.speed_list,
-                avg_speed=parser.avg_speed,
-                max_speed=parser.max_speed,
-                # temperature
-                temperature_list=parser.temperature_list,
-                avg_temperature=parser.avg_temperature,
-                max_temperature=parser.max_temperature,
-                # training effect
-                aerobic_training_effect=parser.aerobic_training_effect,
-                anaerobic_training_effect=parser.anaerobic_training_effect,
-            )
-        input(f"press enter to continue with next file")
+            corresponding_activity_object = activity_model.objects.get(trace_file=corresponding_trace_object)
+            log.debug(f"updating values for {corresponding_activity_object.name}...")
+            for attribute, value in parser.__dict__.items():
+                db_value = getattr(corresponding_trace_object, attribute)
+                if hasattr(corresponding_trace_object, attribute):
+                    if db_value != value:
+                        log.debug(f"db value: {db_value}")
+                        setattr(corresponding_trace_object, attribute, value)
+                        log.debug(f"newly parsed value: {value}")
+                time.sleep(5)
+            corresponding_trace_object.save()
+        time.sleep(10)
     log.info(f"successfully parsed trace files and updated corresponding database objects")
