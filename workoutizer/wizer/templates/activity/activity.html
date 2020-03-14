@@ -18,6 +18,7 @@
     <div class="clearfix"></div>
     <p class="text-muted">{{ activity.date }}</p>
     <br>
+    {% include "lib/messages.html" %}
     <table class="table table-bordered table-responsive-xl">
         <thead class="thead-secondary">
         <tr>
@@ -33,7 +34,6 @@
         </thead>
     </table>
     <br>
-    {% include "lib/messages.html" %}
     {% if activity.trace_file %}
         {% if traces %}
             <div class="row">
