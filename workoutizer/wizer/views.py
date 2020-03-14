@@ -139,13 +139,16 @@ def custom_404_view(request, exception=None):
 
 
 def reimport_activity_files(request):
-    reimport_activity_data(
+    updated_activities = reimport_activity_data(
         activity_model=Activity,
         sport_model=Sport,
         settings_model=Settings,
         traces_model=Traces,
     )
-    messages.success(request, 'Successfully re-imported Activity Files!')
+    if updated_activities:
+        messages.success(request, f'Successfully updated following Activities:\n{updated_activities}')
+    else:
+        messages.success(request, 'Reimport done, no Activity updated.')
     if request.META.get('HTTP_REFERER'):
         return redirect(request.META.get('HTTP_REFERER'))
     else:

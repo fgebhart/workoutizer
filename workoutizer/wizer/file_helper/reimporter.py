@@ -6,10 +6,11 @@ log = logging.getLogger(__name__)
 
 
 def reimport_activity_data(settings_model, traces_model, activity_model, sport_model):
-    log.info(f"started reparse process...")
+    log.info(f"starting reimport process...")
     md5sums_from_db = get_md5sums_from_model(traces_model=traces_model)
     path = settings_model.objects.get(pk=1).path_to_trace_dir
     trace_files = get_all_files(path=path)
+    updated_activities = []
     for trace_file in trace_files:
         md5sum = calc_md5(trace_file)
         if md5sum not in md5sums_from_db:
@@ -43,8 +44,10 @@ def reimport_activity_data(settings_model, traces_model, activity_model, sport_m
                     # log.debug(f"model does not have the attribute: '{attribute}'")
                     pass
             if modified_value:
-                log.debug(f"updating data for {trace_file} ...")
+                log.info(f"updating data for {corresponding_activity_object.name} ...")
                 corresponding_trace_object.save()
+                updated_activities.append(corresponding_activity_object.name)
             else:
-                log.debug(f"no relevant update for {trace_file}")
+                log.info(f"no relevant update for {corresponding_activity_object.name}")
     log.info(f"successfully parsed trace files and updated corresponding database objects")
+    return updated_activities
