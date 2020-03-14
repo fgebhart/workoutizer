@@ -15,8 +15,8 @@ class GPXParser(Parser):
         self.gpx = None
 
     def _parse_metadata(self):
-        gpx_file = open(self.path, 'r')
-        self.name = self.path.split(".gpx")[0].split("/")[-1]
+        gpx_file = open(self.path_to_file, 'r')
+        self.file_name = self.get_file_name_from_path(self.path_to_file)
         self.gpx = gpxpy.parse(gpx_file)
         self._get_sport_from_gpx_file()
         self._get_duration_from_gpx_file()
@@ -56,9 +56,9 @@ class GPXParser(Parser):
             for segment in track.segments:
                 for point in segment.points:
                     if point.elevation:
-                        self.elevation.append(point.elevation)
-                    self.coordinates.append([point.longitude, point.latitude])
-        log.debug(f"found number of coordinates: {len(self.coordinates)}")
-        log.debug(f"found number of elevation points: {len(self.elevation)}")
-        self.distance = calc_distance_of_points(self.coordinates)
+                        self.altitude_list.append(point.elevation)
+                    self.coordinates_list.append([point.longitude, point.latitude])
+        log.debug(f"found number of coordinates: {len(self.coordinates_list)}")
+        log.debug(f"found number of elevation points: {len(self.altitude_list)}")
+        self.distance = calc_distance_of_points(self.coordinates_list)
         log.debug(f"found distance: {self.distance}")

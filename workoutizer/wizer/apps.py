@@ -6,7 +6,6 @@ from multiprocessing import Process
 
 from django.apps import AppConfig
 from django.db.utils import OperationalError
-from django.core.exceptions import ObjectDoesNotExist
 
 from wizer.file_helper.gpx_parser import GPXParser
 from wizer.file_helper.fit_parser import FITParser
@@ -74,9 +73,7 @@ class FileImporter:
                 path = settings.path_to_trace_dir
                 interval = settings.file_checker_interval
                 # find activity files in directory
-                trace_files = [os.path.join(root, name)
-                               for root, dirs, files in os.walk(path)
-                               for name in files if name.endswith(tuple(formats))]
+                trace_files = get_all_files(path)
                 if os.path.isdir(path):
                     log.debug(f"found {len(trace_files)} files in trace dir: {path}")
                     self._run_parser(trace_files)
@@ -85,69 +82,22 @@ class FileImporter:
                     break
                 time.sleep(interval)
         except OperationalError as e:
-            log.debug(f"cannot run FileImporter. Run django migrations first: {e}")
+            log.debug(f"cannot run FileImporter. Maybe run django migrations first: {e}")
 
     def _run_parser(self, trace_files):
-        md5sums_from_db = list(self.traces_model.objects.all())
-        md5sums_from_db = [m.md5sum for m in md5sums_from_db]
-        for file in trace_files:
-            md5sum = calc_md5(file)
+        md5sums_from_db = get_md5sums_from_model(traces_model=self.traces_model)
+        for trace_file in trace_files:
+            md5sum = calc_md5(trace_file)
             if md5sum not in md5sums_from_db:  # current file is not stored in model yet
                 try:
-                    log.debug(f"importing file {file} ...")
-                    if file.endswith(".gpx"):
-                        log.debug(f"parsing GPX file ...")
-                        parser = GPXParser(path_to_file=file)
-                    elif file.endswith(".fit"):
-                        log.debug(f"parsing FIT file ...")
-                        parser = FITParser(path_to_file=file)
-                    else:
-                        log.warning(f"file type: {file} unknown")
-                        parser = None
-                    sport = parser.sport
-                    mapped_sport = map_sport_name(sport, sport_naming_map)
-                    log.debug(f"saving trace file {file} to traces model")
-                    t = self.traces_model(
-                        path_to_file=file,
+                    trace_file_instance = parse_and_save_to_model(
+                        traces_model=self.traces_model,
+                        activity_model=self.activities_model,
+                        sport_model=self.sport_model,
                         md5sum=md5sum,
-                        coordinates=parser.coordinates,
-                        elevation=parser.elevation,
-                        # heart rate
-                        heart_rate_list=parser.heart_rate_list,
-                        avg_heart_rate=parser.avg_heart_rate,
-                        max_heart_rate=parser.max_heart_rate,
-                        # cadence
-                        cadence_list=parser.cadence_list,
-                        avg_cadence=parser.avg_cadence,
-                        max_cadence=parser.max_cadence,
-                        # speed
-                        speed_list=parser.speed_list,
-                        avg_speed=parser.avg_speed,
-                        max_speed=parser.max_speed,
-                        # temperature
-                        temperature_list=parser.temperature_list,
-                        avg_temperature=parser.avg_temperature,
-                        max_temperature=parser.max_temperature,
-                        # training effect
-                        aerobic_training_effect=parser.aerobic_training_effect,
-                        anaerobic_training_effect=parser.anaerobic_training_effect,
-                    )
-                    t.save()
-                    trace_file_instance = self.traces_model.objects.get(pk=t.pk)
-                    sport_instance = self.sport_model.objects.filter(slug=sanitize(mapped_sport)).first()
-                    a = self.activities_model(
-                        name=parser.name,
-                        sport=sport_instance,
-                        date=parser.date,
-                        duration=parser.duration,
-                        distance=parser.distance,
-                        trace_file=trace_file_instance,
-                        calories=parser.calories,
-                    )
-                    a.save()
-                    log.info(f"created new {sport_instance} activity: {parser.name}")
+                        trace_file=trace_file)
                 except Exception as e:
-                    log.error(f"could not import activity of file: {file}. {e}", exc_info=True)
+                    log.error(f"could not import activity of file: {trace_file}. {e}", exc_info=True)
                     # It might be the case, that the trace file object was created, but no activity.
                     # Delete the trace file object again, to enable reimporting
                     try:
@@ -156,19 +106,100 @@ class FileImporter:
                     except Exception as e:
                         log.debug(f"could not delete trace file object, since it was not created yet, {e}")
             else:  # checksum is in db already
-                file_name = file.split("/")[-1]
+                file_name = trace_file.split("/")[-1]
                 trace_file_path_instance = self.traces_model.objects.get(md5sum=md5sum)
-                if trace_file_path_instance.file_name == file_name and trace_file_path_instance.path_to_file != file:
-                    log.debug(f"path of file: {trace_file_path_instance.path_to_file} has changed, updating to {file}")
-                    trace_file_path_instance.path_to_file = file
+                if trace_file_path_instance.file_name == file_name and trace_file_path_instance.path_to_file != trace_file:
+                    log.debug(
+                        f"path of file: {trace_file_path_instance.path_to_file} has changed, updating to {trace_file}")
+                    trace_file_path_instance.path_to_file = trace_file
                     trace_file_path_instance.save()
-                elif trace_file_path_instance.file_name != file_name and trace_file_path_instance.path_to_file != file:
+                elif trace_file_path_instance.file_name != file_name and trace_file_path_instance.path_to_file != trace_file:
                     log.warning(f"The following two files have the same checksum, "
                                 f"you might want to remove one of them:\n"
-                                f"{file}\n"
+                                f"{trace_file}\n"
                                 f"{trace_file_path_instance.path_to_file}")
                 else:
                     pass  # means file is already in db
+
+
+def parse_and_save_to_model(traces_model, sport_model, activity_model, md5sum, trace_file):
+    parser = parse_activity_data(trace_file)
+    trace_file_object = _save_to_trace_model(
+        traces_model=traces_model, md5sum=md5sum,
+        parser=parser, trace_file=trace_file)
+    trace_file_instance = traces_model.objects.get(pk=trace_file_object.pk)
+    sport = parser.sport
+    mapped_sport = map_sport_name(sport, sport_naming_map)
+    sport_instance = sport_model.objects.filter(slug=sanitize(mapped_sport)).first()
+    _save_to_activity_model(
+        activities_model=activity_model, parser=parser,
+        sport_instance=sport_instance, trace_file_instance=trace_file_instance)
+    log.info(f"created new {sport_instance} activity: {parser.file_name}")
+    return trace_file_instance
+
+
+def _save_to_activity_model(activities_model, parser, sport_instance, trace_file_instance):
+    activity_object = activities_model(
+        name=parser.file_name.split(".gpx")[0],
+        sport=sport_instance,
+        date=parser.date,
+        duration=parser.duration,
+        distance=parser.distance,
+        trace_file=trace_file_instance,
+        calories=parser.calories,
+    )
+    activity_object.save()
+
+
+def _save_to_trace_model(traces_model, md5sum, parser, trace_file):
+    log.debug(f"saving trace file {trace_file} to traces model")
+    trace_object = traces_model(
+        path_to_file=trace_file,
+        md5sum=md5sum,
+        coordinates=parser.coordinates,
+        elevation=parser.elevation,
+        # heart rate
+        heart_rate_list=parser.heart_rate_list,
+        avg_heart_rate=parser.avg_heart_rate,
+        max_heart_rate=parser.max_heart_rate,
+        # cadence
+        cadence_list=parser.cadence_list,
+        avg_cadence=parser.avg_cadence,
+        max_cadence=parser.max_cadence,
+        # speed
+        speed_list=parser.speed_list,
+        avg_speed=parser.avg_speed,
+        max_speed=parser.max_speed,
+        # temperature
+        temperature_list=parser.temperature_list,
+        avg_temperature=parser.avg_temperature,
+        max_temperature=parser.max_temperature,
+        # training effect
+        aerobic_training_effect=parser.aerobic_training_effect,
+        anaerobic_training_effect=parser.anaerobic_training_effect,
+    )
+    trace_object.save()
+    return trace_object
+
+
+def get_md5sums_from_model(traces_model):
+    md5sums_from_db = list(traces_model.objects.all())
+    md5sums_from_db = [m.md5sum for m in md5sums_from_db]
+    return md5sums_from_db
+
+
+def parse_activity_data(file):
+    log.debug(f"importing file {file} ...")
+    if file.endswith(".gpx"):
+        log.debug(f"parsing GPX file ...")
+        parser = GPXParser(path_to_file=file)
+    elif file.endswith(".fit"):
+        log.debug(f"parsing FIT file ...")
+        parser = FITParser(path_to_file=file)
+    else:
+        log.warning(f"file type: {file} unknown")
+        parser = None
+    return parser
 
 
 def map_sport_name(sport_name, map_dict):
@@ -180,3 +211,10 @@ def map_sport_name(sport_name, map_dict):
     if not sport:
         log.warning(f"could not map {sport_name} to given sport names, use unknown instead")
     return sport
+
+
+def get_all_files(path):
+    trace_files = [os.path.join(root, name)
+                   for root, dirs, files in os.walk(path)
+                   for name in files if name.endswith(tuple(formats))]
+    return trace_files

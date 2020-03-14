@@ -6,7 +6,7 @@ from gpxpy.gpxfield import SimpleTZ
 
 def test__parse_metadata(gpx_parser):
     parser = gpx_parser()
-    assert parser.name == 'example'
+    assert parser.file_name == 'example.gpx'
 
 
 def test__get_sport_duration_distance(gpx_parser):
@@ -31,5 +31,5 @@ def test_get_sport_from_type(gpx_parser):
 
 def test__parse_coordinates(gpx_parser):
     parser = gpx_parser()
-    assert parser.coordinates[0] == [8.687453, 49.405446]
-    assert parser.elevation[0] == 128.94
+    assert parser.coordinates_list[0] == [8.687453, 49.405446]
+    assert parser.altitude_list[0] == 128.94

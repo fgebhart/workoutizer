@@ -28,6 +28,28 @@
                 <div class="col-sm-9">{{ form.file_checker_interval }}&nbsp;&nbsp;seconds</div>
             </div>
             <br>
+            <h5><b>Reimporter</b></h5>
+            <hr>
+            <div class="form-group row">
+                <div class="col-sm-3">{{ form.reimporter_updates_all.label }}</div>
+                <div class="col-sm-9">{{ form.reimporter_updates_all }}&nbsp;
+                    <i class="fas fa-question" data-toggle="tooltip" data-placement="right"
+                       title="Use with caution: Forces reimporter to overwrite existing activity data. This ensures to trigger backend related parsing."></i>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-3">Reimport all Files:</div>
+                <div class="col-sm-9">
+                    <a href="{% url 'reimport' %}" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip"
+                       data-placement="right"
+                       title="In case of a new version which supports parsing more activity data from your files,
+                            click this button to re-import all your files and update your activities. This might take a while."
+                       type="submit">
+                        Reimport Files
+                    </a>
+                </div>
+            </div>
+            <br>
             <h5><b>Maps</b></h5>
             <hr>
             <div class="form-group row">
@@ -46,7 +68,8 @@
                 <div class="col-sm-9">{{ form.plotting_style }}</div>
             </div>
             <br>
-            <button id="button" class="btn btn-warning" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Save</button>
+            <button id="button" class="btn btn-warning" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Save
+            </button>
         </form>
     </div>
 {% endblock %}

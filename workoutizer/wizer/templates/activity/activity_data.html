@@ -1,39 +1,16 @@
 {% load filters %}
 
 <div class="row">
-    {% if activity.trace_file.heart_rate_list != "[]" %}
-        <div class="col-sm-6">
-            <h5 class="text-muted">Heart Rate</h5>
-            <table class="table table-hover table-borderless">
-                <tr data-toggle="tooltip" data-placement="left" title="Min Heart Rate">
-                    <td><i class="fas fa-heartbeat"></i><small style="color: grey"> min</small></td>
-                    <td>{{ activity.trace_file.min_heart_rate }}</td>
-                </tr>
-                <tr data-toggle="tooltip" data-placement="left" title="Average Heart Rate">
-                    <td><i class="fas fa-heartbeat"></i><small style="color: grey"> avg</small></td>
-                    <td>{{ activity.trace_file.avg_heart_rate }}</td>
-                </tr>
-                <tr data-toggle="tooltip" data-placement="left" title="Max Heart Rate">
-                    <td><i class="fas fa-heartbeat"></i><small style="color: grey"> max</small></td>
-                    <td>{{ activity.trace_file.max_heart_rate }}</td>
-                </tr>
-            </table>
-        </div>
-    {% endif %}
     {% if activity.trace_file.cadence_list != "[]" %}
-        <div class="col-sm-6">
-            <h5 class="text-muted">Cadence</h5>
-            <table class="table table-hover table-borderless">
-                <tr data-toggle="tooltip" data-placement="left" title="Min Cadence">
-                    <td><i class="fas fa-shoe-prints"></i><small style="color: grey"> min</small></td>
-                    <td>{{ activity.trace_file.min_cadence }}</td>
-                </tr>
+        <div class="col-sm-5">
+            <h5>Cadence</h5>
+            <table class="table table-hover table-borderless text-muted">
                 <tr data-toggle="tooltip" data-placement="left" title="Average Cadence">
-                    <td><i class="fas fa-shoe-prints"></i><small style="color: grey"> avg</small></td>
+                    <td><i class="fas fa-shoe-prints"></i><small> avg</small></td>
                     <td>{{ activity.trace_file.avg_cadence }}</td>
                 </tr>
                 <tr data-toggle="tooltip" data-placement="left" title="Max Cadence">
-                    <td><i class="fas fa-shoe-prints"></i><small style="color: grey"> max</small></td>
+                    <td><i class="fas fa-shoe-prints" style="color: grey"></i><small style="color: grey"> max</small></td>
                     <td>{{ activity.trace_file.max_cadence }}</td>
                 </tr>
             </table>
@@ -41,18 +18,14 @@
     {% endif %}
     {% if activity.trace_file.speed_list != "[]" %}
         <div class="col-sm-6">
-            <h5 class="text-muted">Speed</h5>
-            <table class="table table-hover table-borderless">
-                <tr data-toggle="tooltip" data-placement="left" title="Min Speed">
-                    <td><i class="fas fa-tachometer-alt"></i><small style="color: grey"> min</small></td>
-                    <td>{{ activity.trace_file.min_speed | m_per_s_to_km_per_h }} km/h</td>
-                </tr>
+            <h5>Speed</h5>
+            <table class="table table-hover table-borderless text-muted">
                 <tr data-toggle="tooltip" data-placement="left" title="Average Speed">
-                    <td><i class="fas fa-tachometer-alt"></i><small style="color: grey"> avg</small></td>
+                    <td><i class="fas fa-tachometer-alt" style="color: grey"></i><small style="color: grey"> avg</small></td>
                     <td>{{ activity.trace_file.avg_speed | m_per_s_to_km_per_h }} km/h</td>
                 </tr>
                 <tr data-toggle="tooltip" data-placement="left" title="Max Speed">
-                    <td><i class="fas fa-tachometer-alt"></i><small style="color: grey"> max</small></td>
+                    <td><i class="fas fa-tachometer-alt" style="color: grey"></i><small style="color: grey"> max</small></td>
                     <td>{{ activity.trace_file.max_speed | m_per_s_to_km_per_h }} km/h</td>
                 </tr>
             </table>
@@ -60,46 +33,23 @@
     {% endif %}
     {% if activity.trace_file.speed_list != "[]" %}
         <div class="col-sm-6">
-            <h5 class="text-muted">Pace</h5>
-            <table class="table table-hover table-borderless">
-                <tr data-toggle="tooltip" data-placement="left" title="Worst Pace">
-                    <td><i class="fas fa-stopwatch"></i><small style="color: grey"> low</small></td>
-                    <td>{{ activity.trace_file.min_speed | speed_to_pace }} min/km</td>
-                </tr>
+            <h5>Pace</h5>
+            <table class="table table-hover table-borderless text-muted">
                 <tr data-toggle="tooltip" data-placement="left" title="Average Pace">
-                    <td><i class="fas fa-stopwatch"></i><small style="color: grey"> avg</small></td>
+                    <td><i class="fas fa-stopwatch" style="color: grey"></i><small style="color: grey"> avg</small></td>
                     <td>{{ activity.trace_file.avg_speed | speed_to_pace }} min/km</td>
                 </tr>
                 <tr data-toggle="tooltip" data-placement="left" title="Best Pace">
-                    <td><i class="fas fa-stopwatch"></i><small style="color: grey"> high</small></td>
+                    <td><i class="fas fa-stopwatch" style="color: grey"></i><small style="color: grey"> high</small></td>
                     <td>{{ activity.trace_file.max_speed | speed_to_pace }} min/km</td>
-                </tr>
-            </table>
-        </div>
-    {% endif %}
-    {% if activity.trace_file.temperature_list != "[]" %}
-        <div class="col-sm-6">
-            <h5 class="text-muted">Temperature</h5>
-            <table class="table table-hover table-borderless">
-                <tr data-toggle="tooltip" data-placement="left" title="Min Temperature">
-                    <td><i class="fas fa-thermometer-empty"></i><small style="color: grey"> min</small></td>
-                    <td>{{ activity.trace_file.min_temperature }} °C</td>
-                </tr>
-                <tr data-toggle="tooltip" data-placement="left" title="Average Temperature">
-                    <td><i class="fas fa-thermometer-half"></i><small style="color: grey"> avg</small></td>
-                    <td>{{ activity.trace_file.avg_temperature }} °C</td>
-                </tr>
-                <tr data-toggle="tooltip" data-placement="left" title="Max Temperature">
-                    <td><i class="fas fa-thermometer-full"></i><small style="color: grey"> max</small></td>
-                    <td>{{ activity.trace_file.max_temperature }} °C</td>
                 </tr>
             </table>
         </div>
     {% endif %}
     {% if activity.trace_file.aerobic_training_effect and activity.trace_file.anaerobic_training_effect %}
         <div class="col-sm-6">
-            <h5 class="text-muted">Trainings Effect</h5>
-            <table class="table table-hover table-borderless">
+            <h5>Trainings Effect</h5>
+            <table class="table table-hover table-borderless text-muted">
                 <tr>
                     <td>Aerobic</td>
                     <td>{{ activity.trace_file.aerobic_training_effect }}</td>
@@ -111,9 +61,47 @@
             </table>
         </div>
     {% endif %}
+    {% if activity.trace_file.heart_rate_list != "[]" %}
+        <div class="col-sm-6">
+            <h5>Heart Rate</h5>
+            <table class="table table-hover table-borderless text-muted">
+                <tr data-toggle="tooltip" data-placement="left" title="Min Heart Rate">
+                    <td><i class="fas fa-heartbeat" style="color: grey"></i><small style="color: grey"> min</small></td>
+                    <td>{{ activity.trace_file.min_heart_rate }}</td>
+                </tr>
+                <tr data-toggle="tooltip" data-placement="left" title="Average Heart Rate">
+                    <td><i class="fas fa-heartbeat" style="color: grey"></i><small style="color: grey"> avg</small></td>
+                    <td>{{ activity.trace_file.avg_heart_rate }}</td>
+                </tr>
+                <tr data-toggle="tooltip" data-placement="left" title="Max Heart Rate">
+                    <td><i class="fas fa-heartbeat" style="color: grey"></i><small style="color: grey"> max</small></td>
+                    <td>{{ activity.trace_file.max_heart_rate }}</td>
+                </tr>
+            </table>
+        </div>
+    {% endif %}
+    {% if activity.trace_file.temperature_list != "[]" %}
+        <div class="col-sm-6">
+            <h5>Temperature</h5>
+            <table class="table table-hover table-borderless text-muted">
+                <tr data-toggle="tooltip" data-placement="left" title="Min Temperature">
+                    <td><i class="fas fa-thermometer-empty" style="color: grey"></i><small style="color: grey"> min</small></td>
+                    <td>{{ activity.trace_file.min_temperature }} °C</td>
+                </tr>
+                <tr data-toggle="tooltip" data-placement="left" title="Average Temperature">
+                    <td><i class="fas fa-thermometer-half" style="color: grey"></i><small style="color: grey"> avg</small></td>
+                    <td>{{ activity.trace_file.avg_temperature }} °C</td>
+                </tr>
+                <tr data-toggle="tooltip" data-placement="left" title="Max Temperature">
+                    <td><i class="fas fa-thermometer-full" style="color: grey"></i><small style="color: grey"> max</small></td>
+                    <td>{{ activity.trace_file.max_temperature }} °C</td>
+                </tr>
+            </table>
+        </div>
+    {% endif %}
 </div>
 {% if activity.description %}
-    <h5 style="color: grey">Description</h5>
+    <h5>Description</h5>
     {{ activity.description }}
 {% endif %}
 <br>

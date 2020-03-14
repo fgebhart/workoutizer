@@ -7,6 +7,8 @@ from django.db import models
 from django.utils import timezone
 from django.template.defaultfilters import slugify
 
+from wizer.tools.utils import remove_nones_from_string,remove_nones_from_list
+
 log = logging.getLogger(__name__)
 
 
@@ -33,9 +35,9 @@ class Traces(models.Model):
     path_to_file = models.CharField(max_length=200)
     file_name = models.CharField(max_length=100, editable=False)
     md5sum = models.CharField(max_length=32, unique=True)
-    coordinates = models.CharField(max_length=10000000000, default="[]")
+    coordinates_list = models.CharField(max_length=10000000000, default="[]")
     # elevation
-    elevation = models.CharField(max_length=10000000000, default="[]")
+    altitude_list = models.CharField(max_length=10000000000, default="[]")
     max_altitude = models.FloatField(blank=True, null=True)
     min_altitude = models.FloatField(blank=True, null=True)
     # heart rate
@@ -66,23 +68,22 @@ class Traces(models.Model):
              update_fields=None):
         log.debug(f"creating file name from path {self.path_to_file} -> {self.file_name}")
         self.file_name = self.path_to_file.split("/")[-1]
-        if self.elevation:
-            if not isinstance(self.elevation, list):
-                ele = json.loads(self.elevation)
-                self.elevation = list(ele)
-            if len(self.elevation) > 0:
-                self.max_altitude = round(float(max(self.elevation)), 2)
-                self.min_altitude = round(float(min(self.elevation)), 2)
-                log.debug(f"found min: {self.min_altitude} and max: {self.max_altitude} altitude")
-        if self.heart_rate_list:
-            self.min_heart_rate = min(self.heart_rate_list)
-        if self.cadence_list:
-            self.min_cadence = min(self.cadence_list)
-        if self.speed_list:
-            self.min_speed = min(self.speed_list)
-        if self.temperature_list:
-            self.min_temperature = min(self.temperature_list)
+        self._set_min_max_of_list(list_of_values=self.altitude_list, name="altitude")
+        self._set_min_max_of_list(list_of_values=self.heart_rate_list, name="heart_rate")
+        self._set_min_max_of_list(list_of_values=self.cadence_list, name="cadence")
+        self._set_min_max_of_list(list_of_values=self.speed_list, name="speed")
+        self._set_min_max_of_list(list_of_values=self.temperature_list, name="temperature")
         super(Traces, self).save()
+
+    def _set_min_max_of_list(self, list_of_values, name: str):
+        if list_of_values:
+            if not isinstance(list_of_values, list):
+                list_of_values = json.loads(remove_nones_from_string(list_of_values))
+            list_without_nones = remove_nones_from_list(list_of_values)
+            if list_without_nones:
+                setattr(self, f"max_{name}", round(float(max(list_without_nones)), 2))
+                setattr(self, f"min_{name}", round(float(min(list_without_nones)), 2))
+                log.debug(f"found max: {getattr(self, f'max_{name}')} and min: {getattr(self, f'min_{name}')} altitude")
 
 
 class Activity(models.Model):
@@ -124,3 +125,4 @@ class Settings(models.Model):
     trace_opacity = models.FloatField(max_length=20, default=0.7, verbose_name="Opacity of Traces:")
     plotting_style = models.CharField(choices=plotting_choices, default='bar', max_length=120,
                                       verbose_name="Plotting Style:")
+    reimporter_updates_all = models.BooleanField(verbose_name="Force Update all Fields: ", default=False)

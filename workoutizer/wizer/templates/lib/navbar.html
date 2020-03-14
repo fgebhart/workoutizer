@@ -1,23 +1,15 @@
 <nav class="fixed-top">
-    <div class="navbar navbar-expand-sm bg-info navbar-dark">
-        <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+    <div class="navbar bg-info navbar-dark">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item order-0"><a href="{% url 'add-activity' %}" class="btn btn-warning"
-                                                data-toggle="tooltip" data-placement="bottom"
-                                                title="Add new Activity"><i
+                <li class="nav-item order-0"><a href="{% url 'add-activity' %}" class="btn btn-warning"><i
                         class="fas fa-plus"></i>&nbsp;&nbsp;Add Activity</a></li>
             </ul>
-        </div>
-        <div class="navbar-collapse collapse w-100 order-2 dual-collapse2">
             <a class="navbar-brand" href="/"><i class="fas fa-dumbbell"></i>&nbsp;&nbsp;Workoutizer&nbsp;&nbsp;<i
                     class="fas fa-dumbbell"></i></a>
-        </div>
-        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item order-1"><a class="nav-link" href="{% url 'settings' %}" data-toggle="tooltip"
-                                                data-placement="bottom" title="Settings"><i class="fas fa-cogs"></i></a>
+                                                data-placement="left" title="Settings"><i class="fas fa-cogs"></i></a>
                 </li>
             </ul>
-        </div>
     </div>
 </nav>
