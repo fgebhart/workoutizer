@@ -36,6 +36,7 @@ class Traces(models.Model):
     file_name = models.CharField(max_length=100, editable=False)
     md5sum = models.CharField(max_length=32, unique=True)
     coordinates_list = models.CharField(max_length=10000000000, default="[]")
+    calories = models.IntegerField(null=True, blank=True)
     # elevation
     altitude_list = models.CharField(max_length=10000000000, default="[]")
     max_altitude = models.FloatField(blank=True, null=True)
@@ -83,7 +84,8 @@ class Traces(models.Model):
             if list_without_nones:
                 setattr(self, f"max_{name}", round(float(max(list_without_nones)), 2))
                 setattr(self, f"min_{name}", round(float(min(list_without_nones)), 2))
-                log.debug(f"found max: {getattr(self, f'max_{name}')} and min: {getattr(self, f'min_{name}')} altitude")
+                log.debug(f"found max_{name}: {getattr(self, f'max_{name}')} "
+                          f"and min_{name}: {getattr(self, f'min_{name}')}")
 
 
 class Activity(models.Model):
@@ -98,7 +100,6 @@ class Activity(models.Model):
     distance = models.FloatField(blank=True, null=True, verbose_name="Distance:", default=0)
     description = models.CharField(max_length=600, blank=True, null=True, verbose_name="Description:")
     trace_file = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=True, null=True)
-    calories = models.IntegerField(null=True, blank=True)
 
     def delete(self, *args, **kwargs):
         if self.trace_file:

@@ -51,7 +51,6 @@ class MapView(View):
                         sport=sport,
                         color=color,
                         coordinates=coordinates))
-                    log.debug(f"stored coordinates of: '{activity}' in traces list")
         return {'traces': traces, 'settings': self.settings, 'days': self.number_of_days,
                 'choices': self.days_choices, 'color': color, 'has_elevation': has_elevation}
 
