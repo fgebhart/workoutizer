@@ -96,7 +96,7 @@ class DashboardView(View, PlotView):
                       {'sports': self.sports, 'activities': activities, 'script': script, 'div': div,
                        'days': self.number_of_days, 'choices': self.days_choices, 'summary': summary,
                        'script_pc': script_pc, 'div_pc': div_pc, 'script_trend': script_trend,
-                       'div_trend': div_trend})
+                       'div_trend': div_trend, 'page': 'dashboard'})
 
 
 def settings_view(request):

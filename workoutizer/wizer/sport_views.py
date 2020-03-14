@@ -20,7 +20,7 @@ class AllSportsView(View):
 
     def get(self, request):
         sports = Sport.objects.all().order_by('name')
-        return render(request, self.template_name, {'sports': sports})
+        return render(request, self.template_name, {'sports': sports, 'page': 'all_sports'})
 
 
 class SportsView(MapView, PlotView):
@@ -62,7 +62,7 @@ def add_sport_view(request):
             log.warning(f"form invalid: {form.errors}")
     else:
         form = AddSportsForm()
-    return render(request, 'sport/add_sport.html', {'sports': sports, 'form': form})
+    return render(request, 'sport/add_sport.html', {'sports': sports, 'form': form, 'page': 'add_sport'})
 
 
 def edit_sport_view(request, sports_name_slug):
