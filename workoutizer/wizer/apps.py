@@ -62,12 +62,6 @@ class FileImporter:
         self.traces_model = traces_model
         self.activities_model = activities_model
         self.sport_model = sport_model
-        reparse_activity_data(
-            activity_model=self.activities_model,
-            sport_model=self.sport_model,
-            settings_model=self.settings,
-            traces_model=self.traces_model,
-        )
         self._start_listening()
 
     def _start_listening(self):
@@ -91,7 +85,7 @@ class FileImporter:
             log.debug(f"cannot run FileImporter. Maybe run django migrations first: {e}")
 
     def _run_parser(self, trace_files):
-        md5sums_from_db = _get_md5sums_from_model(traces_model=self.traces_model)
+        md5sums_from_db = get_md5sums_from_model(traces_model=self.traces_model)
         for trace_file in trace_files:
             md5sum = calc_md5(trace_file)
             if md5sum not in md5sums_from_db:  # current file is not stored in model yet
@@ -146,7 +140,7 @@ def parse_and_save_to_model(traces_model, sport_model, activity_model, md5sum, t
 
 def _save_to_activity_model(activities_model, parser, sport_instance, trace_file_instance):
     activity_object = activities_model(
-        name=parser.file_name,
+        name=parser.file_name.split(".gpx")[0],
         sport=sport_instance,
         date=parser.date,
         duration=parser.duration,
@@ -188,7 +182,7 @@ def _save_to_trace_model(traces_model, md5sum, parser, trace_file):
     return trace_object
 
 
-def _get_md5sums_from_model(traces_model):
+def get_md5sums_from_model(traces_model):
     md5sums_from_db = list(traces_model.objects.all())
     md5sums_from_db = [m.md5sum for m in md5sums_from_db]
     return md5sums_from_db
@@ -224,37 +218,3 @@ def get_all_files(path):
                    for root, dirs, files in os.walk(path)
                    for name in files if name.endswith(tuple(formats))]
     return trace_files
-
-
-def reparse_activity_data(settings_model, traces_model, activity_model, sport_model):
-    log.info(f"started reparse process...")
-    md5sums_from_db = _get_md5sums_from_model(traces_model=traces_model)
-    path = settings_model.objects.get(pk=1).path_to_trace_dir
-    trace_files = get_all_files(path=path)
-    for trace_file in trace_files:
-        md5sum = calc_md5(trace_file)
-        if md5sum not in md5sums_from_db:
-            log.debug(f"{trace_file} not yet in db, will import it...")
-            parse_and_save_to_model(
-                traces_model=traces_model,
-                sport_model=sport_model,
-                activity_model=activity_model,
-                md5sum=md5sum,
-                trace_file=trace_file,
-            )
-        else:   # trace file is in db already
-            parser = parse_activity_data(file=trace_file)
-            corresponding_trace_object = traces_model.objects.get(md5sum=md5sum)
-            corresponding_activity_object = activity_model.objects.get(trace_file=corresponding_trace_object)
-            log.debug(f"updating values for {corresponding_activity_object.name}...")
-            for attribute, value in parser.__dict__.items():
-                db_value = getattr(corresponding_trace_object, attribute)
-                if hasattr(corresponding_trace_object, attribute):
-                    if db_value != value:
-                        log.debug(f"db value: {db_value}")
-                        setattr(corresponding_trace_object, attribute, value)
-                        log.debug(f"newly parsed value: {value}")
-                time.sleep(5)
-            corresponding_trace_object.save()
-        time.sleep(10)
-    log.info(f"successfully parsed trace files and updated corresponding database objects")

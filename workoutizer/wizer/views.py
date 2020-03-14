@@ -8,10 +8,11 @@ from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.contrib import messages
 
-from wizer.models import Sport, Activity, Settings
+from wizer.models import Sport, Activity, Settings, Traces
 from wizer.forms import SettingsForm
 from wizer.plotting.plots import create_plot, plot_pie_chart, plot_activity_trend
 from wizer.gis.gis import GeoTrace, add_elevation_data_to_coordinates
+from wizer.file_helper.reimporter import reimport_activity_data
 
 log = logging.getLogger(__name__)
 
@@ -32,8 +33,8 @@ class MapView(View):
         has_elevation = False
         for activity in list_of_activities:
             if activity.trace_file:
-                coordinates = json.loads(activity.trace_file.coordinates)
-                elevation = json.loads(activity.trace_file.elevation)
+                coordinates = json.loads(activity.trace_file.coordinates_list)
+                elevation = json.loads(activity.trace_file.altitude_list)
                 if elevation:
                     has_elevation = True
                     coordinates = add_elevation_data_to_coordinates(coordinates, elevation)
@@ -135,3 +136,17 @@ def get_summary_of_activities(activities):
 
 def custom_404_view(request, exception=None):
     return render(None, "lib/404.html", status=404)
+
+
+def reimport_activity_files(request):
+    reimport_activity_data(
+        activity_model=Activity,
+        sport_model=Sport,
+        settings_model=Settings,
+        traces_model=Traces,
+    )
+    messages.success(request, 'Successfully re-imported Activity Files!')
+    if request.META.get('HTTP_REFERER'):
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return HttpResponseRedirect('/settings/')
