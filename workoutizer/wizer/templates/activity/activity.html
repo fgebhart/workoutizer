@@ -22,13 +22,13 @@
     <table class="table table-bordered table-responsive-xl">
         <thead class="thead-secondary">
         <tr>
-            {% if activity.calories %}
-                <th><i class="fas fa-road"></i>&nbsp;&nbsp;Distance:&nbsp;&nbsp;{{ activity.distance }} km</th>
-            {% endif %}
             <th><i class="fas fa-history"></i>&nbsp;&nbsp;Duration:&nbsp;&nbsp;{{ activity.duration|table_duration }} h
             </th>
-            {% if activity.calories %}
-                <th><i class="fas fa-fire"></i>&nbsp;&nbsp;Calories:&nbsp;&nbsp;{{ activity.calories }} kcal</th>
+            {% if activity.distance %}
+                <th><i class="fas fa-road"></i>&nbsp;&nbsp;Distance:&nbsp;&nbsp;{{ activity.distance }} km</th>
+            {% endif %}
+            {% if activity.trace_file.calories %}
+                <th><i class="fas fa-fire"></i>&nbsp;&nbsp;Calories:&nbsp;&nbsp;{{ activity.trace_file.calories }} kcal</th>
             {% endif %}
         </tr>
         </thead>

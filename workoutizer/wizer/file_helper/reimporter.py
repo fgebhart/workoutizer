@@ -54,6 +54,7 @@ def reimport_activity_data(settings_model, traces_model, activity_model, sport_m
                 updated_activities.append((corresponding_activity_object.name, str(corresponding_activity_object.date)))
             else:
                 log.info(f"no relevant update for {corresponding_activity_object.name}")
+    log.debug(f"updated the following activities:\n{updated_activities}")
     log.info(f"successfully parsed trace files and updated corresponding database objects")
 
     return updated_activities
