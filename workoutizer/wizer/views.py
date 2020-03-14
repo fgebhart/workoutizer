@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.contrib import messages
+from multiprocessing import Process
 
 from wizer.models import Sport, Activity, Settings, Traces
 from wizer.forms import SettingsForm
@@ -139,16 +140,11 @@ def custom_404_view(request, exception=None):
 
 
 def reimport_activity_files(request):
-    updated_activities = reimport_activity_data(
-        activity_model=Activity,
-        sport_model=Sport,
-        settings_model=Settings,
-        traces_model=Traces,
-    )
-    if updated_activities:
-        messages.success(request, f'Successfully updated following Activities:\n{updated_activities}')
-    else:
-        messages.success(request, 'Reimport done, no Activity updated.')
+    messages.info(request, f'Running reimport in background...')
+
+    reimporter = Process(target=reimport_activity_data, args=(Settings, Traces, Activity, Sport))
+    reimporter.start()
+
     if request.META.get('HTTP_REFERER'):
         return redirect(request.META.get('HTTP_REFERER'))
     else:

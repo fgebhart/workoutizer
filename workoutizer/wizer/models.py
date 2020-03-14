@@ -7,6 +7,8 @@ from django.db import models
 from django.utils import timezone
 from django.template.defaultfilters import slugify
 
+from wizer.tools.utils import remove_nones_from_string,remove_nones_from_list
+
 log = logging.getLogger(__name__)
 
 
@@ -76,13 +78,11 @@ class Traces(models.Model):
     def _set_min_max_of_list(self, list_of_values, name: str):
         if list_of_values:
             if not isinstance(list_of_values, list):
-                if "None" in str(list_of_values):
-                    return
-                else:
-                    list_of_values = json.loads(list_of_values)
-            if len(list_of_values) > 0 and None not in list_of_values:
-                setattr(self, f"max_{name}", round(float(max(list_of_values)), 2))
-                setattr(self, f"min_{name}", round(float(min(list_of_values)), 2))
+                list_of_values = json.loads(remove_nones_from_string(list_of_values))
+            list_without_nones = remove_nones_from_list(list_of_values)
+            if list_without_nones:
+                setattr(self, f"max_{name}", round(float(max(list_without_nones)), 2))
+                setattr(self, f"min_{name}", round(float(min(list_without_nones)), 2))
                 log.debug(f"found max: {getattr(self, f'max_{name}')} and min: {getattr(self, f'min_{name}')} altitude")
 
 
@@ -125,3 +125,4 @@ class Settings(models.Model):
     trace_opacity = models.FloatField(max_length=20, default=0.7, verbose_name="Opacity of Traces:")
     plotting_style = models.CharField(choices=plotting_choices, default='bar', max_length=120,
                                       verbose_name="Plotting Style:")
+    reimporter_updates_all = models.BooleanField(verbose_name="Force Update all Fields: ", default=False)

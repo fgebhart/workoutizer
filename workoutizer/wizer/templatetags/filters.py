@@ -41,7 +41,7 @@ def speed_to_pace(speed):
 
 @register.filter
 def m_per_s_to_km_per_h(m_per_s):
-    return round(float(m_per_s) * 3.6, 2)
+    return round(float(m_per_s) * 3.6, 1)
 
 
 @register.filter
