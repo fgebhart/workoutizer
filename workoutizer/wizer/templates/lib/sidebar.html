@@ -5,16 +5,16 @@
                 {% else %}
             <tr onclick="window.location='/';" style="cursor:pointer">
         {% endif %}
-        <td height="50"><i class="fas fa-chart-line"></i></td>
-        <td height="50">Dashboard</td>
+        <td height="45"><i class="fas fa-chart-line"></i></td>
+        <td height="45">Dashboard</td>
         </tr>
         {% if page == 'all_sports' %}
             <tr onclick="window.location='{% url "sports" %}';" style="background: rgba(0,0,0,0.07); cursor:pointer">
                 {% else %}
             <tr onclick="window.location='{% url "sports" %}';" style="cursor:pointer">
         {% endif %}
-        <td height="50"><i class="fas fa-list"></i></td>
-        <td height="50">All Sports</td>
+        <td height="45"><i class="fas fa-list"></i></td>
+        <td height="45">All Sports</td>
         </tr>
         {% for s in sports %}
             {% if s.slug != 'unknown' %}
@@ -24,9 +24,9 @@
                         {% else %}
                     <tr onclick="window.location='/sport/{{ s.slug }}';" style="cursor:pointer">
                 {% endif %}
-            <td height="50"><i class="fas fa-{{ s.icon }}"
+            <td height="45"><i class="fas fa-{{ s.icon }}"
                                style="color: {{ s.color }};"></i></td>
-            <td height="50">{{ s.name }}</td>
+            <td height="45">{{ s.name }}</td>
             </tr>
             {% endif %}
         {% endfor %}
@@ -35,8 +35,8 @@
                 {% else %}
             <tr onclick="window.location='{% url 'add-sport' %}';" style="cursor:pointer">
         {% endif %}
-        <td height="50"><i class="fas fa-plus"></i></td>
-        <td height="50">Add Sport</td>
+        <td height="45"><i class="fas fa-plus"></i></td>
+        <td height="45">Add Sport</td>
         </tr>
         <tr onclick="void(0)" id="myBtn" style="cursor:pointer;">
             <td><i class="fas fa-arrows-alt-h"></i></td>

@@ -2,13 +2,13 @@
 {% extends 'lib/base.html' %}
 {% load static %}
 {% block body %}
+    <div class="sidebar_right">
+        {% include 'plotting/plot_pie_chart.html' %}
+        {% include 'lib/sidenav/summary_facts.html' %}
+        {% include 'plotting/plot_trend.html' %}
+    </div>
     {% include "lib/messages.html" %}
     {% include 'plotting/plot_activity_history.html' %}
     {% include 'lib/table.html' %}
 
-    {#    <div class="sidebar_right">#}
-    {#        {% include 'plotting/plot_pie_chart.html' %}#}
-    {#        {% include 'lib/sidenav/summary_facts.html' %}#}
-    {#        {% include 'plotting/plot_trend.html' %}#}
-    {#    </div>#}
 {% endblock %}

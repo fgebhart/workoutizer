@@ -64,13 +64,6 @@ body {
 
 .sidebar_left .closebtn {
     width: 200px;
-    position: fixed;
-    top: 0;
-    background-color: whitesmoke;
-    padding-top: 55px;
-    height: 100%;
-    overflow-x: hidden;
-    transition: 1s;
 }
 
 .sidebar_left a {
@@ -89,18 +82,21 @@ body {
     position: fixed;
     width: 45px;
     background-color: whitesmoke;
-    padding-top: 55px;
     overflow-x: hidden;
     height: 100%;
     transition: 1s;
-    top: 0;
+    top: 55px;
+    border-style: solid;
+    border-color: rgba(0,0,0,0.1);
+    border-width: thin;
 }
 
 #main {
     transition: 1s;
     overflow-x: hidden;
-    padding: 16px;
+    padding: 30px;
     margin-left: 45px;
+    margin-top: 45px
 }
 
 @media screen and (max-height: 450px) {
