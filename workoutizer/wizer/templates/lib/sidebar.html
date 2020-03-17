@@ -9,7 +9,8 @@
         <td height="45">Dashboard</td>
         </tr>
         {% if page == 'all_sports' %}
-            <tr onclick="window.location='{% url "sports" %}';" style="background: rgba(0,0,0,0.07); cursor:pointer">
+            <tr onclick="window.location='{% url "sports" %}';"
+                style="background: rgba(0,0,0,0.07); cursor:pointer">
                 {% else %}
             <tr onclick="window.location='{% url "sports" %}';" style="cursor:pointer">
         {% endif %}
@@ -31,12 +32,17 @@
             {% endif %}
         {% endfor %}
         {% if page == 'add_sport' %}
-            <tr onclick="window.location='{% url 'add-sport' %}';" style="background: rgba(0,0,0,0.07); cursor:pointer">
+            <tr onclick="window.location='{% url 'add-sport' %}';"
+                style="background: rgba(0,0,0,0.07); cursor:pointer">
                 {% else %}
             <tr onclick="window.location='{% url 'add-sport' %}';" style="cursor:pointer">
         {% endif %}
         <td height="45"><i class="fas fa-plus"></i></td>
         <td height="45">Add Sport</td>
+        </tr>
+        <tr style="background: whitesmoke">
+            <td id="fill_row"></td>
+            <td></td>
         </tr>
         <tr onclick="void(0)" id="myBtn" style="cursor:pointer;">
             <td><i class="fas fa-arrows-alt-h"></i></td>
@@ -50,7 +56,6 @@
 
     function toggleNav() {
         const navSize = document.getElementById("sidebar_left").style.width;
-        console.log(navSize);
         if (navSize === "45px" || navSize === "") {
             return openNav();
         }
@@ -58,14 +63,18 @@
     }
 
     function openNav() {
-        console.log("called open");
         document.getElementById("sidebar_left").style.width = "200px";
         document.getElementById("main").style.marginLeft = "200px";
     }
 
     function closeNav() {
-        console.log("called close");
         document.getElementById("sidebar_left").style.width = "45px";
         document.getElementById("main").style.marginLeft = "45px";
     }
+
+    present_height = document.getElementsByTagName("TD")[0].getAttribute("height");
+    number_of_rows = document.getElementsByTagName("TD").length / 2;
+    fill_height = $("#sidebar_left").height() - present_height * number_of_rows - 6;
+    document.getElementById("fill_row").setAttribute("height", fill_height);
+
 </script>
