@@ -1,20 +1,80 @@
-<div class="sidebar" style="margin-top: 50px;">
-    <table class="table table-hover table-borderless">
-        <tr onclick="window.location='/';">
-            <td><i class="fas fa-chart-line"></i></td>
-            <td>Dashboard</td>
-        <tr onclick="window.location='{% url "sports" %}';">
-            <td><i class="fas fa-list"></i></td>
-            <td>All Sports</td>
-            {% for sport in sports %}
-                {% if sport.slug != 'unknown' %}
-                    <tr onclick="window.location='/sport/{{ sport.slug }}';">
-                    <td><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></td>
-                    <td>{{ sport.name }}</td>
+<div id="sidebar_left" class="sidebar_left">
+    <table class="table table-hover">
+        {% if page == 'dashboard' %}
+            <tr onclick="window.location='/';" style="background: rgba(0,0,0,0.07); cursor:pointer">
+                {% else %}
+            <tr onclick="window.location='/';" style="cursor:pointer">
+        {% endif %}
+        <td height="45"><i class="fas fa-chart-line"></i></td>
+        <td height="45">Dashboard</td>
+        </tr>
+        {% if page == 'all_sports' %}
+            <tr onclick="window.location='{% url "sports" %}';"
+                style="background: rgba(0,0,0,0.07); cursor:pointer">
+                {% else %}
+            <tr onclick="window.location='{% url "sports" %}';" style="cursor:pointer">
+        {% endif %}
+        <td height="45"><i class="fas fa-list"></i></td>
+        <td height="45">All Sports</td>
+        </tr>
+        {% for s in sports %}
+            {% if s.slug != 'unknown' %}
+                {% if activity.sport.slug == s.slug or sport.slug == s.slug %}
+                    <tr onclick="window.location='/sport/{{ s.slug }}';"
+                        style="background: rgba(0,0,0,0.07); cursor:pointer">
+                        {% else %}
+                    <tr onclick="window.location='/sport/{{ s.slug }}';" style="cursor:pointer">
                 {% endif %}
-            {% endfor %}
-        <tr onclick="window.location='{% url 'add-sport' %}';">
-            <td><i class="fas fa-plus"></i></td>
-            <td>Add Sport</td>
+            <td height="45"><i class="fas fa-{{ s.icon }}"
+                               style="color: {{ s.color }};"></i></td>
+            <td height="45">{{ s.name }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        {% if page == 'add_sport' %}
+            <tr onclick="window.location='{% url 'add-sport' %}';"
+                style="background: rgba(0,0,0,0.07); cursor:pointer">
+                {% else %}
+            <tr onclick="window.location='{% url 'add-sport' %}';" style="cursor:pointer">
+        {% endif %}
+        <td height="45"><i class="fas fa-plus"></i></td>
+        <td height="45">Add Sport</td>
+        </tr>
+        <tr style="background: whitesmoke">
+            <td id="fill_row"></td>
+            <td></td>
+        </tr>
+        <tr onclick="void(0)" id="myBtn" style="cursor:pointer;">
+            <td><i class="fas fa-arrows-alt-h"></i></td>
+            <td>Collapse</td>
+        </tr>
     </table>
 </div>
+
+<script>
+    document.getElementById("myBtn").addEventListener("click", toggleNav);
+
+    function toggleNav() {
+        const navSize = document.getElementById("sidebar_left").style.width;
+        if (navSize === "45px" || navSize === "") {
+            return openNav();
+        }
+        return closeNav();
+    }
+
+    function openNav() {
+        document.getElementById("sidebar_left").style.width = "200px";
+        document.getElementById("main").style.marginLeft = "200px";
+    }
+
+    function closeNav() {
+        document.getElementById("sidebar_left").style.width = "45px";
+        document.getElementById("main").style.marginLeft = "45px";
+    }
+
+    present_height = document.getElementsByTagName("TD")[0].getAttribute("height");
+    number_of_rows = document.getElementsByTagName("TD").length / 2;
+    fill_height = $("#sidebar_left").height() - present_height * number_of_rows - 6;
+    document.getElementById("fill_row").setAttribute("height", fill_height);
+
+</script>

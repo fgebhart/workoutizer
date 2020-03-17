@@ -2,14 +2,14 @@
 {% extends 'lib/base.html' %}
 {% load static %}
 {% block body %}
-    <div class="row">
-        <div class="col-sm-9">
-            {% include "lib/messages.html" %}
-            {% include 'plotting/plot_activity_history.html' %}
-            {% include 'lib/table.html' %}
-        </div>
-        <div class="col-sm-3">
-            <div class="sidenav">
+    <div class="container-fluid" style="margin-left: -20px">
+        <div class="row">
+            <div class="col-sm-9">
+                {% include "lib/messages.html" %}
+                {% include 'plotting/plot_activity_history.html' %}
+                {% include 'lib/table.html' %}
+            </div>
+            <div class="col-sm-3 sidebar_right">
                 {% include 'plotting/plot_pie_chart.html' %}
                 {% include 'lib/sidenav/summary_facts.html' %}
                 {% include 'plotting/plot_trend.html' %}

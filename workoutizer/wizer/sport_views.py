@@ -20,7 +20,7 @@ class AllSportsView(View):
 
     def get(self, request):
         sports = Sport.objects.all().order_by('name')
-        return render(request, self.template_name, {'sports': sports})
+        return render(request, self.template_name, {'sports': sports, 'page': 'all_sports'})
 
 
 class SportsView(MapView, PlotView):
@@ -30,8 +30,6 @@ class SportsView(MapView, PlotView):
         sport_id = Sport.objects.get(slug=sports_name_slug).id
         activities = self.get_activities(sport_id=sport_id)
         log.debug(f"got sports name: {sports_name_slug}")
-        log.debug(f"request in sports view: {request.user}")
-        log.debug(f"got activities: {activities}")
         map_context = super(SportsView, self).get(request=request, list_of_activities=activities)
         sports = Sport.objects.all().order_by('name')
         summary = get_summary_of_activities(activities=activities)
@@ -62,7 +60,7 @@ def add_sport_view(request):
             log.warning(f"form invalid: {form.errors}")
     else:
         form = AddSportsForm()
-    return render(request, 'sport/add_sport.html', {'sports': sports, 'form': form})
+    return render(request, 'sport/add_sport.html', {'sports': sports, 'form': form, 'page': 'add_sport'})
 
 
 def edit_sport_view(request, sports_name_slug):
