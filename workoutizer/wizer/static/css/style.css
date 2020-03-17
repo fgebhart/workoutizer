@@ -55,7 +55,7 @@ body {
     width: 300px;
     float: right;
     position: fixed;
-    right: 0;
+    right: 25px;
     top: 0;
     padding-top: 75px;
     padding-right: 30px;
@@ -95,7 +95,7 @@ body {
     transition: 1s;
     overflow-x: hidden;
     padding: 30px;
-    margin-left: 45px;
+    margin-left: 40px;
     margin-top: 45px
 }
 
