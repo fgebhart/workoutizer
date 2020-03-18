@@ -17,6 +17,24 @@
     <link type="text/css" rel="stylesheet" href="{% static 'css/style.css' %}"/>
     <script src="{% static 'js/script.js' %}"></script>
 </head>
+<script>
+    $(document.documentElement).keyup(function (event) {
+        // handle cursor keys
+        if (event.keyCode === 37) {
+            console.log("left");
+        } else if (event.keyCode === 72 || 68) {
+            // go to Dashboard / Home
+            window.location.href = '/';
+        } else if (event.keyCode === 83) {
+            window.location.href = '/sports';
+        } else if (event.keyCode === 72 || 68) {
+            window.location.href = '/add-activity';
+        } else if (event.keyCode === 72 || 68) {
+            window.location.href = '/';
+        }
+    });
+
+</script>
 
 <body>
 {% include 'lib/navbar.html' %}
