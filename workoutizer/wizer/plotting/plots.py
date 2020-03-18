@@ -128,6 +128,8 @@ def plot_pie_chart(activities):
     p.axis.visible = False
     p.grid.grid_line_color = None
     p.outline_line_color = None
+    p.background_fill_color = "whitesmoke"
+    p.border_fill_color = "whitesmoke"
 
     script_pc, div_pc = components(p)
 
@@ -156,6 +158,8 @@ def plot_activity_trend(activities, sport_model):
 
     p.toolbar.logo = None
     p.toolbar_location = None
+    p.background_fill_color = "whitesmoke"
+    p.border_fill_color = "whitesmoke"
 
     script_trend, div_trend = components(p)
 

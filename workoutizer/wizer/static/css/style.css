@@ -55,11 +55,14 @@ body {
     width: 300px;
     float: right;
     position: fixed;
-    right: 25px;
+    right: 0;
     top: 0;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.1);
+    border-width: thin;
+    background-color: whitesmoke;
     padding-top: 75px;
-    padding-right: 30px;
-    overflow: auto;
+    height: 100%;
 }
 
 .sidebar_left .closebtn {
@@ -70,7 +73,6 @@ body {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
     font-size: 25px;
-    color: #818181;
     transition: 0.3s;
 }
 
@@ -87,7 +89,7 @@ body {
     transition: 1s;
     top: 55px;
     border-style: solid;
-    border-color: rgba(0,0,0,0.1);
+    border-color: rgba(0, 0, 0, 0.1);
     border-width: thin;
 }
 
