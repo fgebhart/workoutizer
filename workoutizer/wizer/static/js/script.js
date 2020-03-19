@@ -15,3 +15,15 @@ var redIcon = new L.Icon({
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
 });
+
+$(document.documentElement).keyup(function (event) {
+    if (event.keyCode === 72) {                 // h
+        window.location.href = '/';
+    } else if (event.keyCode === 83) {          // s
+        window.location.href = '/sports';
+    } else if (event.keyCode === 65) {          // a
+        window.location.href = '/add-activity';
+    } else if (event.keyCode === 188) {         // ,
+        window.location.href = '/settings';
+    }
+});
