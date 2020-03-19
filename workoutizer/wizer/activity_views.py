@@ -7,10 +7,12 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.http import HttpResponse, Http404
 
-from .views import MapView
-from .models import Sport, Activity
-from .forms import AddActivityForm, EditActivityForm
-from .file_helper.gpx_exporter import save_activity_to_gpx_file
+from wizer.views import MapView
+from wizer.models import Sport, Activity
+from wizer.forms import AddActivityForm, EditActivityForm
+from wizer.file_helper.gpx_exporter import save_activity_to_gpx_file
+from wizer.plotting.plot_time_series import plot_time_series
+
 
 log = logging.getLogger(__name__)
 
@@ -21,9 +23,17 @@ class ActivityView(MapView):
     def get(self, request, activity_id):
         activity = Activity.objects.get(id=activity_id)
         context = super(ActivityView, self).get(request=request, list_of_activities=[activity])
-        context['sports'] = Sport.objects.all().order_by('name')
-        context['activity'] = activity
-        return render(request, self.template_name, context)
+        print(f"asdf: {activity.trace_file}")
+        script_time_series, div_time_series = plot_time_series(activity.trace_file)
+        activity_context = {
+            'sports': Sport.objects.all().order_by('name'),
+            'activity': activity,
+            # TODO
+
+        }
+        context['script_time_series'] = script_time_series
+        context['div_time_series'] = div_time_series
+        return render(request, self.template_name, {**context, **activity_context})
 
 
 def add_activity_view(request):
