@@ -54,3 +54,10 @@ def strfdelta(tdelta, format):
     d["hours"], rem = divmod(tdelta.seconds, 3600)
     d["minutes"], d["seconds"] = divmod(rem, 60)
     return format.format(**d)
+
+
+@register.filter
+def queryset_to_list(queryset):
+    list_as_string = sorted(list(queryset.values_list('slug', flat=True)))
+    list_as_string.remove('unknown')
+    return list_as_string
