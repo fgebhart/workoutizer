@@ -3,6 +3,7 @@
 {% load leaflet_tags %}
 {% leaflet_js %}
 {% leaflet_css %}
+{% load filters %}
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,6 +18,14 @@
     <link type="text/css" rel="stylesheet" href="{% static 'css/style.css' %}"/>
     <script src="{% static 'js/script.js' %}"></script>
 </head>
+
+<script>
+    $(document.documentElement).keyup(function (event) {
+        let sports = {{ sports | queryset_to_list | safe }};
+        go_to_page_with_key(event, sports);
+    });
+</script>
+
 <body>
 {% include 'lib/navbar.html' %}
 {% include 'lib/sidebar.html' %}

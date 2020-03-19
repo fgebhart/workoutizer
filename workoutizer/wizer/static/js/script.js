@@ -16,7 +16,16 @@ $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
 });
 
-$(document.documentElement).keyup(function (event) {
+function get_sport(event, sports) {
+    let event_as_int = Number(String.fromCharCode(event.which));
+    if (event_as_int === 0) {
+        event_as_int = sports.length;
+    }
+    console.log(event_as_int);
+    return '/sport/' + sports[event_as_int - 1]
+}
+
+function go_to_page_with_key(event, sports) {
     if (event.keyCode === 72) {                 // h
         window.location.href = '/';
     } else if (event.keyCode === 83) {          // s
@@ -25,5 +34,25 @@ $(document.documentElement).keyup(function (event) {
         window.location.href = '/add-activity';
     } else if (event.keyCode === 188) {         // ,
         window.location.href = '/settings';
+    } else if (event.keyCode === 48) {          // 0
+        window.location.href = get_sport(event, sports);
+    } else if (event.keyCode === 49) {          // 1
+        window.location.href = get_sport(event, sports);
+    } else if (event.keyCode === 50) {          // 2
+        window.location.href = get_sport(event, sports);
+    } else if (event.keyCode === 51) {          // 3
+        window.location.href = get_sport(event, sports);
+    } else if (event.keyCode === 52) {          // 4
+        window.location.href = get_sport(event, sports);
+    } else if (event.keyCode === 53) {          // 5
+        window.location.href = get_sport(event, sports);
+    } else if (event.keyCode === 54) {          // 6
+        window.location.href = get_sport(event, sports);
+    } else if (event.keyCode === 55) {          // 7
+        window.location.href = get_sport(event, sports);
+    } else if (event.keyCode === 56) {          // 8
+        window.location.href = get_sport(event, sports);
+    } else if (event.keyCode === 57) {          // 9
+        window.location.href = get_sport(event, sports);
     }
-});
+}
