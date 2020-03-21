@@ -6,7 +6,6 @@
 <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.4.0.min.js"></script>
 
 {% for attribute, plotting in time_series.items %}
-    <h5>{{ attribute }}</h5>
     {% for key, script_and_div in plotting.items %}
         {{ script_and_div | safe }}
     {% endfor %}

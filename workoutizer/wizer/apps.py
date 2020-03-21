@@ -160,23 +160,29 @@ def _save_to_trace_model(traces_model, md5sum, parser, trace_file):
         elevation=parser.elevation,
         # heart rate
         heart_rate_list=parser.heart_rate_list,
+        min_heart_rate=parser.min_heart_rate,
         avg_heart_rate=parser.avg_heart_rate,
         max_heart_rate=parser.max_heart_rate,
         # cadence
         cadence_list=parser.cadence_list,
+        min_cadence=parser.min_cadence,
         avg_cadence=parser.avg_cadence,
         max_cadence=parser.max_cadence,
         # speed
         speed_list=parser.speed_list,
+        min_speed=parser.min_speed,
         avg_speed=parser.avg_speed,
         max_speed=parser.max_speed,
         # temperature
         temperature_list=parser.temperature_list,
+        min_temperature=parser.min_temperature,
         avg_temperature=parser.avg_temperature,
         max_temperature=parser.max_temperature,
         # training effect
         aerobic_training_effect=parser.aerobic_training_effect,
         anaerobic_training_effect=parser.anaerobic_training_effect,
+        # timestamps
+        timestamps_list=parser.timestamps_list,
     )
     trace_object.save()
     return trace_object
@@ -196,6 +202,8 @@ def parse_activity_data(file):
     elif file.endswith(".fit"):
         log.debug(f"parsing FIT file ...")
         parser = FITParser(path_to_file=file)
+        parser.set_min_max_values()
+        parser.convert_list_attributes_to_json()
     else:
         log.warning(f"file type: {file} unknown")
         parser = None

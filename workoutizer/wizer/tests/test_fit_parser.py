@@ -2,8 +2,8 @@ import datetime
 
 
 def test__parse_metadata(fit_parser):
-    parser = fit_parser()
-    assert parser.file_name == 'example.fit'
+    p = fit_parser()
+    assert p.file_name == 'example.fit'
 
 
 def test__parse_records(fit_parser):
@@ -32,3 +32,23 @@ def test__parse_records(fit_parser):
     assert len(p.temperature_list) == 1202
     assert len(p.speed_list) == 1201
     assert len(p.timestamps_list) == 1224
+
+
+def test_get_min_max_values(fit_parser):
+    p = fit_parser()
+    assert p.cadence_list[:3] == [61, 0, 0]
+    assert p.avg_cadence == 64
+    assert p.max_cadence is None
+    assert p.min_cadence is None
+    p.set_min_max_values()
+    assert p.max_cadence == 116.0
+    assert p.min_cadence == 0.0
+
+
+def test_convert_list_attributes_to_json(fit_parser):
+    p = fit_parser()
+    assert type(p.timestamps_list) == list
+    assert type(p.coordinates_list) == list
+    p.convert_list_attributes_to_json()
+    assert type(p.timestamps_list) == str
+    assert type(p.coordinates_list) == str

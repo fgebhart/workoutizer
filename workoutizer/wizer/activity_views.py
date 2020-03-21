@@ -28,7 +28,6 @@ class ActivityView(MapView):
             'sports': Sport.objects.all().order_by('name'),
             'activity': activity,
         }
-        print(f"time series: {time_series}")
         return render(request, self.template_name, {**context, **activity_context, 'time_series': time_series})
 
 

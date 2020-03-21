@@ -1,4 +1,4 @@
-from wizer.tools.utils import sanitize, remove_nones_from_string, remove_nones_from_list
+from wizer.tools.utils import sanitize, remove_nones_from_string, remove_nones_from_list, ensure_list_have_same_length
 
 
 def test_remove_nones_from_string():
@@ -21,3 +21,10 @@ def test_remove_nones_from_list():
     assert remove_nones_from_list([None]) == []
     assert remove_nones_from_list([None, 1, 2, "a"]) == [1, 2, "a"]
     assert remove_nones_from_list([None, 1, None, 2]) == [1, 2]
+
+
+def test_ensure_list_have_same_length():
+    assert ensure_list_have_same_length([1, 2, 3, 4, 5], [3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
+    assert ensure_list_have_same_length([3, 4, 5], [1, 2, 3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
+    assert ensure_list_have_same_length([3, 4, 5], [3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
+    assert ensure_list_have_same_length([3], []) == ([], [])

@@ -1,8 +1,10 @@
+import json
 import logging
 import datetime
 
 from fitparse import FitFile
 from wizer.file_helper.lib.parser import Parser
+from wizer.tools.utils import remove_nones_from_list
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +28,7 @@ class FITParser(Parser):
         lat = None
         for record in self.fit.get_messages():
             for label, value in record.get_values().items():
-                print(f"{label}: {value}")
+                # print(f"{label}: {value}")
                 if label == 'sport':
                     self.sport = value
                 if label == "total_distance":
@@ -73,7 +75,7 @@ class FITParser(Parser):
                     self.anaerobic_training_effect = value
                 # timestamps
                 if label == "timestamp":
-                    self.timestamps_list.append(value)
+                    self.timestamps_list.append(value.timestamp())
             if lat and lon:
                 coordinates.append([float(lon) / ccp, float(lat) / ccp])
         self.coordinates_list = coordinates
@@ -89,3 +91,18 @@ class FITParser(Parser):
         log.debug(f"found duration: {self.duration} min")
         log.debug(f"found avg_cadence: {self.avg_cadence} steps/min")
         log.debug(f"found avg_temperature: {self.avg_temperature} Celcius")
+
+    def set_min_max_values(self):
+        attributes = self.__dict__.copy()
+        for attribute, values in attributes.items():
+            if attribute.endswith("_list") and attribute != 'coordinates_list' and attribute != 'timestamps_list':
+                name = attribute.replace("_list", "")
+                values = remove_nones_from_list(values)
+                if values:
+                    setattr(self, f"max_{name}", round(float(max(values)), 2))
+                    setattr(self, f"min_{name}", round(float(min(values)), 2))
+
+    def convert_list_attributes_to_json(self):
+        for attribute, values in self.__dict__.items():
+            if attribute.endswith("_list"):
+                setattr(self, attribute, json.dumps(values))
