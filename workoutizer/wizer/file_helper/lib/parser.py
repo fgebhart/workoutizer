@@ -32,6 +32,8 @@ class Parser:
         # training effect
         self.aerobic_training_effect = None     # float()
         self.anaerobic_training_effect = None   # float()
+        # timestamps
+        self.timestamps_list = []
 
         # run parser
         self._parse_metadata()

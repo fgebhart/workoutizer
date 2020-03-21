@@ -26,6 +26,7 @@ class FITParser(Parser):
         lat = None
         for record in self.fit.get_messages():
             for label, value in record.get_values().items():
+                print(f"{label}: {value}")
                 if label == 'sport':
                     self.sport = value
                 if label == "total_distance":
@@ -70,6 +71,9 @@ class FITParser(Parser):
                     self.aerobic_training_effect = value
                 if label == "total_anaerobic_training_effect":
                     self.anaerobic_training_effect = value
+                # timestamps
+                if label == "timestamp":
+                    self.timestamps_list.append(value)
             if lat and lon:
                 coordinates.append([float(lon) / ccp, float(lat) / ccp])
         self.coordinates_list = coordinates
@@ -78,6 +82,7 @@ class FITParser(Parser):
         log.debug(f"found date: {self.date}")
         log.debug(f"found number of coordinates: {len(self.coordinates_list)}")
         log.debug(f"found number of elevation points: {len(self.coordinates_list)}")
+        log.debug(f"found number of timestamps: {len(self.timestamps_list)}")
         log.debug(f"found avg_speed: {self.avg_speed}")
         log.debug(f"found sport: {self.sport}")
         log.debug(f"found distance: {self.distance} km")

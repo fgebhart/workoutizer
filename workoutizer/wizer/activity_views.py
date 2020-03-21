@@ -23,17 +23,13 @@ class ActivityView(MapView):
     def get(self, request, activity_id):
         activity = Activity.objects.get(id=activity_id)
         context = super(ActivityView, self).get(request=request, list_of_activities=[activity])
-        print(f"asdf: {activity.trace_file}")
-        script_time_series, div_time_series = plot_time_series(activity.trace_file)
+        time_series = plot_time_series(activity)
         activity_context = {
             'sports': Sport.objects.all().order_by('name'),
             'activity': activity,
-            # TODO
-
         }
-        context['script_time_series'] = script_time_series
-        context['div_time_series'] = div_time_series
-        return render(request, self.template_name, {**context, **activity_context})
+        print(f"time series: {time_series}")
+        return render(request, self.template_name, {**context, **activity_context, 'time_series': time_series})
 
 
 def add_activity_view(request):

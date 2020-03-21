@@ -25,3 +25,10 @@ def test__parse_records(fit_parser):
     assert p.avg_temperature == 27
     assert p.aerobic_training_effect == 2.7
     assert p.anaerobic_training_effect == 0.3
+    assert len(p.heart_rate_list) == 1202
+    assert len(p.altitude_list) == 1202
+    assert len(p.coordinates_list) == 4157
+    assert len(p.cadence_list) == 1202
+    assert len(p.temperature_list) == 1202
+    assert len(p.speed_list) == 1201
+    assert len(p.timestamps_list) == 1224

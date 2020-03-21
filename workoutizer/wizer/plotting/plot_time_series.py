@@ -1,28 +1,35 @@
 import logging
+import json
 
 import pandas as pd
+import numpy as np
 from bokeh.plotting import figure
 from bokeh.embed import components
+
+from django.conf import settings
 
 log = logging.getLogger(__name__)
 
 
-def plot_time_series(trace_data):
+def plot_time_series(activity):
+    dict_containing_divs_and_scripts = {}
+    attributes = activity.trace_file.__dict__
+    del attributes["coordinates_list"]
+    del attributes["altitude_list"]
+    # timestamps_list = attributes.pop("timestamps_list")
+    for attribute, value in attributes.items():
+        if attribute.endswith("_list"):
+            value = json.loads(value)
+            print(f"attribute: {attribute}, len of value: {len(value)}")  # , value: {value}")
+            p = figure(x_axis_type='datetime', y_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT/2),
+                       sizing_mode='stretch_width')
+            N = 40
+            x = np.random.random(size=N) * 100
+            y = np.random.random(size=N) * 100
 
-    df = pd.DataFrame(data=data, columns=sports, index=dates, dtype='timedelta64[ns]')
-    df = df.groupby(df.columns, axis=1).sum()
+            p.scatter(x, y, radius=0.3, fill_alpha=1, color=activity.sport.color)
 
-    p = figure(x_axis_type='datetime', y_axis_type='datetime', plot_height=settings.PLOT_HEIGHT,
-               sizing_mode='stretch_width',
-               tools="pan,wheel_zoom,box_zoom,reset,save")
-
-
-    p.vbar_stack(sports, x='dates', width=70000000, color=colors, source=plot_data)
-
-    p.xaxis[0].ticker.desired_num_ticks = 12
-    p.toolbar.logo = None
-    p.toolbar_location = None
-
-    script, div = components(p)
-
-    return script, div
+            script, div = components(p)
+            name = attribute.replace("_list", "").replace("_", " ").title()
+            dict_containing_divs_and_scripts[name] = {"script": script, "div": div}
+    return dict_containing_divs_and_scripts
