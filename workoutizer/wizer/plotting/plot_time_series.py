@@ -1,5 +1,6 @@
 import logging
 import json
+import datetime
 
 import numpy as np
 from bokeh.plotting import figure
@@ -7,6 +8,7 @@ from bokeh.embed import components
 from bokeh.models import HoverTool
 
 from django.conf import settings
+from wizer.tools.utils import ensure_list_have_same_length
 
 log = logging.getLogger(__name__)
 
@@ -39,15 +41,25 @@ def plot_time_series(activity):
     attributes = activity.trace_file.__dict__
     del attributes["coordinates_list"]
     del attributes["altitude_list"]
-    del attributes["timestamps_list"]
     for attribute, values in attributes.items():
-        if attribute.endswith("_list"):
+        if attribute.endswith("_list") and attribute != 'timestamps_list':
             values = json.loads(values)
             if values:
                 attribute = attribute.replace("_list", "")
-                x_axis = np.arange(0, activity.distance, activity.distance / len(values))
-                p = figure(plot_height=int(settings.PLOT_HEIGHT / 2),
-                           sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
+                if activity.distance:
+                    x_axis = np.arange(0, activity.distance, activity.distance / len(values))
+                    p = figure(plot_height=int(settings.PLOT_HEIGHT / 2),
+                               sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
+                    p.xaxis[0].ticker.desired_num_ticks = 10
+
+                else:
+                    timestamps_list = json.loads(attributes["timestamps_list"])
+                    # x_axis = np.array(timestamps_list, dtype='i8').view('datetime64[ms]').tolist()
+                    x_axis = [datetime.datetime.fromtimestamp(t) for t in timestamps_list]
+                    x_axis, values = ensure_list_have_same_length(x_axis, values)
+                    p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2),
+                               sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
+                    print(x_axis)
                 p.tools = []
                 p.toolbar.logo = None
                 p.toolbar_location = None
@@ -61,7 +73,6 @@ def plot_time_series(activity):
                 p.add_tools(hover)
                 p.toolbar.logo = None
                 p.title.text = plot_matrix[attribute]["title"]
-                p.xaxis[0].ticker.desired_num_ticks = 10
 
                 script, div = components(p)
                 name = attribute.replace("_", " ").title()
