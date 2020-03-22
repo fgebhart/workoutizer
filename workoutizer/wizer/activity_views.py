@@ -23,7 +23,9 @@ class ActivityView(MapView):
     def get(self, request, activity_id):
         activity = Activity.objects.get(id=activity_id)
         context = super(ActivityView, self).get(request=request, list_of_activities=[activity])
-        time_series = plot_time_series(activity)
+        time_series = None
+        if activity.trace_file:
+            time_series = plot_time_series(activity)
         activity_context = {
             'sports': Sport.objects.all().order_by('name'),
             'activity': activity,

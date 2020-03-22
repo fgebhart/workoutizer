@@ -27,6 +27,7 @@ class FITParser(Parser):
         lon = None
         lat = None
         for record in self.fit.get_messages():
+            altitude = None
             for label, value in record.get_values().items():
                 # print(f"{label}: {value}")
                 if label == 'sport':
@@ -52,7 +53,7 @@ class FITParser(Parser):
                     lat = value
                 # altitude
                 if label == "altitude":
-                    self.altitude_list.append(float(value) / 10)
+                    altitude = float(value) / 10
                 # heart rate
                 if label == "heart_rate":
                     self.heart_rate_list.append(value)
@@ -78,6 +79,7 @@ class FITParser(Parser):
                     self.timestamps_list.append(value.timestamp())
             if lat and lon:
                 coordinates.append([float(lon) / ccp, float(lat) / ccp])
+                self.altitude_list.append(altitude)
         self.coordinates_list = coordinates
         # NOTE: There might be more altitude values than coordinates, since garmin start activity even if there is
         # NOTE: no GPS signal yet...

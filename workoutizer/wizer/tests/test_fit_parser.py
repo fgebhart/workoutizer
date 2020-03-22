@@ -16,7 +16,7 @@ def test__parse_records(fit_parser):
     assert p.speed_list[:3] == [1.605, 1.577, 1.577]
     assert p.avg_speed == 1.845
     assert p.coordinates_list[0] == [8.694167453795673, 49.40601873211563]
-    assert p.altitude_list[0] == 248.7
+    assert p.altitude_list[0] == 248.9
     assert p.heart_rate_list[:3] == [100, 99, 96]
     assert p.avg_heart_rate == 130
     assert p.cadence_list[:3] == [61, 0, 0]
@@ -26,7 +26,7 @@ def test__parse_records(fit_parser):
     assert p.aerobic_training_effect == 2.7
     assert p.anaerobic_training_effect == 0.3
     assert len(p.heart_rate_list) == 1202
-    assert len(p.altitude_list) == 1202
+    assert len(p.altitude_list) == 4157
     assert len(p.coordinates_list) == 4157
     assert len(p.cadence_list) == 1202
     assert len(p.temperature_list) == 1202

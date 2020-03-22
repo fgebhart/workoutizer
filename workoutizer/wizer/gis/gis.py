@@ -65,9 +65,13 @@ def add_elevation_data_to_coordinates(coordinates: list, elevation: list):
         while len(coordinates) > len(elevation):
             elevation.insert(0, None)
     coordinates_with_elevation = []
+    previous_altitude = 0
     for coordinate, altitude in zip(coordinates, elevation):
         if altitude:
             coordinate.append(altitude)
+            previous_altitude = altitude
+        else:
+            coordinate.append(previous_altitude)
         coordinates_with_elevation.append(coordinate)
     return coordinates_with_elevation
 
