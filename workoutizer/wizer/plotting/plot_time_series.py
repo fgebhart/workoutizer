@@ -59,7 +59,6 @@ def plot_time_series(activity):
                     x_axis, values = ensure_list_have_same_length(x_axis, values)
                     p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2),
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
-                    print(x_axis)
                 p.tools = []
                 p.toolbar.logo = None
                 p.toolbar_location = None
