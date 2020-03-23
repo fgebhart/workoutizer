@@ -86,19 +86,30 @@ class DashboardView(View, PlotView):
         self.sports = Sport.objects.all().order_by('name')
         activities = self.get_activities()
         summary = get_summary_of_activities(activities=activities)
-        script_history, div_history = plot_history(activities=activities, plotting_style=self.settings.plotting_style)
-        script_pc, div_pc = plot_pie_chart(activities=activities)
-        try:
+        context = {
+            'sports': self.sports,
+            'activities': activities,
+            'days': self.number_of_days,
+            'choices': self.days_choices,
+            'summary': summary,
+            'page': 'dashboard'
+        }
+        if activities:
+            script_history, div_history = plot_history(activities=activities, plotting_style=self.settings.plotting_style)
+            script_pc, div_pc = plot_pie_chart(activities=activities)
             script_trend, div_trend = plot_trend(activities=activities, sport_model=Sport)
-        except KeyError as e:
-            log.warning(f"could not create trend plot. Probably time range is set to narrow and no activity data was"
-                        f"found. KeyError: {e}")
-            div_trend = script_trend = None
-        return render(request, self.template_name,
-                      {'sports': self.sports, 'activities': activities, 'script_history': script_history,
-                       'div_history': div_history, 'days': self.number_of_days, 'choices': self.days_choices,
-                       'summary': summary, 'script_pc': script_pc, 'div_pc': div_pc, 'script_trend': script_trend,
-                       'div_trend': div_trend, 'page': 'dashboard'})
+            plotting_context = {
+                'script_history': script_history,
+                'div_history': div_history,
+                'script_pc': script_pc,
+                'div_pc': div_pc,
+                'script_trend': script_trend,
+                'div_trend': div_trend,
+            }
+            return render(request, self.template_name, {**context, **plotting_context})
+        else:
+            log.warning(f"no activities found...")
+        return render(request, self.template_name, {**context})
 
 
 def settings_view(request):
