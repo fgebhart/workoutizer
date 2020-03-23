@@ -56,9 +56,6 @@ def _activity_data(sport_model, counter):
             datetime.timedelta(minutes=48),
             datetime.timedelta(minutes=82),
         ],
-        'calories': [571, 432, 620,
-                     571, 432, 620,
-                     571, 432, 620]
     }
 
 
@@ -82,7 +79,6 @@ def insert_activities_to_model(sport_model, activity_model):
             sport=activity.get('sport')[i],
             date=activity.get('date')[i],
             duration=activity.get('duration')[i],
-            calories=activity.get('calories')[i],
         )
     log.info(f"created initial activities")
 

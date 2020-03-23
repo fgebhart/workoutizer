@@ -5,42 +5,47 @@
 <script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.4.0.min.js"></script>
 <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.4.0.min.js"></script>
 
-<div class="row">
-    <div class="col-sm-8">
-        <p>Overview of your {{ sport.name }} activities:</p>
-    </div>
-    <div class="col-sm-4">
-        <div class="float-right">
-            <div class="dropdown">
-                display last
-                <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown">
-                    {% for k, v in choices %}
-                        {% if days == k %}
-                            {{ v }}
-                        {% endif %}
-                    {% endfor %}
-                </button>
-                <div class="dropdown-menu">
-                    {% for k, v in choices %}
-                        {% if k == days %}
-                            <a class="dropdown-item"><b>{{ v }}&nbsp;<i
-                                    class="fas fa-check"></i></b></a>
-                        {% else %}
-                            <a class="dropdown-item" href="/set_number_of_days/{{ k }}">{{ v }}</a>
-                        {% endif %}
-                    {% endfor %}
+
+{% if activities %}
+    <div class="row">
+        <div class="col-sm-8">
+            <p>Overview of your {{ sport.name }} activities:</p>
+        </div>
+        <div class="col-sm-4">
+            <div class="float-right">
+                <div class="dropdown">
+                    display last
+                    <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown">
+                        {% for k, v in choices %}
+                            {% if days == k %}
+                                {{ v }}
+                            {% endif %}
+                        {% endfor %}
+                    </button>
+                    <div class="dropdown-menu">
+                        {% for k, v in choices %}
+                            {% if k == days %}
+                                <a class="dropdown-item"><b>{{ v }}&nbsp;<i
+                                        class="fas fa-check"></i></b></a>
+                            {% else %}
+                                <a class="dropdown-item" href="/set_number_of_days/{{ k }}">{{ v }}</a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    days
                 </div>
-                days
             </div>
         </div>
     </div>
-</div>
 
 
-{{ script | safe }}
+    {{ script_history | safe }}
 
-{% if div %}
-    {{ div | safe }}
+    {% if div_history %}
+        {{ div_history | safe }}
+    {% endif %}
+{% else %}
+    <h3>no Activity data found</h3>
+    <p>Go ahead, do some sports and add it to Workoutizer! Activities will appear here! <i class="fas fa-running"></i></p>
 {% endif %}
-
 <br>

@@ -32,3 +32,13 @@ def remove_nones_from_string(string: str):
 
 def remove_nones_from_list(list: list):
     return [x for x in list if x is not None]
+
+
+def ensure_list_have_same_length(list1, list2, mode="cut beginning"):
+    if mode == "cut beginning":
+        diff = len(list1) - len(list2)
+        if diff < 0:
+            list2 = list2[abs(diff):]
+        elif diff > 0:
+            list1 = list1[diff:]
+    return list1, list2
