@@ -40,13 +40,21 @@
             <div class="row">
                 <div class="col-sm-8">
                     {% include "map/activity_map.html" %}
+                    {% include "plotting/plot_time_series.html" %}
                 </div>
                 <div class="col-sm-4">
                     {% include "activity/activity_data.html" %}
                 </div>
             </div>
         {% else %}
-            {% include "activity/activity_data.html" %}
+            <div class="row">
+                <div class="col-sm-8">
+                    {% include "plotting/plot_time_series.html" %}
+                </div>
+                <div class="col-sm-4">
+                    {% include "activity/activity_data.html" %}
+                </div>
+            </div>
         {% endif %}
     {% elif not activity.trace_file and traces %}
         {% include "map/activity_map.html" %}

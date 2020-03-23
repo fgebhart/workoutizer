@@ -11,7 +11,9 @@ from multiprocessing import Process
 
 from wizer.models import Sport, Activity, Settings, Traces
 from wizer.forms import SettingsForm
-from wizer.plotting.plots import create_plot, plot_pie_chart, plot_activity_trend
+from wizer.plotting.plot_history import plot_history
+from wizer.plotting.plot_pie_chart import plot_pie_chart
+from wizer.plotting.plot_trend import plot_trend
 from wizer.gis.gis import GeoTrace, add_elevation_data_to_coordinates
 from wizer.file_helper.reimporter import reimport_activity_data
 
@@ -84,18 +86,18 @@ class DashboardView(View, PlotView):
         self.sports = Sport.objects.all().order_by('name')
         activities = self.get_activities()
         summary = get_summary_of_activities(activities=activities)
-        script, div = create_plot(activities=activities, plotting_style=self.settings.plotting_style)
+        script_history, div_history = plot_history(activities=activities, plotting_style=self.settings.plotting_style)
         script_pc, div_pc = plot_pie_chart(activities=activities)
         try:
-            script_trend, div_trend = plot_activity_trend(activities=activities, sport_model=Sport)
+            script_trend, div_trend = plot_trend(activities=activities, sport_model=Sport)
         except KeyError as e:
             log.warning(f"could not create trend plot. Probably time range is set to narrow and no activity data was"
                         f"found. KeyError: {e}")
             div_trend = script_trend = None
         return render(request, self.template_name,
-                      {'sports': self.sports, 'activities': activities, 'script': script, 'div': div,
-                       'days': self.number_of_days, 'choices': self.days_choices, 'summary': summary,
-                       'script_pc': script_pc, 'div_pc': div_pc, 'script_trend': script_trend,
+                      {'sports': self.sports, 'activities': activities, 'script_history': script_history,
+                       'div_history': div_history, 'days': self.number_of_days, 'choices': self.days_choices,
+                       'summary': summary, 'script_pc': script_pc, 'div_pc': div_pc, 'script_trend': script_trend,
                        'div_trend': div_trend, 'page': 'dashboard'})
 
 

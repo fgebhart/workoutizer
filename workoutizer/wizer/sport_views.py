@@ -10,7 +10,7 @@ from django.contrib import messages
 from wizer.views import MapView, PlotView, get_summary_of_activities
 from wizer.models import Sport
 from wizer.forms import AddSportsForm
-from wizer.plotting.plots import create_plot
+from wizer.plotting.plot_history import plot_history
 
 log = logging.getLogger(__name__)
 
@@ -34,9 +34,9 @@ class SportsView(MapView, PlotView):
         sports = Sport.objects.all().order_by('name')
         summary = get_summary_of_activities(activities=activities)
         if activities:
-            script, div = create_plot(activities=activities, plotting_style=self.settings.plotting_style)
-            map_context['script'] = script
-            map_context['div'] = div
+            script_history, div_history = plot_history(activities=activities, plotting_style=self.settings.plotting_style)
+            map_context['script_history'] = script_history
+            map_context['div_history'] = div_history
         try:
             sport = model_to_dict(Sport.objects.get(slug=sports_name_slug))
             sport['slug'] = sports_name_slug
