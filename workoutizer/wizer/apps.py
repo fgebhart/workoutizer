@@ -202,6 +202,7 @@ def parse_activity_data(file):
     elif file.endswith(".fit"):
         log.debug(f"parsing FIT file ...")
         parser = FITParser(path_to_file=file)
+        parser.convert_list_of_nones_to_empty_list()
         parser.set_min_max_values()
         parser.convert_list_attributes_to_json()
     else:
