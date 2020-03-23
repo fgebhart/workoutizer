@@ -26,8 +26,8 @@ class FITParser(Parser):
         coordinates = []
         lon = None
         lat = None
+        altitude = None
         for record in self.fit.get_messages():
-            altitude = None
             for label, value in record.get_values().items():
                 # print(f"{label}: {value}")
                 if label == 'sport':
@@ -81,11 +81,9 @@ class FITParser(Parser):
                 coordinates.append([float(lon) / ccp, float(lat) / ccp])
                 self.altitude_list.append(altitude)
         self.coordinates_list = coordinates
-        # NOTE: There might be more altitude values than coordinates, since garmin start activity even if there is
-        # NOTE: no GPS signal yet...
         log.debug(f"found date: {self.date}")
         log.debug(f"found number of coordinates: {len(self.coordinates_list)}")
-        log.debug(f"found number of elevation points: {len(self.coordinates_list)}")
+        log.debug(f"found number of altitude: {len(self.altitude_list)}")
         log.debug(f"found number of timestamps: {len(self.timestamps_list)}")
         log.debug(f"found avg_speed: {self.avg_speed}")
         log.debug(f"found sport: {self.sport}")
@@ -93,6 +91,17 @@ class FITParser(Parser):
         log.debug(f"found duration: {self.duration} min")
         log.debug(f"found avg_cadence: {self.avg_cadence} steps/min")
         log.debug(f"found avg_temperature: {self.avg_temperature} Celcius")
+
+    def convert_list_of_nones_to_empty_list(self):
+        for attribute, values in self.__dict__.items():
+            if attribute.endswith("_list"):
+                got_value = False
+                for item in getattr(self, attribute):
+                    if item:
+                        got_value = True
+                        break
+                if not got_value:
+                    setattr(self, attribute, [])
 
     def set_min_max_values(self):
         attributes = self.__dict__.copy()

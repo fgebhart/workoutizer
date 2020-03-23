@@ -1,3 +1,4 @@
+import os
 import datetime
 
 
@@ -28,6 +29,7 @@ def test__parse_records(fit_parser):
     assert len(p.heart_rate_list) == 1202
     assert len(p.altitude_list) == 4157
     assert len(p.coordinates_list) == 4157
+    assert len(p.coordinates_list) == len(p.altitude_list)
     assert len(p.cadence_list) == 1202
     assert len(p.temperature_list) == 1202
     assert len(p.speed_list) == 1201
@@ -52,3 +54,12 @@ def test_convert_list_attributes_to_json(fit_parser):
     p.convert_list_attributes_to_json()
     assert type(p.timestamps_list) == str
     assert type(p.coordinates_list) == str
+
+
+def test_convert_list_of_nones_to_empty_list(fit_parser):
+    p = fit_parser(path=os.path.join(os.path.dirname(__file__), "data/with_nones.fit"))
+    assert p.altitude_list[:3] == [None, None, None]
+    p.convert_list_of_nones_to_empty_list()
+    assert p.altitude_list == []
+
+
