@@ -146,7 +146,6 @@ def _save_to_activity_model(activities_model, parser, sport_instance, trace_file
         duration=parser.duration,
         distance=parser.distance,
         trace_file=trace_file_instance,
-        calories=parser.calories,
     )
     activity_object.save()
 
@@ -156,8 +155,9 @@ def _save_to_trace_model(traces_model, md5sum, parser, trace_file):
     trace_object = traces_model(
         path_to_file=trace_file,
         md5sum=md5sum,
-        coordinates=parser.coordinates,
-        elevation=parser.elevation,
+        coordinates_list=parser.coordinates_list,
+        altitude_list=parser.altitude_list,
+        calories=parser.calories,
         # heart rate
         heart_rate_list=parser.heart_rate_list,
         min_heart_rate=parser.min_heart_rate,

@@ -20,7 +20,7 @@ plot_matrix = {
     },
     "cadence": {
         "color": "blue",
-        "axis": "steps/min",
+        "axis": "revolutions/min",
         "title": "Cadence",
     },
     "speed": {
