@@ -17,6 +17,6 @@ services:
     volumes:
       - .:/workoutizer
     ports:
-      - "8000:8000"
+      - "8001:8001"
     stdin_open: true
     tty: true
