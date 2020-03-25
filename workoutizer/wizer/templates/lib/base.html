@@ -21,8 +21,13 @@
 
 <script>
     $(document.documentElement).keyup(function (event) {
-        let sports = {{ sports | queryset_to_list | safe }};
-        go_to_page_with_key(event, sports);
+        let ids = {{ form_field_ids | safe }};
+        if (ids.includes(document.activeElement.id)) {
+        }
+        else {
+            let sports = {{ sports | queryset_to_list | safe }};
+            go_to_page_with_key(event, sports);
+        }
     });
 </script>
 
