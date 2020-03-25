@@ -140,7 +140,7 @@ def parse_and_save_to_model(traces_model, sport_model, activity_model, md5sum, t
 
 def _save_to_activity_model(activities_model, parser, sport_instance, trace_file_instance):
     activity_object = activities_model(
-        name=parser.file_name.split(".gpx")[0],
+        name=parser.file_name.replace(".gpx", "").replace(".fit", ""),
         sport=sport_instance,
         date=parser.date,
         duration=parser.duration,
