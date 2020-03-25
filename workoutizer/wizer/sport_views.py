@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 from django.contrib import messages
 
-from wizer.views import MapView, PlotView, get_summary_of_activities
+from wizer.views import MapView, PlotView, get_summary_of_activities, get_all_form_field_ids
 from wizer.models import Sport
 from wizer.forms import AddSportsForm
 from wizer.plotting.plot_history import plot_history
@@ -20,7 +20,8 @@ class AllSportsView(View):
 
     def get(self, request):
         sports = Sport.objects.all().order_by('name')
-        return render(request, self.template_name, {'sports': sports, 'page': 'all_sports'})
+        return render(request, self.template_name, {'sports': sports, 'page': 'all_sports',
+                                                    'form_field_ids': get_all_form_field_ids()})
 
 
 class SportsView(MapView, PlotView):
@@ -44,7 +45,8 @@ class SportsView(MapView, PlotView):
             log.critical("this sport does not exist")
             raise Http404
         return render(request, self.template_name,
-                      {**map_context, 'activities': activities, 'sports': sports, 'summary': summary, 'sport': sport})
+                      {**map_context, 'activities': activities, 'sports': sports, 'summary': summary, 'sport': sport,
+                       'form_field_ids': get_all_form_field_ids()})
 
 
 def add_sport_view(request):
@@ -60,7 +62,8 @@ def add_sport_view(request):
             log.warning(f"form invalid: {form.errors}")
     else:
         form = AddSportsForm()
-    return render(request, 'sport/add_sport.html', {'sports': sports, 'form': form, 'page': 'add_sport'})
+    return render(request, 'sport/add_sport.html', {'sports': sports, 'form': form, 'page': 'add_sport',
+                                                    'form_field_ids': get_all_form_field_ids()})
 
 
 def edit_sport_view(request, sports_name_slug):
@@ -75,7 +78,8 @@ def edit_sport_view(request, sports_name_slug):
             return HttpResponseRedirect(f'/sport/{sport.slug}/edit/')
         else:
             log.warning(f"form invalid: {form.errors}")
-    return render(request, 'sport/edit_sport.html', {'sports': sports, 'sport': sport, 'form': form})
+    return render(request, 'sport/edit_sport.html', {'sports': sports, 'sport': sport, 'form': form,
+                                                     'form_field_ids': get_all_form_field_ids()})
 
 
 class SportDeleteView(DeleteView):
@@ -87,4 +91,5 @@ class SportDeleteView(DeleteView):
     def get(self, request, *args, **kwargs):
         sports = Sport.objects.all().order_by('name')
         sport = Sport.objects.get(slug=kwargs['slug'])
-        return render(request, self.template_name, {'sports': sports, 'sport': sport})
+        return render(request, self.template_name, {'sports': sports, 'sport': sport,
+                                                    'form_field_ids': get_all_form_field_ids()})

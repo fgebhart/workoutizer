@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.http import HttpResponse, Http404
 
-from wizer.views import MapView
+from wizer.views import MapView, get_all_form_field_ids
 from wizer.models import Sport, Activity
 from wizer.forms import AddActivityForm, EditActivityForm
 from wizer.file_helper.gpx_exporter import save_activity_to_gpx_file
@@ -29,6 +29,7 @@ class ActivityView(MapView):
         activity_context = {
             'sports': Sport.objects.all().order_by('name'),
             'activity': activity,
+            'form_field_ids': get_all_form_field_ids(),
         }
         return render(request, self.template_name, {**context, **activity_context, 'time_series': time_series})
 
@@ -46,7 +47,8 @@ def add_activity_view(request):
             log.warning(f"form invalid: {form.errors}")
     else:
         form = AddActivityForm()
-    return render(request, 'activity/add_activity.html', {'sports': sports, 'form': form})
+    return render(request, 'activity/add_activity.html', {'sports': sports, 'form': form,
+                                                          'form_field_ids': get_all_form_field_ids()})
 
 
 def edit_activity_view(request, activity_id):
@@ -63,7 +65,8 @@ def edit_activity_view(request, activity_id):
             return HttpResponseRedirect(f"/activity/{activity_id}")
         else:
             log.warning(f"form invalid: {form.errors}")
-    return render(request, 'activity/edit_activity.html', {'form': form, 'sports': sports, 'activity': activity})
+    return render(request, 'activity/edit_activity.html', {'form': form, 'sports': sports, 'activity': activity,
+                                                           'form_field_ids': get_all_form_field_ids()})
 
 
 def download_activity(request, activity_id):
@@ -88,4 +91,5 @@ class ActivityDeleteView(DeleteView):
         activity = Activity.objects.get(id=kwargs['pk'])
         log.debug(f"my sports: {sports}")
         log.debug(f"activity: {activity}")
-        return render(request, self.template_name, {'sports': sports, 'activity': activity})
+        return render(request, self.template_name, {'sports': sports, 'activity': activity,
+                                                    'form_field_ids': get_all_form_field_ids()})

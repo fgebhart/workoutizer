@@ -17,7 +17,7 @@
             <td>{{ a.date }}</td>
             <td class="limit"><a href="/activity/{{ a.id }}">{{ a.name }}</a></td>
             <td>
-                {% if a.trace_file.coordinates|length > 2 %}
+                {% if a.trace_file.coordinates_list|length > 2 %}
                     <a href="/activity/{{ a.id }}" data-toggle="tooltip" data-placement="bottom"
                        title="Show on Map" style="color: black;">
                         <i class="fas fa-map-marked-alt"></i>

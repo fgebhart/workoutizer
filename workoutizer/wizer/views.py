@@ -10,7 +10,7 @@ from django.contrib import messages
 from multiprocessing import Process
 
 from wizer.models import Sport, Activity, Settings, Traces
-from wizer.forms import SettingsForm
+from wizer.forms import SettingsForm, AddActivityForm, EditActivityForm, AddSportsForm
 from wizer.plotting.plot_history import plot_history
 from wizer.plotting.plot_pie_chart import plot_pie_chart
 from wizer.plotting.plot_trend import plot_trend
@@ -92,7 +92,8 @@ class DashboardView(View, PlotView):
             'days': self.number_of_days,
             'choices': self.days_choices,
             'summary': summary,
-            'page': 'dashboard'
+            'page': 'dashboard',
+            'form_field_ids': get_all_form_field_ids(),
         }
         if activities:
             script_history, div_history = plot_history(activities=activities, plotting_style=self.settings.plotting_style)
@@ -124,7 +125,8 @@ def settings_view(request):
             return HttpResponseRedirect('/settings')
         else:
             log.warning(f"form invalid: {form.errors}")
-    return render(request, "settings.html", {'sports': sports, 'form': form, 'settings': settings})
+    return render(request, "settings.html", {'sports': sports, 'form': form, 'settings': settings,
+                                             'form_field_ids': get_all_form_field_ids()})
 
 
 def set_number_of_days(request, number_of_days):
@@ -161,3 +163,12 @@ def reimport_activity_files(request):
         return redirect(request.META.get('HTTP_REFERER'))
     else:
         return HttpResponseRedirect('/settings/')
+
+
+def get_all_form_field_ids():
+    ids = []
+    all_forms = [AddSportsForm, SettingsForm, AddActivityForm]
+    for form in all_forms:
+        ids += [f"id_{field}" for field in form.base_fields.keys()]
+
+    return ids
