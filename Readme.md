@@ -14,8 +14,9 @@ docker-compose up
 ```
 ## Thanks
 
-Thanks to the authors of some projects I integrated into workoutizer:
-* Raruto - [leaflet-elevation](https://github.com/Raruto/leaflet-elevation)
+Thanks to the authors of projects I integrated into workoutizer:
+* [leaflet-elevation](https://github.com/Raruto/leaflet-elevation) by [Raruto](https://github.com/Raruto)
+* [python-fitparse](https://github.com/dtcooper/python-fitparse) by [dtcooper](https://github.com/dtcooper)
 * [Font Awesome Icons](https://fontawesome.com/)
 
 
