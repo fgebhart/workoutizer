@@ -3,16 +3,15 @@ version: '3.3'
 services:
   django:
     container_name: workoutizer
-    environment:
-      - DEVENV=docker
     build:
       context: .
       dockerfile: docker/Dockerfile
     command: bash -xc "
       cd workoutizer
+      && python manage.py collectstatic --no-input
       && python manage.py makemigrations
       && python manage.py migrate
-      && python manage.py runserver 0.0.0.0:8001
+      && python manage.py runserver 0.0.0.0:8001 --noreload
       "
     volumes:
       - .:/workoutizer
