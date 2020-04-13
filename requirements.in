@@ -1,0 +1,9 @@
+bokeh
+coloredlogs
+django
+django-leaflet
+fitparse
+geopy
+gpxpy
+pandas
+pytest
