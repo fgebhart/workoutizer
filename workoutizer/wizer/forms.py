@@ -16,7 +16,7 @@ class AddActivityForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AddActivityForm, self).__init__(*args, **kwargs)
-        self.fields['sport'] = forms.ModelChoiceField(queryset=Sport.objects.all())
+        self.fields['sport'] = forms.ModelChoiceField(queryset=Sport.objects.all().exclude(name='unknown'))
 
 
 class EditActivityForm(forms.ModelForm):
