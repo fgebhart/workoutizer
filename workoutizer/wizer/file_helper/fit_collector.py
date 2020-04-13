@@ -14,7 +14,7 @@ class FitCollector:
         self.target_location = os.path.join(self.settings.path_to_trace_dir, 'garmin')
         log.debug(f"looking for garmin device at: {self.path_to_gvfs}")
 
-    def look_for_fit_files(self):
+    def look_for_fit_files_and_copy(self):
         self.path_to_gvfs = self.settings.path_to_garmin_device
         self.target_location = os.path.join(self.settings.path_to_trace_dir, 'garmin')
 
@@ -31,3 +31,18 @@ class FitCollector:
                     if not os.path.isfile(target_file):
                         shutil.copy(fit, target_file)
                         log.debug(f"copied file: {file_name}")
+                        if self.settings.delete_files_after_import:
+                            delete_imported_fit_file_from_device(
+                                path_to_file_on_device=fit,
+                                path_to_local_file=target_file,
+                            )
+
+
+def delete_imported_fit_file_from_device(path_to_file_on_device: str, path_to_local_file: str):
+    """
+    Check if both the original file on the device and the copy on the local file
+    system are present and if so, delete the file on the device.
+    """
+    if os.path.isfile(path_to_file_on_device) and os.path.isfile(path_to_local_file):
+        os.remove(path_to_file_on_device)
+        log.debug(f"deleted file from device: {path_to_file_on_device}")

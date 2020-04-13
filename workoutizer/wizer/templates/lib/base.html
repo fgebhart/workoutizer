@@ -20,15 +20,63 @@
 </head>
 
 <script>
-    $(document.documentElement).keyup(function (event) {
-        let ids = {{ form_field_ids | safe }};
-        if (ids.includes(document.activeElement.id)) {
+    var map = {};   // thanks to https://stackoverflow.com/questions/5203407/how-to-detect-if-multiple-keys-are-pressed-at-once-using-javascript
+    onkeydown = onkeyup = function (e) {
+        let sports = {{ sports | queryset_to_list | safe }}
+            e = e || event; // to deal with IE
+        map[e.key] = e.type === 'keydown';
+        if (map['g'] && map['h']) {
+            window.location.href = '/';
+            map = {};
+        } else if (map['g'] && map['s']) {
+            window.location.href = '/sports';
+            map = {};
+        } else if (map['g'] && map['a']) {
+            window.location.href = '/add-activity';
+            map = {};
+        } else if (map['g'] && map[',']) {
+            window.location.href = '/settings';
+            map = {};
+        } else if (map['g'] && map['0']) {
+            window.location.href = get_sport(event, sports);
+            map = {};
+        } else if (map['g'] && map['1']) {
+            window.location.href = get_sport(event, sports);
+            map = {};
+        } else if (map['g'] && map['2']) {
+            window.location.href = get_sport(event, sports);
+            map = {};
+        } else if (map['g'] && map['3']) {
+            window.location.href = get_sport(event, sports);
+            map = {};
+        } else if (map['g'] && map['4']) {
+            window.location.href = get_sport(event, sports);
+            map = {};
+        } else if (map['g'] && map['5']) {
+            window.location.href = get_sport(event, sports);
+            map = {};
+        } else if (map['g'] && map['6']) {
+            window.location.href = get_sport(event, sports);
+            map = {};
+        } else if (map['g'] && map['7']) {
+            window.location.href = get_sport(event, sports);
+            map = {};
+        } else if (map['g'] && map['8']) {
+            window.location.href = get_sport(event, sports);
+            map = {};
+        } else if (map['g'] && map['9']) {
+            window.location.href = get_sport(event, sports);
+            map = {};
         }
-        else {
-            let sports = {{ sports | queryset_to_list | safe }};
-            go_to_page_with_key(event, sports);
+    }
+
+    function get_sport(event, sports) {
+        let event_as_int = Number(String.fromCharCode(event.which));
+        if (event_as_int === 0) {
+            event_as_int = sports.length;
         }
-    });
+        return '/sport/' + sports[event_as_int - 1]
+    }
 </script>
 
 <body>
@@ -41,46 +89,3 @@
 </div>
 </body>
 </html>
-
-<script>
-function get_sport(event, sports) {
-    let event_as_int = Number(String.fromCharCode(event.which));
-    if (event_as_int === 0) {
-        event_as_int = sports.length;
-    }
-    console.log(event_as_int);
-    return '/sport/' + sports[event_as_int - 1]
-}
-
-function go_to_page_with_key(event, sports) {
-    if (event.keyCode === 72) {                 // h
-        window.location.href = '/';
-    } else if (event.keyCode === 83) {          // s
-        window.location.href = '/sports';
-    } else if (event.keyCode === 65) {          // a
-        window.location.href = '/add-activity';
-    } else if (event.keyCode === 188) {         // ,
-        window.location.href = '/settings';
-    } else if (event.keyCode === 48) {          // 0
-        window.location.href = get_sport(event, sports);
-    } else if (event.keyCode === 49) {          // 1
-        window.location.href = get_sport(event, sports);
-    } else if (event.keyCode === 50) {          // 2
-        window.location.href = get_sport(event, sports);
-    } else if (event.keyCode === 51) {          // 3
-        window.location.href = get_sport(event, sports);
-    } else if (event.keyCode === 52) {          // 4
-        window.location.href = get_sport(event, sports);
-    } else if (event.keyCode === 53) {          // 5
-        window.location.href = get_sport(event, sports);
-    } else if (event.keyCode === 54) {          // 6
-        window.location.href = get_sport(event, sports);
-    } else if (event.keyCode === 55) {          // 7
-        window.location.href = get_sport(event, sports);
-    } else if (event.keyCode === 56) {          // 8
-        window.location.href = get_sport(event, sports);
-    } else if (event.keyCode === 57) {          // 9
-        window.location.href = get_sport(event, sports);
-    }
-}
-</script>

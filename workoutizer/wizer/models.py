@@ -109,4 +109,5 @@ class Settings(models.Model):
     trace_opacity = models.FloatField(max_length=20, default=0.7, verbose_name="Opacity of Traces:")
     plotting_style = models.CharField(choices=plotting_choices, default='bar', max_length=120,
                                       verbose_name="Plotting Style:")
-    reimporter_updates_all = models.BooleanField(verbose_name="Force Update all Fields: ", default=False)
+    reimporter_updates_all = models.BooleanField(verbose_name="Force Update all Fields:", default=False)
+    delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying: ", default=False)

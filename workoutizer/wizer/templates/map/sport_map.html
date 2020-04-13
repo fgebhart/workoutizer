@@ -10,6 +10,8 @@
 <script>
     // config options of leaflet-ui plugin: https://github.com/Raruto/leaflet-ui
     var map = L.map('map', {
+        center: [41.4583, 12.7059],  // needs value to initialize
+        zoom: 1,                     // needs value to initialize
         mapTypeId: 'streets',
         mapTypeIds: ['streets', 'topo', 'osm', 'terrain', 'satellite'],
         gestureHandling: false,     // zoom with Cmd + Scroll
@@ -28,78 +30,80 @@
     map.once('idle', function () { /* Waiting for map init */
     });
 
-    // workoutizer settings for adding traces to map
-    var Traces = [{
-        {% for line in traces %}
-            "type": "LineString",
-            "coordinates": {{ line.coordinates }}
-            }, {
+    {% if has_traces %}
+        {# custom hover popup marksers, from: http://jsfiddle.net/sowelie/3JbNY/ #}
+        var MyCustomMarker = L.Marker.extend({
+            bindPopup: function (htmlContent, options) {
+                if (options && options.showOnMouseOver) {
+                    // call the super method
+                    L.Marker.prototype.bindPopup.apply(this, [htmlContent, options]);
+                    // unbind the click event
+                    this.off("click", this.openPopup, this);
+                    // bind to mouse over
+                    this.on("mouseover", function (e) {
+                        // get the element that the mouse hovered onto
+                        var target = e.originalEvent.fromElement || e.originalEvent.relatedTarget;
+                        var parent = this._getParent(target, "leaflet-popup");
+                        // check to see if the element is a popup, and if it is this marker's popup
+                        if (parent == this._popup._container)
+                            return true;
+                        // show the popup
+                        this.openPopup();
+                    }, this);
+                }
+            },
+            _getParent: function (element, className) {
+                var parent = element.parentNode;
+                while (parent != null) {
+                    if (parent.className && L.DomUtil.hasClass(parent, className))
+                        return parent;
+                    parent = parent.parentNode;
+                }
+                return false;
+            }
+        });
+
+        const markers = new L.FeatureGroup();
+        const Traces = [];
+
+        {% for line, color in traces %}
+            // add coordinates to Traces
+            var coordinates = {{ line.coordinates }};
+            Traces.push({
+                "type": "LineString",
+                "coordinates": coordinates,
+                "color": "{{ color }}",
+            },)
+
+            // create start and end point
+            beg = coordinates[0];
+            end = coordinates[coordinates.length - 1];
+
+            var begin_marker = new MyCustomMarker([beg[1], beg[0]], {icon: greenIcon}).addTo(map);
+            begin_marker.bindPopup("Start: <a href='/activity/{{ line.pk }}'>{{ line.name }}</a>", {
+                showOnMouseOver: true
+            });
+            var end_marker = new MyCustomMarker([end[1], end[0]], {icon: redIcon}).addTo(map);
+            end_marker.bindPopup("End: <a href='/activity/{{ line.pk }}'>{{ line.name }}</a>", {
+                showOnMouseOver: true
+            });
+            markers.addLayer(begin_marker);
+            markers.addLayer(end_marker);
+            map.addLayer(markers);
         {% endfor %}
-    }];
 
-    var geoJsonLayer = L.geoJson(Traces);
-    var Bounds = geoJsonLayer.getBounds();
-    map.fitBounds(Bounds);
-
-    {# custom hover popup marksers, from: http://jsfiddle.net/sowelie/3JbNY/ #}
-    var MyCustomMarker = L.Marker.extend({
-        bindPopup: function (htmlContent, options) {
-            if (options && options.showOnMouseOver) {
-                // call the super method
-                L.Marker.prototype.bindPopup.apply(this, [htmlContent, options]);
-                // unbind the click event
-                this.off("click", this.openPopup, this);
-                // bind to mouse over
-                this.on("mouseover", function (e) {
-                    // get the element that the mouse hovered onto
-                    var target = e.originalEvent.fromElement || e.originalEvent.relatedTarget;
-                    var parent = this._getParent(target, "leaflet-popup");
-                    // check to see if the element is a popup, and if it is this marker's popup
-                    if (parent == this._popup._container)
-                        return true;
-                    // show the popup
-                    this.openPopup();
-                }, this);
-            }
-        },
-        _getParent: function (element, className) {
-            var parent = element.parentNode;
-            while (parent != null) {
-                if (parent.className && L.DomUtil.hasClass(parent, className))
-                    return parent;
-                parent = parent.parentNode;
-            }
-            return false;
+        for (let i = 0; i < Traces.length; i++) {
+            L.geoJSON(Traces[i], {
+                "color": Traces[i].color,
+                "weight": {{ settings.trace_width }},
+                "opacity": {{ settings.trace_opacity }},
+            }).addTo(map);
         }
-    });
-    var markers = new L.FeatureGroup();
+        const geoJsonLayer = L.geoJson(Traces);
+        const Bounds = geoJsonLayer.getBounds();
+        map.fitBounds(Bounds);
 
-    {% for trace in traces %}
-        numPts ={{ trace.coordinates }};
-        beg = {{ trace.coordinates }}[0];
-        end = {{ trace.coordinates }}[numPts.length - 1];
-
-        var begin_marker = new MyCustomMarker([beg[1], beg[0]], {icon: greenIcon}).addTo(map);
-        begin_marker.bindPopup("Start: <a href='/activity/{{ trace.pk }}'>{{ trace.name }}</a>", {
-            showOnMouseOver: true
-        });
-        var end_marker = new MyCustomMarker([end[1], end[0]], {icon: redIcon}).addTo(map);
-        end_marker.bindPopup("End: <a href='/activity/{{ trace.pk }}'>{{ trace.name }}</a>", {
-            showOnMouseOver: true
-        });
-        markers.addLayer(begin_marker);
-        markers.addLayer(end_marker);
-        map.addLayer(markers);
-
-    {% endfor %}
-
-    var Style = {
-        "color": "red",
-        "weight": {{ settings.trace_width }},
-        "opacity": {{ settings.trace_opacity }}
-    };
-
-    L.geoJSON(Traces, {style: Style}).addTo(map);
+    {% endif %}
 
 </script>
 <br>
