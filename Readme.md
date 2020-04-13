@@ -17,6 +17,7 @@ docker-compose up
 Thanks to the authors of projects I integrated into workoutizer:
 * [leaflet-elevation](https://github.com/Raruto/leaflet-elevation) by [Raruto](https://github.com/Raruto)
 * [python-fitparse](https://github.com/dtcooper/python-fitparse) by [dtcooper](https://github.com/dtcooper)
+* [leaflet-color-markers](https://github.com/pointhi/leaflet-color-markers) by [pointhi](https://github.com/pointhi)
 * [Font Awesome Icons](https://fontawesome.com/)
 
 

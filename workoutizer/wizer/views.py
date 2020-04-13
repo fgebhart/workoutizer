@@ -2,20 +2,22 @@ import logging
 import datetime
 import json
 
-import webcolors
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.contrib import messages
+from django.conf import settings
 from multiprocessing import Process
 
 from wizer.models import Sport, Activity, Settings, Traces
-from wizer.forms import SettingsForm, AddActivityForm, EditActivityForm, AddSportsForm
+from wizer.forms import SettingsForm, AddActivityForm, AddSportsForm
 from wizer.plotting.plot_history import plot_history
 from wizer.plotting.plot_pie_chart import plot_pie_chart
 from wizer.plotting.plot_trend import plot_trend
 from wizer.gis.gis import GeoTrace, add_elevation_data_to_coordinates
 from wizer.file_helper.reimporter import reimport_activity_data
+from wizer.tools.colors import lines_colors
+from wizer.tools.utils import ensure_lists_have_same_length
 
 log = logging.getLogger(__name__)
 
@@ -31,8 +33,6 @@ class MapView(View):
         self.number_of_days = self.settings.number_of_days
         self.days_choices = Settings.days_choices
         traces = []
-        color = '#ffa500'
-        sport = None
         has_elevation = False
         for activity in list_of_activities:
             if activity.trace_file:
@@ -41,20 +41,23 @@ class MapView(View):
                 if elevation:
                     has_elevation = True
                     coordinates = add_elevation_data_to_coordinates(coordinates, elevation)
-                try:
-                    color = webcolors.name_to_hex(activity.sport.color)  # NOTE: last activity color will be applied
-                    sport = activity.sport.name
-                except AttributeError as e:
-                    log.warning(f"could not find color of sport: {sport}, using default color instead: {e}")
+                sport = activity.sport.name
+
                 if coordinates:
                     traces.append(GeoTrace(
                         pk=activity.pk,
                         name=activity.name,
                         sport=sport,
-                        color=color,
                         coordinates=coordinates))
+        has_traces = True if traces else False
+
+        if traces:
+
+            traces, colors = ensure_lists_have_same_length(traces, lines_colors, mode='fill end', modify_only_list2=True)
+            traces = zip(traces, colors)
+        log.debug(f"running MapView")
         return {'traces': traces, 'settings': self.settings, 'days': self.number_of_days,
-                'choices': self.days_choices, 'color': color, 'has_elevation': has_elevation}
+                'choices': self.days_choices, 'has_elevation': has_elevation, 'has_traces': has_traces}
 
 
 class PlotView:
@@ -96,7 +99,8 @@ class DashboardView(View, PlotView):
             'form_field_ids': get_all_form_field_ids(),
         }
         if activities:
-            script_history, div_history = plot_history(activities=activities, plotting_style=self.settings.plotting_style)
+            script_history, div_history = plot_history(activities=activities,
+                                                       plotting_style=self.settings.plotting_style)
             script_pc, div_pc = plot_pie_chart(activities=activities)
             script_trend, div_trend = plot_trend(activities=activities, sport_model=Sport)
             plotting_context = {

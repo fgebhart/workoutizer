@@ -1,4 +1,4 @@
-from wizer.tools.utils import sanitize, remove_nones_from_string, remove_nones_from_list, ensure_list_have_same_length
+from wizer.tools.utils import sanitize, remove_nones_from_string, remove_nones_from_list, ensure_lists_have_same_length
 
 
 def test_remove_nones_from_string():
@@ -24,7 +24,14 @@ def test_remove_nones_from_list():
 
 
 def test_ensure_list_have_same_length():
-    assert ensure_list_have_same_length([1, 2, 3, 4, 5], [3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
-    assert ensure_list_have_same_length([3, 4, 5], [1, 2, 3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
-    assert ensure_list_have_same_length([3, 4, 5], [3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
-    assert ensure_list_have_same_length([3], []) == ([], [])
+    # mode: cut beginning
+    assert ensure_lists_have_same_length([1, 2, 3, 4, 5], [3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
+    assert ensure_lists_have_same_length([3, 4, 5], [1, 2, 3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
+    assert ensure_lists_have_same_length([3, 4, 5], [3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
+    assert ensure_lists_have_same_length([3], []) == ([], [])
+    # mode: fill end of shorter list with same as last item
+    assert ensure_lists_have_same_length([1, 2, 3], [1], mode="fill end") == ([1, 2, 3], [1, 1, 1])
+    assert ensure_lists_have_same_length([1], [1, 2, 3], mode="fill end") == ([1, 1, 1], [1, 2, 3])
+    assert ensure_lists_have_same_length([1], [1, 2, 3], mode="fill end", modify_only_list2=True) == ([1], [1, 2, 3])
+    assert ensure_lists_have_same_length(['a'], ['a', 'b', 'c'], mode="fill end") == (['a', 'a', 'a'], ['a', 'b', 'c'])
+    assert ensure_lists_have_same_length([3, 4, 5], [3, 4, 5], mode="fill end") == ([3, 4, 5], [3, 4, 5])

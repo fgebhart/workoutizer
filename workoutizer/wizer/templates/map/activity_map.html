@@ -7,7 +7,7 @@
     <script src="https://unpkg.com/@raruto/leaflet-elevation@1.0.2/dist/leaflet-elevation.js"></script>
     <style>
         .elevation-control.elevation .area {
-            fill: {{ color }};
+            fill: SeaGreen;
         }
 
         .elevation-control.elevation .background {
@@ -58,7 +58,7 @@
     map.once('idle', function () { /* Waiting for map init */
     });
 
-    {% for line in traces %}
+    {% for line, _ in traces %}
         coordinates = {{ line.coordinates }};
         numPts = {{ line.coordinates }};
         beg = {{ line.coordinates }}[0];
