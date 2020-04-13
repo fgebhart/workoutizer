@@ -2,33 +2,32 @@
 {% load static %}
 {% block body %}
     <title>Delete {{ activity }} | Workoutizer</title>
-    <h3>Delete "{{ activity }}"?</h3>
-
+    <h3>Delete ' {{ activity }} ' Activity?</h3>
+    <hr>
     <br>
-    <p>
-        Are you sure you want to delete "{{ activity }}"?
-    </p>
-    <br>
-    {% if activity.trace_file %}
-        <div class="alert alert-warning">
-            <strong>
-                <i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Warning&nbsp;&nbsp;<i
-                    class="fas fa-exclamation-triangle"></i>
-            </strong>
-            <br>
-            This will also delete the trace file of this activity located at:
-            <br>
-            <code>{{ activity.trace_file.path_to_file }}</code>
-        </div>
-    {% endif %}
-
-    <form method="post">{% csrf_token %}
+    <div class="container">
+        <p>Are you sure you want to delete ' {{ activity }} ' Activity?</p>
         <br>
-        <button class="float-left btn btn-danger btn-space" type="submit">
-            <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete
-        </button>
-        <a href="/activity/{{ activity.id }}" class="float-left btn btn-outline-secondary">Cancel</a>
-        <div class="clearfix"></div>
-    </form>
+        {% if activity.trace_file %}
+            <div class="alert alert-warning">
+                <strong>
+                    <i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Warning&nbsp;&nbsp;<i
+                        class="fas fa-exclamation-triangle"></i>
+                </strong>
+                <br>
+                This will also delete the trace file of this activity located at:
+                <br>
+                <code>{{ activity.trace_file.path_to_file }}</code>
+            </div>
+        {% endif %}
+
+        <form method="post">{% csrf_token %}
+            <br>
+            <button class="float-left btn btn-danger btn-space" type="submit">
+                <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete
+            </button>
+            <a href="/activity/{{ activity.id }}" class="float-left btn btn-outline-secondary">Cancel</a>
+            <div class="clearfix"></div>
+        </form>
 
 {% endblock %}

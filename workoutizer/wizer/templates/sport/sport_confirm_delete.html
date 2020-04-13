@@ -3,18 +3,21 @@
 {% block body %}
     <title>Delete {{ sport }} Sport | Workoutizer</title>
 
-    <h3>Delete "{{ sport }}"?</h3>
-
+    <h3>Delete ' {{ sport }} <i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i> ' Sport?</h3>
+    <hr>
     <br>
-    <p>Are you sure you want to delete "{{ sport }}"?</p>
+    <div class="container">
 
-    <form method="post">{% csrf_token %}
         <br>
-        <button class="float-left btn btn-danger btn-space" type="submit">
-            <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete
-        </button>
-        <a href="/sport/{{ sport.slug }}" class="float-left btn btn-outline-secondary">Cancel</a>
-        <div class="clearfix"></div>
-    </form>
+        <p>Are you sure you want to delete ' {{ sport }} ' Sport?</p>
 
+        <form method="post">{% csrf_token %}
+            <br>
+            <button class="float-left btn btn-danger btn-space" type="submit">
+                <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete
+            </button>
+            <a href="/sport/{{ sport.slug }}" class="float-left btn btn-outline-secondary">Cancel</a>
+            <div class="clearfix"></div>
+        </form>
+    </div>
 {% endblock %}
