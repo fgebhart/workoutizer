@@ -66,9 +66,9 @@
         const markers = new L.FeatureGroup();
         const Traces = [];
 
-        {% for line, color in traces %}
+        {% for trace, color in traces %}
             // add coordinates to Traces
-            var coordinates = {{ line.coordinates }};
+            var coordinates = {{ trace.coordinates }};
             Traces.push({
                 "type": "LineString",
                 "coordinates": coordinates,
@@ -80,11 +80,11 @@
             end = coordinates[coordinates.length - 1];
 
             var begin_marker = new MyCustomMarker([beg[1], beg[0]], {icon: greenIcon}).addTo(map);
-            begin_marker.bindPopup("Start: <a href='/activity/{{ line.pk }}'>{{ line.name }}</a>", {
+            begin_marker.bindPopup("Start: <a href='/activity/{{ trace.pk }}'>{{ trace.name }}</a>", {
                 showOnMouseOver: true
             });
             var end_marker = new MyCustomMarker([end[1], end[0]], {icon: redIcon}).addTo(map);
-            end_marker.bindPopup("End: <a href='/activity/{{ line.pk }}'>{{ line.name }}</a>", {
+            end_marker.bindPopup("End: <a href='/activity/{{ trace.pk }}'>{{ trace.name }}</a>", {
                 showOnMouseOver: true
             });
             markers.addLayer(begin_marker);
