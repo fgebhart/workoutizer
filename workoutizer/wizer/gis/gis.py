@@ -1,6 +1,7 @@
 import logging
 from math import cos, sin, atan2, sqrt, radians, degrees
 from dataclasses import dataclass
+from wizer.tools.utils import ensure_lists_have_same_length
 
 from geopy import distance
 
@@ -57,13 +58,7 @@ def calc_distance_of_points(list_of_tuples: list):
 
 
 def add_elevation_data_to_coordinates(coordinates: list, elevation: list):
-    if len(elevation) > len(coordinates):
-        log.debug(f"found more elevation points than coordinates, cut beginning of elevation list")
-        elevation = elevation[-len(coordinates):]
-    if len(coordinates) > len(elevation):
-        log.debug(f"found more coordinates than elevation points, add elevation to end of coordinates list")
-        while len(coordinates) > len(elevation):
-            elevation.insert(0, None)
+    coordinates, elevation = ensure_lists_have_same_length(coordinates, elevation, mode="fill end")
     coordinates_with_elevation = []
     for coordinate, altitude in zip(coordinates, elevation):
         coordinate.append(altitude)

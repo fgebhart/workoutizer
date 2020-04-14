@@ -12,6 +12,21 @@ To run the application, just clone the repo, navigate into the root of the repo 
 ```bash
 docker-compose up
 ```
+and then open your browser at [http://0.0.0.0:8001/](http://0.0.0.0:8001/).
+
+
+## Gallery 
+
+It comes bundled with some initial dummy activity data:
+
+ Dashboard             |  Sport Page
+:-------------------------:|:-------------------------:
+![](https://i.imgur.com/gSYgVSJ.png)  |  ![](https://i.imgur.com/6fwcEZX.png)
+
+ Activity Page 1/2             |  Activity Page 2/2
+:-------------------------:|:-------------------------:
+![](https://i.imgur.com/tzJZh4M.png)  |  ![](https://i.imgur.com/CJ1SKEn.png)
+
 ## Thanks
 
 Thanks to the authors of projects I integrated into workoutizer:
@@ -19,21 +34,5 @@ Thanks to the authors of projects I integrated into workoutizer:
 * [python-fitparse](https://github.com/dtcooper/python-fitparse) by [dtcooper](https://github.com/dtcooper)
 * [leaflet-color-markers](https://github.com/pointhi/leaflet-color-markers) by [pointhi](https://github.com/pointhi)
 * [Font Awesome Icons](https://fontawesome.com/)
-
-
-## Gallery 
-
-It comes bundled with some initial dummy activity data:
-
-<div align="center">
-    <h3>Dashboard</h3>
-    <img src="https://i.imgur.com/PDEd0n1.png" width="800" alt="Dashboard">
-    <hr>
-    <h3>Sport View</h3>
-    <img src="https://i.imgur.com/3D5C1Un.png" width="800" alt="Sport View">
-    <hr>
-    <h3>Activity View</h3>
-    <img src="https://i.imgur.com/m4Cufx8.png" width="800" alt="Activity View">
-</div>
 
 Enjoy!
