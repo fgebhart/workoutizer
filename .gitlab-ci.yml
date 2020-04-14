@@ -5,20 +5,19 @@ stages:
 
 before_script:
   - date
-  - pwd
-  - ls
+  - python3 -m pip install -r requirements.txt
 
 pytest:
   stage: test
   script:
-    - python3 -m pip install -r requirements.txt
-    - python3 -m pytest workoutizer/wizer/tests -v
+    - python3 -m pytest workoutizer/wizer/pytests -v
 
 django:
   stage: test
   script:
-    - python3 -m pip install -r requirements.txt
-    - python3 workoutizer/manage.py collectstatic --noinput
-    - python3 workoutizer/manage.py check
-    - python3 workoutizer/manage.py makemigrations
-    - python3 workoutizer/manage.py migrate
+    - cd workoutizer
+    - python3 manage.py collectstatic --noinput
+    - python3 manage.py check
+    - python3 manage.py makemigrations
+    - python3 manage.py migrate
+    - python3 manage.py test
