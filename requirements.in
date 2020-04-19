@@ -7,3 +7,4 @@ geopy
 gpxpy
 pandas
 pytest
+pytest-django

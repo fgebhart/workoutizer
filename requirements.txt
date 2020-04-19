@@ -26,7 +26,8 @@ pillow==6.1.0             # via bokeh
 pluggy==0.13.1            # via pytest
 py==1.8.1                 # via pytest
 pyparsing==2.4.2          # via packaging
-pytest==5.4.1             # via -r requirements.in
+pytest-django==3.9.0      # via -r requirements.in
+pytest==5.4.1             # via -r requirements.in, pytest-django
 python-dateutil==2.8.0    # via bokeh, pandas
 pytz==2019.2              # via django, pandas
 pyyaml==5.1.2             # via bokeh
