@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls import url
-from wizer.views import DashboardView, settings_view, set_number_of_days, reimport_activity_files
-from wizer.activity_views import add_activity_view, edit_activity_view, ActivityDeleteView, ActivityView,\
+from wizer.views import DashboardView, settings_view, set_number_of_days, reimport_activity_files, HelpView
+from wizer.activity_views import add_activity_view, edit_activity_view, ActivityDeleteView, ActivityView, \
     download_activity
 from wizer.sport_views import edit_sport_view, SportDeleteView, SportsView, AllSportsView, add_sport_view
 
@@ -28,4 +28,6 @@ urlpatterns = [
     path('settings/', settings_view, name="settings"),
     path('settings/reimport', reimport_activity_files, name="reimport"),
 
+    # Help
+    path('help/', HelpView.as_view(), name="help"),
 ]

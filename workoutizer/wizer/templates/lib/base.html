@@ -25,7 +25,7 @@
         let sports = {{ sports | queryset_to_list | safe }}
             e = e || event; // to deal with IE
         map[e.key] = e.type === 'keydown';
-        if (map['g'] && map['h']) {
+        if (map['g'] && map['d']) {
             window.location.href = '/';
             map = {};
         } else if (map['g'] && map['s']) {
@@ -36,6 +36,9 @@
             map = {};
         } else if (map['g'] && map[',']) {
             window.location.href = '/settings';
+            map = {};
+        } else if (map['g'] && map['h']) {
+            window.location.href = '/help';
             map = {};
         } else if (map['g'] && map['0']) {
             window.location.href = get_sport(event, sports);

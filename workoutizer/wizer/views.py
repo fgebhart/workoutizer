@@ -52,8 +52,8 @@ class MapView(View):
         has_traces = True if traces else False
 
         if traces:
-
-            traces, colors = ensure_lists_have_same_length(traces, lines_colors, mode='fill end', modify_only_list2=True)
+            traces, colors = ensure_lists_have_same_length(traces, lines_colors, mode='fill end',
+                                                           modify_only_list2=True)
             traces = zip(traces, colors)
         log.debug(f"running MapView")
         return {'traces': traces, 'settings': self.settings, 'days': self.number_of_days,
@@ -66,7 +66,7 @@ class PlotView:
     settings = None
 
     def get_days_config(self):
-        self.settings = Settings.objects.get_or_create(pk=1, number_of_days=90)[0]
+        self.settings = Settings.objects.get_or_create(pk=1)[0]
         self.number_of_days = self.settings.number_of_days
         self.days_choices = Settings.days_choices
 
@@ -129,8 +129,16 @@ def settings_view(request):
             return HttpResponseRedirect(reverse('settings'))
         else:
             log.warning(f"form invalid: {form.errors}")
-    return render(request, "settings.html", {'sports': sports, 'form': form, 'settings': settings,
-                                             'form_field_ids': get_all_form_field_ids()})
+    return render(request, "lib/settings.html", {'sports': sports, 'form': form, 'settings': settings,
+                                                 'form_field_ids': get_all_form_field_ids()})
+
+
+class HelpView(View):
+    template_name = "lib/help.html"
+
+    def get(self, request):
+        self.sports = Sport.objects.all().order_by('name')
+        return render(request, template_name=self.template_name, context={'sports': self.sports})
 
 
 def set_number_of_days(request, number_of_days):

@@ -2,9 +2,10 @@ import datetime
 import logging
 
 from django import template
+from django.db.models.query import QuerySet
 
 
-log = logging.getLogger('wizer.filters')
+log = logging.getLogger(__name__)
 
 register = template.Library()
 
@@ -58,6 +59,8 @@ def strfdelta(tdelta, format):
 
 @register.filter
 def queryset_to_list(queryset):
-    list_as_string = sorted(list(queryset.values_list('slug', flat=True)))
-    list_as_string.remove('unknown')
-    return list_as_string
+    if isinstance(queryset, QuerySet):
+        list_as_string = sorted(list(queryset.values_list('slug', flat=True)))
+        if 'unknown' in list_as_string:
+            list_as_string.remove('unknown')
+        return list_as_string

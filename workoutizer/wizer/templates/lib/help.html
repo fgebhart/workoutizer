@@ -1,0 +1,24 @@
+<title>Help | Workoutizer</title>
+
+{% extends 'lib/base.html' %}
+{% block body %}
+    <div class="container">
+
+        <h3>Help</h3>
+        <hr>
+        <br>
+
+        <h4><b>Source Code</b></h4>
+        <p>The Workoutizer source code can be found on:</p>
+        <ul>
+            <li><a href="https://gitlab.com/fgebhart/workoutizer">https://gitlab.com/fgebhart/workoutizer</a></li>
+        </ul>
+        <p>Feel free to get in touch to contribute or open an <a
+                href="https://gitlab.com/fgebhart/workoutizer/-/issues">issue</a>.</p>
+        <br>
+        <br>
+        <h4><b>Keyboard Navigation</b></h4>
+        {% include "lib/keymap.html" %}
+        <br>
+    </div>
+{% endblock %}

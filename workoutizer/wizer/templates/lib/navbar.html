@@ -1,15 +1,20 @@
 <nav class="fixed-top">
-    <div class="navbar bg-info navbar-dark">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item order-0"><a href="{% url 'add-activity' %}" class="btn btn-warning"><i
-                        class="fas fa-plus"></i>&nbsp;&nbsp;Add Activity</a></li>
-            </ul>
-            <a class="navbar-brand" href="/"><i class="fas fa-dumbbell"></i>&nbsp;&nbsp;Workoutizer&nbsp;&nbsp;<i
-                    class="fas fa-dumbbell"></i></a>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item order-1"><a class="nav-link" href="{% url 'settings' %}" data-toggle="tooltip"
-                                                data-placement="left" title="Settings"><i class="fas fa-cogs"></i></a>
-                </li>
-            </ul>
+    <div class="navbar navbar-expand-sm bg-info navbar-dark">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item order-0"><a href="{% url 'add-activity' %}" class="btn btn-warning"
+                                            data-toggle="tooltip" data-placement="bottom"
+                                            title="Add new Activity"><i
+                    class="fas fa-plus"></i>&nbsp;&nbsp;Add Activity</a></li>
+        </ul>
+        <a class="navbar-brand" href="/"><i class="fas fa-dumbbell"></i>&nbsp;&nbsp;Workoutizer&nbsp;&nbsp;<i
+                class="fas fa-dumbbell"></i></a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item order-1"><a class="nav-link" href="{% url 'settings' %}" data-toggle="tooltip"
+                                            data-placement="bottom" title="Settings"><i class="fas fa-cogs"></i></a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'help' %}" data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    title="Help"><i class="fas fa-question-circle"></i></a></li>
+        </ul>
     </div>
 </nav>
