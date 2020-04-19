@@ -69,13 +69,6 @@ body {
     width: 200px;
 }
 
-.sidebar_left a {
-    padding: 8px 8px 8px 32px;
-    text-decoration: none;
-    font-size: 25px;
-    transition: 0.3s;
-}
-
 .sidebar_left a:hover {
     color: #f1f1f1;
 }
@@ -99,14 +92,4 @@ body {
     padding: 30px;
     margin-left: 40px;
     margin-top: 45px
-}
-
-@media screen and (max-height: 450px) {
-    .sidebar_left {
-        padding-top: 15px;
-    }
-
-    .sidebar_left a {
-        font-size: 18px;
-    }
 }
