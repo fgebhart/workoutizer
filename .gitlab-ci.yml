@@ -10,7 +10,8 @@ before_script:
 pytest:
   stage: test
   script:
-    - python3 -m pytest workoutizer/wizer/pytests -v
+    - cd workoutizer
+    - python3 -m pytest -v
 
 django:
   stage: test

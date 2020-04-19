@@ -182,5 +182,4 @@ def get_all_form_field_ids():
     all_forms = [AddSportsForm, SettingsForm, AddActivityForm]
     for form in all_forms:
         ids += [f"id_{field}" for field in form.base_fields.keys()]
-
     return ids
