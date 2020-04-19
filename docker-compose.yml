@@ -7,7 +7,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     command: bash -xc "
-      cd workoutizer
+      git checkout master
+      && cd workoutizer
       && python manage.py collectstatic --no-input
       && python manage.py makemigrations
       && python manage.py migrate
