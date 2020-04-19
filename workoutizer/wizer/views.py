@@ -6,8 +6,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.contrib import messages
-from django.conf import settings
 from multiprocessing import Process
+from django.urls import reverse
 
 from wizer.models import Sport, Activity, Settings, Traces
 from wizer.forms import SettingsForm, AddActivityForm, AddSportsForm
@@ -66,7 +66,7 @@ class PlotView:
     settings = None
 
     def get_days_config(self):
-        self.settings = Settings.objects.get(pk=1)
+        self.settings = Settings.objects.get_or_create(pk=1, number_of_days=90)[0]
         self.number_of_days = self.settings.number_of_days
         self.days_choices = Settings.days_choices
 
@@ -119,14 +119,14 @@ class DashboardView(View, PlotView):
 
 def settings_view(request):
     sports = Sport.objects.all().order_by('name')
-    settings = Settings.objects.get(pk=1)
+    settings = Settings.objects.get_or_create(pk=1)[0]
     form = SettingsForm(request.POST or None, instance=settings)
     if request.method == 'POST':
         if form.is_valid():
             log.debug(f"got valid form: {form.cleaned_data}")
             form.save()
             messages.success(request, 'Successfully saved Settings!')
-            return HttpResponseRedirect('/settings')
+            return HttpResponseRedirect(reverse('settings'))
         else:
             log.warning(f"form invalid: {form.errors}")
     return render(request, "settings.html", {'sports': sports, 'form': form, 'settings': settings,
@@ -141,7 +141,7 @@ def set_number_of_days(request, number_of_days):
     if request.META.get('HTTP_REFERER'):
         return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('home'))
 
 
 def get_summary_of_activities(activities):
@@ -166,7 +166,7 @@ def reimport_activity_files(request):
     if request.META.get('HTTP_REFERER'):
         return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return HttpResponseRedirect('/settings/')
+        return HttpResponseRedirect(reverse('settings'))
 
 
 def get_all_form_field_ids():

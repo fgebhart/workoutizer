@@ -6,6 +6,7 @@ from django.views.generic import DeleteView
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.http import HttpResponse, Http404
+from django.urls import reverse
 
 from wizer.views import MapView, get_all_form_field_ids
 from wizer.models import Sport, Activity
@@ -42,7 +43,7 @@ def add_activity_view(request):
             instance = form.save()
             instance.save()
             messages.success(request, f"Successfully added '{form.cleaned_data['name']}'")
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect(reverse('home'))
         else:
             log.warning(f"form invalid: {form.errors}")
     else:

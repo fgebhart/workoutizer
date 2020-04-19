@@ -6,6 +6,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 from django.contrib import messages
+from django.urls import reverse
 
 from wizer.views import MapView, PlotView, get_summary_of_activities, get_all_form_field_ids
 from wizer.models import Sport
@@ -57,7 +58,7 @@ def add_sport_view(request):
             instance = form.save()
             instance.save()
             messages.success(request, f"Successfully added '{form.cleaned_data['name']}'")
-            return HttpResponseRedirect('/sports')
+            return HttpResponseRedirect(reverse('sports'))
         else:
             log.warning(f"form invalid: {form.errors}")
     else:
