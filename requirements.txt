@@ -31,8 +31,10 @@ pytest==5.4.1             # via -r requirements.in, pytest-django
 python-dateutil==2.8.0    # via bokeh, pandas
 pytz==2019.2              # via django, pandas
 pyyaml==5.1.2             # via bokeh
+selenium==3.141.0         # via -r requirements.in
 six==1.12.0               # via bokeh, packaging, python-dateutil
 sqlparse==0.3.0           # via django
 tornado==6.0.3            # via bokeh
+urllib3==1.25.9           # via selenium
 wcwidth==0.1.9            # via pytest
 zipp==3.1.0               # via importlib-metadata

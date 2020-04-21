@@ -6,3 +6,4 @@ workoutizer/tracks/*.fit
 .pytest_cache/
 *.sqlite3
 tested_data/
+geckodriver.log

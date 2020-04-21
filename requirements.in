@@ -8,3 +8,4 @@ gpxpy
 pandas
 pytest
 pytest-django
+selenium
