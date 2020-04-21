@@ -6,7 +6,7 @@ from wizer.models import Settings, Sport, Activity
 
 
 @pytest.fixture
-def settings():
+def settings(db):
     settings = Settings(
         path_to_trace_dir="/home/pi/traces/",
         path_to_garmin_device="/home/pi/traces/",
@@ -23,14 +23,14 @@ def settings():
 
 
 @pytest.fixture
-def sport():
+def sport(db):
     sport = Sport(name='Some Crazy Stuff', color='red', icon='Bike')
     sport.save()
     return sport
 
 
 @pytest.fixture
-def activity(sport):
+def activity(db, sport):
     activity = Activity(
         name='Running',
         sport=sport,

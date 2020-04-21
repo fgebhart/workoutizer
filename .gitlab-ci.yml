@@ -11,7 +11,9 @@ pytest:
   stage: test
   script:
     - cd workoutizer
-    - python3 -m pytest -v
+    - python3 -m pytest wizer/tests/unit_tests -v
+    - python3 -m pytest wizer/tests/integration_tests -v
+    - python3 -m pytest wizer/tests/browser_tests -v
 
 django:
   stage: test
