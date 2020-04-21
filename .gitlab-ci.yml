@@ -13,7 +13,7 @@ pytest:
     - cd workoutizer
     - python3 -m pytest wizer/tests/unit_tests -v
     - python3 -m pytest wizer/tests/integration_tests -v
-    - python3 -m pytest wizer/tests/browser_tests -v
+#    - python3 -m pytest wizer/tests/browser_tests -v   # not used since webdriver does not work in CI
 
 django:
   stage: test
@@ -23,4 +23,3 @@ django:
     - python3 manage.py check
     - python3 manage.py makemigrations
     - python3 manage.py migrate
-    - python3 manage.py test -v 2
