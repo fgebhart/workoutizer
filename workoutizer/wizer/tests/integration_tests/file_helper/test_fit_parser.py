@@ -57,7 +57,7 @@ def test_convert_list_attributes_to_json(fit_parser):
 
 
 def test_convert_list_of_nones_to_empty_list(fit_parser):
-    p = fit_parser(path=os.path.join(os.path.dirname(__file__), "data/with_nones.fit"))
+    p = fit_parser(path=os.path.join(os.path.dirname(__file__), "../data/with_nones.fit"))
     assert p.altitude_list[:3] == [None, None, None]
     p.convert_list_of_nones_to_empty_list()
     assert p.altitude_list == []

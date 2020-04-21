@@ -44,8 +44,10 @@ class GPXParser(Parser):
             log.debug(f"could not find duration")
         if self.gpx.time:
             self.date = self.gpx.time
+            log.debug(f"found date: {self.date}")
         else:
             self.date = start
+            log.debug(f"found date: {self.date}")
 
         if not self.date:
             log.debug(f"could not find date in GPX file, will use OS file created date")

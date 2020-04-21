@@ -87,19 +87,21 @@ def create_initial_trace_data_with_recent_time():
     for i, trace_file in enumerate(_get_all_initial_trace_files()):
         if not os.path.isfile(os.path.join(settings.TRACKS_DIR, trace_file)):
             _insert_current_date_into_gpx(
-                gpx=trace_file,
+                gpx_file_name=trace_file,
+                source_path=settings.INITIAL_TRACE_DATA_DIR,
+                target_path=settings.TRACKS_DIR,
                 strf_timestamp=(datetime.datetime.now() - datetime.timedelta(days=3 * i + 1)).strftime(
                     timestamp_format))
 
 
-def _insert_current_date_into_gpx(gpx, strf_timestamp: str):
-    log.debug(f"inserting recent time {strf_timestamp} into {gpx}")
-    env = Environment(loader=FileSystemLoader(settings.INITIAL_TRACE_DATA_DIR))
-    template = env.get_template(gpx)
+def _insert_current_date_into_gpx(gpx_file_name: str, source_path: str, target_path: str, strf_timestamp: str):
+    log.debug(f"inserting recent time {strf_timestamp} into {gpx_file_name}")
+    env = Environment(loader=FileSystemLoader(source_path))
+    template = env.get_template(gpx_file_name)
     output_from_parsed_template = template.render(time=strf_timestamp)
 
     # to save the results
-    new_file = os.path.join(settings.TRACKS_DIR, os.path.basename(gpx))
+    new_file = os.path.join(target_path, os.path.basename(gpx_file_name))
     with open(new_file, "w") as fh:
         log.debug(f"saving {new_file}")
         fh.write(output_from_parsed_template)

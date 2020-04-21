@@ -11,7 +11,7 @@ from wizer.file_helper.gpx_parser import GPXParser
 from wizer.file_helper.fit_parser import FITParser
 from wizer.file_helper.fit_collector import FitCollector
 from wizer.tools.utils import sanitize, calc_md5
-from wizer.tools.initial_data_handler import insert_settings_and_sports_to_model, \
+from wizer.file_helper.initial_data_handler import insert_settings_and_sports_to_model, \
     create_initial_trace_data_with_recent_time, insert_activities_to_model
 
 log = logging.getLogger(__name__)

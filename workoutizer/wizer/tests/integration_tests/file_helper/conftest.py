@@ -8,7 +8,7 @@ from wizer.file_helper.gpx_parser import GPXParser
 
 @pytest.fixture(scope="module")
 def fit_parser():
-    test_file_path = os.path.join(os.path.dirname(__file__), "data/example.fit")
+    test_file_path = os.path.join(os.path.dirname(__file__), "../data/example.fit")
 
     def _pass_path(path=test_file_path):
         return FITParser(path_to_file=path)
@@ -18,7 +18,7 @@ def fit_parser():
 
 @pytest.fixture(scope="module")
 def gpx_parser():
-    test_file_path = os.path.join(os.path.dirname(__file__), "data/example.gpx")
+    test_file_path = os.path.join(os.path.dirname(__file__), "../data/example.gpx")
 
     def _pass_path(path=test_file_path):
         return GPXParser(path_to_file=path)
