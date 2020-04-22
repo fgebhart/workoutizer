@@ -1,14 +1,24 @@
 image: python:3.7
 
-stages:
-  - test
+variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - venv/
 
 before_script:
   - date
+  - ls -larht
+  - echo $CI_PROJECT_DIR
+  - python -V
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
   - python3 -m pip install -r requirements.txt
 
 pytest:
-  stage: test
   script:
     - cd workoutizer
     - python3 -m pytest wizer/tests/unit_tests -v
@@ -16,7 +26,6 @@ pytest:
 #    - python3 -m pytest wizer/tests/browser_tests -v   # not used since webdriver does not work in CI
 
 django:
-  stage: test
   script:
     - cd workoutizer
     - python3 manage.py collectstatic --noinput

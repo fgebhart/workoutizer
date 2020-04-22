@@ -5,6 +5,6 @@ workoutizer/tracks/*.gpx
 workoutizer/tracks/*.fit
 .pytest_cache/
 *.sqlite3
-tested_data/*.gpx
-tested_data/*.fit
+tested_data/
+!tested_data/readme.txt
 geckodriver.log
