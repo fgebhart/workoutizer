@@ -38,11 +38,12 @@ class WizerFileDaemon(AppConfig):
     def ready(self):
         if 'runserver' in sys.argv and os.environ.get('RUN_MAIN', None) != 'true':
             # ensure to only run with 'manage.py runserver' and not in auto reload thread
-            from .models import Settings, Traces, Activity, Sport
+            from wizer.models import Settings, Traces, Activity, Sport
 
             # if needed you can perform custom migrations here, see tools/migration_utils
 
-            if not Activity.objects.all():
+            # insert initial example activity data in the case there is none
+            if Activity.objects.count() == 0:
                 insert_settings_and_sports_to_model(
                     settings_model=Settings,
                     sport_model=Sport)
@@ -50,6 +51,7 @@ class WizerFileDaemon(AppConfig):
                 insert_activities_to_model(
                     sport_model=Sport,
                     activity_model=Activity)
+                log.info(f"inserting initial example data done.")
             fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
             fi.start()
 

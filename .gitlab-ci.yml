@@ -8,27 +8,39 @@ cache:
     - .cache/pip
     - venv/
 
+stages:
+  - tests
+  - system test
+
 before_script:
   - date
-  - ls -larht
-  - echo $CI_PROJECT_DIR
-  - python -V
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
   - python3 -m pip install -r requirements.txt
 
 pytest:
+  stage: tests
   script:
-    - cd workoutizer
-    - python3 -m pytest wizer/tests/unit_tests -v
-    - python3 -m pytest wizer/tests/integration_tests -v
-#    - python3 -m pytest wizer/tests/browser_tests -v   # not used since webdriver does not work in CI
+    - cd workoutizer/wizer/tests/
+    - python3 -m pytest unit_tests -v
+    - python3 -m pytest integration_tests -v
+#    - python3 -m pytest browser_tests -v   # not used since webdriver does not work in CI
 
 django:
+  stage: tests
+  artifacts:
+    paths:
+      - workoutizer/db.sqlite3
+    expire_in: 1 day
   script:
     - cd workoutizer
     - python3 manage.py collectstatic --noinput
     - python3 manage.py check
-    - python3 manage.py makemigrations
     - python3 manage.py migrate
+
+end2end:
+  stage: system test
+  script:
+    - cd workoutizer
+    - python3 -m pytest wizer/tests/end2end -vvs
