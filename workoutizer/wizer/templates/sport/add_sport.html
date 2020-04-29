@@ -24,6 +24,7 @@
 
         <form action="{% url 'add-sport' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
             {% csrf_token %}
+            {{ form.media }}
             {% include "lib/form_errors.html" %}
             {% include "lib/messages.html" %}
             <div class="form-group row">
