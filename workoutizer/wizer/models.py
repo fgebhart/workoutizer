@@ -5,6 +5,7 @@ import datetime
 from django.db import models
 from django.utils import timezone
 from django.template.defaultfilters import slugify
+from colorfield.fields import ColorField
 
 log = logging.getLogger(__name__)
 
@@ -18,6 +19,7 @@ class Sport(models.Model):
     color = models.CharField(max_length=24, verbose_name="Color:")
     icon = models.CharField(max_length=24, verbose_name="Icon:")
     slug = models.SlugField(max_length=100, unique=True, blank=True)
+    color_field = ColorField(default='#FF0000')
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)

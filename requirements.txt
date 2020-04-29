@@ -10,6 +10,7 @@ bokeh==1.4.0              # via -r requirements.in
 certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
 coloredlogs==14.0         # via -r requirements.in
+django-colorfield==0.3.0  # via -r requirements.in
 django-leaflet==0.26.0    # via -r requirements.in
 django==3.0.3             # via -r requirements.in, django-leaflet
 fitparse==1.1.0           # via -r requirements.in

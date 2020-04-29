@@ -1,6 +1,7 @@
 bokeh
 coloredlogs
 django
+django-colorfield
 django-leaflet
 fitparse
 geopy
