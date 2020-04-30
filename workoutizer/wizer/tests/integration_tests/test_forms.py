@@ -22,7 +22,7 @@ def test_settings_form():
 def test_add_sport_form(db):
     form_data = {
         "name": "Running",
-        "color": "black",
+        "color": "#060087",
         "icon": "running",
     }
     form = AddSportsForm(data=form_data)
