@@ -16,10 +16,9 @@ class Sport(models.Model):
         return self.name
 
     name = models.CharField(max_length=24, unique=True, verbose_name="Sport Name:")
-    color = models.CharField(max_length=24, verbose_name="Color:")
     icon = models.CharField(max_length=24, verbose_name="Icon:")
     slug = models.SlugField(max_length=100, unique=True, blank=True)
-    color_field = ColorField(default='#FF0000')
+    color = ColorField(default='#42FF71', verbose_name="Color:")
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
