@@ -66,9 +66,7 @@ class FileImporter:
 
     def _start_listening(self):
         try:
-            fit_collector = FitCollector(settings_model=self.settings)
             while True:
-                fit_collector.look_for_fit_files_and_copy()
                 settings = self.settings.objects.get(pk=1)
                 path = settings.path_to_trace_dir
                 interval = settings.file_checker_interval

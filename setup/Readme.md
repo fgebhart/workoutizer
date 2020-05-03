@@ -1,5 +1,7 @@
 # Setup Workoutizer
 
+**NOTE: Setup on a Raspberry Pi is still in development**
+
 Follow these instructions to install Workoutizer on a Raspberry Pi:
 
 ### Setup Pi using Ansible

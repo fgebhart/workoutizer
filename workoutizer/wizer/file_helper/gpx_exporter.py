@@ -77,9 +77,9 @@ def _fill_list_of_timestamps(start: datetime.date, duration, length: int):
 def save_activity_to_gpx_file(activity):
     file_name = f"{activity.date}_{sanitize(activity.name)}.gpx"
     path = os.path.join(settings.MEDIA_ROOT, file_name)
-    coordinates = json.loads(activity.trace_file.coordinates)
-    if activity.trace_file.elevation:
-        coordinates = add_elevation_data_to_coordinates(coordinates, json.loads(activity.trace_file.elevation))
+    coordinates = json.loads(activity.trace_file.coordinates_list)
+    if activity.trace_file.altitude_list:
+        coordinates = add_elevation_data_to_coordinates(coordinates, json.loads(activity.trace_file.altitude_list))
     file_content = _build_gpx(
         time=activity.date,
         file_name=activity.name,

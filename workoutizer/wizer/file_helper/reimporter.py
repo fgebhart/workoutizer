@@ -9,7 +9,7 @@ def reimport_activity_data(settings_model, traces_model, activity_model, sport_m
     log.info(f"starting reimport process...")
     md5sums_from_db = get_md5sums_from_model(traces_model=traces_model)
     path = settings_model.objects.get(pk=1).path_to_trace_dir
-    force_update = settings_model.objects.get(pk=1).reimporter_updates_all
+    force_overwrite = settings_model.objects.get(pk=1).reimporter_updates_all
     trace_files = get_all_files(path=path)
     updated_activities = []
     for trace_file in trace_files:
@@ -31,7 +31,7 @@ def reimport_activity_data(settings_model, traces_model, activity_model, sport_m
             modified_value = False
             for attribute, value in parser.__dict__.items():
                 if hasattr(corresponding_trace_object, attribute):
-                    if force_update:
+                    if force_overwrite:
                         setattr(corresponding_trace_object, attribute, value)
                         modified_value = True
                     else:

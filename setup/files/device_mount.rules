@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="091e", ATTRS{idProduct}=="4b48", TAG+="systemd", ENV{SYSTEMD_WANTS}="wkz_mount"

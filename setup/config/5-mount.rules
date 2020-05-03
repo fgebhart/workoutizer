@@ -1,1 +1,0 @@
-ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="091e", ATTRS{idProduct}=="4b48", ATTRS{serial}=="0000c4fa0516", RUN{program}+="/bin/su pi --command='/home/pi/workoutizer/setup/config/mount.sh'"

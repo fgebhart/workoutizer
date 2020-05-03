@@ -1,3 +1,4 @@
+import os
 import logging
 import datetime
 import json
@@ -8,6 +9,9 @@ from django.views.generic import View
 from django.contrib import messages
 from multiprocessing import Process
 from django.urls import reverse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
 from wizer.models import Sport, Activity, Settings, Traces
 from wizer.forms import SettingsForm, AddActivityForm, AddSportsForm
@@ -16,6 +20,7 @@ from wizer.plotting.plot_pie_chart import plot_pie_chart
 from wizer.plotting.plot_trend import plot_trend
 from wizer.gis.gis import GeoTrace, add_elevation_data_to_coordinates
 from wizer.file_helper.reimporter import reimport_activity_data
+from wizer.file_helper.fit_collector import try_to_mount_device, FitCollector
 from wizer.tools.colors import lines_colors
 from wizer.tools.utils import ensure_lists_have_same_length
 
@@ -139,6 +144,22 @@ class HelpView(View):
     def get(self, request):
         self.sports = Sport.objects.all().order_by('name')
         return render(request, template_name=self.template_name, context={'sports': self.sports})
+
+
+@api_view(['POST'])
+def mount_device_endpoint(request):
+    mount_path = try_to_mount_device()
+    settings = Settings.objects.get_or_create(pk=1)[0]
+    if mount_path:
+        fit_collector = FitCollector(
+            path_to_garmin_device=settings.path_to_garmin_device,
+            target_location=settings.path_to_trace_dir,
+            delete_files_after_import=settings.delete_files_after_import
+        )
+        fit_collector.copy_fit_files()
+        return Response("mounted", status=status.HTTP_200_OK)
+    else:
+        return Response("failed", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def set_number_of_days(request, number_of_days):

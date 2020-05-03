@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'wizer',
     'leaflet',
     'colorfield',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -85,7 +86,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, sqlite_file),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -138,8 +138,8 @@ LEAFLET_CONFIG = {
     'MAX_ZOOM': 18,
 }
 
-# format_console = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
-format_console = "%(name)s - %(message)s"   # optionally add time: "%(asctime)s -"
+format_console = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+# format_console = "%(name)s - %(message)s"  # optionally add time: "%(asctime)s -"
 
 LOGGING = {
     'version': 1,
@@ -163,4 +163,10 @@ LOGGING = {
             'level': 'DEBUG',
         },
     },
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
 }

@@ -1,9 +1,12 @@
 from django.urls import path
 from django.conf.urls import url
+
+from wizer import views
 from wizer.views import DashboardView, settings_view, set_number_of_days, reimport_activity_files, HelpView
 from wizer.activity_views import add_activity_view, edit_activity_view, ActivityDeleteView, ActivityView, \
     download_activity
 from wizer.sport_views import edit_sport_view, SportDeleteView, SportsView, AllSportsView, add_sport_view
+
 
 urlpatterns = [
     # home Dashboard
@@ -30,4 +33,7 @@ urlpatterns = [
 
     # Help
     path('help/', HelpView.as_view(), name="help"),
+
+    # mount device post endpoint
+    path('mount-device/', views.mount_device_endpoint),
 ]
