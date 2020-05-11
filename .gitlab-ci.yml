@@ -22,7 +22,7 @@ before_script:
 pytest:
   stage: tests
   script:
-    - cd workoutizer/wizer/tests/
+    - cd wizer/tests/
     - python3 -m pytest unit_tests -v
     - python3 -m pytest integration_tests -v
 #    - python3 -m pytest browser_tests -v   # not used since webdriver does not work in CI
@@ -31,10 +31,9 @@ django:
   stage: tests
   artifacts:
     paths:
-      - workoutizer/db.sqlite3
+      - db.sqlite3
     expire_in: 1 day
   script:
-    - cd workoutizer
     - python3 manage.py collectstatic --noinput
     - python3 manage.py check
     - python3 manage.py migrate
@@ -42,5 +41,4 @@ django:
 end2end:
   stage: system test
   script:
-    - cd workoutizer
     - python3 -m pytest wizer/tests/end2end -vvs

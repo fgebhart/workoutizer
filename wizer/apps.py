@@ -58,7 +58,7 @@ class WizerFileDaemon(AppConfig):
 
 class FileImporter:
     def __init__(self, settings_model, traces_model, activities_model, sport_model):
-        self.settings = settings_model
+        self.settings = settings_model.objects.get(pk=1)
         self.traces_model = traces_model
         self.activities_model = activities_model
         self.sport_model = sport_model
@@ -66,10 +66,15 @@ class FileImporter:
 
     def _start_listening(self):
         try:
+            fit_collector = FitCollector(
+                path_to_garmin_device=self.settings.path_to_garmin_device,
+                target_location=self.settings.path_to_trace_dir,
+                delete_files_after_import=self.settings.delete_files_after_import,
+            )
             while True:
-                settings = self.settings.objects.get(pk=1)
-                path = settings.path_to_trace_dir
-                interval = settings.file_checker_interval
+                fit_collector.copy_fit_files()
+                path = self.settings.path_to_trace_dir
+                interval = self.settings.file_checker_interval
                 # find activity files in directory
                 trace_files = get_all_files(path)
                 if os.path.isdir(path):

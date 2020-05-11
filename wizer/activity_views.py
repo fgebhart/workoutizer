@@ -57,7 +57,6 @@ def edit_activity_view(request, activity_id):
     log.debug(f"querying for activity id: {activity_id}")
     activity = Activity.objects.get(id=activity_id)
     form = EditActivityForm(request.POST or None, instance=activity)
-    log.debug(f"got form: {form}")
     if request.method == 'POST':
         if form.is_valid():
             log.debug(f"got valid form: {form.cleaned_data}")
