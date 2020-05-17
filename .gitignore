@@ -10,3 +10,4 @@ geckodriver.log
 dist/
 build/
 *.egg-info
+.eggs/

@@ -36,7 +36,7 @@ class WizerFileDaemon(AppConfig):
     verbose_name = 'Workoutizer'
 
     def ready(self):
-        if 'runserver' in sys.argv and os.environ.get('RUN_MAIN', None) != 'true':
+        if ('runserver' in sys.argv or 'run' in sys.argv) and os.environ.get('RUN_MAIN', None) != 'true':
             # ensure to only run with 'manage.py runserver' and not in auto reload thread
             from wizer.models import Settings, Traces, Activity, Sport
 
@@ -44,6 +44,7 @@ class WizerFileDaemon(AppConfig):
 
             # insert initial example activity data in the case there is none
             if Activity.objects.count() == 0:
+                log.debug(f"no data found, will create demo data...")
                 insert_settings_and_sports_to_model(
                     settings_model=Settings,
                     sport_model=Sport)
@@ -51,7 +52,7 @@ class WizerFileDaemon(AppConfig):
                 insert_activities_to_model(
                     sport_model=Sport,
                     activity_model=Activity)
-                log.info(f"inserting initial example data done.")
+                log.info(f"inserting initial demo data done.")
             fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
             fi.start()
 

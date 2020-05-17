@@ -123,7 +123,7 @@ USE_TZ = True
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 TRACKS_DIR = os.path.join(BASE_DIR, 'tracks')
-INITIAL_TRACE_DATA_DIR = os.path.join(os.path.dirname(BASE_DIR), 'setup', 'initial_trace_data')
+INITIAL_TRACE_DATA_DIR = os.path.join(BASE_DIR, 'setup', 'initial_trace_data')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'

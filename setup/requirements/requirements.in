@@ -8,7 +8,4 @@ fitparse
 geopy
 gpxpy
 pandas
-pytest
-pytest-django
 requests
-selenium
