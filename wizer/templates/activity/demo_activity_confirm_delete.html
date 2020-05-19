@@ -1,0 +1,42 @@
+{% extends 'lib/base.html' %}
+{% load static %}
+{% block body %}
+    <title>Delete Demo Activities | Workoutizer</title>
+    <h3>Delete Demo Activity?</h3>
+    <hr>
+    <br>
+    <div class="container">
+        <p>Are you sure you want to delete the following list of Demo Activities:</p>
+        <ul>
+            {% for activity in activities %}
+                <li>{{ activity.name }}</li>
+            {% endfor %}
+        </ul>
+        <br>
+        <div class="alert alert-warning">
+            <strong>
+                <i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;Warning&nbsp;&nbsp;<i
+                    class="fas fa-exclamation-triangle"></i>
+            </strong>
+            <br>
+            This will also delete the trace files of the corresponding activities located at:
+            <br>
+            <ul>
+                {% for activity in activities %}
+                    {% if activity.trace_file %}
+                        <li><code>{{ activity.trace_file.path_to_file }}</code></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <form method="post">{% csrf_token %}
+            <br>
+            <button class="float-left btn btn-danger btn-space" type="submit">
+                <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete
+            </button>
+            <a href="{% url 'settings' %}" class="float-left btn btn-outline-secondary">Cancel</a>
+            <div class="clearfix"></div>
+        </form>
+    </div>
+{% endblock %}

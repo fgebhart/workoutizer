@@ -89,7 +89,23 @@ class ActivityDeleteView(DeleteView):
     def get(self, request, *args, **kwargs):
         sports = Sport.objects.all().order_by('name')
         activity = Activity.objects.get(id=kwargs['pk'])
-        log.debug(f"my sports: {sports}")
-        log.debug(f"activity: {activity}")
         return render(request, self.template_name, {'sports': sports, 'activity': activity,
                                                     'form_field_ids': get_all_form_field_ids()})
+
+
+class DemoActivityDeleteView(DeleteView):
+    template_name = "activity/demo_activity_confirm_delete.html"
+    activities = Activity.objects.filter(is_demo_activity=True)
+
+    def get(self, request, *args, **kwargs):
+        sports = Sport.objects.all().order_by('name')
+        log.debug(f"activities to be deleted: {self.activities}")
+        return render(request, self.template_name, {'sports': sports, 'activities': self.activities,
+                                                    'form_field_ids': get_all_form_field_ids()})
+
+    def post(self, request, *args, **kwargs):
+        log.debug(f"deleting: {self.activities}")
+        for activity in self.activities:
+            activity.delete()
+        log.info(f"deleted demo activities")
+        return HttpResponseRedirect(reverse('home'))

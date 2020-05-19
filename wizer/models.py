@@ -84,6 +84,7 @@ class Activity(models.Model):
     distance = models.FloatField(blank=True, null=True, verbose_name="Distance:", default=0)
     description = models.CharField(max_length=600, blank=True, null=True, verbose_name="Description:")
     trace_file = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=True, null=True)
+    is_demo_activity = models.BooleanField(verbose_name="Is this a Demo Activity:", default=False)
 
     def delete(self, *args, **kwargs):
         if self.trace_file:

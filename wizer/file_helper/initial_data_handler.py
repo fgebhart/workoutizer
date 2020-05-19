@@ -79,11 +79,12 @@ def insert_activities_to_model(sport_model, activity_model):
             sport=activity.get('sport')[i],
             date=activity.get('date')[i],
             duration=activity.get('duration')[i],
+            is_demo_activity=True,
         )
     log.info(f"created initial activities")
 
 
-def create_initial_trace_data_with_recent_time():
+def create_demo_trace_data_with_recent_time():
     for i, trace_file in enumerate(_get_all_initial_trace_files()):
         if not os.path.isfile(os.path.join(settings.TRACKS_DIR, trace_file)):
             _insert_current_date_into_gpx(

@@ -125,6 +125,7 @@ class DashboardView(View, PlotView):
 def settings_view(request):
     sports = Sport.objects.all().order_by('name')
     settings = Settings.objects.get_or_create(pk=1)[0]
+    activities = Activity.objects.filter(is_demo_activity=True).count()
     form = SettingsForm(request.POST or None, instance=settings)
     if request.method == 'POST':
         if form.is_valid():
@@ -135,7 +136,8 @@ def settings_view(request):
         else:
             log.warning(f"form invalid: {form.errors}")
     return render(request, "lib/settings.html", {'sports': sports, 'form': form, 'settings': settings,
-                                                 'form_field_ids': get_all_form_field_ids()})
+                                                 'form_field_ids': get_all_form_field_ids(),
+                                                 'delete_demos': True if activities else False})
 
 
 class HelpView(View):

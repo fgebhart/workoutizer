@@ -12,7 +12,7 @@ from wizer.file_helper.fit_parser import FITParser
 from wizer.file_helper.fit_collector import FitCollector
 from wizer.tools.utils import sanitize, calc_md5
 from wizer.file_helper.initial_data_handler import insert_settings_and_sports_to_model, \
-    create_initial_trace_data_with_recent_time, insert_activities_to_model
+    create_demo_trace_data_with_recent_time, insert_activities_to_model
 
 log = logging.getLogger(__name__)
 
@@ -40,6 +40,7 @@ class WizerFileDaemon(AppConfig):
             # ensure to only run with 'manage.py runserver' and not in auto reload thread
             from wizer.models import Settings, Traces, Activity, Sport
 
+            importing_demo_data = False
             # if needed you can perform custom migrations here, see tools/migration_utils
 
             # insert initial example activity data in the case there is none
@@ -48,17 +49,19 @@ class WizerFileDaemon(AppConfig):
                 insert_settings_and_sports_to_model(
                     settings_model=Settings,
                     sport_model=Sport)
-                create_initial_trace_data_with_recent_time()
+                create_demo_trace_data_with_recent_time()
                 insert_activities_to_model(
                     sport_model=Sport,
                     activity_model=Activity)
                 log.info(f"inserting initial demo data done.")
-            fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport))
+                importing_demo_data = True
+            fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport, importing_demo_data))
             fi.start()
 
 
 class FileImporter:
-    def __init__(self, settings_model, traces_model, activities_model, sport_model):
+    def __init__(self, settings_model, traces_model, activities_model, sport_model, importing_demo_data):
+        self.importing_demo_data = importing_demo_data
         self.settings = settings_model.objects.get(pk=1)
         self.traces_model = traces_model
         self.activities_model = activities_model
@@ -79,14 +82,17 @@ class FileImporter:
                 # find activity files in directory
                 trace_files = get_all_files(path)
                 if os.path.isdir(path):
-                    log.debug(f"found {len(trace_files)} files in trace dir: {path}")
+                    log.info(f"found {len(trace_files)} files in trace dir: {path}")
                     self._run_parser(trace_files)
                 else:
                     log.warning(f"path: {path} is not a valid directory!")
                     break
+                if self.importing_demo_data:
+                    log.info(f"finished inserting demo data")
+                    self.importing_demo_data = False
                 time.sleep(interval)
         except OperationalError as e:
-            log.debug(f"cannot run FileImporter. Maybe run django migrations first: {e}")
+            log.warning(f"cannot run FileImporter. Maybe run django migrations first: {e}")
 
     def _run_parser(self, trace_files):
         md5sums_from_db = get_md5sums_from_model(traces_model=self.traces_model)
@@ -99,7 +105,9 @@ class FileImporter:
                         activity_model=self.activities_model,
                         sport_model=self.sport_model,
                         md5sum=md5sum,
-                        trace_file=trace_file)
+                        trace_file=trace_file,
+                        importing_demo_data=self.importing_demo_data,
+                    )
                 except Exception as e:
                     log.error(f"could not import activity of file: {trace_file}. {e}", exc_info=True)
                     # It might be the case, that the trace file object was created, but no activity.
@@ -126,7 +134,7 @@ class FileImporter:
                     pass  # means file is already in db
 
 
-def parse_and_save_to_model(traces_model, sport_model, activity_model, md5sum, trace_file):
+def parse_and_save_to_model(traces_model, sport_model, activity_model, md5sum, trace_file, importing_demo_data=False):
     parser = parse_activity_data(trace_file)
     trace_file_object = _save_to_trace_model(
         traces_model=traces_model, md5sum=md5sum,
@@ -137,12 +145,13 @@ def parse_and_save_to_model(traces_model, sport_model, activity_model, md5sum, t
     sport_instance = sport_model.objects.filter(slug=sanitize(mapped_sport)).first()
     _save_to_activity_model(
         activities_model=activity_model, parser=parser,
-        sport_instance=sport_instance, trace_file_instance=trace_file_instance)
+        sport_instance=sport_instance, trace_file_instance=trace_file_instance,
+        importing_demo_data=importing_demo_data)
     log.info(f"created new {sport_instance} activity: {parser.file_name}")
     return trace_file_instance
 
 
-def _save_to_activity_model(activities_model, parser, sport_instance, trace_file_instance):
+def _save_to_activity_model(activities_model, parser, sport_instance, trace_file_instance, importing_demo_data):
     activity_object = activities_model(
         name=parser.file_name.replace(".gpx", "").replace(".fit", ""),
         sport=sport_instance,
@@ -150,6 +159,7 @@ def _save_to_activity_model(activities_model, parser, sport_instance, trace_file
         duration=parser.duration,
         distance=parser.distance,
         trace_file=trace_file_instance,
+        is_demo_activity=importing_demo_data,
     )
     activity_object.save()
 
