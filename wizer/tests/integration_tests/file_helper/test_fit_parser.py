@@ -34,6 +34,7 @@ def test__parse_records(fit_parser):
     assert len(p.temperature_list) == 1202
     assert len(p.speed_list) == 1201
     assert len(p.timestamps_list) == 1224
+    assert p.laps == []     # TODO need test activity which actually has valid laps
 
 
 def test_get_min_max_values(fit_parser):

@@ -5,11 +5,11 @@ from wizer.apps import get_md5sums_from_model, get_all_files, calc_md5, parse_an
 log = logging.getLogger(__name__)
 
 
-def reimport_activity_data(settings_model, traces_model, activity_model, sport_model):
+def reimport_activity_data(models):
     log.info(f"starting reimport process...")
-    md5sums_from_db = get_md5sums_from_model(traces_model=traces_model)
-    path = settings_model.objects.get(pk=1).path_to_trace_dir
-    force_overwrite = settings_model.objects.get(pk=1).reimporter_updates_all
+    md5sums_from_db = get_md5sums_from_model(traces_model=models.Traces)
+    path = models.Settings.objects.get(pk=1).path_to_trace_dir
+    force_overwrite = models.Settings.objects.get(pk=1).reimporter_updates_all
     trace_files = get_all_files(path=path)
     updated_activities = []
     for trace_file in trace_files:
@@ -17,16 +17,14 @@ def reimport_activity_data(settings_model, traces_model, activity_model, sport_m
         if md5sum not in md5sums_from_db:  # trace file is not in db already
             log.debug(f"{trace_file} not yet in db, will import it...")
             parse_and_save_to_model(
-                traces_model=traces_model,
-                sport_model=sport_model,
-                activity_model=activity_model,
+                models=models,
                 md5sum=md5sum,
                 trace_file=trace_file,
             )
         else:   # trace file is in db already
             parser = parse_activity_data(file=trace_file)
-            corresponding_trace_object = traces_model.objects.get(md5sum=md5sum)
-            corresponding_activity_object = activity_model.objects.get(trace_file=corresponding_trace_object)
+            corresponding_trace_object = models.Traces.objects.get(md5sum=md5sum)
+            corresponding_activity_object = models.Activity.objects.get(trace_file=corresponding_trace_object)
             log.debug(f"reading values for {corresponding_activity_object.name}...")
             modified_value = False
             for attribute, value in parser.__dict__.items():

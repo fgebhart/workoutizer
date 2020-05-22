@@ -97,6 +97,20 @@ class Activity(models.Model):
         log.debug(f"deleted activity: {self.name}")
 
 
+class Lap(models.Model):
+
+    start_time = models.DateTimeField(blank=False)
+    end_time = models.DateTimeField(blank=False)
+    elapsed_time = models.DurationField(blank=False)
+    start_lat = models.FloatField(blank=True, null=True)
+    start_long = models.FloatField(blank=True, null=True)
+    end_lat = models.FloatField(blank=True, null=True)
+    end_long = models.FloatField(blank=True, null=True)
+    distance = models.FloatField(blank=True, null=True)
+    speed = models.FloatField(blank=True, null=True)
+    trace = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=False)
+
+
 class Settings(models.Model):
     days_choices = [(9999, 'all'), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10)]
     plotting_choices = [('bar', 'stacked bar chart'), ('line', 'multiline')]

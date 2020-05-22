@@ -38,34 +38,31 @@ class WizerFileDaemon(AppConfig):
     def ready(self):
         if ('runserver' in sys.argv or 'run' in sys.argv) and os.environ.get('RUN_MAIN', None) != 'true':
             # ensure to only run with 'manage.py runserver' and not in auto reload thread
-            from wizer.models import Settings, Traces, Activity, Sport
+            from wizer import models
 
             importing_demo_data = False
-            # if needed you can perform custom migrations here, see tools/migration_utils
 
             # insert initial example activity data in the case there is none
-            if Activity.objects.count() == 0:
+            if models.Activity.objects.count() == 0:
                 log.debug(f"no data found, will create demo data...")
                 insert_settings_and_sports_to_model(
-                    settings_model=Settings,
-                    sport_model=Sport)
+                    settings_model=models.Settings,
+                    sport_model=models.Sport)
                 create_demo_trace_data_with_recent_time()
                 insert_activities_to_model(
-                    sport_model=Sport,
-                    activity_model=Activity)
+                    sport_model=models.Sport,
+                    activity_model=models.Activity)
                 log.info(f"inserting initial demo data done.")
                 importing_demo_data = True
-            fi = Process(target=FileImporter, args=(Settings, Traces, Activity, Sport, importing_demo_data))
+            fi = Process(target=FileImporter, args=(models, importing_demo_data))
             fi.start()
 
 
 class FileImporter:
-    def __init__(self, settings_model, traces_model, activities_model, sport_model, importing_demo_data):
+    def __init__(self, models, importing_demo_data):
         self.importing_demo_data = importing_demo_data
-        self.settings = settings_model.objects.get(pk=1)
-        self.traces_model = traces_model
-        self.activities_model = activities_model
-        self.sport_model = sport_model
+        self.settings = models.settings_model.objects.get(pk=1)
+        self.models = models
         self._start_listening()
 
     def _start_listening(self):
@@ -95,15 +92,13 @@ class FileImporter:
             log.warning(f"cannot run FileImporter. Maybe run django migrations first: {e}")
 
     def _run_parser(self, trace_files):
-        md5sums_from_db = get_md5sums_from_model(traces_model=self.traces_model)
+        md5sums_from_db = get_md5sums_from_model(traces_model=self.models.Traces)
         for trace_file in trace_files:
             md5sum = calc_md5(trace_file)
             if md5sum not in md5sums_from_db:  # current file is not stored in model yet
                 try:
                     trace_file_instance = parse_and_save_to_model(
-                        traces_model=self.traces_model,
-                        activity_model=self.activities_model,
-                        sport_model=self.sport_model,
+                        models=self.models,
                         md5sum=md5sum,
                         trace_file=trace_file,
                         importing_demo_data=self.importing_demo_data,
@@ -119,7 +114,7 @@ class FileImporter:
                         log.debug(f"could not delete trace file object, since it was not created yet, {e}")
             else:  # checksum is in db already
                 file_name = trace_file.split("/")[-1]
-                trace_file_path_instance = self.traces_model.objects.get(md5sum=md5sum)
+                trace_file_path_instance = self.models.Traces.objects.get(md5sum=md5sum)
                 if trace_file_path_instance.file_name == file_name and trace_file_path_instance.path_to_file != trace_file:
                     log.debug(
                         f"path of file: {trace_file_path_instance.path_to_file} has changed, updating to {trace_file}")
@@ -134,31 +129,51 @@ class FileImporter:
                     pass  # means file is already in db
 
 
-def parse_and_save_to_model(traces_model, sport_model, activity_model, md5sum, trace_file, importing_demo_data=False):
+def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=False):
     parser = parse_activity_data(trace_file)
     trace_file_object = _save_to_trace_model(
-        traces_model=traces_model, md5sum=md5sum,
+        traces_model=models.Traces, md5sum=md5sum,
         parser=parser, trace_file=trace_file)
-    trace_file_instance = traces_model.objects.get(pk=trace_file_object.pk)
+    trace_file_instance = models.Traces.objects.get(pk=trace_file_object.pk)
     sport = parser.sport
     mapped_sport = map_sport_name(sport, sport_naming_map)
-    sport_instance = sport_model.objects.filter(slug=sanitize(mapped_sport)).first()
+    sport_instance = models.Sport.objects.filter(slug=sanitize(mapped_sport)).first()
+    # _save_to_lap_model(
+    #     lap_model=
+    # ) TODO integrate lap to model here
     _save_to_activity_model(
-        activities_model=activity_model, parser=parser,
-        sport_instance=sport_instance, trace_file_instance=trace_file_instance,
+        activities_model=models.Activity, parser=parser,
+        sport_instance=sport_instance, trace_instance=trace_file_instance,
         importing_demo_data=importing_demo_data)
     log.info(f"created new {sport_instance} activity: {parser.file_name}")
     return trace_file_instance
 
 
-def _save_to_activity_model(activities_model, parser, sport_instance, trace_file_instance, importing_demo_data):
+def _save_to_lap_model(lap_model, parser, trace_instance):
+    for lap in parser.laps:
+        lap_object = lap_model(
+            start_time=lap.start_time,
+            end_time=lap.end_time,
+            elapsed_time=lap.elapsed_time,
+            start_lat=lap.start_lat,
+            start_long=lap.start_long,
+            end_lat=lap.end_lat,
+            end_long=lap.end_long,
+            distance=lap.distance,
+            speed=lap.speed,
+            trace=trace_instance,
+        )
+        lap_object.save()
+
+
+def _save_to_activity_model(activities_model, parser, sport_instance, trace_instance, importing_demo_data):
     activity_object = activities_model(
         name=parser.file_name.replace(".gpx", "").replace(".fit", ""),
         sport=sport_instance,
         date=parser.date,
         duration=parser.duration,
         distance=parser.distance,
-        trace_file=trace_file_instance,
+        trace_file=trace_instance,
         is_demo_activity=importing_demo_data,
     )
     activity_object.save()

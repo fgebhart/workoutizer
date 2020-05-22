@@ -51,6 +51,9 @@ class Parser:
             self.speed_list,
             self.heart_rate_list,
         ]
+        # lap
+        self.laps = []
+
         # run parser
         self._parse_metadata()
         self._parse_records()

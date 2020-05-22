@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import json
 import logging
 import datetime
@@ -7,10 +8,6 @@ from wizer.file_helper.lib.parser import Parser
 from wizer.tools.utils import remove_nones_from_list
 
 log = logging.getLogger(__name__)
-
-
-# coordinates conversion parameter, not sure why this was needed, maybe due to swapping lat with lon
-ccp = 11930464.71111111
 
 
 class FITParser(Parser):
@@ -28,7 +25,11 @@ class FITParser(Parser):
         lat = None
         altitude = None
         for record in self.fit.get_messages():
-            for label, value in record.get_values().items():
+            # print(f"------------------------------ new record ------------------------------")
+            record = record.get_values()
+            if record.get('event') == 'lap' and record.get('lap_trigger') == 'manual':
+                self.laps.append(_parse_lap_data(record))
+            for label, value in record.items():
                 # print(f"{label}: {value}")
                 if label == 'sport':
                     self.sport = value
@@ -78,7 +79,7 @@ class FITParser(Parser):
                 if label == "timestamp":
                     self.timestamps_list.append(value.timestamp())
             if lat and lon:
-                coordinates.append([float(lon) / ccp, float(lat) / ccp])
+                coordinates.append([_to_coordinate(lon), _to_coordinate(lat)])
                 self.altitude_list.append(altitude)
         self.coordinates_list = coordinates
         log.debug(f"found date: {self.date}")
@@ -91,6 +92,7 @@ class FITParser(Parser):
         log.debug(f"found duration: {self.duration} min")
         log.debug(f"found avg_cadence: {self.avg_cadence} steps/min")
         log.debug(f"found avg_temperature: {self.avg_temperature} Celcius")
+        log.debug(f"found number of laps: {len(self.laps)}")
 
     def convert_list_of_nones_to_empty_list(self):
         for attribute, values in self.__dict__.items():
@@ -117,3 +119,43 @@ class FITParser(Parser):
         for attribute, values in self.__dict__.items():
             if attribute.endswith("_list"):
                 setattr(self, attribute, json.dumps(values))
+
+
+def _parse_lap_data(record):
+    lap = LapData(
+        start_time=record['start_time'],
+        end_time=record['timestamp'],
+        elapsed_time=datetime.timedelta(seconds=record['total_elapsed_time']),
+        distance=record['total_distance'],
+        start_lat=_to_coordinate(record.get('start_position_lat')),
+        start_long=_to_coordinate(record.get('start_position_long')),
+        end_lat=_to_coordinate(record.get('end_position_lat')),
+        end_long=_to_coordinate(record.get('end_position_long')),
+    )
+
+    if lap.elapsed_time and lap.distance:
+        lap.speed = lap.distance / record['total_elapsed_time']
+    return lap
+
+
+@dataclass
+class LapData:
+    start_time: datetime.datetime
+    end_time: datetime.datetime
+    elapsed_time: datetime.timedelta
+    distance: float = None
+    start_lat: float = None
+    start_long: float = None
+    end_long: float = None
+    end_lat: float = None
+    speed: float = None
+
+
+def _to_coordinate(point: int):
+    if not point:
+        return point
+    # coordinates conversion parameter, not sure why this was needed, maybe due to swapping lat with lon
+    ccp = 11930464.71111111
+
+    coordinate = float(point) / ccp
+    return coordinate

@@ -1,11 +1,8 @@
 import datetime
-import logging
 
 from django import template
 from django.db.models.query import QuerySet
 
-
-log = logging.getLogger(__name__)
 
 register = template.Library()
 
