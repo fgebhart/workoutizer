@@ -61,7 +61,7 @@ class WizerFileDaemon(AppConfig):
 class FileImporter:
     def __init__(self, models, importing_demo_data):
         self.importing_demo_data = importing_demo_data
-        self.settings = models.settings_model.objects.get(pk=1)
+        self.settings = models.Settings.objects.get(pk=1)
         self.models = models
         self._start_listening()
 
