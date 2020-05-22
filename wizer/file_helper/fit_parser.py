@@ -3,9 +3,12 @@ import json
 import logging
 import datetime
 
+import pytz
 from fitparse import FitFile
+
 from wizer.file_helper.lib.parser import Parser
 from wizer.tools.utils import remove_nones_from_list
+from django.conf import settings
 
 log = logging.getLogger(__name__)
 
@@ -123,8 +126,8 @@ class FITParser(Parser):
 
 def _parse_lap_data(record):
     lap = LapData(
-        start_time=record['start_time'],
-        end_time=record['timestamp'],
+        start_time=pytz.timezone(settings.TIME_ZONE).localize(record['start_time']),
+        end_time=pytz.timezone(settings.TIME_ZONE).localize(record['timestamp']),
         elapsed_time=datetime.timedelta(seconds=record['total_elapsed_time']),
         distance=record['total_distance'],
         start_lat=_to_coordinate(record.get('start_position_lat')),
@@ -134,7 +137,7 @@ def _parse_lap_data(record):
     )
 
     if lap.elapsed_time and lap.distance:
-        lap.speed = lap.distance / record['total_elapsed_time']
+        lap.speed = round(lap.distance / record['total_elapsed_time'], 2)
     return lap
 
 

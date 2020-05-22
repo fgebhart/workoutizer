@@ -160,7 +160,7 @@ LOGGING = {
         },
         'wizer': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': os.getenv('WKZ_LOG_LEVEL', 'INFO'),
         },
     },
 }

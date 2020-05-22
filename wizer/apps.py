@@ -130,18 +130,20 @@ class FileImporter:
 
 
 def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=False):
-    parser = parse_activity_data(trace_file)
-    trace_file_object = _save_to_trace_model(
+    parser = parse_data(trace_file)
+    trace_file_object = _save_trace_to_model(
         traces_model=models.Traces, md5sum=md5sum,
         parser=parser, trace_file=trace_file)
     trace_file_instance = models.Traces.objects.get(pk=trace_file_object.pk)
     sport = parser.sport
     mapped_sport = map_sport_name(sport, sport_naming_map)
     sport_instance = models.Sport.objects.filter(slug=sanitize(mapped_sport)).first()
-    # _save_to_lap_model(
-    #     lap_model=
-    # ) TODO integrate lap to model here
-    _save_to_activity_model(
+    save_laps_to_model(
+        lap_model=models.Lap,
+        laps=parser.laps,
+        trace_instance=trace_file_instance,
+    )
+    _save_activity_to_model(
         activities_model=models.Activity, parser=parser,
         sport_instance=sport_instance, trace_instance=trace_file_instance,
         importing_demo_data=importing_demo_data)
@@ -149,8 +151,9 @@ def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=Fals
     return trace_file_instance
 
 
-def _save_to_lap_model(lap_model, parser, trace_instance):
-    for lap in parser.laps:
+def save_laps_to_model(lap_model, laps: list, trace_instance):
+    for lap in laps:
+        log.debug(f'saving lap data: {lap} for trace: {trace_instance}')
         lap_object = lap_model(
             start_time=lap.start_time,
             end_time=lap.end_time,
@@ -166,7 +169,7 @@ def _save_to_lap_model(lap_model, parser, trace_instance):
         lap_object.save()
 
 
-def _save_to_activity_model(activities_model, parser, sport_instance, trace_instance, importing_demo_data):
+def _save_activity_to_model(activities_model, parser, sport_instance, trace_instance, importing_demo_data):
     activity_object = activities_model(
         name=parser.file_name.replace(".gpx", "").replace(".fit", ""),
         sport=sport_instance,
@@ -179,7 +182,7 @@ def _save_to_activity_model(activities_model, parser, sport_instance, trace_inst
     activity_object.save()
 
 
-def _save_to_trace_model(traces_model, md5sum, parser, trace_file):
+def _save_trace_to_model(traces_model, md5sum, parser, trace_file):
     log.debug(f"saving trace file {trace_file} to traces model")
     trace_object = traces_model(
         path_to_file=trace_file,
@@ -223,7 +226,7 @@ def get_md5sums_from_model(traces_model):
     return md5sums_from_db
 
 
-def parse_activity_data(file):
+def parse_data(file):
     log.debug(f"importing file {file} ...")
     if file.endswith(".gpx"):
         log.debug(f"parsing GPX file ...")
