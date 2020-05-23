@@ -38,7 +38,7 @@ def reimport_activity_data(models):
                         modified_value = True
                     else:
                         db_value = getattr(corresponding_trace_instance, attribute)
-                        if str(db_value) != str(value):
+                        if not _values_equal(db_value, value):
                             log.debug(f"overwriting value for {attribute}: old: {db_value} to: {value}")
                             setattr(corresponding_trace_instance, attribute, value)
                             modified_value = True
@@ -64,3 +64,16 @@ def reimport_activity_data(models):
     log.info(f"successfully parsed trace files and updated corresponding database objects")
 
     return updated_activities
+
+
+def _values_equal(value_a, value_b):
+    if value_a == value_b:
+        return True
+    else:
+        if str(value_a) == str(value_b):
+            return True
+        else:
+            if str(float(value_a)) == str(float(value_b)):
+                return True
+            else:
+                return False
