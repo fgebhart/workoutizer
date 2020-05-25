@@ -8,6 +8,7 @@ from django.views.generic import View
 from django.contrib import messages
 from multiprocessing import Process
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,7 +19,7 @@ from wizer.plotting.plot_history import plot_history
 from wizer.plotting.plot_pie_chart import plot_pie_chart
 from wizer.plotting.plot_trend import plot_trend
 from wizer.gis.gis import GeoTrace, add_elevation_data_to_coordinates
-from wizer.file_helper.reimporter import reimport_activity_data
+from wizer.file_helper.reimporter import Reimporter
 from wizer.file_helper.fit_collector import try_to_mount_device, FitCollector
 from wizer.tools.colors import lines_colors
 from wizer.tools.utils import ensure_lists_have_same_length
@@ -76,12 +77,12 @@ class PlotView:
 
     def get_activities(self, sport_id=None):
         self.get_days_config()
-        today = datetime.datetime.today()
-        start_day = today - datetime.timedelta(days=self.number_of_days)
+        now = timezone.now()
+        start_datetime = now - datetime.timedelta(days=self.number_of_days)
         if sport_id:
-            activities = models.Activity.objects.filter(date__range=[start_day, today], sport=sport_id).order_by("-date")
+            activities = models.Activity.objects.filter(date__range=[start_datetime, now], sport=sport_id).order_by("-date")
         else:
-            activities = models.Activity.objects.filter(date__range=[start_day, today]).order_by("-date")
+            activities = models.Activity.objects.filter(date__range=[start_datetime, now]).order_by("-date")
         return activities
 
 
@@ -190,7 +191,7 @@ def custom_404_view(request, exception=None):
 def reimport_activity_files(request):
     messages.info(request, f'Running reimport in background...')
 
-    reimporter = Process(target=reimport_activity_data, args=(models,))
+    reimporter = Process(target=Reimporter, args=())
     reimporter.start()
 
     if request.META.get('HTTP_REFERER'):

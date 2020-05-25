@@ -12,7 +12,7 @@ class Parser:
         self.duration = datetime.timedelta(minutes=0)
         self.distance = 0
         self.calories = None
-        # trace file infos
+        # trace file info
         # coordinates
         self.coordinates_list = []
         # elevation
@@ -42,6 +42,7 @@ class Parser:
         self.anaerobic_training_effect = None   # float()
         # timestamps
         self.timestamps_list = []
+        # lists
         self.list_attributes = [
             self.timestamps_list,
             self.coordinates_list,
@@ -51,7 +52,7 @@ class Parser:
             self.speed_list,
             self.heart_rate_list,
         ]
-        # lap
+        # lap info
         self.laps = []
 
         # run parser

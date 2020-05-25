@@ -1,12 +1,14 @@
 import logging
 import datetime
 
+import pytz
 import pandas as pd
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.embed import components
 
 from django.conf import settings
+from django.utils import timezone
 from wizer.models import Settings
 
 log = logging.getLogger(__name__)
@@ -22,17 +24,18 @@ def _plot_activities(activities, plotting_style="line"):
     activities = activities.exclude(sport_id=None)
 
     for a in activities:
-        activity_dates.append(a.date)
+        activity_dates.append(a.date.astimezone(pytz.UTC))
         sports.append(a.sport.name)
 
     number_of_days = Settings.objects.get(pk=1).number_of_days
-    today = datetime.datetime.today().date()
+    now = timezone.now()
+    # now = datetime.datetime.today().astimezone(pytz.UTC)
     if number_of_days == 9999:
         oldest = min(activity_dates) - datetime.timedelta(days=1)
     else:
-        oldest = today - datetime.timedelta(days=number_of_days)
+        oldest = now - datetime.timedelta(days=number_of_days)
 
-    while oldest <= today:
+    while oldest <= now:
         dates.append(oldest)
         oldest = oldest + datetime.timedelta(days=1)
 

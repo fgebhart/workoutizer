@@ -131,7 +131,7 @@ class FileImporter:
 
 def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=False):
     parser = parse_data(trace_file)
-    trace_file_object = _save_trace_to_model(
+    trace_file_object = save_trace_to_model(
         traces_model=models.Traces, md5sum=md5sum,
         parser=parser, trace_file=trace_file)
     trace_file_instance = models.Traces.objects.get(pk=trace_file_object.pk)
@@ -182,7 +182,7 @@ def _save_activity_to_model(activities_model, parser, sport_instance, trace_inst
     activity_object.save()
 
 
-def _save_trace_to_model(traces_model, md5sum, parser, trace_file):
+def save_trace_to_model(traces_model, md5sum, parser, trace_file):
     log.debug(f"saving trace file {trace_file} to traces model")
     trace_object = traces_model(
         path_to_file=trace_file,

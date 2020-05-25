@@ -8,7 +8,6 @@ from fitparse import FitFile
 
 from wizer.file_helper.lib.parser import Parser
 from wizer.tools.utils import remove_nones_from_list
-from django.conf import settings
 
 log = logging.getLogger(__name__)
 
@@ -47,7 +46,7 @@ class FITParser(Parser):
                     self.calories = value
                 # speed
                 if label == "enhanced_speed":
-                    self.speed_list.append(value)
+                    self.speed_list.append(value if value else 0)
                 if label == "enhanced_avg_speed":
                     self.avg_speed = value
                 # coordinates
@@ -65,7 +64,7 @@ class FITParser(Parser):
                     self.avg_heart_rate = value
                 # cadence
                 if label == 'cadence':
-                    self.cadence_list.append(value)
+                    self.cadence_list.append(value if value else 0)
                 if label == "avg_running_cadence":
                     self.avg_cadence = value
                 # temperature
@@ -126,8 +125,8 @@ class FITParser(Parser):
 
 def _parse_lap_data(record):
     lap = LapData(
-        start_time=pytz.timezone(settings.TIME_ZONE).localize(record['start_time']),
-        end_time=pytz.timezone(settings.TIME_ZONE).localize(record['timestamp']),
+        start_time=record['start_time'].astimezone(pytz.UTC),
+        end_time=record['timestamp'].astimezone(pytz.UTC),
         elapsed_time=datetime.timedelta(seconds=record['total_elapsed_time']),
         distance=record['total_distance'],
         start_lat=_to_coordinate(record.get('start_position_lat')),
