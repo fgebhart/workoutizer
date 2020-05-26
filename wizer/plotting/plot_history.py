@@ -1,89 +1,32 @@
 import logging
-import datetime
 
-import pytz
 import pandas as pd
-from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure
 from bokeh.embed import components
 
 from django.conf import settings
-from django.utils import timezone
-from wizer.models import Settings
+from wizer.models import Sport
 
 log = logging.getLogger(__name__)
 
 
 def _plot_activities(activities, plotting_style="line"):
-    data = list()
-    sports = list()
-    dates = list()
-    activity_dates = list()
-    colors = list()
+    sports = Sport.objects.all().exclude(name='unknown')
+    df = pd.DataFrame(list(activities.values('name', 'sport', 'date', 'duration')))
+    colors = []
+    for sport in sports:
+        df[sport.name] = df.loc[df['sport'] == sport.id, 'duration']
+        colors.append(sport.color)
 
-    activities = activities.exclude(sport_id=None)
-
-    for a in activities:
-        activity_dates.append(a.date.astimezone(pytz.UTC))
-        sports.append(a.sport.name)
-
-    number_of_days = Settings.objects.get(pk=1).number_of_days
-    now = timezone.now()
-    # now = datetime.datetime.today().astimezone(pytz.UTC)
-    if number_of_days == 9999:
-        oldest = min(activity_dates) - datetime.timedelta(days=1)
-    else:
-        oldest = now - datetime.timedelta(days=number_of_days)
-
-    while oldest <= now:
-        dates.append(oldest)
-        oldest = oldest + datetime.timedelta(days=1)
-
-    for date in dates:
-        durations = list()
-        for a in activities:
-            if a.date == date:
-                durations.append(a.duration)
-            else:
-                durations.append(0)
-        data.append(durations)
-
-    df = pd.DataFrame(data=data, columns=sports, index=dates, dtype='timedelta64[ns]')
-    df = df.groupby(df.columns, axis=1).sum()
-
-    for sport in df.columns:
-        for a in activities:
-            if str(sport) == str(a.sport):
-                colors.append(a.sport.color)
-                break
+    df.drop(columns=['sport', 'duration', 'name'], inplace=True)
+    df.fillna(value=pd.Timedelta(seconds=0), inplace=True)
 
     p = figure(x_axis_type='datetime', y_axis_type='datetime', plot_height=settings.PLOT_HEIGHT,
-               sizing_mode='stretch_width',
-               tools="pan,wheel_zoom,box_zoom,reset,save")
+               sizing_mode='stretch_width', toolbar_location=None, tools="hover", tooltips="$name @date: @$name")
 
-    if plotting_style == "line":
-        data = {
-            'xs': [df.index.values] * len(df.columns),
-            'ys': [df[name].values for name in df],
-            'colors': colors,
-        }
-
-        p.multi_line(xs='xs', ys='ys', color='colors', line_width=3, hover_line_color='colors',
-                     hover_line_alpha=1.0, source=ColumnDataSource(data))
-
-    else:
-        sports = df.columns
-
-        plot_data = {}
-        for d, s in zip([df[name].values for name in df], sports):
-            plot_data[s] = d
-        plot_data['dates'] = dates
-
-        p.vbar_stack(sports, x='dates', width=70000000, color=colors, source=plot_data)
-
-    p.xaxis[0].ticker.desired_num_ticks = 12
-    p.toolbar.logo = None
-    p.toolbar_location = None
+    sports_list = [sport.name for sport in sports]
+    p.vbar_stack(sports_list, x='date', width=70000000, color=colors, source=df,
+                 legend_label=sports_list)
 
     return p
 
