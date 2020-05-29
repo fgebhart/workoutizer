@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.urls import reverse
 
 from wizer.views import MapView, PlotView, get_summary_of_activities, get_all_form_field_ids
-from wizer.models import Sport
+from wizer.models import Sport, Settings
 from wizer.forms import AddSportsForm
 from wizer.plotting.plot_history import plot_history
 
@@ -36,7 +36,8 @@ class SportsView(MapView, PlotView):
         sports = Sport.objects.all().order_by('name')
         summary = get_summary_of_activities(activities=activities)
         if activities:
-            script_history, div_history = plot_history(activities=activities, plotting_style=self.settings.plotting_style)
+            script_history, div_history = plot_history(activities=activities, sport_model=Sport,
+                                                       settings_model=Settings)
             map_context['script_history'] = script_history
             map_context['div_history'] = div_history
         try:

@@ -104,7 +104,8 @@ class DashboardView(View, PlotView):
             'form_field_ids': get_all_form_field_ids(),
         }
         if activities:
-            script_history, div_history = plot_history(activities=activities)
+            script_history, div_history = plot_history(activities=activities, sport_model=models.Sport,
+                                                       settings_model=models.Settings)
             script_pc, div_pc = plot_pie_chart(activities=activities)
             script_trend, div_trend = plot_trend(activities=activities, sport_model=models.Sport)
             plotting_context = {

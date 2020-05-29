@@ -4,6 +4,7 @@ import sys
 import logging
 from multiprocessing import Process
 
+import pytz
 from django.apps import AppConfig
 from django.db.utils import OperationalError
 
@@ -173,7 +174,7 @@ def _save_activity_to_model(activities_model, parser, sport_instance, trace_inst
     activity_object = activities_model(
         name=parser.file_name.replace(".gpx", "").replace(".fit", ""),
         sport=sport_instance,
-        date=parser.date,
+        date=pytz.utc.localize(parser.date),
         duration=parser.duration,
         distance=parser.distance,
         trace_file=trace_instance,
