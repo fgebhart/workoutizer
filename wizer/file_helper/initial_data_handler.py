@@ -2,6 +2,7 @@ import os
 import datetime
 import logging
 
+import pytz
 from jinja2 import Environment, FileSystemLoader
 from workoutizer import settings
 from wizer.tools.utils import timestamp_format
@@ -35,15 +36,15 @@ def _activity_data(sport_model, counter):
             sport_model.objects.get(name='Swimming'),
         ],
         'date': [
-            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
-            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
-            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
-            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
-            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
-            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
-            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
-            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
-            datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2),
+            pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
+            pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
+            pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
+            pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
+            pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
+            pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
+            pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
+            pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
+            pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
         ],
         'duration': [
             datetime.timedelta(minutes=90),

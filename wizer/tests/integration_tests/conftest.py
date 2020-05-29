@@ -1,6 +1,9 @@
 import datetime
 
 import pytest
+import pytz
+from django.utils import timezone
+from django.conf import settings as django_settings
 
 from wizer.models import Settings, Sport, Activity
 
@@ -14,7 +17,6 @@ def settings(db):
         number_of_days=30,
         trace_width=1.0,
         trace_opacity=0.7,
-        plotting_style="bar",
         reimporter_updates_all=False,
         delete_files_after_import=False,
     )
@@ -34,7 +36,7 @@ def activity(db, sport):
     activity = Activity(
         name='Running',
         sport=sport,
-        date=datetime.date.today(),
+        date=timezone.now().replace(tzinfo=pytz.timezone(django_settings.TIME_ZONE)),
         duration=datetime.timedelta(minutes=30),
         distance=5.2,
         description="some super sport",
