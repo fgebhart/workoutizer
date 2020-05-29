@@ -84,10 +84,10 @@ class Reimporter:
 
 
 def _values_equal(value_a, value_b):
-    if (value_a is None and value_b) or (value_b is None and value_a):
-        return False
     if value_a == value_b:
         return True
+    elif (value_a is None and value_b) or (value_b is None and value_a):
+        return False
     else:
         if str(value_a) == str(value_b):
             return True
@@ -97,5 +97,5 @@ def _values_equal(value_a, value_b):
                     return True
                 else:
                     return False
-            except ValueError and TypeError:
+            except ValueError or TypeError:
                 return False
