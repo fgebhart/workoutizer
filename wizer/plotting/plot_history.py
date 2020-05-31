@@ -44,7 +44,7 @@ def _plot_activities(activities, sport_model, settings_model):
                  muted_color=colors, muted_alpha=0.2, source=df,
                  legend_label=sports_list)
 
-    p.legend.location = "top_right"
+    p.legend.location = "top_left"
     p.legend.click_policy = "mute"
     p.legend.label_text_font = "ubuntu"
 
