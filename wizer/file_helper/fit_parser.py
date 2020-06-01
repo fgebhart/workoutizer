@@ -5,6 +5,7 @@ import datetime
 
 import pytz
 from fitparse import FitFile
+from django.conf import settings
 
 from wizer.file_helper.lib.parser import Parser
 from wizer.tools.utils import remove_nones_from_list
@@ -29,7 +30,7 @@ class FITParser(Parser):
         for record in self.fit.get_messages():
             # print(f"------------------------------ new record ------------------------------")
             record = record.get_values()
-            if record.get('event') == 'lap' and record.get('lap_trigger') == 'manual':
+            if record.get('event') == 'lap':
                 self.laps.append(_parse_lap_data(record))
             for label, value in record.items():
                 # print(f"{label}: {value}")
@@ -40,7 +41,7 @@ class FITParser(Parser):
                 if label == "total_elapsed_time":
                     self.duration = datetime.timedelta(seconds=int(value))
                 if label == "timestamp":
-                    self.date = value
+                    self.date = value.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
                 # calories
                 if label == 'total_calories':
                     self.calories = value
@@ -125,9 +126,11 @@ class FITParser(Parser):
 
 def _parse_lap_data(record):
     lap = LapData(
-        start_time=record['start_time'].astimezone(pytz.UTC),
-        end_time=record['timestamp'].astimezone(pytz.UTC),
+        start_time=record['start_time'].replace(tzinfo=pytz.timezone(settings.TIME_ZONE)),
+        end_time=record['timestamp'].replace(tzinfo=pytz.timezone(settings.TIME_ZONE)),
         elapsed_time=datetime.timedelta(seconds=record['total_elapsed_time']),
+        lap_trigger=record.get('lap_trigger', 'unknown'),
+        # lap trigger could be 'manual', 'distance' or 'session_end'
         distance=record['total_distance'],
         start_lat=_to_coordinate(record.get('start_position_lat')),
         start_long=_to_coordinate(record.get('start_position_long')),
@@ -145,6 +148,7 @@ class LapData:
     start_time: datetime.datetime
     end_time: datetime.datetime
     elapsed_time: datetime.timedelta
+    lap_trigger: str
     distance: float = None
     start_lat: float = None
     start_long: float = None
@@ -156,7 +160,7 @@ class LapData:
 def _to_coordinate(point: int):
     if not point:
         return point
-    # coordinates conversion parameter, not sure why this was needed, maybe due to swapping lat with lon
+    # coordinates conversion parameter, not sure why this was needed, maybe due to swapping lat with lon?
     ccp = 11930464.71111111
 
     coordinate = float(point) / ccp

@@ -1,6 +1,14 @@
 import os
 import datetime
 
+import pytz
+from django.conf import settings
+
+from wizer.file_helper.fit_parser import LapData
+
+
+tz = pytz.timezone(settings.TIME_ZONE)
+
 
 def test__parse_metadata(fit_parser):
     p = fit_parser()
@@ -12,7 +20,7 @@ def test__parse_records(fit_parser):
     assert p.sport == 'running'
     assert p.distance == 5.84
     assert p.duration == datetime.timedelta(seconds=3164)
-    assert p.date == datetime.datetime(2019, 9, 14, 16, 15)
+    assert p.date == datetime.datetime(2019, 9, 14, 16, 15, tzinfo=tz)
     assert p.calories == 432
     assert p.speed_list[:3] == [1.605, 1.577, 1.577]
     assert p.avg_speed == 1.845
@@ -34,7 +42,18 @@ def test__parse_records(fit_parser):
     assert len(p.temperature_list) == 1202
     assert len(p.speed_list) == 1201
     assert len(p.timestamps_list) == 1224
-    assert p.laps == []     # TODO need test activity which actually has valid laps
+    assert p.laps[0] == LapData(
+        start_time=datetime.datetime(2019, 9, 14, 15, 22, 5, tzinfo=tz),
+        end_time=datetime.datetime(2019, 9, 14, 15, 29, 52, tzinfo=tz),
+        elapsed_time=datetime.timedelta(seconds=465, microseconds=90000),
+        distance=1000.0,
+        start_lat=49.405793594196446,
+        start_long=8.694087238982322,
+        end_long=8.696012729778888,
+        end_lat=49.40549436025322,
+        lap_trigger='distance',
+        speed=2.15,
+    )
 
 
 def test_get_min_max_values(fit_parser):

@@ -4,7 +4,6 @@ import sys
 import logging
 from multiprocessing import Process
 
-import pytz
 from django.apps import AppConfig
 from django.db.utils import OperationalError
 
@@ -159,6 +158,7 @@ def save_laps_to_model(lap_model, laps: list, trace_instance):
             start_time=lap.start_time,
             end_time=lap.end_time,
             elapsed_time=lap.elapsed_time,
+            lap_trigger=lap.lap_trigger,
             start_lat=lap.start_lat,
             start_long=lap.start_long,
             end_lat=lap.end_lat,
@@ -174,7 +174,7 @@ def _save_activity_to_model(activities_model, parser, sport_instance, trace_inst
     activity_object = activities_model(
         name=parser.file_name.replace(".gpx", "").replace(".fit", ""),
         sport=sport_instance,
-        date=pytz.utc.localize(parser.date),
+        date=parser.date,
         duration=parser.duration,
         distance=parser.distance,
         trace_file=trace_instance,

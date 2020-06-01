@@ -1,15 +1,13 @@
 import logging
 import json
-import datetime
 
 import numpy as np
-import pytz
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import HoverTool
 
 from django.conf import settings
-from wizer.tools.utils import ensure_lists_have_same_length, remove_nones_from_list
+from wizer.tools.utils import ensure_lists_have_same_length, timestamp_to_local_time
 from wizer.models import Lap
 
 log = logging.getLogger(__name__)
@@ -57,25 +55,19 @@ def plot_time_series(activity):
                     p = figure(plot_height=int(settings.PLOT_HEIGHT / 2),
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"],
                                x_range=(0, x_axis[-1]))
-                    p.xaxis[0].ticker.desired_num_ticks = 10
-                    for lap in lap_data:
-                        y_pos = lap.distance
-                        print(f"y_pos: {y_pos}")
-                        p.line([y_pos, y_pos], [min(values)-1, max(values)+1], line_width=10, color='grey')
-                        y_pos += lap.distance
-                else:
+                    _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
+                else:   # activity has no distance data, use time for x-axis instead
                     timestamps_list = json.loads(attributes["timestamps_list"])
-                    x_axis = [datetime.datetime.fromtimestamp(t) for t in timestamps_list]
+                    start = timestamp_to_local_time(timestamps_list[0])
+                    x_axis = [timestamp_to_local_time(t) - start for t in timestamps_list]
                     x_axis, values = ensure_lists_have_same_length(x_axis, values)
-                    print(f"x_axis: {x_axis}")
                     p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2),
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
-                    for lap in lap_data:
-                        print(f"lap_end: {lap.end_time}")
-                        p.line([lap.end_time, lap.end_time], [min(values)-1, max(values)+1], line_width=10, color='grey')
+                    _add_laps_to_plot(laps=lap_data, plot=p, y_values=values, x_start_value=x_axis[0], use_time=True)
                 p.tools = []
                 p.toolbar.logo = None
                 p.toolbar_location = None
+                p.xgrid.grid_line_color = None
                 if attribute == 'cadence':
                     p.scatter(x_axis, values, radius=0.01, fill_alpha=1, color=plot_matrix[attribute]["color"])
                 else:
@@ -92,3 +84,14 @@ def plot_time_series(activity):
                 dict_containing_divs_and_scripts[name] = {"script": script, "div": div}
 
     return dict_containing_divs_and_scripts
+
+
+def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, use_time: bool = False):
+    for lap in laps:
+        width = 1.5 if lap.lap_trigger == 'manual' else 0.5
+        color = 'violet' if lap.lap_trigger == 'manual' else 'grey'
+        if use_time:
+            x_start_value = lap.elapsed_time
+        else:
+            x_start_value += lap.distance / 1000
+        plot.line([x_start_value, x_start_value], [min(y_values) - 1, max(y_values) + 1], line_width=width, color=color)

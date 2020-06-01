@@ -1,5 +1,10 @@
 import logging
 import hashlib
+import datetime
+
+import pytz
+
+from django.conf import settings
 
 log = logging.getLogger(__name__)
 
@@ -43,7 +48,7 @@ def ensure_lists_have_same_length(list1, list2, mode="cut beginning", modify_onl
             if not modify_only_list2:
                 list1 = list1[diff:]
     elif mode == "fill end":
-        if diff < 0:    # last 2 is larger
+        if diff < 0:  # last 2 is larger
             if not modify_only_list2:
                 list1 = list1 + abs(diff) * [list1[-1]]
         elif diff > 0:  # list 1 is larger
@@ -51,3 +56,8 @@ def ensure_lists_have_same_length(list1, list2, mode="cut beginning", modify_onl
     else:
         raise NotImplementedError('mode not implemented')
     return list1, list2
+
+
+def timestamp_to_local_time(timestamp: int):
+    return pytz.utc.localize(datetime.datetime.fromtimestamp(timestamp), is_dst=False).astimezone(
+        pytz.timezone(settings.TIME_ZONE))

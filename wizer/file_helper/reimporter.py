@@ -2,7 +2,7 @@ import logging
 
 from wizer import models
 from wizer.apps import get_md5sums_from_model, get_all_files, calc_md5, parse_and_save_to_model, parse_data, \
-    save_laps_to_model, save_trace_to_model
+    save_laps_to_model
 
 log = logging.getLogger(__name__)
 
@@ -40,17 +40,17 @@ class Reimporter:
                 self._compare_and_update(trace, parser)
                 laps = models.Lap.objects.filter(trace=trace)
                 if laps:    # activity has laps in db already
-                    for lap_instance in laps:
-                        self._compare_and_update(lap_instance, parser)
+                    for lap_instance, parser_lap in zip(laps, parser.laps):
+                        self._compare_and_update(lap_instance, parser_lap)
                 else:       # save laps for trace to db
                     save_laps_to_model(models.Lap, parser.laps, trace)
+                    self.activity_modified = True
 
                 if self.activity_modified:
                     log.info(f"updated data for {activity.name} ...")
                     self.updated_activities.add(activity.name)
                 else:
                     log.info(f"no relevant update for {activity.name}")
-                # input("Press enter -----------------")
         log.debug(f"updated {len(self.updated_activities)} activities:\n{self.updated_activities}")
         log.info(f"successfully parsed trace files and updated corresponding database objects")
 
@@ -69,7 +69,7 @@ class Reimporter:
                 else:
                     db_value = getattr(obj, attribute)
                     if not _values_equal(db_value, value):
-                        log.debug(f"overwriting value for {attribute}: old: {db_value} to: {value}")
+                        log.debug(f"overwriting value for {attribute} old: {db_value} to: {value}")
                         setattr(obj, attribute, value)
                         self.activity_modified = True
                         updated = True
@@ -97,5 +97,5 @@ def _values_equal(value_a, value_b):
                     return True
                 else:
                     return False
-            except ValueError or TypeError:
+            except (ValueError, TypeError):
                 return False

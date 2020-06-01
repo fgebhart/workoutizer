@@ -102,6 +102,7 @@ class Lap(models.Model):
     start_time = models.DateTimeField(blank=False)
     end_time = models.DateTimeField(blank=False)
     elapsed_time = models.DurationField(blank=False)
+    lap_trigger = models.CharField(max_length=120, blank=False)
     start_lat = models.FloatField(blank=True, null=True)
     start_long = models.FloatField(blank=True, null=True)
     end_lat = models.FloatField(blank=True, null=True)
