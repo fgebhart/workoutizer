@@ -5,9 +5,9 @@
 <script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.4.0.min.js"></script>
 <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.4.0.min.js"></script>
 
-{% for attribute, plotting in time_series.items %}
-    {% for key, script_and_div in plotting.items %}
-        {{ script_and_div | safe }}
-    {% endfor %}
-{% endfor %}
+{{ script_time_series | safe }}
+
+{% if div_time_series %}
+    {{ div_time_series | safe }}
+{% endif %}
 <br>
