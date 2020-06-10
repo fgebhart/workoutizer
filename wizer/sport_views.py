@@ -68,9 +68,15 @@ def add_sport_view(request):
                                                     'form_field_ids': get_all_form_field_ids()})
 
 
+protected_sports = ['unknown']
+
+
 def edit_sport_view(request, sports_name_slug):
     sports = Sport.objects.all().order_by('name')
     sport = Sport.objects.get(slug=sports_name_slug)
+    if sport.name in protected_sports:
+        messages.warning(request, f"Can't edit sport '{sport.name}'")
+        return HttpResponseRedirect(f"/sport/{sport.slug}")
     form = AddSportsForm(request.POST or None, instance=sport)
     if request.method == 'POST':
         if form.is_valid():
@@ -93,5 +99,8 @@ class SportDeleteView(DeleteView):
     def get(self, request, *args, **kwargs):
         sports = Sport.objects.all().order_by('name')
         sport = Sport.objects.get(slug=kwargs['slug'])
+        if sport.name in protected_sports:
+            messages.warning(request, f"Can't delete sport '{sport.name}'")
+            return HttpResponseRedirect(f"/sport/{sport.slug}")
         return render(request, self.template_name, {'sports': sports, 'sport': sport,
                                                     'form_field_ids': get_all_form_field_ids()})
