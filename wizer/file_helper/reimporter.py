@@ -42,7 +42,7 @@ class Reimporter:
                 if laps:    # activity has laps in db already
                     for lap_instance, parser_lap in zip(laps, parser.laps):
                         self._compare_and_update(lap_instance, parser_lap)
-                else:       # save laps for trace to db
+                elif not laps and parser.laps:  # no laps in db but parser
                     save_laps_to_model(models.Lap, parser.laps, trace)
                     self.activity_modified = True
 
