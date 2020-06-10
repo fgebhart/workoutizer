@@ -130,8 +130,8 @@ def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, 
     manual_laps = []
     auto_laps = []
     for lap in laps:
-        width = 1.5 if lap.lap_trigger == 'manual' else 0.5
-        color = 'violet' if lap.lap_trigger == 'manual' else 'grey'
+        width = 1.5 if lap.trigger == 'manual' else 0.5
+        color = 'violet' if lap.trigger == 'manual' else 'grey'
         if use_time:
             x_start_value = lap.elapsed_time
         else:
@@ -139,7 +139,7 @@ def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, 
         line = plot.line([x_start_value, x_start_value], [min(y_values) - 1, max(y_values) + 1], line_width=width,
                          color=color)
 
-        if lap.lap_trigger == 'manual':
+        if lap.trigger == 'manual':
             manual_laps.append(line)
         else:
             auto_laps.append(line)

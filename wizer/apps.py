@@ -158,7 +158,7 @@ def save_laps_to_model(lap_model, laps: list, trace_instance):
             start_time=lap.start_time,
             end_time=lap.end_time,
             elapsed_time=lap.elapsed_time,
-            lap_trigger=lap.lap_trigger,
+            trigger=lap.trigger,
             start_lat=lap.start_lat,
             start_long=lap.start_long,
             end_lat=lap.end_lat,

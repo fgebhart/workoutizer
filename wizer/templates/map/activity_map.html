@@ -68,7 +68,6 @@
         L.marker([end[1], end[0]], {icon: redIcon}).addTo(map);
     {% endfor %}
 
-
     data = {
         "name": "demo.geojson",
         "type": "FeatureCollection",
@@ -105,5 +104,38 @@
     });
 
     control.geojson.addTo(map);
+
+    // create lap markers
+    var manualLapMarker = {
+        radius: 4,
+        fillColor: "white",
+        color: "violet",
+        weight: 2.0,
+        fillOpacity: 1.0,
+    };
+    var autoLapMarker = {
+        radius: 4,
+        fillColor: "white",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,
+    };
+
+    // add lap markers to map
+    {% for lap in laps %}
+        {% if lap.end_lat and lap.end_long %}
+            var lat = {{lap.end_lat}};
+            var lon = {{lap.end_long}};
+        {% else %}
+            var lat = {{lap.start_lat}};
+            var lon = {{lap.start_long}};
+        {% endif %}
+        {% if lap.trigger == "manual" %}
+            L.circleMarker([lat, lon], manualLapMarker).addTo(map).bindTooltip("Lap: {{ forloop.counter }}");    //  {{ lap.description }}
+        {% else %}
+            L.circleMarker([lat, lon], autoLapMarker).addTo(map).bindTooltip("{{ forloop.counter }}");
+        {% endif %}
+    {% endfor %}
+
 </script>
 <br>

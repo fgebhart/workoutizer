@@ -9,7 +9,7 @@ from django.http import HttpResponse, Http404
 from django.urls import reverse
 
 from wizer.views import MapView, get_all_form_field_ids
-from wizer.models import Sport, Activity
+from wizer.models import Sport, Activity, Lap
 from wizer.forms import AddActivityForm, EditActivityForm
 from wizer.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wizer.plotting.plot_time_series import plot_time_series
@@ -33,6 +33,9 @@ class ActivityView(MapView):
             script_time_series, div_time_series = plot_time_series(activity)
             activity_context['script_time_series'] = script_time_series
             activity_context['div_time_series'] = div_time_series
+        laps = Lap.objects.filter(trace=activity.trace_file)
+        if laps:
+            activity_context['laps'] = laps
         return render(request, self.template_name, {**context, **activity_context})
 
 

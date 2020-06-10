@@ -129,7 +129,7 @@ def _parse_lap_data(record):
         start_time=record['start_time'].replace(tzinfo=pytz.timezone(settings.TIME_ZONE)),
         end_time=record['timestamp'].replace(tzinfo=pytz.timezone(settings.TIME_ZONE)),
         elapsed_time=datetime.timedelta(seconds=record['total_elapsed_time']),
-        lap_trigger=record.get('lap_trigger', 'unknown'),
+        trigger=record.get('lap_trigger', 'unknown'),
         # lap trigger could be 'manual', 'distance' or 'session_end'
         distance=record['total_distance'],
         start_lat=_to_coordinate(record.get('start_position_lat')),
@@ -148,7 +148,7 @@ class LapData:
     start_time: datetime.datetime
     end_time: datetime.datetime
     elapsed_time: datetime.timedelta
-    lap_trigger: str
+    trigger: str
     distance: float = None
     start_lat: float = None
     start_long: float = None
