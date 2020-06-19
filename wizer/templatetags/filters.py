@@ -47,6 +47,16 @@ def round_2nd_decimal(td):
     return round(td, 2)
 
 
+@register.filter
+def to_int(number):
+    return int(number)
+
+
+@register.filter
+def h_m_s(delta):
+    return str(delta).split(".")[0]
+
+
 def strfdelta(tdelta, format):
     d = {"days": tdelta.days}
     d["hours"], rem = divmod(tdelta.seconds, 3600)
