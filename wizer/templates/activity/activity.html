@@ -16,7 +16,7 @@
         {% endif %}
     </div>
     <div class="clearfix"></div>
-    <p class="text-muted">{{ activity.date }}</p>
+    <p class="text-muted">{{ activity.date|date:"M d, Y, H:i" }}</p>
     <br>
     {% include "lib/messages.html" %}
     <table class="table table-bordered table-responsive-xl">

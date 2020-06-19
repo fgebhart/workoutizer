@@ -14,7 +14,7 @@
     <tbody>
     {% for a in activities %}
         <tr>
-            <td>{{ a.date }}</td>
+            <td>{{ a.date|date:"M d, Y" }}</td>
             <td class="limit"><a href="/activity/{{ a.id }}">{{ a.name }}</a></td>
             <td>
                 {% if a.trace_file.coordinates_list|length > 2 %}
