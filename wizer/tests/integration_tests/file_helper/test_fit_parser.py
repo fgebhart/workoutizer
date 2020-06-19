@@ -51,7 +51,7 @@ def test__parse_records(fit_parser):
         start_long=8.694087238982322,
         end_long=8.696012729778888,
         end_lat=49.40549436025322,
-        lap_trigger='distance',
+        trigger='distance',
         speed=2.15,
     )
 
