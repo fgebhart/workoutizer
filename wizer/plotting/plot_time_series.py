@@ -117,14 +117,11 @@ def plot_time_series(activity):
 def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, use_time: bool = False):
     lap_lines = []
     for lap in laps:
-        width = 1.5 if lap.trigger == 'manual' else 0.5
-        color = 'violet' if lap.trigger == 'manual' else 'grey'
         if use_time:
             x_start_value = lap.elapsed_time
         else:
             x_start_value += lap.distance / 1000
-        line = plot.line([x_start_value, x_start_value], [min(y_values) - 1, max(y_values) + 1], line_width=width,
-                         color=color)
+        line = plot.line([x_start_value, x_start_value], [min(y_values) - 1, max(y_values) + 1], color='grey')
 
         if lap.trigger == 'manual':
             lap_lines.append(line)
