@@ -33,7 +33,7 @@ class ActivityView(MapView):
             script_time_series, div_time_series = plot_time_series(activity)
             activity_context['script_time_series'] = script_time_series
             activity_context['div_time_series'] = div_time_series
-        laps = Lap.objects.filter(trace=activity.trace_file)
+        laps = Lap.objects.filter(trace=activity.trace_file, trigger='manual')
         if laps:
             activity_context['laps'] = laps
         return render(request, self.template_name, {**context, **activity_context})

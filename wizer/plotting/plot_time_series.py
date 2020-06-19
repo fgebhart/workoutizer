@@ -42,11 +42,9 @@ def plot_time_series(activity):
     attributes = activity.trace_file.__dict__
     del attributes["coordinates_list"]
     del attributes["altitude_list"]
-    lap_data = Lap.objects.filter(trace=activity.trace_file)
+    lap_data = Lap.objects.filter(trace=activity.trace_file, trigger='manual')
     plots = []
     lap_lines = []
-    if lap_data:
-        log.debug(f"found some Lap data for {activity}: {lap_data}")
 
     for attribute, values in attributes.items():
         if attribute.endswith("_list") and attribute != 'timestamps_list':
@@ -67,7 +65,7 @@ def plot_time_series(activity):
                     p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2),
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
                     lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values,
-                                                   x_start_value=x_axis[0], use_time=True)
+                                            x_start_value=x_axis[0], use_time=True)
                 lap_lines += lap
                 p.tools = []
                 p.toolbar.logo = None
@@ -88,28 +86,32 @@ def plot_time_series(activity):
     # TODO
     # connect all plots and share hovering line
     # add hover info for each lap line with lap data info
-
     all_plots = column(*plots)
     all_plots.sizing_mode = "stretch_width"
-    checkbox = CheckboxButtonGroup(labels=["Show Laps"], active=[0], width=100)
 
-    js = """
-        for (line in laps) {
-            laps[line].visible = false;
-        }
-        for (i in cb_obj.active) {
-            if (cb_obj.active[i] == 0) {
-                for (line in laps) {
-                    laps[line].visible = true;
+    if lap_data:
+        log.debug(f"found some Lap data for {activity}: {lap_data}")
+        checkbox = CheckboxButtonGroup(labels=["Show Laps"], active=[0], width=100)
+
+        js = """
+            for (line in laps) {
+                laps[line].visible = false;
+            }
+            for (i in cb_obj.active) {
+                if (cb_obj.active[i] == 0) {
+                    for (line in laps) {
+                        laps[line].visible = true;
+                    }
                 }
             }
-        }
-    """
-    callback = CustomJS(args=dict(laps=lap_lines, checkbox=checkbox), code=js)
-    checkbox.js_on_change('active', callback)
-    layout = column(checkbox, all_plots)
-    layout.sizing_mode = 'stretch_width'
-    script, div = components(layout)
+        """
+        callback = CustomJS(args=dict(laps=lap_lines, checkbox=checkbox), code=js)
+        checkbox.js_on_change('active', callback)
+        layout = column(checkbox, all_plots)
+        layout.sizing_mode = 'stretch_width'
+        script, div = components(layout)
+    else:
+        script, div = components(all_plots)
 
     return script, div
 
