@@ -5,7 +5,7 @@ import numpy as np
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import HoverTool
-from bokeh.models import CheckboxButtonGroup, CustomJS
+from bokeh.models import CheckboxButtonGroup, CustomJS, Button
 from bokeh.layouts import column
 
 from django.conf import settings
@@ -44,8 +44,7 @@ def plot_time_series(activity):
     del attributes["altitude_list"]
     lap_data = Lap.objects.filter(trace=activity.trace_file)
     plots = []
-    manual_lap_lines = []
-    auto_lap_lines = []
+    lap_lines = []
     if lap_data:
         log.debug(f"found some Lap data for {activity}: {lap_data}")
 
@@ -59,7 +58,7 @@ def plot_time_series(activity):
                     p = figure(plot_height=int(settings.PLOT_HEIGHT / 2),
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"],
                                x_range=(0, x_axis[-1]))
-                    manual_lap, auto_lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
+                    lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
                 else:  # activity has no distance data, use time for x-axis instead
                     timestamps_list = json.loads(attributes["timestamps_list"])
                     start = timestamp_to_local_time(timestamps_list[0])
@@ -67,10 +66,9 @@ def plot_time_series(activity):
                     x_axis, values = ensure_lists_have_same_length(x_axis, values)
                     p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2),
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
-                    manual_lap, auto_lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values,
-                                                             x_start_value=x_axis[0], use_time=True)
-                manual_lap_lines += manual_lap
-                auto_lap_lines += auto_lap
+                    lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values,
+                                                   x_start_value=x_axis[0], use_time=True)
+                lap_lines += lap
                 p.tools = []
                 p.toolbar.logo = None
                 p.toolbar_location = None
@@ -93,31 +91,21 @@ def plot_time_series(activity):
 
     all_plots = column(*plots)
     all_plots.sizing_mode = "stretch_width"
-    checkbox = CheckboxButtonGroup(labels=["manual laps", "auto laps"], active=[0], width=200)
-    # to ensure auto laps are invisible initially
-    for lap in auto_lap_lines:
-        lap.visible = False
+    checkbox = CheckboxButtonGroup(labels=["Show Laps"], active=[0], width=100)
 
     js = """
-        for (line in auto_laps) {
-            auto_laps[line].visible = false;
-        }
-        for (line in manual_laps) {
-            manual_laps[line].visible = false;
+        for (line in laps) {
+            laps[line].visible = false;
         }
         for (i in cb_obj.active) {
             if (cb_obj.active[i] == 0) {
-                for (line in manual_laps) {
-                    manual_laps[line].visible = true;
-                }
-            } else if (cb_obj.active[i] == 1) {
-                for (line in auto_laps) {
-                    auto_laps[line].visible = true;
+                for (line in laps) {
+                    laps[line].visible = true;
                 }
             }
         }
     """
-    callback = CustomJS(args=dict(manual_laps=manual_lap_lines, auto_laps=auto_lap_lines, checkbox=checkbox), code=js)
+    callback = CustomJS(args=dict(laps=lap_lines, checkbox=checkbox), code=js)
     checkbox.js_on_change('active', callback)
     layout = column(checkbox, all_plots)
     layout.sizing_mode = 'stretch_width'
@@ -127,8 +115,7 @@ def plot_time_series(activity):
 
 
 def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, use_time: bool = False):
-    manual_laps = []
-    auto_laps = []
+    lap_lines = []
     for lap in laps:
         width = 1.5 if lap.trigger == 'manual' else 0.5
         color = 'violet' if lap.trigger == 'manual' else 'grey'
@@ -140,7 +127,5 @@ def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, 
                          color=color)
 
         if lap.trigger == 'manual':
-            manual_laps.append(line)
-        else:
-            auto_laps.append(line)
-    return manual_laps, auto_laps
+            lap_lines.append(line)
+    return lap_lines

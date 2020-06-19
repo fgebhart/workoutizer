@@ -132,8 +132,6 @@
         {% endif %}
         {% if lap.trigger == "manual" %}
             L.circleMarker([lat, lon], manualLapMarker).addTo(map).bindTooltip("Lap: {{ forloop.counter }}");    //  {{ lap.description }}
-        {% else %}
-            L.circleMarker([lat, lon], autoLapMarker).addTo(map).bindTooltip("{{ forloop.counter }}");
         {% endif %}
     {% endfor %}
 
