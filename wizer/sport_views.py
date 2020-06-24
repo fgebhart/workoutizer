@@ -29,9 +29,12 @@ class SportsView(MapView, PlotView):
     template_name = "sport/sport.html"
 
     def get(self, request, sports_name_slug):
+        log.debug(f"got sports name: {sports_name_slug}")
+        if sports_name_slug == 'undefined':
+            log.warning(f"could not find sport - redirecting to home")
+            return HttpResponseRedirect(reverse('home'))
         sport_id = Sport.objects.get(slug=sports_name_slug).id
         activities = self.get_activities(sport_id=sport_id)
-        log.debug(f"got sports name: {sports_name_slug}")
         map_context = super(SportsView, self).get(request=request, list_of_activities=activities)
         sports = Sport.objects.all().order_by('name')
         summary = get_summary_of_activities(activities=activities)
