@@ -1,5 +1,6 @@
 import logging
 
+import pandas as pd
 from django.shortcuts import render
 from django.views.generic import View, DeleteView
 from django.http import Http404, HttpResponseRedirect
@@ -9,9 +10,11 @@ from django.contrib import messages
 from django.urls import reverse
 
 from wizer.views import MapView, PlotView, get_summary_of_activities, get_all_form_field_ids
-from wizer.models import Sport, Settings
+from wizer.models import Sport, Settings, Activity
 from wizer.forms import AddSportsForm
 from wizer.plotting.plot_history import plot_history
+from wizer.naming import protected_sports
+from wizer.tools.utils import remove_microseconds
 
 log = logging.getLogger(__name__)
 
@@ -21,8 +24,15 @@ class AllSportsView(View):
 
     def get(self, request):
         sports = Sport.objects.all().order_by('name')
+        sport_data = {}
+        for sport in sports:
+            if sport.name not in protected_sports:
+                activities_df = pd.DataFrame(list(Activity.objects.filter(sport=sport.id).values("duration", "distance")))
+                setattr(sport, "total_count", len(activities_df))
+                setattr(sport, "total_distance", round(activities_df['distance'].sum(), 2))
+                setattr(sport, "total_duration", remove_microseconds(activities_df['duration'].sum()))
         return render(request, self.template_name, {'sports': sports, 'page': 'all_sports',
-                                                    'form_field_ids': get_all_form_field_ids()})
+                                                    'form_field_ids': get_all_form_field_ids(), **sport_data})
 
 
 class SportsView(MapView, PlotView):
@@ -70,8 +80,6 @@ def add_sport_view(request):
     return render(request, 'sport/add_sport.html', {'sports': sports, 'form': form, 'page': 'add_sport',
                                                     'form_field_ids': get_all_form_field_ids()})
 
-
-protected_sports = ['unknown']
 
 
 def edit_sport_view(request, sports_name_slug):

@@ -1,0 +1,2 @@
+
+protected_sports = ['unknown']

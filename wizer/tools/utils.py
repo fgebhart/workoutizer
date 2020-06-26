@@ -61,3 +61,7 @@ def ensure_lists_have_same_length(list1, list2, mode="cut beginning", modify_onl
 def timestamp_to_local_time(timestamp: int):
     return pytz.utc.localize(datetime.datetime.fromtimestamp(timestamp), is_dst=False).astimezone(
         pytz.timezone(settings.TIME_ZONE))
+
+
+def remove_microseconds(delta):
+    return delta - datetime.timedelta(microseconds=delta.microseconds)
