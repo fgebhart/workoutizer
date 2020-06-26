@@ -78,6 +78,7 @@ def plot_time_series(activity):
                 hover = HoverTool(
                     tooltips=[(plot_matrix[attribute]['title'], f"@y {plot_matrix[attribute]['axis']}")],
                     mode='vline')
+                p.xaxis.ticker = [i for i in range(int(activity.distance + 1))]
                 p.add_tools(hover)
                 p.toolbar.logo = None
                 p.title.text = plot_matrix[attribute]["title"]
