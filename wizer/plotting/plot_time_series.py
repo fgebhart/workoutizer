@@ -97,11 +97,13 @@ def plot_time_series(activity):
         js = """
             for (line in laps) {
                 laps[line].visible = false;
+                markerGroup.removeFrom(map);
             }
             for (i in cb_obj.active) {
                 if (cb_obj.active[i] == 0) {
                     for (line in laps) {
                         laps[line].visible = true;
+                        markerGroup.addTo(map);
                     }
                 }
             }

@@ -114,6 +114,8 @@
         fillOpacity: 1.0,
     };
 
+    var markerGroup = L.layerGroup();
+
     // add lap markers to map
     {% for lap in laps %}
         {% if lap.end_lat and lap.end_long %}
@@ -124,7 +126,9 @@
             var lon = {{lap.start_long}};
         {% endif %}
         {% if lap.trigger == "manual" %}
-            L.circleMarker([lat, lon], LapMarker).addTo(map).bindTooltip("Lap: {{ forloop.counter }}");    //  {{ lap.description }}
+            var marker = L.circleMarker([lat, lon], LapMarker).bindTooltip("Lap: {{ forloop.counter }}");    // {{ lap.description }}
+            marker.addTo(markerGroup);
+            markerGroup.addTo(map);
         {% endif %}
     {% endfor %}
 
