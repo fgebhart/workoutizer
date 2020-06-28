@@ -29,8 +29,12 @@ class AllSportsView(View):
             if sport.name not in protected_sports:
                 activities_df = pd.DataFrame(list(Activity.objects.filter(sport=sport.id).values("duration", "distance")))
                 setattr(sport, "total_count", len(activities_df))
-                setattr(sport, "total_distance", round(activities_df['distance'].sum(), 2))
-                setattr(sport, "total_duration", remove_microseconds(activities_df['duration'].sum()))
+                if activities_df.empty:
+                    setattr(sport, "total_distance", 0)
+                    setattr(sport, "total_duration", 0)
+                else:
+                    setattr(sport, "total_distance", round(activities_df['distance'].sum(), 2))
+                    setattr(sport, "total_duration", remove_microseconds(activities_df['duration'].sum()))
         return render(request, self.template_name, {'sports': sports, 'page': 'all_sports',
                                                     'form_field_ids': get_all_form_field_ids(), **sport_data})
 

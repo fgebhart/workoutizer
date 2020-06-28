@@ -19,6 +19,8 @@ class Sport(models.Model):
     icon = models.CharField(max_length=24, verbose_name="Icon:")
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     color = ColorField(default='#42FF71', verbose_name="Color:")
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
@@ -64,6 +66,9 @@ class Traces(models.Model):
     anaerobic_training_effect = models.FloatField(blank=True, null=True)
     # timestamps
     timestamps_list = models.CharField(max_length=10000000000, default="[]")
+    # other
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -85,6 +90,8 @@ class Activity(models.Model):
     description = models.CharField(max_length=600, blank=True, null=True, verbose_name="Description:")
     trace_file = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=True, null=True)
     is_demo_activity = models.BooleanField(verbose_name="Is this a Demo Activity:", default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def delete(self, *args, **kwargs):
         if self.trace_file:
@@ -98,7 +105,6 @@ class Activity(models.Model):
 
 
 class Lap(models.Model):
-
     start_time = models.DateTimeField(blank=False)
     end_time = models.DateTimeField(blank=False)
     elapsed_time = models.DurationField(blank=False)
@@ -111,6 +117,8 @@ class Lap(models.Model):
     speed = models.FloatField(blank=True, null=True)
     trace = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=False)
     description = models.CharField(max_length=200, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class Settings(models.Model):
@@ -126,3 +134,5 @@ class Settings(models.Model):
     trace_opacity = models.FloatField(max_length=20, default=0.7, verbose_name="Opacity of Traces:")
     reimporter_updates_all = models.BooleanField(verbose_name="Force Update all Fields:", default=False)
     delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying: ", default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)

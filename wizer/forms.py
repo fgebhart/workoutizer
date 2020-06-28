@@ -6,13 +6,13 @@ from .models import Sport, Activity, Settings
 class AddSportsForm(forms.ModelForm):
     class Meta:
         model = Sport
-        fields = '__all__'
+        exclude = ('created', 'modified')
 
 
 class AddActivityForm(forms.ModelForm):
     class Meta:
         model = Activity
-        exclude = ('trace_file',)
+        exclude = ('trace_file', 'created', 'modified')
 
     def __init__(self, *args, **kwargs):
         super(AddActivityForm, self).__init__(*args, **kwargs)
@@ -22,10 +22,10 @@ class AddActivityForm(forms.ModelForm):
 class EditActivityForm(forms.ModelForm):
     class Meta:
         model = Activity
-        exclude = ('trace_file',)
+        exclude = ('trace_file', 'created', 'modified')
 
 
 class SettingsForm(forms.ModelForm):
     class Meta:
         model = Settings
-        exclude = ('number_of_days',)
+        exclude = ('number_of_days', 'created', 'modified')
