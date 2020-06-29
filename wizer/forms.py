@@ -25,12 +25,6 @@ class EditActivityForm(forms.ModelForm):
         exclude = ('trace_file', 'created', 'modified')
 
 
-class EditLapForm(forms.ModelForm):
-    class Meta:
-        model = Lap
-        fields = ('label',)
-
-
 class EditSettingsForm(forms.ModelForm):
     class Meta:
         model = Settings

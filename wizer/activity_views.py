@@ -7,11 +7,11 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.http import HttpResponse, Http404
 from django.urls import reverse
-from django.forms import formset_factory
+from django.forms import modelformset_factory
 
 from wizer.views import MapView, get_all_form_field_ids
 from wizer.models import Sport, Activity, Lap
-from wizer.forms import AddActivityForm, EditActivityForm, EditLapForm
+from wizer.forms import AddActivityForm, EditActivityForm
 from wizer.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wizer.plotting.plot_time_series import plot_time_series
 
@@ -58,52 +58,28 @@ def add_activity_view(request):
 
 
 def edit_activity_view(request, activity_id):
-    print(f"request: {request.POST}")
     sports = Sport.objects.all().order_by('name')
-    log.debug(f"querying for activity id: {activity_id}")
     activity = Activity.objects.get(id=activity_id)
     laps = Lap.objects.filter(trace=activity.trace_file, trigger='manual')
+    LapFormSet = modelformset_factory(Lap, fields=('label',))
+    has_laps = True if laps else False
     activity_form = EditActivityForm(request.POST or None, instance=activity, prefix="activity")
     log.debug(f"got activity_form: {activity_form}")
-    if laps:
-        print(f"got laps")
-        lap_forms = []
-        for lap in laps:
-            lap_form = EditLapForm(request.POST or None, instance=lap, prefix="lap")
-            lap_forms.append(lap_form)
-            label = request.POST.get('lap-label')
-            log.debug(f"got lap_form: {label}")
-        if request.method == 'POST':
-            if activity_form.is_valid():
-                log.debug(f"got valid activity_form: {activity_form.cleaned_data}")
-                activity_form.save()
-                for lap_form in lap_forms:
-                    if lap_form.is_valid():
-                        log.debug(f"got valid lap_form: {lap_form.cleaned_data}")
-                        lap_form.save()
-                messages.success(request, f"Successfully modified '{activity_form.cleaned_data['name']}'")
-                return HttpResponseRedirect(f"/activity/{activity_id}")
-            else:
-                log.warning(f"form invalid: {activity_form.errors}")
-        # else:
-        #     activity_form = EditActivityForm(prefix="activity")
-        #     lap_form = EditLapForm(prefix="lap")
-        return render(request, 'activity/edit_activity.html',
-                      {'activity_form': activity_form, 'lap_forms': lap_forms, 'sports': sports, 'activity': activity,
-                       'form_field_ids': get_all_form_field_ids()})
-    else:   # activity has no laps
-        print(f"no laps found")
-        if request.method == 'POST':
-            if activity_form.is_valid():
-                log.debug(f"got valid activity_form: {activity_form.cleaned_data}")
-                activity_form.save()
-                messages.success(request, f"Successfully modified '{activity_form.cleaned_data['name']}'")
-                return HttpResponseRedirect(f"/activity/{activity_id}")
-            else:
-                log.warning(f"form invalid: {activity_form.errors}")
-        return render(request, 'activity/edit_activity.html',
-                      {'activity_form': activity_form, 'sports': sports, 'activity': activity,
-                       'form_field_ids': get_all_form_field_ids()})
+    if request.method == 'POST':
+        formset = LapFormSet(request.POST)
+        if activity_form.is_valid():
+            log.debug(f"got valid activity_form: {activity_form.cleaned_data}")
+            activity_form.save()
+            formset.save()
+            messages.success(request, f"Successfully modified '{activity_form.cleaned_data['name']}'")
+            return HttpResponseRedirect(f"/activity/{activity_id}")
+        else:
+            log.warning(f"form invalid: {activity_form.errors}")
+    else:
+        formset = LapFormSet(queryset=laps)
+    return render(request, 'activity/edit_activity.html',
+                  {'activity_form': activity_form, 'sports': sports, 'activity': activity, "formset": formset,
+                   "has_laps": has_laps, 'form_field_ids': get_all_form_field_ids()})
 
 
 def download_activity(request, activity_id):
