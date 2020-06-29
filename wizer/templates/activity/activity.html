@@ -35,6 +35,10 @@
         </thead>
     </table>
     <br>
+    {% if activity.description and not activity.trace_file %}
+        <h5>Description</h5>
+        {{ activity.description }}
+    {% endif %}
     {% if activity.trace_file %}
         {% if traces %}
             <div class="row">
