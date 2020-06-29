@@ -60,16 +60,13 @@ def add_activity_view(request):
 def edit_activity_view(request, activity_id):
     sports = Sport.objects.all().order_by('name')
     activity = Activity.objects.get(id=activity_id)
-    laps = Lap.objects.filter(trace=activity.trace_file, trigger='manual')
-    LapFormSet = modelformset_factory(Lap, fields=('label',))
-    has_laps = True if laps else False
     activity_form = EditActivityForm(request.POST or None, instance=activity, prefix="activity")
+    laps = Lap.objects.filter(trace=activity.trace_file, trigger='manual')
+    has_laps = True if laps else False
+    LapFormSet = modelformset_factory(Lap, fields=('label',))
     formset = LapFormSet(request.POST or None, queryset=laps)
-    log.debug(f"got activity_form: {activity_form}")
     if request.method == 'POST':
         if activity_form.is_valid() and formset.is_valid():
-            log.debug(f"got valid activity_form: {activity_form.cleaned_data}")
-            log.debug(f"got valid lap formset: {formset.cleaned_data}")
             activity_form.save()
             formset.save()
             messages.success(request, f"Successfully modified '{activity_form.cleaned_data['name']}'")
