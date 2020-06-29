@@ -37,19 +37,21 @@
             </div>
             <br>
             {% if has_laps %}
-                <a href="#edit_laps" class="h4" style="color: black;" data-toggle="collapse">Lap Data <i class="fas fa-angle-down"></i></a>
+                <a href="#edit_laps" class="h4" style="color: black;" data-toggle="collapse">Lap Data <i
+                        class="fas fa-angle-down"></i></a>
                 <div id="edit_laps" class="collapse">
-                <br>
+                    <br>
                     {{ formset.management_form }}
                     {% for lap_form in formset %}
+                        {{ lap_form.id }}
                         <div class="form-group row">
-                            <div class="col-sm-2">{{ forloop.counter }}. Lap {{ lap_form.label.label }}</div>
+                            <div class="col-sm-2">{{ forloop.counter }}. Lap:</div>
                             <div class="col-sm-10">{{ lap_form.label }}</div>
                         </div>
                     {% endfor %}
                 </div>
-            <br>
-            <br>
+                <br>
+                <br>
             {% endif %}
             <button id="button" class="float-left btn btn-warning btn-space" type="submit" name="action"><i
                     class="fas fa-check"></i>&nbsp;&nbsp;Save

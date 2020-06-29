@@ -64,19 +64,18 @@ def edit_activity_view(request, activity_id):
     LapFormSet = modelformset_factory(Lap, fields=('label',))
     has_laps = True if laps else False
     activity_form = EditActivityForm(request.POST or None, instance=activity, prefix="activity")
+    formset = LapFormSet(request.POST or None, queryset=laps)
     log.debug(f"got activity_form: {activity_form}")
     if request.method == 'POST':
-        formset = LapFormSet(request.POST)
-        if activity_form.is_valid():
+        if activity_form.is_valid() and formset.is_valid():
             log.debug(f"got valid activity_form: {activity_form.cleaned_data}")
+            log.debug(f"got valid lap formset: {formset.cleaned_data}")
             activity_form.save()
             formset.save()
             messages.success(request, f"Successfully modified '{activity_form.cleaned_data['name']}'")
             return HttpResponseRedirect(f"/activity/{activity_id}")
         else:
-            log.warning(f"form invalid: {activity_form.errors}")
-    else:
-        formset = LapFormSet(queryset=laps)
+            log.warning(f"form invalid: {activity_form.errors, formset.errors}")
     return render(request, 'activity/edit_activity.html',
                   {'activity_form': activity_form, 'sports': sports, 'activity': activity, "formset": formset,
                    "has_laps": has_laps, 'form_field_ids': get_all_form_field_ids()})
