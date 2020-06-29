@@ -27,6 +27,8 @@ def table_duration(td):
 
 @register.filter
 def speed_to_pace(speed):
+    if speed is None:
+        return "00:00"
     if speed <= 0:
         return "00:00"
     pace = (float(speed) * 60 / 1000) ** -1

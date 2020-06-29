@@ -1,11 +1,12 @@
 import logging
 import json
+from itertools import combinations
 
 import numpy as np
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.models import HoverTool
-from bokeh.models import CheckboxButtonGroup, CustomJS, Button
+from bokeh.models import HoverTool, CrosshairTool
+from bokeh.models import CheckboxButtonGroup, CustomJS
 from bokeh.layouts import column
 
 from django.conf import settings
@@ -57,6 +58,7 @@ def plot_time_series(activity):
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"],
                                x_range=(0, x_axis[-1]))
                     lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
+                    x_hover = ("Distance", "@x km")
                 else:  # activity has no distance data, use time for x-axis instead
                     timestamps_list = json.loads(attributes["timestamps_list"])
                     start = timestamp_to_local_time(timestamps_list[0])
@@ -66,8 +68,8 @@ def plot_time_series(activity):
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
                     lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values,
                                             x_start_value=x_axis[0], use_time=True)
+                    x_hover = ("Time", "@x")
                 lap_lines += lap
-                p.tools = []
                 p.toolbar.logo = None
                 p.toolbar_location = None
                 p.xgrid.grid_line_color = None
@@ -76,12 +78,15 @@ def plot_time_series(activity):
                 else:
                     p.line(x_axis, values, line_width=2, color=plot_matrix[attribute]["color"])
                 hover = HoverTool(
-                    tooltips=[(plot_matrix[attribute]['title'], f"@y {plot_matrix[attribute]['axis']}")],
+                    tooltips=[(plot_matrix[attribute]['title'], f"@y {plot_matrix[attribute]['axis']}"),
+                              x_hover],
                     mode='vline')
                 p.add_tools(hover)
-                p.toolbar.logo = None
+                cross = CrosshairTool(dimensions="height")
+                p.add_tools(cross)
                 p.title.text = plot_matrix[attribute]["title"]
                 plots.append(p)
+    _link_all_plots_with_each_other(all_plots=plots)
 
     # TODO
     # connect all plots and share hovering line
@@ -96,13 +101,17 @@ def plot_time_series(activity):
         js = """
             for (line in laps) {
                 laps[line].visible = false;
-                markerGroup.removeFrom(map);
+                if (typeof maybeObject != "undefined") {
+                    markerGroup.removeFrom(map);
+                    }
             }
             for (i in cb_obj.active) {
                 if (cb_obj.active[i] == 0) {
                     for (line in laps) {
                         laps[line].visible = true;
-                        markerGroup.addTo(map);
+                        if (typeof maybeObject != "undefined") {
+                            markerGroup.addTo(map);
+                            }
                     }
                 }
             }
@@ -130,3 +139,33 @@ def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, 
         if lap.trigger == 'manual':
             lap_lines.append(line)
     return lap_lines
+
+
+def _add_vlinked_crosshairs(fig1, fig2):
+    cross1 = CrosshairTool(dimensions="height")
+    cross2 = CrosshairTool(dimensions="height")
+    fig1.add_tools(cross1)
+    fig2.add_tools(cross2)
+    js_move = '''
+        if(cb_obj.x >= fig.x_range.start && cb_obj.x <= fig.x_range.end &&
+           cb_obj.y >= fig.y_range.start && cb_obj.y <= fig.y_range.end)
+        {
+            cross.spans.height.computed_location = cb_obj.sx
+        }
+        else
+        {
+            cross.spans.height.computed_location = null
+        }
+    '''
+    js_leave = 'cross.spans.height.computed_location = null'
+    args = {'cross': cross2, 'fig': fig1}
+    fig1.js_on_event('mousemove', CustomJS(args=args, code=js_move))
+    fig1.js_on_event('mouseleave', CustomJS(args=args, code=js_leave))
+    args = {'cross': cross1, 'fig': fig2}
+    fig2.js_on_event('mousemove', CustomJS(args=args, code=js_move))
+    fig2.js_on_event('mouseleave', CustomJS(args=args, code=js_leave))
+
+
+def _link_all_plots_with_each_other(all_plots: list):
+    for combi in combinations(all_plots, 2):
+        _add_vlinked_crosshairs(combi[0], combi[1])

@@ -83,7 +83,6 @@ class MapView(View):
             traces, colors = ensure_lists_have_same_length(traces, lines_colors, mode='fill end',
                                                            modify_only_list2=True)
             traces = zip(traces, colors)
-        log.debug(f"running MapView")
         return {'traces': traces, 'settings': self.settings, 'days': self.number_of_days,
                 'choices': self.days_choices, 'has_elevation': has_elevation, 'has_traces': has_traces}
 
