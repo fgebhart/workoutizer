@@ -130,8 +130,6 @@ class Settings(models.Model):
                                              verbose_name="Path to Garmin Device:")
     file_checker_interval = models.IntegerField(default=60, verbose_name="File Checker Time Interval:")
     number_of_days = models.IntegerField(choices=days_choices, default=30)
-    trace_width = models.FloatField(max_length=20, default=3.0, verbose_name="Width of Traces:")
-    trace_opacity = models.FloatField(max_length=20, default=0.7, verbose_name="Opacity of Traces:")
     reimporter_updates_all = models.BooleanField(verbose_name="Force Update all Fields:", default=False)
     delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying: ", default=False)
     created = models.DateTimeField(auto_now_add=True)

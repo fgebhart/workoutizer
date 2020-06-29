@@ -9,6 +9,7 @@ from django.contrib import messages
 from multiprocessing import Process
 from django.urls import reverse
 from django.utils import timezone
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -23,6 +24,7 @@ from wizer.file_helper.reimporter import Reimporter
 from wizer.file_helper.fit_collector import try_to_mount_device, FitCollector
 from wizer.tools.colors import lines_colors
 from wizer.tools.utils import ensure_lists_have_same_length
+from workoutizer import settings
 
 log = logging.getLogger(__name__)
 
@@ -35,6 +37,8 @@ class MapView(View):
     def get(self, request, list_of_activities: list):
         log.debug(f"got list_of_activity_ids: {list_of_activities}")
         self.settings = models.Settings.objects.get(pk=1)
+        setattr(self.settings, "trace_width", settings.TRACE_LINE_WIDTH)
+        setattr(self.settings, "trace_opacity", settings.TRACE_LINE_OPACITY)
         self.number_of_days = self.settings.number_of_days
         self.days_choices = models.Settings.days_choices
         traces = []

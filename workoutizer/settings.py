@@ -138,6 +138,9 @@ LEAFLET_CONFIG = {
     'MAX_ZOOM': 18,
 }
 
+TRACE_LINE_WIDTH = 4.0
+TRACE_LINE_OPACITY = 0.9
+
 format_console = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
 # format_console = "%(name)s - %(message)s"  # optionally add time: "%(asctime)s -"
 
