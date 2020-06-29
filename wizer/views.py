@@ -29,6 +29,25 @@ from workoutizer import settings
 log = logging.getLogger(__name__)
 
 
+def get_all_form_field_ids():
+    """
+    helper function to get all ids of input form fields to avoid keyboard navigation while entering
+    text into form fields.
+    """
+
+    ids = []
+    all_forms = [forms.AddSportsForm, forms.EditSettingsForm, forms.AddActivityForm, forms.EditActivityForm]
+    for form in all_forms:
+        ids += [f"id_{field}" for field in form.base_fields.keys()]
+    return ids
+
+
+class WKZView(View):
+    sports = models.Sport.objects.all().order_by('name')
+    form_field_ids = get_all_form_field_ids()
+    context = {"sports": sports, "form_field_ids": form_field_ids}
+
+
 class MapView(View):
     number_of_days = None
     days_choices = None
@@ -84,7 +103,8 @@ class PlotView:
         now = timezone.now()
         start_datetime = now - datetime.timedelta(days=self.number_of_days)
         if sport_id:
-            activities = models.Activity.objects.filter(date__range=[start_datetime, now], sport=sport_id).order_by("-date")
+            activities = models.Activity.objects.filter(date__range=[start_datetime, now], sport=sport_id).order_by(
+                "-date")
         else:
             activities = models.Activity.objects.filter(date__range=[start_datetime, now]).order_by("-date")
         return activities
@@ -144,12 +164,11 @@ def settings_view(request):
                                                  'delete_demos': True if activities else False})
 
 
-class HelpView(View):
+class HelpView(WKZView):
     template_name = "lib/help.html"
 
     def get(self, request):
-        self.sports = models.Sport.objects.all().order_by('name')
-        return render(request, template_name=self.template_name, context={'sports': self.sports})
+        return render(request, template_name=self.template_name, context=self.context)
 
 
 @api_view(['POST'])
@@ -202,16 +221,3 @@ def reimport_activity_files(request):
         return redirect(request.META.get('HTTP_REFERER'))
     else:
         return HttpResponseRedirect(reverse('settings'))
-
-
-def get_all_form_field_ids():
-    """
-    helper function to get all ids of input form fields to avoid keyboard navigation while entering
-    text into form fields.
-    """
-
-    ids = []
-    all_forms = [forms.AddSportsForm, forms.EditSettingsForm, forms.AddActivityForm, forms.EditActivityForm]
-    for form in all_forms:
-        ids += [f"id_{field}" for field in form.base_fields.keys()]
-    return ids
