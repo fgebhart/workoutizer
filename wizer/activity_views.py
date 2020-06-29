@@ -15,7 +15,6 @@ from wizer.forms import AddActivityForm, EditActivityForm
 from wizer.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wizer.plotting.plot_time_series import plot_time_series
 
-
 log = logging.getLogger(__name__)
 
 
@@ -58,13 +57,15 @@ def add_activity_view(request):
 
 
 def edit_activity_view(request, activity_id):
+    form_field_ids = get_all_form_field_ids()
     sports = Sport.objects.all().order_by('name')
     activity = Activity.objects.get(id=activity_id)
-    activity_form = EditActivityForm(request.POST or None, instance=activity, prefix="activity")
+    activity_form = EditActivityForm(request.POST or None, instance=activity)
     laps = Lap.objects.filter(trace=activity.trace_file, trigger='manual')
     has_laps = True if laps else False
     LapFormSet = modelformset_factory(Lap, fields=('label',))
     formset = LapFormSet(request.POST or None, queryset=laps)
+    form_field_ids = _add_formset_field_ids(form_field_ids, formset)
     if request.method == 'POST':
         if activity_form.is_valid() and formset.is_valid():
             activity_form.save()
@@ -75,7 +76,20 @@ def edit_activity_view(request, activity_id):
             log.warning(f"form invalid: {activity_form.errors, formset.errors}")
     return render(request, 'activity/edit_activity.html',
                   {'activity_form': activity_form, 'sports': sports, 'activity': activity, "formset": formset,
-                   "has_laps": has_laps, 'form_field_ids': get_all_form_field_ids()})
+                   "has_laps": has_laps, 'form_field_ids': form_field_ids})
+
+
+def _add_formset_field_ids(form_field_ids, formset):
+    """
+    Add all input fields of a given form set to the list of all field ids in order to avoid
+    keyboard navigation while entering text in form fields.
+    """
+
+    for i, form in enumerate(formset):
+        for field in form.base_fields.keys():
+            field = f"id_form-{i}-{field}"
+            form_field_ids.append(field)
+    return form_field_ids
 
 
 def download_activity(request, activity_id):

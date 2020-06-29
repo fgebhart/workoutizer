@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Sport, Activity, Settings, Lap
+from wizer.models import Sport, Activity, Settings, Lap
 
 
 class AddSportsForm(forms.ModelForm):

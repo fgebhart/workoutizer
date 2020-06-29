@@ -22,9 +22,18 @@
 <script>
     var map = {};   // thanks to https://stackoverflow.com/questions/5203407/how-to-detect-if-multiple-keys-are-pressed-at-once-using-javascript
     onkeydown = onkeyup = function (e) {
-        let sports = {{ sports | queryset_to_list | safe }}
-            e = e || event; // to deal with IE
-        map[e.key] = e.type === 'keydown';
+        let ids = {{ form_field_ids | safe }};
+        if (ids.includes(document.activeElement.id)) {
+            // do nothing in case focus is in input form fields
+        } else {
+            let sports = {{ sports | queryset_to_list | safe }}
+                e = e || event; // to deal with IE
+            map[e.key] = e.type === 'keydown';
+            go_to_page_with_key(event, sports)
+        }
+    }
+
+    function go_to_page_with_key(event, sports) {
         if (map['g'] && map['d']) {
             window.location.href = '/';
             map = {};

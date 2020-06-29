@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from wizer import models
-from wizer.forms import EditSettingsForm, AddActivityForm, AddSportsForm
+from wizer import forms
 from wizer.plotting.plot_history import plot_history
 from wizer.plotting.plot_pie_chart import plot_pie_chart
 from wizer.plotting.plot_trend import plot_trend
@@ -130,7 +130,7 @@ def settings_view(request):
     sports = models.Sport.objects.all().order_by('name')
     settings = models.Settings.objects.get_or_create(pk=1)[0]
     activities = models.Activity.objects.filter(is_demo_activity=True).count()
-    form = EditSettingsForm(request.POST or None, instance=settings)
+    form = forms.EditSettingsForm(request.POST or None, instance=settings)
     if request.method == 'POST':
         if form.is_valid():
             log.debug(f"got valid form: {form.cleaned_data}")
@@ -205,8 +205,13 @@ def reimport_activity_files(request):
 
 
 def get_all_form_field_ids():
+    """
+    helper function to get all ids of input form fields to avoid keyboard navigation while entering
+    text into form fields.
+    """
+
     ids = []
-    all_forms = [AddSportsForm, EditSettingsForm, AddActivityForm]
+    all_forms = [forms.AddSportsForm, forms.EditSettingsForm, forms.AddActivityForm, forms.EditActivityForm]
     for form in all_forms:
         ids += [f"id_{field}" for field in form.base_fields.keys()]
     return ids
