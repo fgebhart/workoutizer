@@ -122,7 +122,7 @@
             <th data-toggle="tooltip" data-placement="top" title="hh:mm:ss">Time</th>
             <th data-toggle="tooltip" data-placement="top" title="m">Distance</th>
             <th data-toggle="tooltip" data-placement="top" title="min/km">Pace</th>
-            <th>Description</th>
+            <th>Label</th>
         </tr>
         </thead>
         <tbody>
@@ -132,8 +132,8 @@
                 <td>{{ lap.elapsed_time|h_m_s }}</td>
                 <td>{{ lap.distance|to_int }}</td>
                 <td>{{ lap.speed|speed_to_pace }}</td>
-                {% if lap.description %}
-                    <td>{{ lap.description }}</td>
+                {% if lap.label %}
+                    <td>{{ lap.label }}</td>
                 {% else %}
                     <td>-</td>
                 {% endif %}

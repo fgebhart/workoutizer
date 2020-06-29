@@ -126,7 +126,13 @@
             var lon = {{lap.start_long}};
         {% endif %}
         {% if lap.trigger == "manual" %}
-            var marker = L.circleMarker([lat, lon], LapMarker).bindTooltip("Lap: {{ forloop.counter }}");    // {{ lap.description }}
+            var label = "{{ lap.label }}";
+            if (label === "None") {
+                var text = "Lap {{ forloop.counter }}";
+            } else {
+                var text = "Lap {{ forloop.counter }}: " + label;
+            }
+            var marker = L.circleMarker([lat, lon], LapMarker).bindTooltip(text);
             marker.addTo(markerGroup);
             markerGroup.addTo(map);
         {% endif %}

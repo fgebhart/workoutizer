@@ -1,9 +1,9 @@
 import datetime
 
-from wizer.forms import SettingsForm, AddSportsForm, AddActivityForm, EditActivityForm
+from wizer.forms import EditSettingsForm, AddSportsForm, AddActivityForm, EditActivityForm
 
 
-def test_settings_form():
+def test_edit_settings_form():
     form_data = {
         "path_to_trace_dir": "/home/pi/traces/",
         "path_to_garmin_device": "/home/pi/traces/",
@@ -15,7 +15,7 @@ def test_settings_form():
         "reimporter_updates_all": False,
         "delete_files_after_import": False,
     }
-    form = SettingsForm(data=form_data)
+    form = EditSettingsForm(data=form_data)
     assert form.is_valid() is True
 
 
@@ -29,7 +29,7 @@ def test_add_sport_form(db):
     assert form.is_valid() is True
 
 
-def test_add_and_enit_activity_form(db, sport):
+def test_add_and_edit_activity_form(db, sport):
     form_data = {
         "name": "Running",
         "sport": sport,

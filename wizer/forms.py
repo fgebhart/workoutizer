@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Sport, Activity, Settings
+from .models import Sport, Activity, Settings, Lap
 
 
 class AddSportsForm(forms.ModelForm):
@@ -25,7 +25,13 @@ class EditActivityForm(forms.ModelForm):
         exclude = ('trace_file', 'created', 'modified')
 
 
-class SettingsForm(forms.ModelForm):
+class EditLapForm(forms.ModelForm):
+    class Meta:
+        model = Lap
+        fields = ('label',)
+
+
+class EditSettingsForm(forms.ModelForm):
     class Meta:
         model = Settings
         exclude = ('number_of_days', 'created', 'modified')

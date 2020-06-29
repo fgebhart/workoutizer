@@ -116,7 +116,7 @@ class Lap(models.Model):
     distance = models.FloatField(blank=True, null=True)
     speed = models.FloatField(blank=True, null=True)
     trace = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=False)
-    description = models.CharField(max_length=200, blank=True, null=True)
+    label = models.CharField(max_length=100, blank=True, null=True, verbose_name="Label:")
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
