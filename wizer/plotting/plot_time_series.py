@@ -101,7 +101,7 @@ def plot_time_series(activity):
         js = """
             for (line in laps) {
                 laps[line].visible = false;
-                if (typeof maybeObject != "undefined") {
+                if (typeof markerGroup != "undefined") {
                     markerGroup.removeFrom(map);
                     }
             }
@@ -109,7 +109,7 @@ def plot_time_series(activity):
                 if (cb_obj.active[i] == 0) {
                     for (line in laps) {
                         laps[line].visible = true;
-                        if (typeof maybeObject != "undefined") {
+                        if (typeof markerGroup != "undefined") {
                             markerGroup.addTo(map);
                             }
                     }
