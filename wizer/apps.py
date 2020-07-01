@@ -245,13 +245,15 @@ def parse_data(file):
 
 
 def map_sport_name(sport_name, map_dict):
-    sport = 'unknown'
+    sport = None
     for k, v in map_dict.items():
         if sanitize(sport_name) in v:
-            log.debug(f"mapped activity sport: {sport_name} to {k}")
             sport = k
-    if not sport:
-        log.warning(f"could not map {sport_name} to given sport names, use unknown instead")
+    if sport:
+        log.debug(f"mapped activity sport: {sport_name} to {sport}")
+    else:
+        sport = 'unknown'
+        log.warning(f"could not map '{sport_name}' to given sport names, use unknown instead")
     return sport
 
 
