@@ -1,6 +1,16 @@
 import os
 import argparse
+import configparser
+
 from django.core.management import execute_from_command_line
+
+
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.ini')
+
+# read config
+config = configparser.ConfigParser()
+config.read(CONFIG_PATH)
+ip_address = config.get("WORKOUTIZER", "local_ip_address")
 
 
 def cli():
@@ -14,7 +24,7 @@ def cli():
     args = parser.parse_args()
     os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
     if args.run == 'run':
-        execute_from_command_line(["manage.py", "runserver"])
+        execute_from_command_line(["manage.py", "runserver", ip_address])
     elif args.run == 'init':
         execute_from_command_line(["manage.py", "collectstatic"])
         execute_from_command_line(["manage.py", "migrate"])

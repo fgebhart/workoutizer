@@ -36,7 +36,8 @@ class WizerFileDaemon(AppConfig):
     verbose_name = 'Workoutizer'
 
     def ready(self):
-        if ('runserver' in sys.argv or 'run' in sys.argv) and os.environ.get('RUN_MAIN', None) != 'true':
+        if ('runserver' in sys.argv or 'run' in sys.argv) and "help" not in sys.argv and os.environ.get('RUN_MAIN',
+                                                                                                        None) != 'true':
             # ensure to only run with 'manage.py runserver' and not in auto reload thread
             from wizer import models
 
