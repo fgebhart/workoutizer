@@ -22,16 +22,19 @@
     register: installed
 
   - name: copy udev rule for automated mounting
+    become: yes
     copy:
       src: files/device_mount.rules
       dest: /etc/udev/rules.d/device_mount.rules
 
   - name: copy workoutizer systemd service file to pi
+    become: yes
     copy:
       src: files/wkz_mount.service
       dest: /etc/systemd/system/wkz_mount.service
 
   - name: enable wkz_mount systemd service
+    become: yes
     systemd:
       enabled: yes
       name: wkz_mount.service
