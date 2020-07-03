@@ -19,12 +19,12 @@ from wizer import forms
 from wizer.plotting.plot_history import plot_history
 from wizer.plotting.plot_pie_chart import plot_pie_chart
 from wizer.plotting.plot_trend import plot_trend
-from wizer.gis.gis import GeoTrace, add_elevation_data_to_coordinates
+from wizer.gis.gis import GeoTrace
 from wizer.file_helper.reimporter import Reimporter
 from wizer.file_helper.fit_collector import try_to_mount_device, FitCollector
 from wizer.tools.colors import lines_colors
 from wizer.tools.utils import ensure_lists_have_same_length
-from workoutizer import settings
+from workoutizer.settings import config
 
 log = logging.getLogger(__name__)
 
@@ -56,8 +56,8 @@ class MapView(View):
     def get(self, request, list_of_activities: list):
         log.debug(f"got list_of_activity_ids: {list_of_activities}")
         self.settings = models.Settings.objects.get(pk=1)
-        setattr(self.settings, "trace_width", settings.TRACE_LINE_WIDTH)
-        setattr(self.settings, "trace_opacity", settings.TRACE_LINE_OPACITY)
+        setattr(self.settings, "trace_width", config.get("PLOTTING", "trace_line_width"))
+        setattr(self.settings, "trace_opacity", config.get("PLOTTING", "trace_line_opacity"))
         self.number_of_days = self.settings.number_of_days
         self.days_choices = models.Settings.days_choices
         traces = []
