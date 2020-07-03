@@ -13,9 +13,7 @@ from django.conf import settings
 from wizer.tools.utils import ensure_lists_have_same_length, timestamp_to_local_time
 from wizer import models
 
-
 log = logging.getLogger(__name__)
-
 
 plot_matrix = {
     "temperature": {
@@ -38,6 +36,12 @@ plot_matrix = {
         "axis": "bpm",
         "title": "Heart Rate",
     },
+    "altitude": {
+        "color": "Green",
+        "second_color": "darkseagreen",
+        "axis": "m",
+        "title": "Altitude",
+    }
 }
 
 
@@ -45,6 +49,7 @@ def plot_time_series(activity: models.Activity):
     """
     Plotting function to create the time series plots shown in tha activity page. Depending
     on what data is available this creates the following plots:
+    - Altitude
     - Heart Rate
     - Speed
     - Cadence
@@ -64,7 +69,7 @@ def plot_time_series(activity: models.Activity):
 
     attributes = activity.trace_file.__dict__
     del attributes["coordinates_list"]
-    del attributes["altitude_list"]
+    # del attributes["altitude_list"]
     lap_data = models.Lap.objects.filter(trace=activity.trace_file, trigger='manual')
     plots = []
     lap_lines = []
@@ -97,6 +102,10 @@ def plot_time_series(activity: models.Activity):
                 p.xgrid.grid_line_color = None
                 if attribute == 'cadence':
                     p.scatter(x_axis, values, radius=0.01, fill_alpha=1, color=plot_matrix[attribute]["color"])
+                elif attribute == 'altitude':
+                    p.varea(x_axis, values, [min(values) for i in range(len(values))],
+                            color=plot_matrix[attribute]["second_color"], fill_alpha=0.5)
+                    p.line(x_axis, values, line_width=2, color=plot_matrix[attribute]["color"])
                 else:
                     p.line(x_axis, values, line_width=2, color=plot_matrix[attribute]["color"])
                 hover = HoverTool(
