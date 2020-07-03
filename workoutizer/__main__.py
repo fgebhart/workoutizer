@@ -4,8 +4,8 @@ import configparser
 
 from django.core.management import execute_from_command_line
 
-
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.ini')
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+CONFIG_PATH = os.path.join(BASE_DIR, 'config.ini')
 
 # read config
 config = configparser.ConfigParser()

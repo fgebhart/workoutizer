@@ -1,23 +1,39 @@
 ---
-
 - name: setup workoutizer
-  hosts: workoutizer
-  remote_user: pi
+  hosts: localhost
+  connection: local
+  vars:
+    - ansible_python_interpreter: "{{ '/usr/bin/python3' }}"
 
   tasks:
-  - name: import config variables
-    set_fact:
-      dropbox_token: "{{ lookup('ini', 'dropbox_token section=DROPBOX file=config.ini') }}"
-      path_to_workoutizer: "{{ lookup('ini', 'path_to_workoutizer section=GENERAL file=config.ini') }}"
 
-  - name: test connection
-    ping:
-
-  - name: Set timezone to Europe/Berlin
+  - name: install required apt packages
     become: yes
-    timezone:
-      name: Europe/Berlin
+    apt:
+      name: "{{ packages }}"
+      update_cache: yes
+    vars:
+      packages:
+        - gvfs
+        - gvfs-fuse
+        - gvfs-bin
+        - gvfs-backends
+        - ifuse
+    register: installed
 
-  - name: install workoutizer
-    include: "ansible/workoutizer.yml"
+  - name: copy udev rule for automated mounting
+    copy:
+      src: files/device_mount.rules
+      dest: /etc/udev/rules.d/device_mount.rules
+
+  - name: copy workoutizer systemd service file to pi
+    copy:
+      src: files/wkz_mount.service
+      dest: /etc/systemd/system/wkz_mount.service
+
+  - name: enable wkz_mount systemd service
+    systemd:
+      enabled: yes
+      name: wkz_mount.service
+      state: stopped
 ...
