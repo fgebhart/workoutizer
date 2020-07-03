@@ -11,9 +11,11 @@ from bokeh.layouts import column
 
 from django.conf import settings
 from wizer.tools.utils import ensure_lists_have_same_length, timestamp_to_local_time
-from wizer.models import Lap
+from wizer import models
+
 
 log = logging.getLogger(__name__)
+
 
 plot_matrix = {
     "temperature": {
@@ -39,11 +41,31 @@ plot_matrix = {
 }
 
 
-def plot_time_series(activity):
+def plot_time_series(activity: models.Activity):
+    """
+    Plotting function to create the time series plots shown in tha activity page. Depending
+    on what data is available this creates the following plots:
+    - Heart Rate
+    - Speed
+    - Cadence
+    - Temperature
+    All plots share a connected vertical cross hair tools.
+
+    Parameters
+    ----------
+    activity : models.Activity
+        Activity model containing the required activity for which the plots should be generated
+
+    Returns
+    -------
+    script, div : tuple(str, str)
+        the html script and div elements used to render the plots in the html templates
+    """
+
     attributes = activity.trace_file.__dict__
     del attributes["coordinates_list"]
     del attributes["altitude_list"]
-    lap_data = Lap.objects.filter(trace=activity.trace_file, trigger='manual')
+    lap_data = models.Lap.objects.filter(trace=activity.trace_file, trigger='manual')
     plots = []
     lap_lines = []
 
