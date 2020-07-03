@@ -71,8 +71,11 @@ def plot_time_series(activity: models.Activity):
     """
 
     attributes = activity.trace_file.__dict__
-    list_of_distances = turn_coordinates_into_list_of_distances(json.loads(attributes["coordinates_list"]))
-    list_of_distances = _scale_distances(activity.distance, list_of_distances)
+    coordinates = json.loads(attributes["coordinates_list"])
+    list_of_distances = []
+    if coordinates:
+        list_of_distances = turn_coordinates_into_list_of_distances(coordinates)
+        list_of_distances = _scale_distances(activity.distance, list_of_distances)
     del attributes["coordinates_list"]
     lap_data = models.Lap.objects.filter(trace=activity.trace_file, trigger='manual')
     plots = []
