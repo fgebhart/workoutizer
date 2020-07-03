@@ -2,40 +2,10 @@
     <!-- leaflet-ui -->
     <script src="https://unpkg.com/leaflet@1.3.2/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-ui@0.2.0/dist/leaflet-ui.js"></script>
-    <!-- leaflet-elevation -->
-    <link rel="stylesheet" href="https://unpkg.com/@raruto/leaflet-elevation@1.0.2/dist/leaflet-elevation.css"/>
-    <script src="https://unpkg.com/@raruto/leaflet-elevation@1.0.2/dist/leaflet-elevation.js"></script>
-    <style>
-        .elevation-control.elevation .area {
-            fill: SeaGreen;
-        }
-
-        .elevation-control.elevation .background {
-            background-color: white;
-        }
-    </style>
 </head>
 
 <div id="map"></div>
 <script>
-    // Full list options at "leaflet-elevation.js"
-    var elevation_options = {
-        // Default chart colors: theme lime-theme, magenta-theme, ...
-        theme: "custom-theme",
-        // Chart container outside/inside map container
-        detached: true,
-        // if (detached), the elevation chart container
-        elevationDiv: "#elevation-div",
-        // Autoupdate map center on chart mouseover.
-        followMarker: false,
-        // Chart distance/elevation units.
-        imperial: false,
-        // [Lat, Long] vs [Long, Lat] points. (leaflet default: [Lat, Long])
-        reverseCoords: false,
-        // Summary track info style: "line" || "multiline" || false,
-        summary: false,
-    };
-
     // config options of leaflet-ui plugin: https://github.com/Raruto/leaflet-ui
     var map = L.map('map', {
         center: [41.4583, 12.7059],  // needs value to initialize
@@ -55,55 +25,29 @@
         disableDefaultUI: false,
         printControl: false,
     });
-    map.once('idle', function () { /* Waiting for map init */
-    });
 
     {% for line, _ in traces %}
         coordinates = {{ line.coordinates }};
-        numPts = {{ line.coordinates }};
         beg = {{ line.coordinates }}[0];
-        end = {{ line.coordinates }}[numPts.length - 1];
+        end = {{ line.coordinates }}[coordinates.length - 1];
 
         L.marker([beg[1], beg[0]], {icon: greenIcon}).addTo(map);
         L.marker([end[1], end[0]], {icon: redIcon}).addTo(map);
     {% endfor %}
 
-    data = {
-        "name": "demo.geojson",
-        "type": "FeatureCollection",
-        "features": [{
-            "type": "Feature",
-            "geometry": {
-                "type": "LineString",
-                "coordinates": coordinates,
-            }
-        }]
-    };
-
-    // initialize your elevation control variable.
-    var control = L.control.elevation(elevation_options);
-
-    var Style = {
+    let Style = {
         "color": "red",
         "weight": {{ settings.trace_width }},
         "opacity": {{ settings.trace_opacity }}
     };
 
-    control.geojson = L.geoJson(data, {
-        onEachFeature: control.addData.bind(control),
-        style: Style,
-    });
+    // add GoeJson trace to map
+    trace = L.geoJSON({
+        "type": "LineString",
+        "coordinates": coordinates,
+    }, Style).addTo(map)
 
-    {% if has_elevation %}
-        control.loadChart(map); // initialize your #elevation-div container
-    {% endif %}
-
-    // Really rough trick used to detect when your geojson data is fully loaded
-    map.once('layeradd', function (e) {
-        map.fitBounds(control.geojson.getBounds());
-    });
-
-    control.geojson.addTo(map);
+    map.fitBounds(trace.getBounds());
 
     // create lap markers
     var LapMarker = {
@@ -148,13 +92,11 @@
     };
 
     var position = null;
-
-    function render_position(counter) {
+    function render_position(index) {
         if (position != null) {
             position.removeFrom(map);
         }
-        position = L.circleMarker([coordinates[counter][1], coordinates[counter][0]], PositionMarker).addTo(map);
+        position = L.circleMarker([coordinates[index][1], coordinates[index][0]], PositionMarker).addTo(map);
     }
-
 </script>
 <br>

@@ -45,7 +45,7 @@
                         var target = e.originalEvent.fromElement || e.originalEvent.relatedTarget;
                         var parent = this._getParent(target, "leaflet-popup");
                         // check to see if the element is a popup, and if it is this marker's popup
-                        if (parent == this._popup._container)
+                        if (parent === this._popup._container)
                             return true;
                         // show the popup
                         this.openPopup();

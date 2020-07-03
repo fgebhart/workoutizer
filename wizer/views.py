@@ -61,16 +61,10 @@ class MapView(View):
         self.number_of_days = self.settings.number_of_days
         self.days_choices = models.Settings.days_choices
         traces = []
-        has_elevation = False
         for activity in list_of_activities:
             if activity.trace_file:
                 coordinates = json.loads(activity.trace_file.coordinates_list)
-                elevation = json.loads(activity.trace_file.altitude_list)
-                if elevation:
-                    has_elevation = True
-                    coordinates = add_elevation_data_to_coordinates(coordinates, elevation)
                 sport = activity.sport.name
-
                 if coordinates:
                     traces.append(GeoTrace(
                         pk=activity.pk,
@@ -84,7 +78,7 @@ class MapView(View):
                                                            modify_only_list2=True)
             traces = zip(traces, colors)
         return {'traces': traces, 'settings': self.settings, 'days': self.number_of_days,
-                'choices': self.days_choices, 'has_elevation': has_elevation, 'has_traces': has_traces}
+                'choices': self.days_choices, 'has_traces': has_traces}
 
 
 class PlotView:

@@ -82,7 +82,7 @@ def plot_time_series(activity: models.Activity):
                 attribute = attribute.replace("_list", "")
                 if activity.distance:
                     x_axis = np.arange(0, activity.distance, activity.distance / len(values))
-                    p = figure(plot_height=int(settings.PLOT_HEIGHT / 2),
+                    p = figure(plot_height=int(settings.PLOT_HEIGHT / 2.5),
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"],
                                x_range=(0, x_axis[-1]))
                     lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
@@ -92,7 +92,7 @@ def plot_time_series(activity: models.Activity):
                     start = timestamp_to_local_time(timestamps_list[0])
                     x_axis = [timestamp_to_local_time(t) - start for t in timestamps_list]
                     x_axis, values = ensure_lists_have_same_length(x_axis, values)
-                    p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2),
+                    p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2.5),
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
                     lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values,
                                             x_start_value=x_axis[0], use_time=True)
@@ -102,13 +102,16 @@ def plot_time_series(activity: models.Activity):
                 p.toolbar_location = None
                 p.xgrid.grid_line_color = None
                 if attribute == 'cadence':
-                    p.scatter(x_axis, values, radius=0.01, fill_alpha=1, color=plot_matrix[attribute]["color"])
+                    p.scatter(x_axis, values, radius=0.01, fill_alpha=1, color=plot_matrix[attribute]["color"],
+                              legend_label=plot_matrix[attribute]["title"])
                 elif attribute == 'altitude':
                     p.varea(x_axis, values, [min(values) for i in range(len(values))],
                             color=plot_matrix[attribute]["second_color"], fill_alpha=0.5)
-                    p.line(x_axis, values, line_width=2, color=plot_matrix[attribute]["color"])
+                    p.line(x_axis, values, line_width=2, color=plot_matrix[attribute]["color"],
+                           legend_label=plot_matrix[attribute]["title"])
                 else:
-                    p.line(x_axis, values, line_width=2, color=plot_matrix[attribute]["color"])
+                    p.line(x_axis, values, line_width=2, color=plot_matrix[attribute]["color"],
+                           legend_label=plot_matrix[attribute]["title"])
                 hover = HoverTool(
                     tooltips=[(plot_matrix[attribute]['title'], f"@y {plot_matrix[attribute]['axis']}"),
                               x_hover],
@@ -116,8 +119,11 @@ def plot_time_series(activity: models.Activity):
                 p.add_tools(hover)
                 cross = CrosshairTool(dimensions="height")
                 p.add_tools(cross)
-                p.title.text = plot_matrix[attribute]["title"]
+                p.legend.location = "top_left"
+                p.legend.label_text_font = "ubuntu"
+                p.legend.background_fill_alpha = 0.9
                 plots.append(p)
+
     _link_all_plots_with_each_other(all_plots=plots, x_values=list_of_distances)
 
     # TODO
@@ -150,7 +156,7 @@ def plot_time_series(activity: models.Activity):
         """
         callback = CustomJS(args=dict(laps=lap_lines, checkbox=checkbox), code=js)
         checkbox.js_on_change('active', callback)
-        layout = column(checkbox, all_plots)
+        layout = column(all_plots, checkbox)
         layout.sizing_mode = 'stretch_width'
         script, div = components(layout)
     else:
