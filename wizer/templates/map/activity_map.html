@@ -138,5 +138,23 @@
         {% endif %}
     {% endfor %}
 
+    // create position markers
+    var PositionMarker = {
+        radius: 6,
+        fillColor: "white",
+        color: "black",
+        weight: 1.0,
+        fillOpacity: 1.0,
+    };
+
+    var position = null;
+
+    function render_position(counter) {
+        if (position != null) {
+            position.removeFrom(map);
+        }
+        position = L.circleMarker([coordinates[counter][1], coordinates[counter][0]], PositionMarker).addTo(map);
+    }
+
 </script>
 <br>

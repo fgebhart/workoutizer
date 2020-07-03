@@ -1,5 +1,5 @@
-from wizer.file_helper.gpx_parser import calc_distance_of_points
-from wizer.gis.gis import add_elevation_data_to_coordinates
+from wizer.gis.gis import add_elevation_data_to_coordinates, calc_distance_of_points, \
+    turn_coordinates_into_list_of_distances
 
 
 def test_calc_distance_of_points():
@@ -19,3 +19,7 @@ def test_add_elevation_data_to_coordinates():
         elevation=[248, 249, 250],
     ) == [[8, 49, 248], [9, 50, 249], [10, 51, 250]]
 
+
+def test_turn_coordinates_into_list_of_distances():
+    assert turn_coordinates_into_list_of_distances([(99, 16), (98, 16), (97, 16)]) == [0.0, 106.8875, 213.775]
+    assert turn_coordinates_into_list_of_distances([(99, 16), (99, 16)]) == [0.0, 0.0]

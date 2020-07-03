@@ -11,6 +11,7 @@ from bokeh.layouts import column
 
 from django.conf import settings
 from wizer.tools.utils import ensure_lists_have_same_length, timestamp_to_local_time
+from wizer.gis.gis import turn_coordinates_into_list_of_distances
 from wizer import models
 
 log = logging.getLogger(__name__)
@@ -68,8 +69,8 @@ def plot_time_series(activity: models.Activity):
     """
 
     attributes = activity.trace_file.__dict__
+    list_of_distances = turn_coordinates_into_list_of_distances(json.loads(attributes["coordinates_list"]))
     del attributes["coordinates_list"]
-    # del attributes["altitude_list"]
     lap_data = models.Lap.objects.filter(trace=activity.trace_file, trigger='manual')
     plots = []
     lap_lines = []
@@ -117,7 +118,7 @@ def plot_time_series(activity: models.Activity):
                 p.add_tools(cross)
                 p.title.text = plot_matrix[attribute]["title"]
                 plots.append(p)
-    _link_all_plots_with_each_other(all_plots=plots)
+    _link_all_plots_with_each_other(all_plots=plots, x_values=list_of_distances)
 
     # TODO
     # connect all plots and share hovering line
@@ -172,7 +173,7 @@ def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, 
     return lap_lines
 
 
-def _add_vlinked_crosshairs(fig1, fig2):
+def _add_vlinked_crosshairs(fig1, fig2, x_values):
     cross1 = CrosshairTool(dimensions="height")
     cross2 = CrosshairTool(dimensions="height")
     fig1.add_tools(cross1)
@@ -182,21 +183,28 @@ def _add_vlinked_crosshairs(fig1, fig2):
            cb_obj.y >= fig.y_range.start && cb_obj.y <= fig.y_range.end)
         {
             cross.spans.height.computed_location = cb_obj.sx
+            
+            // determine closest point in list of x_values in order to render 
+            // the current position when hovering over time series plots
+            var closest = x_values.reduce(function (prev, curr) {
+                return (Math.abs(curr - cb_obj.x) < Math.abs(prev - cb_obj.x) ? curr : prev);
+            });
+            var index = x_values.indexOf(closest);
+            
+            // call rendering function, defined in activity_map.html
+            render_position(index);
         }
         else
         {
             cross.spans.height.computed_location = null
         }
     '''
-    js_leave = 'cross.spans.height.computed_location = null'
-    args = {'cross': cross2, 'fig': fig1}
+    args = {'cross': cross2, 'fig': fig1, "x_values": x_values}
     fig1.js_on_event('mousemove', CustomJS(args=args, code=js_move))
-    fig1.js_on_event('mouseleave', CustomJS(args=args, code=js_leave))
-    args = {'cross': cross1, 'fig': fig2}
+    args = {'cross': cross1, 'fig': fig2, "x_values": x_values}
     fig2.js_on_event('mousemove', CustomJS(args=args, code=js_move))
-    fig2.js_on_event('mouseleave', CustomJS(args=args, code=js_leave))
 
 
-def _link_all_plots_with_each_other(all_plots: list):
+def _link_all_plots_with_each_other(all_plots: list, x_values: list):
     for combi in combinations(all_plots, 2):
-        _add_vlinked_crosshairs(combi[0], combi[1])
+        _add_vlinked_crosshairs(combi[0], combi[1], x_values=x_values)
