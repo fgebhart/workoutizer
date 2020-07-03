@@ -14,7 +14,9 @@ from wizer.tools.utils import ensure_lists_have_same_length, timestamp_to_local_
 from wizer.gis.gis import turn_coordinates_into_list_of_distances
 from wizer import models
 
+
 log = logging.getLogger(__name__)
+
 
 plot_matrix = {
     "temperature": {
@@ -70,6 +72,7 @@ def plot_time_series(activity: models.Activity):
 
     attributes = activity.trace_file.__dict__
     list_of_distances = turn_coordinates_into_list_of_distances(json.loads(attributes["coordinates_list"]))
+    list_of_distances = _scale_distances(activity.distance, list_of_distances)
     del attributes["coordinates_list"]
     lap_data = models.Lap.objects.filter(trace=activity.trace_file, trigger='manual')
     plots = []
@@ -163,6 +166,12 @@ def plot_time_series(activity: models.Activity):
         script, div = components(all_plots)
 
     return script, div
+
+
+def _scale_distances(activity_distance, list_of_distances):
+    scale = list_of_distances[-1] / activity_distance
+    list_of_distances = list(np.array(list_of_distances) / scale)
+    return list_of_distances
 
 
 def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, use_time: bool = False):
