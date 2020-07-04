@@ -23,7 +23,7 @@
 
   - name: copy udev rule for automated mounting
     become: yes
-    copy:
+    template:
       src: files/device_mount.rules
       dest: /etc/udev/rules.d/device_mount.rules
 

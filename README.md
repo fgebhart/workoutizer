@@ -1,31 +1,56 @@
 # Workoutizer
 
 The Workoutizer is a simple web application for organizing your workouts and sports activities. It is designed to work
-locally on any system running Python. Track your activities to get an overview of your overall training, similar to
-platforms like [strava](https://www.strava.com/) or [garmin connect](https://connect.garmin.com/) - but without
+locally on any UNIX-like system running Python.
+
+Track your activities to get an overview of your overall training, similar to platforms like
+[strava](https://www.strava.com/) or [garmin connect](https://connect.garmin.com/) - but without
 uploading all your sensitive health data to some 3rd party cloud.
+
+#### Features
+* Automatic import of Garmin `.fit` files and `.gpx` files
+* Dashboard overview page of all activities
+* render your activity gps data on different OSM maps
+* show either all activities of one sport or only one activity on the map
+* plots of activity specific data like: heart rate, pace, temperature, cadence and altitude
+* Integrate laps into both plots and maps
+* Connect plots and map via mouse hovering
+* Keyboard navigation
+* Add untracked activities manually via the GUI
+* Create and download `.gpx` files to share your activities
+* Add as many different sports as you want.
+
 
 ## Getting Started
 
-To run the application, just clone the repo, navigate into the root of the repo and run
-
-```bash
-docker-compose up
+Install workoutizer
+```shell script
+pip install workoutizer
 ```
-and then open your browser at [http://0.0.0.0:8001/](http://0.0.0.0:8001/).
 
+Initialize and run workoutizer
+```shell script
+wkz init
+wkz run
+```
+
+Note: This was tested on a Ubuntu-like Linux system only. Please
+[report issues](https://gitlab.com/fgebhart/workoutizer/-/issues) when installing workoutizer.
+
+Workoutizer comes bundled with some initial dummy activity data.
+
+In case you want to run workoutizer on a Raspberry Pi in your local network, follow the 
+[Raspberry Pi setup instructions](https://gitlab.com/fgebhart/workoutizer/-/tree/master/setup).
 
 ## Gallery 
 
-It comes bundled with some initial dummy activity data:
-
  Dashboard             |  Sport Page
 :-------------------------:|:-------------------------:
-![](https://i.imgur.com/gSYgVSJ.png)  |  ![](https://i.imgur.com/6fwcEZX.png)
+![](https://i.imgur.com/FcB5JDl.png)  |  ![](https://i.imgur.com/6fwcEZX.png)
 
  Activity Page 1/2             |  Activity Page 2/2
 :-------------------------:|:-------------------------:
-![](https://i.imgur.com/tzJZh4M.png)  |  ![](https://i.imgur.com/CJ1SKEn.png)
+![](https://i.imgur.com/iuXhiab.png)  |  ![](https://i.imgur.com/7nV4Ks2.png)
 
 ## Thanks
 
@@ -37,3 +62,20 @@ Thanks to the authors of projects I integrated into workoutizer:
 * [Font Awesome Icons](https://fontawesome.com/)
 
 Enjoy!
+
+## Contributing
+
+Contributions are welcome! Feel free to pick an [open issue](https://gitlab.com/fgebhart/workoutizer/-/issues) open up 
+a pull request or file a new issue.
+
+For local development first clone the repo and install the `dev-requirements.txt` like
+```shell script
+pip install -r setup/requirements/dev-requirements.txt
+``` 
+Afterwards I recommend to run the tests:
+```shell script
+pytest wizer/tests
+```
+
+Note: You might need to install [gecko driver](https://github.com/mozilla/geckodriver/releases) for running the
+browser tests. 

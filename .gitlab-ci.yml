@@ -41,4 +41,4 @@ django:
 end2end:
   stage: system test
   script:
-    - python3 -m pytest wizer/tests/end2end -vvs
+    - python3 -m pytest wizer/tests/end2end/end2end.py -vvs

@@ -1,8 +1,8 @@
 import os
-import configparser
 
 import coloredlogs
 
+from workoutizer.logger import get_logging_config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -12,11 +12,6 @@ INITIAL_TRACE_DATA_DIR = os.path.join(BASE_DIR, 'setup', 'initial_trace_data')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
-
-
-# read config values
-config = configparser.ConfigParser()
-config.read(CONFIG_PATH)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'h#ppx^(%ya18qrm+hgzf-vxr^t=r57k_65_hr73f^-n)@qc9as'
@@ -103,35 +98,17 @@ USE_TZ = True
 PLOT_WIDTH = 1110
 PLOT_HEIGHT = 300
 
-format_console = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
-# format_console = "%(name)s - %(message)s"  # optionally add time: "%(asctime)s -"
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'colored': {'()': 'coloredlogs.ColoredFormatter', 'format': format_console, 'datefmt': '%m-%d %H:%M:%S'}
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'colored',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', config.get('DJANGO', "django_log_level")),
-        },
-        'wizer': {
-            'handlers': ['console'],
-            'level': os.getenv('WKZ_LOG_LEVEL', config.get('WORKOUTIZER', 'wkz_log_level')),
-        },
-    },
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
 }
+
+# plotting
+trace_line_width = 3.5
+trace_line_opacity = 0.9
+
+LOGGING = get_logging_config(
+    django_log_level=os.getenv('DJANGO_LOG_LEVEL', "INFO"),
+    wkz_log_level=os.getenv('WKZ_LOG_LEVEL', "INFO"),
+)
