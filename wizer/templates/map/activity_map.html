@@ -84,19 +84,29 @@
 
     // create position markers
     var PositionMarker = {
-        radius: 6,
+        radius: 10,
         fillColor: "white",
         color: "black",
         weight: 1.0,
-        fillOpacity: 1.0,
+        fillOpacity: 1.0
     };
 
-    var position = null;
+    icon = L.divIcon({
+        className: 'custom-div-icon',
+        html: "<i class='fa fa-{{ activity.sport.icon }}' style='color: {{ activity.sport.color }};'>",
+        iconSize: [30, 42],
+        iconAnchor: [7, 6]
+    });
+
+    var icon_marker = null;
+    var circle_marker = null;
     function render_position(index) {
-        if (position != null) {
-            position.removeFrom(map);
+        if (icon_marker != null) {
+            icon_marker.removeFrom(map);
+            circle_marker.removeFrom(map);
         }
-        position = L.circleMarker([coordinates[index][1], coordinates[index][0]], PositionMarker).addTo(map);
+        circle_marker = L.circleMarker([coordinates[index][1], coordinates[index][0]], PositionMarker).addTo(map);
+        icon_marker = L.marker([coordinates[index][1], coordinates[index][0]], {icon: icon}).addTo(map);
     }
 </script>
 <br>
