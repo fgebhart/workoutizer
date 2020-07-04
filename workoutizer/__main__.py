@@ -28,8 +28,7 @@ def cli():
                                                                        "id like: \n"
                                                                        "wkz --setup_rpi vendor_id=091e product_id=4b48",
                         action=ParseDict, nargs=2)
-    parser.add_argument("-m", "--manage", metavar="django manage.py command",
-                        help="pass arguments to django's manage.py", nargs='?')
+    parser.add_argument("-m", "--manage", help="pass arguments to django's manage.py", nargs='+')
 
     args = parser.parse_args()
     os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
@@ -57,7 +56,7 @@ def cli():
     elif args.manage:
         execute_from_command_line(["manage.py"] + args.manage)
     else:
-        log.error(f"wkz: error: unrecognized arguments")
+        log.critical(f"wkz: error: unrecognized arguments")
         parser.print_help()
         return 1
 
@@ -82,7 +81,7 @@ def _check_keys_exist(keys: List[str], arguments: dict):
                 "wkz --setup_rpi vendor_id=091e product_id=4b48"
     for key in keys:
         if key not in arguments.keys():
-            log.error(error_msg.format(key=key))
+            log.critical(error_msg.format(key=key))
             quit()
 
 

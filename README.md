@@ -65,7 +65,7 @@ Enjoy!
 
 ## Contributing
 
-Contributions are welcome! Feel free to pick an [open issue](https://gitlab.com/fgebhart/workoutizer/-/issues) open up 
+Contributions are welcome! Feel free to pick an [open issue](https://gitlab.com/fgebhart/workoutizer/-/issues), open up 
 a pull request or file a new issue.
 
 For local development first clone the repo and install the `dev-requirements.txt` like
