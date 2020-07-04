@@ -7,7 +7,7 @@
 
   tasks:
 
-  - name: install required apt packages
+  - name: install required apt packages needed to mount device
     become: yes
     apt:
       name: "{{ packages }}"
@@ -19,6 +19,20 @@
         - gvfs-bin
         - gvfs-backends
         - ifuse
+    register: installed
+
+  - name: install required apt required in case of using raspbian lite
+    become: yes
+    apt:
+      name: "{{ packages }}"
+      update_cache: yes
+    vars:
+      packages:
+        - libblas-dev
+        - liblapack-dev
+        - python-dev
+        - libatlas-base-dev
+        - libopenjp2-7
     register: installed
 
   - name: copy udev rule for automated mounting
