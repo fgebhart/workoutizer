@@ -1,23 +1,28 @@
-format_console = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
-# format_console = "%(name)s - %(message)s"  # optionally add time: "%(asctime)s -"
+format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+minimal_format = "%(message)s"
 
-logging_dict = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'colored': {'()': 'coloredlogs.ColoredFormatter', 'format': format_console, 'datefmt': '%m-%d %H:%M:%S'}
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'colored',
+
+def _get_formatter_and_handler(use_minimal_format: bool = False):
+    logging_dict = {
+        'version': 1,
+        'disable_existing_loggers': True,
+        'formatters': {
+            'colored': {'()': 'coloredlogs.ColoredFormatter',
+                        'format': minimal_format if use_minimal_format else format, 'datefmt': '%m-%d %H:%M:%S'}
         },
-    },
-    'loggers': {},
-}
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'colored',
+            },
+        },
+        'loggers': {},
+    }
+    return logging_dict
 
 
 def get_logging_config(django_log_level: str, wkz_log_level: str):
+    logging_dict = _get_formatter_and_handler()
     logging_dict['loggers'] = {
         'django': {
             'handlers': ['console'],
@@ -33,6 +38,7 @@ def get_logging_config(django_log_level: str, wkz_log_level: str):
 
 
 def get_logging_for_wkz():
+    logging_dict = _get_formatter_and_handler(use_minimal_format=True)
     logging_dict['loggers'] = {
         'wkz': {
             'handlers': ['console'],
