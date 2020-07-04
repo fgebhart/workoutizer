@@ -217,10 +217,13 @@ def _add_vlinked_crosshairs(fig1, fig2, x_values):
             cross.spans.height.computed_location = null
         }
     '''
+    js_leave = 'cross.spans.height.computed_location = null'
     args = {'cross': cross2, 'fig': fig1, "x_values": x_values}
     fig1.js_on_event('mousemove', CustomJS(args=args, code=js_move))
+    fig1.js_on_event('mouseleave', CustomJS(args=args, code=js_leave))
     args = {'cross': cross1, 'fig': fig2, "x_values": x_values}
     fig2.js_on_event('mousemove', CustomJS(args=args, code=js_move))
+    fig2.js_on_event('mouseleave', CustomJS(args=args, code=js_leave))
 
 
 def _link_all_plots_with_each_other(all_plots: list, x_values: list):
