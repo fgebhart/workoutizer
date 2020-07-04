@@ -13,12 +13,6 @@ stages:
   - system test
   - release
 
-before_script:
-  - date
-  - pip install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
-
 pytest:
   stage: tests
   script:
