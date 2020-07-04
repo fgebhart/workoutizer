@@ -1,7 +1,7 @@
 image: python:3.7
 
 variables:
-    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
 cache:
   paths:
@@ -48,15 +48,13 @@ end2end:
     - python3 -m pytest wizer/tests/end2end/end2end.py -vvs
 
 pypi:
-    image: python:3.7
-    stage: release
-    cache: {}
-    script:
-      - echo "running release process here"
-#        - pip install -U twine
-#        - python setup.py sdist
-#        - twine upload dist/*
-    only:
-      - master
-    only:
-      - tags
+  stage: release
+  cache: {}
+  script:
+    - pip install -U twine
+    - python setup.py sdist
+    - twine upload dist/*
+  only:
+    - master
+  only:
+    - tags
