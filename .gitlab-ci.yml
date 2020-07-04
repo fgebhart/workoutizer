@@ -11,6 +11,7 @@ cache:
 stages:
   - tests
   - system test
+  - release
 
 before_script:
   - date
@@ -42,3 +43,16 @@ end2end:
   stage: system test
   script:
     - python3 -m pytest wizer/tests/end2end/end2end.py -vvs
+
+pypi:
+    image: python:3.7
+    stage: release
+    cache: {}
+    script:
+      - echo "running release process here"
+#        - pip install -U twine
+#        - python setup.py sdist
+#        - twine upload dist/*
+    only:
+        - tags
+        - master
