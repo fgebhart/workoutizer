@@ -18,12 +18,12 @@ before_script:
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate
-  - python3 -m pip install -r setup/requirements/requirements.txt
-  - python3 -m pip install -r setup/requirements/dev-requirements.txt
 
 pytest:
   stage: tests
   script:
+    - python3 -m pip install -r setup/requirements/requirements.txt
+    - python3 -m pip install -r setup/requirements/dev-requirements.txt
     - cd wizer/tests/
     - python3 -m pytest unit_tests -v
     - python3 -m pytest integration_tests -v
@@ -35,6 +35,7 @@ django:
       - db.sqlite3
     expire_in: 1 day
   script:
+    - python3 -m pip install -r setup/requirements/requirements.txt
     - python3 manage.py collectstatic --noinput
     - python3 manage.py check
     - python3 manage.py migrate
@@ -42,6 +43,8 @@ django:
 end2end:
   stage: system test
   script:
+    - python3 -m pip install -r setup/requirements/requirements.txt
+    - python3 -m pip install -r setup/requirements/dev-requirements.txt
     - python3 -m pytest wizer/tests/end2end/end2end.py -vvs
 
 pypi:
@@ -54,5 +57,6 @@ pypi:
 #        - python setup.py sdist
 #        - twine upload dist/*
     only:
-        - tags
-        - master
+      - master
+    only:
+      - tags
