@@ -10,7 +10,7 @@ certifi==2020.6.20        # via requests
 chardet==3.0.4            # via requests
 coloredlogs==14.0         # via -r requirements.in
 django-colorfield==0.3.1  # via -r requirements.in
-django-leaflet==0.27.0    # via -r requirements.in
+django-leaflet==0.26.0    # via -r requirements.in
 django==3.0.8             # via -r requirements.in, django-leaflet, djangorestframework
 djangorestframework==3.11.0  # via -r requirements.in
 fitparse==1.1.0           # via -r requirements.in
