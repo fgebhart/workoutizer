@@ -13,9 +13,10 @@ from workoutizer.logger import get_logging_for_wkz
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SETUP_DIR = os.path.join(BASE_DIR, 'setup')
 
-# configure logger
 logging.config.dictConfig(get_logging_for_wkz())
 log = logging.getLogger("wkz")
+
+example_rpi_cmd = "wkz --setup_rpi vendor_id=091e product_id=4b48 address_plus_port=192.168.0.108:8000"
 
 
 def cli():
@@ -25,9 +26,8 @@ def cli():
     command_group.add_argument('init', help='collects static files and migrates the db schema to a newer version',
                                nargs='?')
     parser.add_argument("-s", "--setup_rpi", metavar="KEY=VALUE", help="Setup raspberry pi. Provide product and vendor"
-                                                                       "id like: \n"
-                                                                       "wkz --setup_rpi vendor_id=091e product_id=4b48",
-                        action=ParseDict, nargs=2)
+                                                                       "id like: \n" + example_rpi_cmd,
+                        action=ParseDict, nargs=3)
     parser.add_argument("-m", "--manage", help="pass arguments to django's manage.py", nargs='+')
 
     args = parser.parse_args()
@@ -38,7 +38,7 @@ def cli():
         execute_from_command_line(["manage.py", "collectstatic"])
         execute_from_command_line(["manage.py", "migrate"])
     elif args.setup_rpi:
-        _check_keys_exist(keys=['product_id', 'vendor_id'], arguments=args.setup_rpi)
+        _check_keys_exist(keys=['product_id', 'vendor_id', 'address_plus_port'], arguments=args.setup_rpi)
         answer = input(f"Are you sure you want to setup your Raspberry Pi?\n\n"
                        f"This will copy the required udev rule and systemd service file\n"
                        f"to your system to enable automated mounting of your device.\n\n"
@@ -50,6 +50,7 @@ def cli():
             _setup_rpi_using_ansible(
                 vendor_id=args.setup_rpi['vendor_id'],
                 product_id=args.setup_rpi['product_id'],
+                address_plus_port=args.setup_rpi['address_plus_port'],
             )
         else:
             log.info(f"Aborted.")
@@ -77,15 +78,14 @@ class ParseDict(argparse.Action):
 
 
 def _check_keys_exist(keys: List[str], arguments: dict):
-    error_msg = "Could not find {key} in given command. Please provide {key} with command like:\n" \
-                "wkz --setup_rpi vendor_id=091e product_id=4b48"
+    error_msg = "Could not find {key} in given command. Please provide {key} with command like:\n" + example_rpi_cmd
     for key in keys:
         if key not in arguments.keys():
             log.critical(error_msg.format(key=key))
             quit()
 
 
-def _setup_rpi_using_ansible(vendor_id: str, product_id: str):
+def _setup_rpi_using_ansible(vendor_id: str, product_id: str, address_plus_port: str):
     from ansible import context
     from ansible.cli import CLI
     from ansible.module_utils.common.collections import ImmutableDict
@@ -106,6 +106,7 @@ def _setup_rpi_using_ansible(vendor_id: str, product_id: str):
     variable_manager._extra_vars = {
         'vendor_id': vendor_id,
         'product_id': product_id,
+        'address_plus_port': address_plus_port,
     }
     pbex = PlaybookExecutor(playbooks=[os.path.join(SETUP_DIR, 'setup_workoutizer.yml')], inventory=inventory,
                             variable_manager=variable_manager,

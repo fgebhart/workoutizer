@@ -43,7 +43,7 @@
 
   - name: copy workoutizer systemd service file to pi
     become: yes
-    copy:
+    template:
       src: files/wkz_mount.service
       dest: /etc/systemd/system/wkz_mount.service
 
