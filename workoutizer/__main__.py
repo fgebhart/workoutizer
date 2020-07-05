@@ -81,11 +81,16 @@ def _build_home():
             else:
                 log.info(f"removed database at {WORKOUTIZER_DB_PATH}")
                 os.remove(WORKOUTIZER_DB_PATH)
+        _make_tracks_dir(TRACKS_DIR)
     else:
         os.mkdir(WORKOUTIZER_DIR)
-        if not os.path.isdir(TRACKS_DIR):
-            os.mkdir(TRACKS_DIR)
-        log.info(f"created workoutizer home folder for storing database and track files at: {WORKOUTIZER_DIR}")
+        _make_tracks_dir(TRACKS_DIR)
+    log.info(f"Workoutizer will store its database and track files at: {WORKOUTIZER_DIR}")
+
+
+def _make_tracks_dir(path):
+    if not os.path.isdir(path):
+        os.mkdir(path)
 
 
 class ParseDict(argparse.Action):
