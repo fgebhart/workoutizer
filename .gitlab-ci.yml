@@ -10,36 +10,23 @@ cache:
 
 stages:
   - tests
-  - system test
   - release
 
 pytest:
   stage: tests
   script:
-    - python3 -m pip install -r setup/requirements/requirements.txt
+    - python3 -m pip install -e .
     - python3 -m pip install -r setup/requirements/dev-requirements.txt
     - cd wizer/tests/
     - python3 -m pytest unit_tests -v
     - python3 -m pytest integration_tests -v
 
-django:
-  stage: tests
-  artifacts:
-    paths:
-      - db.sqlite3
-    expire_in: 1 day
-  script:
-    - python3 -m pip install -r setup/requirements/requirements.txt
-    - python3 manage.py collectstatic --noinput
-    - python3 manage.py check
-    - python3 manage.py migrate
-
 end2end:
-  stage: system test
+  stage: tests
   script:
-    - python3 -m pip install -r setup/requirements/requirements.txt
-    - python3 -m pip install -r setup/requirements/dev-requirements.txt
-    - python3 -m pytest wizer/tests/end2end/end2end.py -vvs
+    - python3 -m pip install -e .
+    - wkz init
+    - python3 wizer/tests/end2end/end2end.py
 
 pypi:
   stage: release

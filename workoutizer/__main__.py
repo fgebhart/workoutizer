@@ -1,5 +1,5 @@
-import logging
 import os
+import logging
 import argparse
 import subprocess
 import sys
@@ -9,6 +9,7 @@ from logging.config import dictConfig
 from django.core.management import execute_from_command_line
 
 from workoutizer.logger import get_logging_for_wkz
+from workoutizer.settings import WORKOUTIZER_DIR, WORKOUTIZER_DB_PATH, TRACKS_DIR
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SETUP_DIR = os.path.join(BASE_DIR, 'setup')
@@ -35,8 +36,10 @@ def cli():
     if args.run == 'run':
         execute_from_command_line(["manage.py", "runserver"])
     elif args.run == 'init':
-        execute_from_command_line(["manage.py", "collectstatic"])
+        _build_home()
+        execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
         execute_from_command_line(["manage.py", "migrate"])
+        execute_from_command_line(["manage.py", "check"])
     elif args.setup_rpi:
         _check_keys_exist(keys=['product_id', 'vendor_id', 'address_plus_port'], arguments=args.setup_rpi)
         answer = input(f"Are you sure you want to setup your Raspberry Pi?\n\n"
@@ -44,9 +47,9 @@ def cli():
                        f"to your system to enable automated mounting of your device.\n\n"
                        f"Start setup? [Y/n] ")
         if answer.lower() == 'y':
-            log.debug(f"installing ansible...")
+            log.info(f"installing ansible...")
             _pip_install('ansible==2.9.10')
-            log.debug(f"starting setup using ansible...")
+            log.info(f"starting setup using ansible...")
             _setup_rpi_using_ansible(
                 vendor_id=args.setup_rpi['vendor_id'],
                 product_id=args.setup_rpi['product_id'],
@@ -62,6 +65,27 @@ def cli():
         return 1
 
     return 0
+
+
+def _build_home():
+    if os.path.isdir(WORKOUTIZER_DIR):
+        if os.path.isfile(WORKOUTIZER_DB_PATH):
+            log.info(f"Found existing workoutizer database at: {WORKOUTIZER_DB_PATH}\n")
+            answer = input(f"Workoutizer could try to use the existing database instead of creating a new one.\n"
+                           f"Note that this could lead to faulty behaviour because of mismatching applied\n"
+                           f"migrations on this database.\n\n"
+                           f"Do you want to use the existing database instead of creating a new one? [Y/n] ")
+            if answer.lower() == 'y':
+                log.info(f"keeping existing database at {WORKOUTIZER_DB_PATH}")
+                return
+            else:
+                log.info(f"removed database at {WORKOUTIZER_DB_PATH}")
+                os.remove(WORKOUTIZER_DB_PATH)
+    else:
+        os.mkdir(WORKOUTIZER_DIR)
+        if not os.path.isdir(TRACKS_DIR):
+            os.mkdir(TRACKS_DIR)
+        log.info(f"created workoutizer home folder for storing database and track files at: {WORKOUTIZER_DIR}")
 
 
 class ParseDict(argparse.Action):

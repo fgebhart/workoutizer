@@ -10,7 +10,7 @@ timeout = 10
 
 
 def _runserver():
-    os.system(f'python3 manage.py runserver {app_url} --noreload')
+    os.system(f'wkz -m runserver {app_url}')
 
 
 def _get_site_status_code(url):
@@ -36,5 +36,11 @@ def test_workoutizer_full():
     for sport in ['hiking', 'swimming', 'cycling', 'jogging', 'unknown']:
         assert _get_site_status_code(f"{http_url}/sport/{sport}") == 200
 
+    print(f"SUCCESS - no errors found.")
+
     # end process
     proc.terminate()
+
+
+if __name__ == '__main__':
+    test_workoutizer_full()

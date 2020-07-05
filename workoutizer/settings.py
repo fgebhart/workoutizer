@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import coloredlogs
 
@@ -6,9 +7,14 @@ from workoutizer.logger import get_logging_config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-TRACKS_DIR = os.path.join(BASE_DIR, 'tracks')
 CONFIG_PATH = os.path.join(BASE_DIR, 'config.ini')
 INITIAL_TRACE_DATA_DIR = os.path.join(BASE_DIR, 'setup', 'initial_trace_data')
+
+USER_HOME = Path.home()
+WORKOUTIZER_DIR = os.path.join(str(USER_HOME), ".wkz")
+SQLITE_FILE = 'db.sqlite3'
+WORKOUTIZER_DB_PATH = os.path.join(WORKOUTIZER_DIR, SQLITE_FILE)
+TRACKS_DIR = os.path.join(WORKOUTIZER_DIR, 'tracks')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
@@ -66,11 +72,10 @@ WSGI_APPLICATION = 'workoutizer.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-sqlite_file = 'db.sqlite3'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, sqlite_file),
+        'NAME': WORKOUTIZER_DB_PATH,
     }
 }
 
