@@ -1,3 +1,4 @@
+import os
 import datetime
 
 import pytest
@@ -41,3 +42,13 @@ def activity(db, sport):
     )
     activity.save()
     return activity
+
+
+@pytest.fixture
+def address_plus_port():
+    return "192.168.0.108:8000"
+
+
+@pytest.fixture
+def wkz_service_path():
+    return os.path.join(os.path.dirname(__file__), "wkz.service")

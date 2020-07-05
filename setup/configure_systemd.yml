@@ -1,0 +1,22 @@
+---
+- name: configure to run workoutizer as systemd service
+  hosts: localhost
+  connection: local
+  vars:
+    - ansible_python_interpreter: "{{ '/usr/bin/python3' }}"
+
+  tasks:
+
+  - name: template workoutizer systemd service file
+    become: yes
+    template:
+      src: files/wkz.service
+      dest: "{{ wkz_service_path }}"
+
+  - name: enable wkz_mount systemd service
+    become: yes
+    systemd:
+      enabled: yes
+      name: wkz.service
+      state: stopped
+...

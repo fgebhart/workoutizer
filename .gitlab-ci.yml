@@ -26,6 +26,7 @@ end2end:
   script:
     - python3 -m pip install -e .
     - wkz init
+    - wkz --run_as_systemd address_plus_port=127.0.0.1:8001
     - python3 wizer/tests/end2end/end2end.py
 
 pypi:

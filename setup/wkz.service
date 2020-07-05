@@ -1,0 +1,11 @@
+[Unit]
+Description=Workoutizer - Workout Organizer
+
+[Service]
+User=pi
+Type=idle
+Environment="WKZ_LOG_LEVEL=DEBUG"
+ExecStart=/home/fabian/make/workoutizer/venv/bin/wkz3.7 -m run 192.168.0.108:8000
+
+[Install]
+WantedBy=multi-user.target

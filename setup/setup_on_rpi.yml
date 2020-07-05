@@ -35,13 +35,13 @@
         - libopenjp2-7
     register: installed
 
-  - name: copy udev rule for automated mounting
+  - name: template udev rule for automated mounting
     become: yes
     template:
       src: files/device_mount.rules
       dest: /etc/udev/rules.d/device_mount.rules
 
-  - name: copy workoutizer systemd service file to pi
+  - name: template workoutizer systemd service file
     become: yes
     template:
       src: files/wkz_mount.service

@@ -4,19 +4,26 @@
 #
 #    pip-compile dev-requirements.in
 #
+ansible==2.9.10           # via -r dev-requirements.in
 attrs==19.3.0             # via pytest
+cffi==1.14.0              # via cryptography
 click==7.1.2              # via pip-tools
+cryptography==2.9.2       # via ansible
 importlib-metadata==1.7.0  # via pluggy, pytest
+jinja2==2.11.2            # via ansible
+markupsafe==1.1.1         # via jinja2
 more-itertools==8.4.0     # via pytest
 packaging==20.4           # via pytest
 pip-tools==5.2.1          # via -r dev-requirements.in
 pluggy==0.13.1            # via pytest
 py==1.9.0                 # via pytest
+pycparser==2.20           # via cffi
 pyparsing==2.4.7          # via packaging
 pytest-django==3.9.0      # via -r dev-requirements.in
 pytest==5.4.3             # via -r dev-requirements.in, pytest-django
+pyyaml==5.3.1             # via ansible
 selenium==3.141.0         # via -r dev-requirements.in
-six==1.15.0               # via packaging, pip-tools
+six==1.15.0               # via cryptography, packaging, pip-tools
 urllib3==1.25.9           # via selenium
 wcwidth==0.2.5            # via pytest
 zipp==3.1.0               # via importlib-metadata

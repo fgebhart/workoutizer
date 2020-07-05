@@ -1,0 +1,11 @@
+[Unit]
+Description=Workoutizer - Workout Organizer
+
+[Service]
+User=pi
+Type=idle
+Environment="WKZ_LOG_LEVEL=DEBUG"
+ExecStart={{ wkz_executable }} -m run {{ address_plus_port }}
+
+[Install]
+WantedBy=multi-user.target

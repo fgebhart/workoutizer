@@ -30,6 +30,8 @@ def cli():
                                                                        "id like: \n" + example_rpi_cmd,
                         action=ParseDict, nargs=3)
     parser.add_argument("-m", "--manage", help="pass arguments to django's manage.py", nargs='+')
+    parser.add_argument("-d", "--run_as_systemd", metavar="address_plus_port=ip:port",
+                        help="configure workoutizer to run as systemd service", action=ParseDict, nargs=1)
 
     args = parser.parse_args()
     os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
@@ -50,21 +52,49 @@ def cli():
             log.info(f"installing ansible...")
             _pip_install('ansible==2.9.10')
             log.info(f"starting setup using ansible...")
-            _setup_rpi_using_ansible(
-                vendor_id=args.setup_rpi['vendor_id'],
-                product_id=args.setup_rpi['product_id'],
-                address_plus_port=args.setup_rpi['address_plus_port'],
+            _run_ansible(
+                playbook='setup_on_rpi.yml',
+                variables={
+                    'vendor_id': args.setup_rpi['vendor_id'],
+                    'product_id': args.setup_rpi['product_id'],
+                    'address_plus_port': args.setup_rpi['address_plus_port'],
+                }
             )
         else:
             log.info(f"Aborted.")
     elif args.manage:
         execute_from_command_line(["manage.py"] + args.manage)
+    elif args.run_as_systemd:
+        _check_keys_exist(keys=['address_plus_port'], arguments=args.run_as_systemd)
+        _configure_to_run_as_systemd_service(
+            address_plus_port=args.run_as_systemd['address_plus_port'],
+            wkz_service_path='/etc/systemd/system/wkz.service',
+        )
     else:
-        log.critical(f"wkz: error: unrecognized arguments")
         parser.print_help()
         return 1
 
     return 0
+
+
+def _configure_to_run_as_systemd_service(address_plus_port: str, wkz_service_path: str):
+    log.info(f"configuring workoutizer to run as system service")
+    env_binaries = sys.executable
+    wkz_executable = env_binaries[:env_binaries.find('python')] + "wkz"
+    result = _run_ansible(
+        playbook='configure_systemd.yml',
+        variables={
+            'address_plus_port': address_plus_port,
+            'wkz_executable': wkz_executable,
+            'wkz_service_path': wkz_service_path,
+        }
+    )
+    if result == 0:
+        log.info(f"Successfully configured workoutizer as systemd service. Run it with:\n"
+                 f"systemctl start wkz.service")
+    else:
+        log.critical(f"Could not configure workoutizer as systemd service, see above errors.")
+    return result
 
 
 def _build_home():
@@ -107,7 +137,7 @@ class ParseDict(argparse.Action):
 
 
 def _check_keys_exist(keys: List[str], arguments: dict):
-    error_msg = "Could not find {key} in given command. Please provide {key} with command like:\n" + example_rpi_cmd
+    error_msg = "Could not find {key} in given command. Please provide {key} with command. See wkz -h for help."
     for key in keys:
         if key not in arguments.keys():
             log.critical(error_msg.format(key=key))
@@ -145,6 +175,31 @@ def _setup_rpi_using_ansible(vendor_id: str, product_id: str, address_plus_port:
 
 def _pip_install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+
+def _run_ansible(playbook: str, variables: dict = None):
+    from ansible import context
+    from ansible.cli import CLI
+    from ansible.module_utils.common.collections import ImmutableDict
+    from ansible.executor.playbook_executor import PlaybookExecutor
+    from ansible.parsing.dataloader import DataLoader
+    from ansible.inventory.manager import InventoryManager
+    from ansible.vars.manager import VariableManager
+
+    loader = DataLoader()
+    context.CLIARGS = ImmutableDict(
+        tags={}, listtags=False, listtasks=False, listhosts=False, syntax=False, connection='ssh', module_path=None,
+        forks=100, remote_user='xxx', private_key_file=None, ssh_common_args=None, ssh_extra_args=None,
+        sftp_extra_args=None, scp_extra_args=None, become=True, become_method='sudo', become_user='root',
+        verbosity=True, check=False, start_at_task=None
+    )
+    inventory = InventoryManager(loader=loader, sources=())
+    variable_manager = VariableManager(loader=loader, inventory=inventory, version_info=CLI.version_info(gitinfo=False))
+    variable_manager._extra_vars = variables
+    pbex = PlaybookExecutor(playbooks=[os.path.join(SETUP_DIR, playbook)], inventory=inventory,
+                            variable_manager=variable_manager,
+                            loader=loader, passwords={})
+    return pbex.run()
 
 
 if __name__ == '__main__':

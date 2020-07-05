@@ -1,5 +1,5 @@
 [Unit]
-Description=Workoutizer - Workout Organizer
+Description=Workoutizer Device Mounting Service
 
 [Service]
 User=pi
