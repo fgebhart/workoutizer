@@ -25,6 +25,7 @@ end2end:
   stage: tests
   script:
     - python3 -m pip install -e .
+    - python3 -m pip install -r setup/requirements/dev-requirements.txt
     - wkz init
     - wkz --run_as_systemd address_plus_port=127.0.0.1:8001
     - python3 wizer/tests/end2end/end2end.py
