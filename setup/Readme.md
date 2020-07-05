@@ -44,12 +44,13 @@ In this example the vendor id is `091e` and the product id is `4b48`. Keep your 
 Now we'll run the `setup_rpi` workoutizer command. This will install and run [ansible](https://www.ansible.com/) to
 configure your Raspberry Pi. It will install some required `apt` packages, insert your device ids to the
 [udev](https://wiki.debian.org/udev) rule file and copy it together with the [systemd](https://wiki.debian.org/systemd)
-unit file to your system. Note, that ansible will issue `sudo` privileges to do so. See the
-`workoutizer/setup/setup_workoutizer.yml` ansible playbook for more details.
+unit file to your system. The ip address and port of your Raspbeery Pi needs to passed to the command as well.
+Note, that ansible will issue `sudo` privileges to do so. See the `workoutizer/setup/setup_on_rpi.yml` ansible playbook
+for more details.
    
 Pass your `vendor_id` and `product_id` as arguments to the command like:
 ```shell script
-wkz --setup_rpi vendor_id=091e product_id=4b48
+wkz --setup_rpi vendor_id=091e product_id=4b48 address_plus_port=192.168.0.108:8000
 ``` 
 
 Afterwards initialize workoutizer as usually:

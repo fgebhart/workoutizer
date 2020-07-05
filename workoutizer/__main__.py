@@ -108,7 +108,7 @@ def _setup_rpi_using_ansible(vendor_id: str, product_id: str, address_plus_port:
         'product_id': product_id,
         'address_plus_port': address_plus_port,
     }
-    pbex = PlaybookExecutor(playbooks=[os.path.join(SETUP_DIR, 'setup_workoutizer.yml')], inventory=inventory,
+    pbex = PlaybookExecutor(playbooks=[os.path.join(SETUP_DIR, 'setup_on_rpi.yml')], inventory=inventory,
                             variable_manager=variable_manager,
                             loader=loader, passwords={})
     pbex.run()
