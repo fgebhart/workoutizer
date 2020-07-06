@@ -36,7 +36,10 @@ def cleanup_files(monkeypatch):
         os.remove(file)
 
 
-def test__setup_rpi(vendor_id, product_id, ip_port, wkz_mount_service_path, udev_rule_path):
+def test__setup_rpi(vendor_id, product_id, ip_port, wkz_mount_service_path, udev_rule_path, udev_rule_dir):
+    # ensure udev folder exists
+    if not os.path.isdir(udev_rule_dir):
+        os.mkdir(udev_rule_dir)
     result = _setup_rpi(
         vendor_id=vendor_id,
         product_id=product_id,
