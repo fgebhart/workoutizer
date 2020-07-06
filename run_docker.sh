@@ -1,5 +1,8 @@
-# to build the required image run:
-#docker build . -t wkz
+
+if ! docker image inspect wkz > /dev/null; then
+  # to build the required image run:
+  docker build . -t wkz
+fi
 
 docker run \
   --name workoutizer \
