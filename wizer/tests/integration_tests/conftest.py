@@ -45,10 +45,30 @@ def activity(db, sport):
 
 
 @pytest.fixture
-def address_plus_port():
+def ip_port():
     return "192.168.0.108:8000"
 
 
 @pytest.fixture
 def wkz_service_path():
     return '/etc/systemd/system/wkz.service'
+
+
+@pytest.fixture
+def wkz_mount_service_path():
+    return '/etc/systemd/system/wkz_mount.service'
+
+
+@pytest.fixture
+def udev_rule_path():
+    return '/etc/udev/rules/device_mount.rules'
+
+
+@pytest.fixture
+def vendor_id():
+    return '091e'
+
+
+@pytest.fixture
+def product_id():
+    return '4b48'

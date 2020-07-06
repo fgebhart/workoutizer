@@ -35,15 +35,3 @@ def get_logging_config(django_log_level: str, wkz_log_level: str):
     }
 
     return logging_dict
-
-
-def get_logging_for_wkz():
-    logging_dict = _get_formatter_and_handler(use_minimal_format=True)
-    logging_dict['loggers'] = {
-        'wkz': {
-            'handlers': ['console'],
-            'level': "DEBUG",
-        }
-    }
-
-    return logging_dict

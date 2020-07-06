@@ -1,86 +1,116 @@
 import os
-import logging
 import argparse
 import subprocess
+import socket
 import sys
 from typing import List
-from logging.config import dictConfig
 
+import click
 from django.core.management import execute_from_command_line
 
-from workoutizer.logger import get_logging_for_wkz
 from workoutizer.settings import WORKOUTIZER_DIR, WORKOUTIZER_DB_PATH, TRACKS_DIR
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SETUP_DIR = os.path.join(BASE_DIR, 'setup')
+os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
 
-logging.config.dictConfig(get_logging_for_wkz())
-log = logging.getLogger("wkz")
-
-example_rpi_cmd = "wkz --setup_rpi vendor_id=091e product_id=4b48 address_plus_port=192.168.0.108:8000"
+example_rpi_cmd = "wkz --setup_rpi vendor_id=091e product_id=4b48"
 
 
+@click.group()
 def cli():
-    parser = argparse.ArgumentParser(description='Workoutizer - Workout Organizer')
-    command_group = parser.add_mutually_exclusive_group()
-    command_group.add_argument('run', help='runs the workoutizer application', nargs='?')
-    command_group.add_argument('init', help='collects static files and migrates the db schema to a newer version',
-                               nargs='?')
-    parser.add_argument("-s", "--setup_rpi", metavar="KEY=VALUE", help="Setup raspberry pi. Provide product and vendor"
-                                                                       "id like: \n" + example_rpi_cmd,
-                        action=ParseDict, nargs=3)
-    parser.add_argument("-m", "--manage", help="pass arguments to django's manage.py", nargs='+')
-    parser.add_argument("-d", "--run_as_systemd", metavar="ip_port=ip:port",
-                        help="configure workoutizer to run as systemd service", action=ParseDict, nargs=1)
+    pass
 
-    args = parser.parse_args()
-    os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
-    if args.run == 'run':
-        execute_from_command_line(["manage.py", "runserver"])
-    elif args.run == 'init':
-        _build_home()
-        execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
-        execute_from_command_line(["manage.py", "migrate"])
-        execute_from_command_line(["manage.py", "check"])
-    elif args.setup_rpi:
-        _check_keys_exist(keys=['product_id', 'vendor_id', 'address_plus_port'], arguments=args.setup_rpi)
-        answer = input(f"Are you sure you want to setup your Raspberry Pi?\n\n"
-                       f"This will copy the required udev rule and systemd service file\n"
-                       f"to your system to enable automated mounting of your device.\n\n"
-                       f"Start setup? [Y/n] ")
-        if answer.lower() == 'y':
-            log.info(f"installing ansible...")
-            _pip_install('ansible==2.9.10')
-            log.info(f"starting setup using ansible...")
-            _run_ansible(
-                playbook='setup_on_rpi.yml',
-                variables={
-                    'vendor_id': args.setup_rpi['vendor_id'],
-                    'product_id': args.setup_rpi['product_id'],
-                    'address_plus_port': args.setup_rpi['address_plus_port'],
-                }
-            )
-        else:
-            log.info(f"Aborted.")
-    elif args.manage:
-        execute_from_command_line(["manage.py"] + args.manage)
-    elif args.run_as_systemd:
-        _check_keys_exist(keys=['ip_port'], arguments=args.run_as_systemd)
-        _configure_to_run_as_systemd_service(
-            address_plus_port=args.run_as_systemd['ip_port'],
+
+@click.command(help='initialize workoutizer')
+def init():
+    _build_home()
+    execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
+    execute_from_command_line(["manage.py", "migrate"])
+    execute_from_command_line(["manage.py", "check"])
+    click.echo(f"database and track files are stored in: {WORKOUTIZER_DIR}")
+
+
+url_help = 'specify ip address and port pair, like: address:port'
+
+
+@click.option('--ip', default="", help=url_help)
+@click.option('--product_id', help="product ip of your device", required=True)
+@click.option('--vendor_id', help="vendor ip of your device", required=True)
+@click.command(help='configure Raspberry Pi to auto mount devices')
+def configure_rpi(ip, vendor_id, product_id):
+    # _check_keys_exist(keys=['product_id', 'vendor_id', 'address_plus_port'], arguments=args.setup_rpi)
+    if not ip:
+        ip = _get_local_ip_address()
+    answer = input(f"Are you sure you want to setup your Raspberry Pi?\n\n"
+                   f"This will copy the required udev rule and systemd service file\n"
+                   f"to your system to enable automated mounting of your device.\n\n"
+                   f"Start setup? [Y/n] ")
+    if answer.lower() == 'y':
+        click.echo(f"installing ansible...")
+        _pip_install('ansible==2.9.10')
+        click.echo(f"starting setup using ansible...")
+        _setup_rpi(
+            vendor_id=vendor_id,
+            product_id=product_id,
+            ip_port=f"{ip}:8000"
         )
     else:
-        parser.print_help()
-        return 1
+        click.echo(f"Aborted.")
 
-    return 0
+
+@click.argument('url', default="")
+@click.command(help='run workoutizer')
+def run(url):
+    if not url:
+        url = f"{_get_local_ip_address()}:8000"
+    execute_from_command_line(["manage.py", "runserver", url])
+
+
+@click.option('--ip', default="", help=url_help)
+@click.command(help='configure workoutizer to run as systemd service')
+def wkz_as_service(ip):
+    if not ip:
+        ip = _get_local_ip_address()
+    _configure_to_run_as_systemd_service(address_plus_port=f"{ip}:8000")
+
+
+@click.argument('cmd', nargs=-1)
+@click.command(help="pass commands to django's manage.py")
+def manage(cmd):
+    execute_from_command_line(["manage.py"] + [*cmd])
+
+
+cli.add_command(init)
+cli.add_command(configure_rpi)
+cli.add_command(run)
+cli.add_command(manage)
+cli.add_command(wkz_as_service)
+
+
+def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
+    if not ip_port:
+        ip_port = f"{_get_local_ip_address()}:8000"
+    result = _run_ansible(
+        playbook='setup_on_rpi.yml',
+        variables={
+            'vendor_id': vendor_id,
+            'product_id': product_id,
+            'address_plus_port': ip_port,
+        }
+    )
+    if result == 0:
+        click.echo(f"Successfully configured to automatically mount your device when plugged in.")
+    else:
+        click.echo(f"ERROR: Could not configure Raspberry Pi, see above errors.")
+    return result
 
 
 def _configure_to_run_as_systemd_service(
         address_plus_port: str,
         wkz_service_path: str = '/etc/systemd/system/wkz.service',
 ):
-    log.info(f"configuring workoutizer to run as system service")
+    click.echo(f"configuring workoutizer to run as system service")
     env_binaries = sys.executable
     wkz_executable = env_binaries[:env_binaries.find('python')] + "wkz"
     result = _run_ansible(
@@ -92,32 +122,39 @@ def _configure_to_run_as_systemd_service(
         }
     )
     if result == 0:
-        log.info(f"Successfully configured workoutizer as systemd service. Run it with:\n"
-                 f"systemctl start wkz.service")
+        click.echo(f"Successfully configured workoutizer as systemd service. Run it with:\n"
+              f"systemctl start wkz.service")
     else:
-        log.critical(f"Could not configure workoutizer as systemd service, see above errors.")
+        click.echo(f"ERROR: Could not configure workoutizer as systemd service, see above errors.")
     return result
+
+
+def _get_local_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    ip_address = s.getsockname()[0]
+    s.close()
+    return ip_address
 
 
 def _build_home():
     if os.path.isdir(WORKOUTIZER_DIR):
         if os.path.isfile(WORKOUTIZER_DB_PATH):
-            log.info(f"Found existing workoutizer database at: {WORKOUTIZER_DB_PATH}\n")
+            click.echo(f"Found existing workoutizer database at: {WORKOUTIZER_DB_PATH}\n")
             answer = input(f"Workoutizer could try to use the existing database instead of creating a new one.\n"
                            f"Note that this could lead to faulty behaviour because of mismatching applied\n"
                            f"migrations on this database.\n\n"
                            f"Do you want to use the existing database instead of creating a new one? [Y/n] ")
             if answer.lower() == 'y':
-                log.info(f"keeping existing database at {WORKOUTIZER_DB_PATH}")
+                click.echo(f"keeping existing database at {WORKOUTIZER_DB_PATH}")
                 return
             else:
-                log.info(f"removed database at {WORKOUTIZER_DB_PATH}")
+                click.echo(f"removed database at {WORKOUTIZER_DB_PATH}")
                 os.remove(WORKOUTIZER_DB_PATH)
         _make_tracks_dir(TRACKS_DIR)
     else:
         os.mkdir(WORKOUTIZER_DIR)
         _make_tracks_dir(TRACKS_DIR)
-    log.info(f"Workoutizer will store its database and track files at: {WORKOUTIZER_DIR}")
 
 
 def _make_tracks_dir(path):
@@ -136,14 +173,6 @@ class ParseDict(argparse.Action):
                 d[key] = value
 
         setattr(namespace, self.dest, d)
-
-
-def _check_keys_exist(keys: List[str], arguments: dict):
-    error_msg = "Could not find {key} in given command. Please provide {key} with command. See wkz -h for help."
-    for key in keys:
-        if key not in arguments.keys():
-            log.critical(error_msg.format(key=key))
-            quit()
 
 
 def _setup_rpi_using_ansible(vendor_id: str, product_id: str, address_plus_port: str):
