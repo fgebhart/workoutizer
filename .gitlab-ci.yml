@@ -17,7 +17,7 @@ pytest:
   script:
     - python3 -m pip install -e .
     - python3 -m pip install -r setup/requirements/dev-requirements.txt
-    - cp setup/files/systemctl.py /usr/bin/systemctl
+    - cp setup/other/systemctl.py /usr/bin/systemctl
     - chmod +x /usr/bin/systemctl
     - cd wizer/tests/
     - python3 -m pytest unit_tests -v
