@@ -65,7 +65,7 @@ def udev_rule_dir():
 
 
 @pytest.fixture
-def udev_rule_path():
+def udev_rule_path(udev_rule_dir):
     return f'{udev_rule_dir}/device_mount.rules'
 
 
