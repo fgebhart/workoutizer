@@ -17,7 +17,7 @@ pytest:
   script:
     - python3 -m pip install -e .
     - python3 -m pip install -r setup/requirements/dev-requirements.txt
-    - wget https://github.com/gdraheim/docker-systemctl-replacement/blob/master/files/docker/systemctl.py
+    - wget https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl.py
     - cp systemctl.py /usr/bin/systemctl
     - chmod +x /usr/bin/systemctl
     - cd wizer/tests/
