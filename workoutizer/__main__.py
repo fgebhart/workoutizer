@@ -30,7 +30,7 @@ def cli():
                                                                        "id like: \n" + example_rpi_cmd,
                         action=ParseDict, nargs=3)
     parser.add_argument("-m", "--manage", help="pass arguments to django's manage.py", nargs='+')
-    parser.add_argument("-d", "--run_as_systemd", metavar="address_plus_port=ip:port",
+    parser.add_argument("-d", "--run_as_systemd", metavar="ip_port=ip:port",
                         help="configure workoutizer to run as systemd service", action=ParseDict, nargs=1)
 
     args = parser.parse_args()
@@ -65,9 +65,9 @@ def cli():
     elif args.manage:
         execute_from_command_line(["manage.py"] + args.manage)
     elif args.run_as_systemd:
-        _check_keys_exist(keys=['address_plus_port'], arguments=args.run_as_systemd)
+        _check_keys_exist(keys=['ip_port'], arguments=args.run_as_systemd)
         _configure_to_run_as_systemd_service(
-            address_plus_port=args.run_as_systemd['address_plus_port'],
+            address_plus_port=args.run_as_systemd['ip_port'],
             wkz_service_path='/etc/systemd/system/wkz.service',
         )
     else:
