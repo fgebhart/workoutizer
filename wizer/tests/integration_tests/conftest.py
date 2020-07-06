@@ -51,4 +51,4 @@ def address_plus_port():
 
 @pytest.fixture
 def wkz_service_path():
-    return os.path.join(os.path.dirname(__file__), "wkz.service")
+    return '/etc/systemd/system/wkz.service'
