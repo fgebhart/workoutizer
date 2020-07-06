@@ -68,7 +68,6 @@ def cli():
         _check_keys_exist(keys=['ip_port'], arguments=args.run_as_systemd)
         _configure_to_run_as_systemd_service(
             address_plus_port=args.run_as_systemd['ip_port'],
-            wkz_service_path='/etc/systemd/system/wkz.service',
         )
     else:
         parser.print_help()
@@ -77,7 +76,10 @@ def cli():
     return 0
 
 
-def _configure_to_run_as_systemd_service(address_plus_port: str, wkz_service_path: str):
+def _configure_to_run_as_systemd_service(
+        address_plus_port: str,
+        wkz_service_path: str = '/etc/systemd/system/wkz.service',
+):
     log.info(f"configuring workoutizer to run as system service")
     env_binaries = sys.executable
     wkz_executable = env_binaries[:env_binaries.find('python')] + "wkz"

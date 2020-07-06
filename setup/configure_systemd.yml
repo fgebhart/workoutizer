@@ -13,7 +13,7 @@
       src: files/wkz.service
       dest: "{{ wkz_service_path }}"
 
-  - name: enable wkz_mount systemd service
+  - name: enable wkz systemd service
     become: yes
     systemd:
       enabled: yes

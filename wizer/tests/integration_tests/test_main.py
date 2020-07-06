@@ -32,7 +32,6 @@ def cleanup_files(monkeypatch):
 def test__configure_to_run_as_systemd_service(address_plus_port, wkz_service_path):
     result = _configure_to_run_as_systemd_service(
         address_plus_port=address_plus_port,
-        wkz_service_path=wkz_service_path,
     )
     assert result == 0
     assert os.path.isfile(wkz_service_path)
