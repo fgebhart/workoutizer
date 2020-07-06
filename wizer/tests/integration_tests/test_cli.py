@@ -6,6 +6,12 @@ import pytest
 from workoutizer.__main__ import _configure_to_run_as_systemd_service, _get_local_ip_address, _setup_rpi
 
 
+def read_file_to_string(path):
+    with open(path, "r") as f:
+        content = f.read()
+    return content
+
+
 def patch_open(open_func, files):
     def open_patched(path, mode='r', buffering=-1, encoding=None,
                      errors=None, newline=None, closefd=True,
@@ -38,18 +44,22 @@ def test__setup_rpi(vendor_id, product_id, ip_port, wkz_mount_service_path, udev
     )
     assert result == 0
     assert os.path.isfile(wkz_mount_service_path)
+    file = read_file_to_string(wkz_mount_service_path)
+    assert ip_port in file
     os.remove(wkz_mount_service_path)
     assert os.path.isfile(udev_rule_path)
+    file = read_file_to_string(udev_rule_path)
+    assert vendor_id in file
+    assert product_id in file
     os.remove(udev_rule_path)
 
 
 def test__configure_to_run_as_systemd_service(ip_port, wkz_service_path):
-    result = _configure_to_run_as_systemd_service(
-        address_plus_port=ip_port,
-        wkz_service_path=wkz_service_path,
-    )
+    result = _configure_to_run_as_systemd_service(address_plus_port=ip_port)
     assert result == 0
     assert os.path.isfile(wkz_service_path)
+    file = read_file_to_string(wkz_service_path)
+    assert ip_port in file
     os.remove(wkz_service_path)
 
 

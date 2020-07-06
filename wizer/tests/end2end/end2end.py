@@ -10,7 +10,7 @@ timeout = 10
 
 
 def _runserver():
-    os.system(f'wkz -m runserver {app_url}')
+    os.system(f'wkz run {app_url}')
 
 
 def _get_site_status_code(url):

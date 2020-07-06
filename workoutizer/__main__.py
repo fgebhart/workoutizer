@@ -55,6 +55,7 @@ def configure_rpi(ip, vendor_id, product_id):
             product_id=product_id,
             ip_port=f"{ip}:8000"
         )
+        _run_ansible(playbook='install_packages.yml')
     else:
         click.echo(f"Aborted.")
 
@@ -67,12 +68,12 @@ def run(url):
     execute_from_command_line(["manage.py", "runserver", url])
 
 
-@click.option('--ip', default="", help=url_help)
+@click.argument('url', default="")
 @click.command(help='configure workoutizer to run as systemd service')
-def wkz_as_service(ip):
-    if not ip:
-        ip = _get_local_ip_address()
-    _configure_to_run_as_systemd_service(address_plus_port=f"{ip}:8000")
+def wkz_as_service(url):
+    if not url:
+        url = f"{_get_local_ip_address()}:8000"
+    _configure_to_run_as_systemd_service(address_plus_port=url)
 
 
 @click.argument('cmd', nargs=-1)
@@ -106,10 +107,7 @@ def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
     return result
 
 
-def _configure_to_run_as_systemd_service(
-        address_plus_port: str,
-        wkz_service_path: str = '/etc/systemd/system/wkz.service',
-):
+def _configure_to_run_as_systemd_service(address_plus_port: str):
     click.echo(f"configuring workoutizer to run as system service")
     env_binaries = sys.executable
     wkz_executable = env_binaries[:env_binaries.find('python')] + "wkz"
@@ -118,12 +116,11 @@ def _configure_to_run_as_systemd_service(
         variables={
             'address_plus_port': address_plus_port,
             'wkz_executable': wkz_executable,
-            'wkz_service_path': wkz_service_path,
         }
     )
     if result == 0:
         click.echo(f"Successfully configured workoutizer as systemd service. Run it with:\n"
-              f"systemctl start wkz.service")
+                   f"systemctl start wkz.service")
     else:
         click.echo(f"ERROR: Could not configure workoutizer as systemd service, see above errors.")
     return result
@@ -227,7 +224,7 @@ def _run_ansible(playbook: str, variables: dict = None):
     inventory = InventoryManager(loader=loader, sources=())
     variable_manager = VariableManager(loader=loader, inventory=inventory, version_info=CLI.version_info(gitinfo=False))
     variable_manager._extra_vars = variables
-    pbex = PlaybookExecutor(playbooks=[os.path.join(SETUP_DIR, playbook)], inventory=inventory,
+    pbex = PlaybookExecutor(playbooks=[os.path.join(SETUP_DIR, 'ansible', playbook)], inventory=inventory,
                             variable_manager=variable_manager,
                             loader=loader, passwords={})
     return pbex.run()

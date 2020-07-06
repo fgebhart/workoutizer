@@ -1,5 +1,5 @@
 ---
-- name: setup workoutizer
+- name: install apt packages required for workoutizer to run on Raspberry Pi
   hosts: localhost
   connection: local
   vars:
@@ -34,23 +34,4 @@
         - libatlas-base-dev
         - libopenjp2-7
     register: installed
-
-  - name: template udev rule for automated mounting
-    become: yes
-    template:
-      src: files/device_mount.rules
-      dest: /etc/udev/rules.d/device_mount.rules
-
-  - name: template workoutizer systemd service file
-    become: yes
-    template:
-      src: files/wkz_mount.service
-      dest: /etc/systemd/system/wkz_mount.service
-
-  - name: enable wkz_mount systemd service
-    become: yes
-    systemd:
-      enabled: yes
-      name: wkz_mount.service
-      state: stopped
 ...

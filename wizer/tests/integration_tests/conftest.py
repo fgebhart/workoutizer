@@ -61,7 +61,7 @@ def wkz_mount_service_path():
 
 @pytest.fixture
 def udev_rule_path():
-    return '/etc/udev/rules/device_mount.rules'
+    return '/etc/udev/rules.d/device_mount.rules'
 
 
 @pytest.fixture

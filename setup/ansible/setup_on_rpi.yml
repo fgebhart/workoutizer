@@ -1,0 +1,28 @@
+---
+- name: setup workoutizer
+  hosts: localhost
+  connection: local
+  vars:
+    - ansible_python_interpreter: "{{ '/usr/bin/python3' }}"
+
+  tasks:
+
+  - name: template udev rule for automated mounting
+    become: yes
+    template:
+      src: ../udev/device_mount.rules
+      dest: /etc/udev/rules.d/device_mount.rules
+
+  - name: template workoutizer systemd service file
+    become: yes
+    template:
+      src: ../systemd/wkz_mount.service
+      dest: /etc/systemd/system/wkz_mount.service
+
+  - name: enable wkz_mount systemd service
+    become: yes
+    systemd:
+      enabled: yes
+      name: wkz_mount.service
+      state: stopped
+...

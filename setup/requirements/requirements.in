@@ -1,5 +1,6 @@
 bokeh
 coloredlogs
+click
 django
 django-colorfield
 django-leaflet
