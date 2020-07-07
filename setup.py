@@ -2,7 +2,7 @@ import os
 import setuptools
 from workoutizer import __version__
 
-with open("README.md", "r") as fh:
+with open("Readme.md", "r") as fh:
     long_description = fh.read()
 
 
