@@ -3,7 +3,6 @@ import argparse
 import subprocess
 import socket
 import sys
-from typing import List
 
 import click
 from django.core.management import execute_from_command_line
@@ -14,7 +13,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SETUP_DIR = os.path.join(BASE_DIR, 'setup')
 os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
 
+
 example_rpi_cmd = "wkz --setup_rpi vendor_id=091e product_id=4b48"
+url_help = 'specify ip address and port pair, like: address:port'
 
 
 @click.group()
@@ -22,7 +23,8 @@ def cli():
     pass
 
 
-@click.command(help='initialize workoutizer')
+@click.command(help='Initialize workoutizer. This fetches the static files, creates the database and applies the'
+                    'required migrations.')
 def init():
     _build_home()
     execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
@@ -31,15 +33,12 @@ def init():
     click.echo(f"database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
-url_help = 'specify ip address and port pair, like: address:port'
-
-
 @click.option('--ip', default="", help=url_help)
 @click.option('--product_id', help="product ip of your device", required=True)
 @click.option('--vendor_id', help="vendor ip of your device", required=True)
-@click.command(help='configure Raspberry Pi to auto mount devices')
-def configure_rpi(ip, vendor_id, product_id):
-    # _check_keys_exist(keys=['product_id', 'vendor_id', 'address_plus_port'], arguments=args.setup_rpi)
+@click.command(help='Configure Raspberry Pi to auto mount devices. Passing vendor and product id is required. Passing'
+                    f'the local ip address and port is optionally. E.g.: {example_rpi_cmd}')
+def setup_rpi(ip, vendor_id, product_id):
     if not ip:
         ip = _get_local_ip_address()
     answer = input(f"Are you sure you want to setup your Raspberry Pi?\n\n"
@@ -61,7 +60,8 @@ def configure_rpi(ip, vendor_id, product_id):
 
 
 @click.argument('url', default="")
-@click.command(help='run workoutizer')
+@click.command(help='Run workoutizer. Passing the local ip address and port is optionally. In case of no ip address'
+                    'being passed, it will be determined automatically.')
 def run(url):
     if not url:
         url = f"{_get_local_ip_address()}:8000"
@@ -69,21 +69,21 @@ def run(url):
 
 
 @click.argument('url', default="")
-@click.command(help='configure workoutizer to run as systemd service')
+@click.command(help='Configure workoutizer to run as systemd service. Passing the local ip address and port is'
+                    'optionally. In case of no ip address being passed, it will be determined automatically.')
 def wkz_as_service(url):
-    if not url:
-        url = f"{_get_local_ip_address()}:8000"
-    _configure_to_run_as_systemd_service(address_plus_port=url)
+    _wkz_as_service(url=url)
 
 
 @click.argument('cmd', nargs=-1)
-@click.command(help="pass commands to django's manage.py")
+@click.command(help="Pass commands to django's manage.py. Convenience function to access all django commands which are"
+                    "not yet covered with the given set of workoutizer commands. Usage, e.g.: 'wkz manage migrate'")
 def manage(cmd):
     execute_from_command_line(["manage.py"] + [*cmd])
 
 
 cli.add_command(init)
-cli.add_command(configure_rpi)
+cli.add_command(setup_rpi)
 cli.add_command(run)
 cli.add_command(manage)
 cli.add_command(wkz_as_service)
@@ -107,20 +107,21 @@ def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
     return result
 
 
-def _configure_to_run_as_systemd_service(address_plus_port: str):
+def _wkz_as_service(url: str):
     click.echo(f"configuring workoutizer to run as system service")
+    if not url:
+        url = f"{_get_local_ip_address()}:8000"
     env_binaries = sys.executable
     wkz_executable = env_binaries[:env_binaries.find('python')] + "wkz"
     result = _run_ansible(
         playbook='configure_systemd.yml',
         variables={
-            'address_plus_port': address_plus_port,
+            'address_plus_port': url,
             'wkz_executable': wkz_executable,
         }
     )
     if result == 0:
-        click.echo(f"Successfully configured workoutizer as systemd service. Run it with:\n"
-                   f"systemctl start wkz.service")
+        click.echo(f"Successfully configured workoutizer as systemd service. Run it with: systemctl start wkz.service")
     else:
         click.echo(f"ERROR: Could not configure workoutizer as systemd service, see above errors.")
     return result

@@ -3,7 +3,7 @@ import io
 import os
 import pytest
 
-from workoutizer.__main__ import _configure_to_run_as_systemd_service, _get_local_ip_address, _setup_rpi
+from workoutizer.__main__ import _wkz_as_service, _get_local_ip_address, _setup_rpi
 
 
 def read_file_to_string(path):
@@ -57,11 +57,21 @@ def test__setup_rpi(vendor_id, product_id, ip_port, wkz_mount_service_path, udev
     os.remove(udev_rule_path)
 
 
-def test__configure_to_run_as_systemd_service(ip_port, wkz_service_path):
-    result = _configure_to_run_as_systemd_service(address_plus_port=ip_port)
+def test__wkz_as_service(ip_port, wkz_service_path):
+    # run with specified url
+    result = _wkz_as_service(url=ip_port)
     assert result == 0
     assert os.path.isfile(wkz_service_path)
     file = read_file_to_string(wkz_service_path)
+    assert ip_port in file
+    os.remove(wkz_service_path)
+
+    # run with specified url
+    result = _wkz_as_service(url="")
+    assert result == 0
+    assert os.path.isfile(wkz_service_path)
+    file = read_file_to_string(wkz_service_path)
+    ip_port = f"{_get_local_ip_address()}:8000"
     assert ip_port in file
     os.remove(wkz_service_path)
 
