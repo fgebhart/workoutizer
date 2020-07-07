@@ -74,10 +74,16 @@ For local development first clone the repo and install the `dev-requirements.txt
 ```shell script
 pip install -r setup/requirements/dev-requirements.txt
 ``` 
-Afterwards I recommend to run the tests:
+Afterwards I recommend to run the development docker container:
 ```shell script
-pytest wizer/tests
+./run_docker.sh
 ```
+This will build the image, run the container and initialize workoutizer. Once up and running, run the tests
+```shell script
+pytest wizer/tests/unit_tests
+pytest wizer/tests/integration_tests
+```
+Once this was successful you are good to go.
 
-Note: You might need to install [gecko driver](https://github.com/mozilla/geckodriver/releases) for running the
-browser tests. 
+Note: The `browser_tests` cannot (yet) be ran from within the docker container, but it is possible to run them form your
+host system. You might need to install [gecko driver](https://github.com/mozilla/geckodriver/releases) though.
