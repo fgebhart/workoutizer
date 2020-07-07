@@ -72,6 +72,7 @@ def run(url):
 @click.command(help='Configure workoutizer to run as systemd service. Passing the local ip address and port is '
                     'optionally. In case of no ip address being passed, it will be determined automatically.')
 def wkz_as_service(url):
+    _pip_install('ansible==2.9.10')
     _wkz_as_service(url=url)
 
 
@@ -111,7 +112,7 @@ def _upgrade():
         execute_from_command_line(["manage.py", "migrate"])
         execute_from_command_line(["manage.py", "check"])
         from workoutizer import __version__ as new_version
-        click.echo(f"Successfully upgrade from {current_version} to {new_version}")
+        click.echo(f"Successfully upgraded from {current_version} to {new_version}")
     else:
         click.echo(f"No update available. You are running the latest version: {current_version}")
 
