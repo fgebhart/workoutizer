@@ -117,13 +117,14 @@ def _upgrade():
 
 
 def _get_latest_version_of(package: str):
-    output = str(subprocess.check_output([sys.executable, "-m", "pip", "search", package]))
-    installed_version = output[output.find('INSTALLED'):].split('\\n')[0].split(' ')[-1]
-    if 'latest' in installed_version:
-        return False
-    else:
+    outdated = str(
+        subprocess.check_output([sys.executable, "-m", "pip", "list", '--outdated', '--disable-pip-version-check']))
+    if package in outdated:
+        output = str(subprocess.check_output([sys.executable, "-m", "pip", "search", package]))
         latest_version = output[output.find('LATEST'):].split('\\n')[0].split(' ')[-1]
         return latest_version
+    else:
+        return False
 
 
 def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
