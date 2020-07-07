@@ -1,6 +1,7 @@
+import os
 import datetime
 
-from wizer.file_helper.gpx_exporter import _build_gpx, _fill_list_of_timestamps
+from wizer.file_helper.gpx_exporter import _build_gpx, _fill_list_of_timestamps, save_activity_to_gpx_file
 
 
 def test__build_gpx(trace_coordinates, gpx_string):
@@ -43,3 +44,9 @@ def test__fill_list_of_timestamps():
         duration=datetime.timedelta(minutes=30),
         length=length,
     ) == ['2019-07-12T12:00:00Z', '2019-07-12T12:10:00Z', '2019-07-12T12:20:00Z']
+
+
+def test_save_activity_to_gpx_file(activity):
+    path = save_activity_to_gpx_file(activity)
+    assert os.path.isfile(path)
+    assert path.split('/')[-1] == '2020-07-07_running.gpx'

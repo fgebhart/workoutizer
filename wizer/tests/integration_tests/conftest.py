@@ -1,4 +1,3 @@
-import os
 import datetime
 
 import pytest
@@ -6,7 +5,7 @@ import pytz
 from django.utils import timezone
 from django.conf import settings as django_settings
 
-from wizer.models import Settings, Sport, Activity
+from wizer.models import Settings, Sport, Activity, Traces
 
 
 @pytest.fixture
@@ -31,7 +30,20 @@ def sport(db):
 
 
 @pytest.fixture
-def activity(db, sport):
+def trace_file(db):
+    trace = Traces(
+        path_to_file='some/path/to/file.gpx',
+        file_name='file.gpx',
+        md5sum='4c1185c55476269b442f424a9d80d964',
+        coordinates_list='[[8.47357001155615, 49.47972273454071], [8.47357001155615, 49.47972273454071]]',
+        calories=123,
+    )
+    trace.save()
+    return trace
+
+
+@pytest.fixture
+def activity(db, sport, trace_file):
     activity = Activity(
         name='Running',
         sport=sport,
@@ -39,6 +51,7 @@ def activity(db, sport):
         duration=datetime.timedelta(minutes=30),
         distance=5.2,
         description="some super sport",
+        trace_file=trace_file,
     )
     activity.save()
     return activity
