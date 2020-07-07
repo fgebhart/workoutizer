@@ -49,7 +49,7 @@ privileges to do so. See the `workoutizer/setup/ansible/setup_on_rpi.yml` ansibl
    
 Pass your `vendor_id` and `product_id` as arguments to the command like:
 ```shell script
-wkz setup-rpi --vendor_id 091e --product_id4b48
+wkz setup-rpi --vendor_id 091e --product_id 4b48
 ``` 
 
 Afterwards initialize workoutizer:
