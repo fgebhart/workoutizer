@@ -23,8 +23,8 @@ def cli():
     pass
 
 
-@click.command(help='Initialize workoutizer. This fetches the static files, creates the database and applies the'
-                    'required migrations.')
+@click.command(help='Mandatory command to initialize workoutizer. This fetches the static files, creates the database '
+                    'and applies the required migrations.')
 def init():
     _build_home()
     execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
@@ -36,7 +36,7 @@ def init():
 @click.option('--ip', default="", help=url_help)
 @click.option('--product_id', help="product ip of your device", required=True)
 @click.option('--vendor_id', help="vendor ip of your device", required=True)
-@click.command(help='Configure Raspberry Pi to auto mount devices. Passing vendor and product id is required. Passing'
+@click.command(help='Configure Raspberry Pi to auto mount devices. Passing vendor and product id is required. Passing '
                     f'the local ip address and port is optionally. E.g.: {example_rpi_cmd}')
 def setup_rpi(ip, vendor_id, product_id):
     if not ip:
@@ -60,8 +60,8 @@ def setup_rpi(ip, vendor_id, product_id):
 
 
 @click.argument('url', default="")
-@click.command(help='Run workoutizer. Passing the local ip address and port is optionally. In case of no ip address'
-                    'being passed, it will be determined automatically.')
+@click.command(help="Run workoutizer. Passing the local ip address and port is optionally. In case of no ip address "
+                    "being passed, it will be determined automatically. Usage, e.g.: 'wkz run 0.0.0.0:8000'.")
 def run(url):
     if not url:
         url = f"{_get_local_ip_address()}:8000"
@@ -69,15 +69,15 @@ def run(url):
 
 
 @click.argument('url', default="")
-@click.command(help='Configure workoutizer to run as systemd service. Passing the local ip address and port is'
+@click.command(help='Configure workoutizer to run as systemd service. Passing the local ip address and port is '
                     'optionally. In case of no ip address being passed, it will be determined automatically.')
 def wkz_as_service(url):
     _wkz_as_service(url=url)
 
 
 @click.argument('cmd', nargs=-1)
-@click.command(help="Pass commands to django's manage.py. Convenience function to access all django commands which are"
-                    "not yet covered with the given set of workoutizer commands. Usage, e.g.: 'wkz manage migrate'")
+@click.command(help="Pass commands to django's manage.py. Convenience function to access all django commands which are "
+                    "not yet covered with the given set of workoutizer commands. Usage, e.g.: 'wkz manage migrate'.")
 def manage(cmd):
     execute_from_command_line(["manage.py"] + [*cmd])
 
