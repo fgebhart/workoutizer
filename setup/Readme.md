@@ -41,31 +41,29 @@ In this example the vendor id is `091e` and the product id is `4b48`. Keep your 
 
 ### Setup Workoutizer
 
-Now we'll run the `setup_rpi` workoutizer command. This will install and run [ansible](https://www.ansible.com/) to
+Now we'll run the `setup-rpi` workoutizer command. This will install and run [ansible](https://www.ansible.com/) to
 configure your Raspberry Pi. It will install some required `apt` packages, insert your device ids to the
 [udev](https://wiki.debian.org/udev) rule file and copy it together with the [systemd](https://wiki.debian.org/systemd)
-unit file to your system. The ip address and port of your Raspbeery Pi needs to passed to the command as well.
-Note, that ansible will issue `sudo` privileges to do so. See the `workoutizer/setup/setup_on_rpi.yml` ansible playbook
-for more details.
+(both are needed for the automated mounting of Garmin devices) file to your system. Note, that ansible will issue `sudo`
+privileges to do so. See the `workoutizer/setup/ansible/setup_on_rpi.yml` ansible playbook for more details.
    
 Pass your `vendor_id` and `product_id` as arguments to the command like:
 ```shell script
-wkz --setup_rpi vendor_id=091e product_id=4b48 address_plus_port=192.168.0.108:8000
+wkz setup-rpi --vendor_id 091e --product_id4b48
 ``` 
 
-Afterwards initialize workoutizer as usually:
+Afterwards initialize workoutizer:
 ```shell script
 wkz init
 ```
-and run workoutizer by passing the ip address and port to the django `manage.py` script, e.g.:
+and run workoutizer as usual:
 ```shell script
-wkz -m runserver 192.168.0.108:8000
+wkz run
 ```
 
-### Explanation
+### Background
 
 Whenever you connect your Garmin device to your Raspberry Pi, workoutizer will automatically mount the device using
 `udev`. Since it is mounted as a [gvfs](https://en.wikipedia.org/wiki/GVfs) device, the file system of your device will
 be mounted at `/run/user/1000/gvfs/...`. This is the default location for Raspbian and workoutizer will look for your
 device in this location as default.   
-

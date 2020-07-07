@@ -34,10 +34,12 @@ wkz init
 wkz run
 ```
 
-Note: This was tested on a Ubuntu-like Linux system only. Please
-[report issues](https://gitlab.com/fgebhart/workoutizer/-/issues) when installing workoutizer.
+See the help description of the CLI with `wkz --help` and even subcommands, e.g.: `wkz manage --help`. 
 
-Workoutizer comes bundled with some initial dummy activity data.
+Note: This should work for any Linux and Mac system. Please
+[report any occuring issues](https://gitlab.com/fgebhart/workoutizer/-/issues) when installing workoutizer.
+
+Workoutizer comes bundled with some initial toy activity data, which can be deleted easily on the Settings page.
 
 In case you want to run workoutizer on a Raspberry Pi in your local network, follow the 
 [Raspberry Pi setup instructions](https://gitlab.com/fgebhart/workoutizer/-/tree/master/setup).

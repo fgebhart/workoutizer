@@ -114,7 +114,7 @@ def _wkz_as_service(url: str):
     env_binaries = sys.executable
     wkz_executable = env_binaries[:env_binaries.find('python')] + "wkz"
     result = _run_ansible(
-        playbook='configure_systemd.yml',
+        playbook='wkz_as_service.yml',
         variables={
             'address_plus_port': url,
             'wkz_executable': wkz_executable,
