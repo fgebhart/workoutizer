@@ -3,7 +3,6 @@ import argparse
 import subprocess
 import socket
 import sys
-from packaging import version as package_version
 
 import click
 from django.core.management import execute_from_command_line
@@ -219,6 +218,8 @@ def _pip_install(package, upgrade: bool = False):
 
 
 def _run_ansible(playbook: str, variables: dict = None):
+    if variables is None:
+        variables = {}
     from ansible import context
     from ansible.cli import CLI
     from ansible.module_utils.common.collections import ImmutableDict
