@@ -8,11 +8,11 @@ import click
 from django.core.management import execute_from_command_line
 
 from workoutizer.settings import WORKOUTIZER_DIR, WORKOUTIZER_DB_PATH, TRACKS_DIR
+from workoutizer import __version__
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SETUP_DIR = os.path.join(BASE_DIR, 'setup')
 os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
-
 
 example_rpi_cmd = "wkz --setup_rpi vendor_id=091e product_id=4b48"
 url_help = 'specify ip address and port pair, like: address:port'
@@ -82,6 +82,12 @@ def manage(cmd):
     execute_from_command_line(["manage.py"] + [*cmd])
 
 
+@click.command(help='Show the version of currently installed workoutizer.')
+def version():
+    click.echo(__version__)
+
+
+cli.add_command(version)
 cli.add_command(init)
 cli.add_command(setup_rpi)
 cli.add_command(run)
