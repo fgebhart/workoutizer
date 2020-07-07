@@ -3,6 +3,7 @@ import argparse
 import subprocess
 import socket
 import sys
+from packaging import version as package_version
 
 import click
 from django.core.management import execute_from_command_line
@@ -89,13 +90,7 @@ def version():
 
 @click.command(help='Check for a newer version and install if there is any.')
 def upgrade():
-    from workoutizer import __version__ as previous_version
-    _pip_install('workoutizer', upgrade=True)
-    execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
-    execute_from_command_line(["manage.py", "migrate"])
-    execute_from_command_line(["manage.py", "check"])
-    from workoutizer import __version__ as new_version
-    click.echo(f"Successfully upgrade from {previous_version} to {new_version}")
+    _upgrade()
 
 
 cli.add_command(upgrade)
@@ -105,6 +100,31 @@ cli.add_command(setup_rpi)
 cli.add_command(run)
 cli.add_command(manage)
 cli.add_command(wkz_as_service)
+
+
+def _upgrade():
+    latest_version = _get_latest_version_of("workoutizer")
+    from workoutizer import __version__ as current_version
+    if latest_version:
+        click.echo(f"found newer version: {latest_version}, you have {current_version} installed")
+        _pip_install('workoutizer', upgrade=True)
+        execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
+        execute_from_command_line(["manage.py", "migrate"])
+        execute_from_command_line(["manage.py", "check"])
+        from workoutizer import __version__ as new_version
+        click.echo(f"Successfully upgrade from {current_version} to {new_version}")
+    else:
+        click.echo(f"No update available. You are running the latest version: {current_version}")
+
+
+def _get_latest_version_of(package: str):
+    output = str(subprocess.check_output([sys.executable, "-m", "pip", "search", package]))
+    installed_version = output[output.find('INSTALLED'):].split('\\n')[0].split(' ')[-1]
+    if 'latest' in installed_version:
+        return False
+    else:
+        latest_version = output[output.find('LATEST'):].split('\\n')[0].split(' ')[-1]
+        return latest_version
 
 
 def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
