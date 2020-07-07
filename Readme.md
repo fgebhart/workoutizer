@@ -65,6 +65,10 @@ Thanks to the authors of projects I integrated into workoutizer:
 
 Enjoy!
 
+## Changelog
+
+See the [tags section](https://gitlab.com/fgebhart/workoutizer/-/tags).
+
 ## Contributing
 
 Contributions are welcome! Feel free to pick an [open issue](https://gitlab.com/fgebhart/workoutizer/-/issues), open up 
