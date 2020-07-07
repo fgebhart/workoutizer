@@ -10,15 +10,16 @@ uploading all your sensitive health data to some 3rd party cloud.
 #### Features
 * Automatic import of Garmin `.fit` files and `.gpx` files
 * Dashboard overview page of all activities
-* render your activity gps data on different OSM maps
-* show either all activities of one sport or only one activity on the map
-* plots of activity specific data like: heart rate, pace, temperature, cadence and altitude
+* Render your activity gps data on different OSM maps
+* Show either all activities of one sport or only one activity on the map
+* Plots of activity specific data like: heart rate, pace, temperature, cadence and altitude
 * Integrate laps into both plots and maps
 * Connect plots and map via mouse hovering
-* Keyboard navigation
+* Keyboard navigation in browser
 * Add untracked activities manually via the GUI
 * Create and download `.gpx` files to share your activities
 * Add as many different sports as you want.
+* Convenience CLI for installing, configuring, updating, ...
 
 
 ## Getting Started
