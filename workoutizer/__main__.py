@@ -43,7 +43,8 @@ def setup_rpi(ip, vendor_id, product_id):
         ip = _get_local_ip_address()
     answer = input(f"Are you sure you want to setup your Raspberry Pi?\n\n"
                    f"This will copy the required udev rule and systemd service file\n"
-                   f"to your system to enable automated mounting of your device.\n\n"
+                   f"to your system to enable automated mounting of your device.\n"
+                   f"This might take a while...\n\n"
                    f"Start setup? [Y/n] ")
     if answer.lower() == 'y':
         click.echo(f"installing ansible...")
@@ -55,6 +56,8 @@ def setup_rpi(ip, vendor_id, product_id):
             ip_port=f"{ip}:8000"
         )
         _run_ansible(playbook='install_packages.yml')
+        click.echo(f"Successfully configured to automatically mount your device when plugged in. Note: These changes "
+                   f"require a system restart to take effect.")
     else:
         click.echo(f"Aborted.")
 
@@ -140,9 +143,10 @@ def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
         }
     )
     if result == 0:
-        click.echo(f"Successfully configured to automatically mount your device when plugged in.")
+        pass
     else:
         click.echo(f"ERROR: Could not configure Raspberry Pi, see above errors.")
+        quit()
     return result
 
 
