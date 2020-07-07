@@ -87,6 +87,18 @@ def version():
     click.echo(__version__)
 
 
+@click.command(help='Check for a newer version and install if there is any.')
+def upgrade():
+    from workoutizer import __version__ as previous_version
+    _pip_install('workoutizer', upgrade=True)
+    execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
+    execute_from_command_line(["manage.py", "migrate"])
+    execute_from_command_line(["manage.py", "check"])
+    from workoutizer import __version__ as new_version
+    click.echo(f"Successfully upgrade from {previous_version} to {new_version}")
+
+
+cli.add_command(upgrade)
 cli.add_command(version)
 cli.add_command(init)
 cli.add_command(setup_rpi)
@@ -179,8 +191,11 @@ class ParseDict(argparse.Action):
         setattr(namespace, self.dest, d)
 
 
-def _pip_install(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+def _pip_install(package, upgrade: bool = False):
+    if upgrade:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package, '--upgrade'])
+    else:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
 
 def _run_ansible(playbook: str, variables: dict = None):
