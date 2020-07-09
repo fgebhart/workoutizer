@@ -144,11 +144,11 @@ def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=Fals
         laps=parser.laps,
         trace_instance=trace_file_instance,
     )
-    _save_activity_to_model(
+    activity = _save_activity_to_model(
         activities_model=models.Activity, parser=parser,
         sport_instance=sport_instance, trace_instance=trace_file_instance,
         importing_demo_data=importing_demo_data)
-    log.info(f"created new {sport_instance} activity: {parser.file_name}")
+    log.info(f"created new {sport_instance} activity: {parser.file_name}. Id: {activity.pk}")
     return trace_file_instance
 
 
@@ -182,6 +182,7 @@ def _save_activity_to_model(activities_model, parser, sport_instance, trace_inst
         is_demo_activity=importing_demo_data,
     )
     activity_object.save()
+    return activity_object
 
 
 def save_trace_to_model(traces_model, md5sum, parser, trace_file):

@@ -77,13 +77,18 @@ class Traces(models.Model):
         super(Traces, self).save()
 
 
+def default_sport():
+    sport = Sport.objects.get_or_create(name='unknown', color='gray', icon='question-circle')[0]
+    return sport
+
+
 class Activity(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.sport})"
 
     name = models.CharField(max_length=200, verbose_name="Activity Name:", default="unknown")
-    sport = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True, verbose_name="Sport:")
+    sport = models.ForeignKey(Sport, on_delete=models.SET_DEFAULT, default=default_sport, verbose_name="Sport:")
     date = models.DateTimeField(blank=False, default=timezone.now, verbose_name="Date:")
     duration = models.DurationField(verbose_name="Duration:", default=datetime.timedelta(minutes=30))
     distance = models.FloatField(blank=True, null=True, verbose_name="Distance:", default=0)
