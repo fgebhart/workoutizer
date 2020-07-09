@@ -47,7 +47,7 @@ def activity(db, sport, trace_file):
     activity = Activity(
         name='Running',
         sport=sport,
-        date=timezone.now().replace(tzinfo=pytz.timezone(django_settings.TIME_ZONE)),
+        date=datetime.datetime(2020, 7, 7),
         duration=datetime.timedelta(minutes=30),
         distance=5.2,
         description="some super sport",
