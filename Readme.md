@@ -85,8 +85,7 @@ Afterwards I recommend to run the development docker container:
 ```
 This will build the image, run the container and initialize workoutizer. Once up and running, run the tests
 ```shell script
-pytest wizer/tests/unit_tests
-pytest wizer/tests/integration_tests
+pytest wizer/tests/
 ```
 Once this was successful you are good to go.
 

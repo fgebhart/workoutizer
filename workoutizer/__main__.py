@@ -79,11 +79,12 @@ def wkz_as_service(url):
     _wkz_as_service(url=url)
 
 
-@click.argument('cmd', nargs=-1)
+@click.argument('cmd', nargs=1)
 @click.command(help="Pass commands to django's manage.py. Convenience function to access all django commands which are "
-                    "not yet covered with the given set of workoutizer commands. Usage, e.g.: 'wkz manage migrate'.")
+                    "not yet covered with the given set of workoutizer commands. Usage, e.g.: "
+                    "wkz manage 'runserver 0.0.0.0:8000 --noreload'.")
 def manage(cmd):
-    execute_from_command_line(["manage.py"] + [*cmd])
+    execute_from_command_line(["manage.py"] + cmd.split(' '))
 
 
 @click.command(help='Show the version of currently installed workoutizer.')

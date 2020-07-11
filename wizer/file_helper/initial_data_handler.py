@@ -10,10 +10,10 @@ from wizer.tools.utils import timestamp_format
 log = logging.getLogger(__name__)
 
 sport_data = {
-    'name': ['Hiking', 'Swimming', 'Cycling', 'Jogging', 'unknown'],
-    'color': ['ForestGreen', 'Navy', 'Gold', 'DarkOrange', 'gray'],
-    'icon': ['hiking', 'swimmer', 'bicycle', 'running', 'question-circle'],
-    'slug': ['hiking', 'swimming', 'cycling', 'jogging', 'unknown'],
+    'name': ['Hiking', 'Swimming', 'Cycling', 'Jogging'],
+    'color': ['ForestGreen', 'Navy', 'Gold', 'DarkOrange'],
+    'icon': ['hiking', 'swimmer', 'bicycle', 'running'],
+    'slug': ['hiking', 'swimming', 'cycling', 'jogging'],
 }
 
 

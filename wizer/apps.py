@@ -31,14 +31,26 @@ sport_naming_map = {
 formats = [".gpx", ".fit"]
 
 
+def _was_runserver_triggered(args: list):
+    triggered = False
+    for arg in args:
+        if arg == 'run' or arg == 'runserver':
+            triggered = True
+        if 'runserver' in arg and 'help' not in arg:
+            triggered = True
+        if arg == 'help':
+            triggered = False
+
+    return triggered
+
+
 class WizerFileDaemon(AppConfig):
     name = 'wizer'
     verbose_name = 'Workoutizer'
 
     def ready(self):
-        if ('runserver' in sys.argv or 'run' in sys.argv) and "help" not in sys.argv and os.environ.get('RUN_MAIN',
-                                                                                                        None) != 'true':
-            # ensure to only run with 'manage.py runserver' and not in auto reload thread
+        # ensure to only run with 'manage.py runserver' and not in auto reload thread
+        if _was_runserver_triggered(sys.argv) and os.environ.get('RUN_MAIN', None) != 'true':
             from wizer import models
 
             importing_demo_data = False

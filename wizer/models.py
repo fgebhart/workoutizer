@@ -78,8 +78,11 @@ class Traces(models.Model):
 
 
 def default_sport():
-    sport = Sport.objects.get_or_create(name='unknown', color='gray', icon='question-circle')[0]
-    return sport
+    sport = Sport.objects.filter(slug='unknown').first()
+    if not sport:
+        sport = Sport(name='unknown', color='gray', icon='question-circle', slug='unknown')
+        sport.save()
+    return sport.pk
 
 
 class Activity(models.Model):

@@ -29,7 +29,7 @@ end2end:
     - python3 -m pip install -e .
     - python3 -m pip install -r setup/requirements/dev-requirements.txt
     - wkz init
-    - python3 wizer/tests/end2end/end2end.py
+    - python3 wizer/tests/end2end/
 
 pypi:
   stage: release
