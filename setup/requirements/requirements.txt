@@ -5,7 +5,7 @@
 #    pip-compile setup/requirements/requirements.in
 #
 asgiref==3.2.10           # via django
-bokeh==2.1.1              # via -r setup/requirements/requirements.in
+bokeh==1.4.0              # via -r setup/requirements/requirements.in
 certifi==2020.6.20        # via requests
 chardet==3.0.4            # via requests
 click==7.1.2              # via -r setup/requirements/requirements.in
@@ -31,8 +31,7 @@ python-dateutil==2.8.1    # via bokeh, pandas
 pytz==2020.1              # via django, pandas
 pyyaml==5.3.1             # via bokeh
 requests==2.24.0          # via -r setup/requirements/requirements.in
-six==1.15.0               # via packaging, python-dateutil
+six==1.15.0               # via bokeh, packaging, python-dateutil
 sqlparse==0.3.1           # via django
 tornado==6.0.4            # via bokeh
-typing-extensions==3.7.4.2  # via bokeh
 urllib3==1.25.9           # via requests
