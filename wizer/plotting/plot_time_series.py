@@ -72,10 +72,11 @@ def plot_time_series(activity: models.Activity):
 
     attributes = activity.trace_file.__dict__
     coordinates = json.loads(attributes["coordinates_list"])
-    list_of_distances = []
+    initial_list_of_distances = []
     if coordinates:
-        list_of_distances = convert_list_to_km(json.loads(attributes['distance_list']))
-        list_of_distances = extend_list_to_have_length(length=len(coordinates), input_list=list_of_distances)
+        initial_list_of_distances = convert_list_to_km(json.loads(attributes['distance_list']))
+        list_of_distances = extend_list_to_have_length(length=len(coordinates), input_list=initial_list_of_distances)
+
     lap_data = models.Lap.objects.filter(trace=activity.trace_file, trigger='manual')
     plots = []
     lap_lines = []
@@ -86,7 +87,7 @@ def plot_time_series(activity: models.Activity):
             if values:
                 attribute = attribute.replace("_list", "")
                 if activity.distance:
-                    x_axis = np.arange(0, activity.distance, activity.distance / len(values))
+                    x_axis = extend_list_to_have_length(length=len(values), input_list=initial_list_of_distances)
                     p = figure(plot_height=int(settings.PLOT_HEIGHT / 2.5),
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"],
                                x_range=(0, x_axis[-1]))
