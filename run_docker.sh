@@ -10,6 +10,7 @@ docker run \
   -it \
   -e WKZ_LOG_LEVEL='DEBUG' \
   -p 8000:8000 \
-  -v /home/fabian/make/workoutizer/repo/workoutizer:/wkz \
+  -v $(pwd):/wkz \
+  -v ~/.wkz:/root/.wkz \
   wkz \
-  /bin/bash -c "pip install -e . --no-deps --disable-pip-version-check && wkz init && bash"
+  /bin/bash -c "pip install -e . --no-deps --disable-pip-version-check && bash"
