@@ -1,3 +1,5 @@
+import datetime
+
 import pandas as pd
 import numpy as np
 from bokeh.embed import components
@@ -26,10 +28,13 @@ def plot_trend(activities, sport_model):
     p.multi_line(xs=[df.index.values] * len(df.columns), ys=[df[name].values for name in df],
                  line_color=df.columns, line_width=2)
 
+    # render zero hours properly
+    p.yaxis.major_label_overrides = {0: "0h"}
     p.toolbar.logo = None
     p.toolbar_location = None
     p.background_fill_color = "whitesmoke"
     p.border_fill_color = "whitesmoke"
+    p.tools = []
 
     script_trend, div_trend = components(p)
 
