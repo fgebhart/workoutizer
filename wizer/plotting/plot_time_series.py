@@ -12,6 +12,7 @@ from bokeh.layouts import column
 from django.conf import settings
 from wizer.tools.utils import ensure_lists_have_same_length, timestamp_to_local_time
 from wizer.gis.gis import turn_coordinates_into_list_of_distances
+from wizer.naming import attributes_to_create_time_series_plot_for
 from wizer import models
 
 
@@ -82,7 +83,7 @@ def plot_time_series(activity: models.Activity):
     lap_lines = []
 
     for attribute, values in attributes.items():
-        if attribute.endswith("_list") and attribute != 'timestamps_list':
+        if attribute in attributes_to_create_time_series_plot_for:
             values = json.loads(values)
             if values:
                 attribute = attribute.replace("_list", "")

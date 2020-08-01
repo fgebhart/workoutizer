@@ -35,8 +35,11 @@ class Traces(models.Model):
     path_to_file = models.CharField(max_length=200)
     file_name = models.CharField(max_length=100, editable=False)
     md5sum = models.CharField(max_length=32, unique=True)
-    coordinates_list = models.CharField(max_length=10000000000, default="[]")
     calories = models.IntegerField(null=True, blank=True)
+    # coordinates
+    coordinates_list = models.CharField(max_length=10000000000, default="[]")
+    # distance
+    distance_list = models.CharField(max_length=10000000000, default="[]")
     # elevation
     altitude_list = models.CharField(max_length=10000000000, default="[]")
     max_altitude = models.FloatField(blank=True, null=True)

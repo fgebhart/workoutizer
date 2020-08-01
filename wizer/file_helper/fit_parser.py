@@ -55,6 +55,9 @@ class FITParser(Parser):
                     lon = value
                 if label == "position_lat":
                     lat = value
+                # distances
+                if label == "distance":
+                    self.distance_list.append(value)
                 # altitude
                 if label == "altitude":
                     altitude = float(value) / 10

@@ -202,9 +202,13 @@ def save_trace_to_model(traces_model, md5sum, parser, trace_file):
     trace_object = traces_model(
         path_to_file=trace_file,
         md5sum=md5sum,
-        coordinates_list=parser.coordinates_list,
-        altitude_list=parser.altitude_list,
         calories=parser.calories,
+        # coordinates
+        coordinates_list=parser.coordinates_list,
+        # distances
+        distance_list=parser.distance_list,
+        # altitude
+        altitude_list=parser.altitude_list,
         # heart rate
         heart_rate_list=parser.heart_rate_list,
         min_heart_rate=parser.min_heart_rate,

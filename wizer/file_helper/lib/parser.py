@@ -15,6 +15,8 @@ class Parser:
         # trace file info
         # coordinates
         self.coordinates_list = []
+        # distances
+        self.distance_list = []
         # elevation
         self.altitude_list = []
         # heart rate
