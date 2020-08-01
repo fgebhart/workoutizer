@@ -69,6 +69,8 @@ def remove_microseconds(delta):
 
 
 def extend_list_to_have_length(length: int, input_list: list):
+    if not input_list:
+        return input_list
     arr = [input_list[int(x)] for x in np.arange(0, len(input_list), (len(input_list) / length))]
     s = pd.Series(arr)
     s = s.where(~s.duplicated(keep="first"), np.nan).interpolate()

@@ -42,3 +42,4 @@ def test_extend_list_to_have_length():
     assert extend_list_to_have_length(length=5, input_list=[1., 2., 3.]) == [1., 1.5, 2., 2.5, 3.]
     assert extend_list_to_have_length(length=9, input_list=[1., 2., 3., 4., 5.]) == [1., 1.5, 2., 2.5, 3., 3.5, 4., 4.5,
                                                                                      5.]
+    assert extend_list_to_have_length(length=2, input_list=[]) == []
