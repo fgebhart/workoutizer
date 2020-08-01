@@ -23,7 +23,7 @@ from wizer.gis.gis import GeoTrace
 from wizer.file_helper.reimporter import Reimporter
 from wizer.file_helper.fit_collector import try_to_mount_device, FitCollector
 from wizer.tools.colors import lines_colors
-from wizer.tools.utils import ensure_lists_have_same_length
+from wizer.tools.utils import cut_list_to_have_same_length
 from workoutizer import settings
 
 log = logging.getLogger(__name__)
@@ -74,8 +74,8 @@ class MapView(View):
         has_traces = True if traces else False
 
         if traces:
-            traces, colors = ensure_lists_have_same_length(traces, lines_colors, mode='fill end',
-                                                           modify_only_list2=True)
+            traces, colors = cut_list_to_have_same_length(traces, lines_colors, mode='fill end',
+                                                          modify_only_list2=True)
             traces = zip(traces, colors)
         return {'traces': traces, 'settings': self.settings, 'days': self.number_of_days,
                 'choices': self.days_choices, 'has_traces': has_traces}

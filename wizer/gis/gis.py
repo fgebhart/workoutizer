@@ -4,7 +4,7 @@ from typing import List
 
 from geopy import distance
 
-from wizer.tools.utils import ensure_lists_have_same_length
+from wizer.tools.utils import cut_list_to_have_same_length
 
 log = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ def turn_coordinates_into_list_of_distances(list_of_coordinates: List[tuple]):
 
 
 def add_elevation_data_to_coordinates(coordinates: list, elevation: list):
-    coordinates, elevation = ensure_lists_have_same_length(coordinates, elevation, mode="fill end")
+    coordinates, elevation = cut_list_to_have_same_length(coordinates, elevation, mode="fill end")
     coordinates_with_elevation = []
     for coordinate, altitude in zip(coordinates, elevation):
         coordinate.append(altitude)

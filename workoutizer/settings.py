@@ -7,7 +7,6 @@ from workoutizer.logger import get_logging_config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-CONFIG_PATH = os.path.join(BASE_DIR, 'config.ini')
 INITIAL_TRACE_DATA_DIR = os.path.join(BASE_DIR, 'setup', 'initial_trace_data')
 
 USER_HOME = Path.home()

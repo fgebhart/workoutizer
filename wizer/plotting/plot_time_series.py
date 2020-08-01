@@ -10,14 +10,13 @@ from bokeh.models import CheckboxButtonGroup, CustomJS
 from bokeh.layouts import column
 
 from django.conf import settings
-from wizer.tools.utils import ensure_lists_have_same_length, timestamp_to_local_time
-from wizer.gis.gis import turn_coordinates_into_list_of_distances
+from wizer.tools.utils import cut_list_to_have_same_length, timestamp_to_local_time, extend_list_to_have_length, \
+    convert_list_to_km
 from wizer.naming import attributes_to_create_time_series_plot_for
 from wizer import models
 
 
 log = logging.getLogger(__name__)
-
 
 plot_matrix = {
     "temperature": {
@@ -75,9 +74,8 @@ def plot_time_series(activity: models.Activity):
     coordinates = json.loads(attributes["coordinates_list"])
     list_of_distances = []
     if coordinates:
-        list_of_distances = turn_coordinates_into_list_of_distances(coordinates)
-        list_of_distances = _scale_distances(activity.distance, list_of_distances)
-    del attributes["coordinates_list"]
+        list_of_distances = convert_list_to_km(json.loads(attributes['distance_list']))
+        list_of_distances = extend_list_to_have_length(length=len(coordinates), input_list=list_of_distances)
     lap_data = models.Lap.objects.filter(trace=activity.trace_file, trigger='manual')
     plots = []
     lap_lines = []
@@ -98,7 +96,7 @@ def plot_time_series(activity: models.Activity):
                     timestamps_list = json.loads(attributes["timestamps_list"])
                     start = timestamp_to_local_time(timestamps_list[0])
                     x_axis = [timestamp_to_local_time(t) - start for t in timestamps_list]
-                    x_axis, values = ensure_lists_have_same_length(x_axis, values)
+                    x_axis, values = cut_list_to_have_same_length(x_axis, values)
                     p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2.5),
                                sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
                     lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values,
