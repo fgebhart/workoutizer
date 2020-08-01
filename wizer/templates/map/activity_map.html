@@ -69,17 +69,15 @@
             var lat = {{lap.start_lat}};
             var lon = {{lap.start_long}};
         {% endif %}
-        {% if lap.trigger == "manual" %}
-            var label = "{{ lap.label }}";
-            if (label === "None") {
-                var text = "Lap {{ forloop.counter }}";
-            } else {
-                var text = "Lap {{ forloop.counter }}: " + label;
-            }
-            var marker = L.circleMarker([lat, lon], LapMarker).bindTooltip(text);
-            marker.addTo(markerGroup);
-            markerGroup.addTo(map);
-        {% endif %}
+        var label = "{{ lap.label }}";
+        if (label === "None") {
+            var text = "Lap {{ forloop.counter }}";
+        } else {
+            var text = "Lap {{ forloop.counter }}: " + label;
+        }
+        var marker = L.circleMarker([lat, lon], LapMarker).bindTooltip(text);
+        marker.addTo(markerGroup);
+        markerGroup.addTo(map);
     {% endfor %}
 
     // create position markers
