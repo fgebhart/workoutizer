@@ -73,6 +73,7 @@ def plot_time_series(activity: models.Activity):
     attributes = activity.trace_file.__dict__
     coordinates = json.loads(attributes["coordinates_list"])
     initial_list_of_distances = []
+    list_of_distances = []
     if coordinates:
         initial_list_of_distances = convert_list_to_km(json.loads(attributes['distance_list']))
         list_of_distances = extend_list_to_have_length(length=len(coordinates), input_list=initial_list_of_distances)
