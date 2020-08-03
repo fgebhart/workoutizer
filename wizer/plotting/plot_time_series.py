@@ -172,12 +172,6 @@ def plot_time_series(activity: models.Activity):
     return script, div
 
 
-def _scale_distances(activity_distance, list_of_distances):
-    scale = list_of_distances[-1] / activity_distance
-    list_of_distances = list(np.array(list_of_distances) / scale)
-    return list_of_distances
-
-
 def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, use_time: bool = False):
     lap_lines = []
     for lap in laps:
