@@ -13,7 +13,7 @@ timestamp_format = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def sanitize(text):
-    return str(text).lower().replace(" ", "-")
+    return str(text).lower().replace(" ", "-").replace("/", "-")
 
 
 def calc_md5(file):

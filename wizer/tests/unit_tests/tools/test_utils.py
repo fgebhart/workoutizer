@@ -10,9 +10,10 @@ def test_remove_nones_from_string():
     assert remove_nones_from_string("[26, None, 0, None]") == "[26, 0]"
 
 
-def test_sanitze():
+def test_sanitize():
     assert sanitize("Lore Ipsum") == "lore-ipsum"
     assert sanitize("some-words") == "some-words"
+    assert sanitize("activity1/3") == "activity1-3"
     assert sanitize(1) == "1"
     assert sanitize(0.123) == "0.123"
     assert sanitize(True) == "true"
