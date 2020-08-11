@@ -77,7 +77,7 @@ def plot_time_series(activity: models.Activity):
         initial_list_of_distances = convert_list_to_km(json.loads(attributes['distance_list']))
         list_of_distances = extend_list_to_have_length(length=len(coordinates), input_list=initial_list_of_distances)
 
-    lap_data = models.Lap.objects.filter(trace=activity.trace_file, trigger='manual')
+    lap_data = models.Lap.objects.filter(trace=activity.trace_file)
     plots = []
     lap_lines = []
 
@@ -178,9 +178,8 @@ def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, 
             x_start_value = lap.elapsed_time
         else:
             x_start_value += lap.distance / 1000
-        line = plot.line([x_start_value, x_start_value], [min(y_values) - 1, max(y_values) + 1], color='grey')
-
         if lap.trigger == 'manual':
+            line = plot.line([x_start_value, x_start_value], [min(y_values) - 1, max(y_values) + 1], color='grey')
             lap_lines.append(line)
     return lap_lines
 
