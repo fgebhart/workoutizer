@@ -115,8 +115,7 @@ def _upgrade():
         execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
         execute_from_command_line(["manage.py", "migrate"])
         execute_from_command_line(["manage.py", "check"])
-        new_version = subprocess.check_output(["wkz", "version"]).decode("utf=8").replace('\n', '')
-        click.echo(f"Successfully upgraded from {current_version} to {new_version}")
+        click.echo(f"Successfully upgraded from {current_version} to {latest_version}")
     else:
         click.echo(f"No update available. You are running the latest version: {current_version}")
 
