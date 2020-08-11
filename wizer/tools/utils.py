@@ -74,6 +74,8 @@ def extend_list_to_have_length(length: int, input_list: list):
     arr = [input_list[int(x)] for x in np.arange(0, len(input_list), (len(input_list) / length))]
     s = pd.Series(arr)
     s = s.where(~s.duplicated(keep="first"), np.nan).interpolate()
+    s = s[:length]
+    log.debug(f"length of generated list: {len(s)} vs given length: {length}")
     assert len(s) == length
     return list(s)
 

@@ -2,7 +2,6 @@ import logging
 import json
 from itertools import combinations
 
-import numpy as np
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import HoverTool, CrosshairTool
