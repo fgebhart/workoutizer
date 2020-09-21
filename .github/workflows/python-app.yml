@@ -35,3 +35,6 @@ jobs:
       - name: integration tests
         run: |
           pytest wizer/tests/integration_tests -v
+      - name: end2end tests
+        run: |
+          pytest wizer/tests/end2end -v
