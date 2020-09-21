@@ -1,6 +1,5 @@
 import os
 import time
-from multiprocessing import Process
 
 import requests
 
@@ -10,7 +9,7 @@ timeout = 10
 
 
 def _runserver():
-    os.system(f"wkz manage 'runserver {app_url} --noreload'")
+    os.system(f"wkz manage 'runserver {app_url} --noreload' &")
 
 
 def _get_site_status_code(url):
@@ -18,8 +17,7 @@ def _get_site_status_code(url):
 
 
 def test_workoutizer_full():
-    proc = Process(target=_runserver, args=())
-    proc.start()
+    _runserver()
 
     # sleep for some seconds in order to have enough time to import activities
     time.sleep(timeout)
@@ -39,7 +37,7 @@ def test_workoutizer_full():
     print(f"SUCCESS - no errors found.")
 
     # end process
-    proc.terminate()
+    # proc.terminate()
 
 
 if __name__ == '__main__':
