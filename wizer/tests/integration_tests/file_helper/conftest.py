@@ -43,7 +43,7 @@ def gpx_string():
     return f"""{gpx_header}
     <metadata>
         <time>2019-07-12T00:00:00Z</time>
-        <link href="https://gitlab.com/fgebhart/workoutizer">
+        <link href="https://github.com/fgebhart/workoutizer">
             <text>Workoutizer</text>
         </link>
     </metadata>
@@ -75,7 +75,7 @@ def gpx_string_with_elevation():
     return f"""{gpx_header}
     <metadata>
         <time>2019-07-12T00:00:00Z</time>
-        <link href="https://gitlab.com/fgebhart/workoutizer">
+        <link href="https://github.com/fgebhart/workoutizer">
             <text>Workoutizer</text>
         </link>
     </metadata>

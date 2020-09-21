@@ -38,12 +38,12 @@ wkz run
 See the help description of the CLI with `wkz --help` and even subcommands, e.g.: `wkz manage --help`. 
 
 Note: This should work for any Linux and Mac system. Please
-[report any occuring issues](https://gitlab.com/fgebhart/workoutizer/-/issues) when installing workoutizer.
+[report any occurring issues](https://github.com/fgebhart/workoutizer/issues) when installing workoutizer.
 
 Workoutizer comes bundled with some initial toy activity data, which can be deleted easily on the Settings page.
 
 In case you want to run workoutizer on a Raspberry Pi in your local network, follow the 
-[Raspberry Pi setup instructions](https://gitlab.com/fgebhart/workoutizer/-/tree/master/setup).
+[Raspberry Pi setup instructions](https://github.com/fgebhart/workoutizer/tree/master/setup).
 
 ## Gallery 
 
@@ -68,11 +68,13 @@ Enjoy!
 
 ## Changelog
 
-See the [tags section](https://gitlab.com/fgebhart/workoutizer/-/tags).
+See the [releases section](https://github.com/fgebhart/workoutizer/releases).
+
+For older releases have a look at the [archived project at gitlab](https://gitlab.com/fgebhart/workoutizer).
 
 ## Contributing
 
-Contributions are welcome! Feel free to pick an [open issue](https://gitlab.com/fgebhart/workoutizer/-/issues), open up 
+Contributions are welcome! Feel free to pick an [open issue](https://github.com/fgebhart/workoutizer/issues), open up 
 a pull request or file a new issue.
 
 For local development first clone the repo and install the `dev-requirements.txt` like

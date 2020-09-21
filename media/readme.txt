@@ -1,1 +1,0 @@
-this folder will store all downloaded files which are created via the web application
