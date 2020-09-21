@@ -37,7 +37,7 @@ def cleanup_files(monkeypatch):
 
 
 # TODO fix for running in github actions (test__ prefix was removed)
-def setup_rpi(vendor_id, product_id, ip_port, wkz_mount_service_path, udev_rule_path, udev_rule_dir):
+def test__setup_rpi(vendor_id, product_id, ip_port, wkz_mount_service_path, udev_rule_path, udev_rule_dir):
     # ensure udev folder exists
     if not os.path.isdir(udev_rule_dir):
         os.makedirs(udev_rule_dir)
@@ -59,7 +59,7 @@ def setup_rpi(vendor_id, product_id, ip_port, wkz_mount_service_path, udev_rule_
 
 
 # TODO fix for running in github actions (test__ prefix was removed)
-def wkz_as_service(ip_port, wkz_service_path):
+def test__wkz_as_service(ip_port, wkz_service_path):
     # run with specified url
     result = _wkz_as_service(url=ip_port)
     assert result == 0

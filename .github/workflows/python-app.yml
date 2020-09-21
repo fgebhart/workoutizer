@@ -21,10 +21,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e .
           python -m pip install -r setup/requirements/dev-requirements.txt
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with flake8
         run: |
-          pip install flake8 pytest
+          pip install flake8
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
@@ -34,7 +33,9 @@ jobs:
           pytest wizer/tests/unit_tests -v
       - name: integration tests
         run: |
+          cp setup/other/systemctl.py /usr/bin/systemctl
+          chmod +x /usr/bin/systemctl
           pytest wizer/tests/integration_tests -v
-      - name: end2end tests
-        run: |
-          pytest wizer/tests/end2end -v
+#      - name: end2end tests
+#        run: |
+#          pytest wizer/tests/end2end -v
