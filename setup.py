@@ -23,7 +23,7 @@ setuptools.setup(
     description="Browser-based Sport Workout Organizer to analyze your Activities locally",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://gitlab.com/fgebhart/workoutizer",
+    url="https://github.com/fgebhart/workoutizer",
     classifiers=[
         "License :: OSI Approved :: MIT License",
         'Programming Language :: Python',

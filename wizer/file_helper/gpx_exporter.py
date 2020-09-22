@@ -21,7 +21,7 @@ def _gpx_file(time, name, track_points, sport):
     return f"""{gpx_header}
     <metadata>
         <time>{time.strftime(timestamp_format)}</time>
-        <link href="https://gitlab.com/fgebhart/workoutizer">
+        <link href="https://github.com/fgebhart/workoutizer">
             <text>Workoutizer</text>
         </link>
     </metadata>
