@@ -8,7 +8,7 @@ on: push
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: python-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -33,6 +33,8 @@ jobs:
           pytest wizer/tests/unit_tests -v
       - name: Run Integration Tests
         run: |
+          cp setup/other/systemctl.py /usr/bin/systemctl
+          chmod +x /usr/bin/systemctl
           pytest wizer/tests/integration_tests -v
       - name: Run end2end Test
         run: |
