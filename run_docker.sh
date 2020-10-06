@@ -1,8 +1,5 @@
-
-if ! docker image inspect wkz > /dev/null; then
-  # to build the required image run:
-  docker build . -t wkz
-fi
+# to build the required image run:
+docker build . -t wkz
 
 docker run \
   --name workoutizer \
@@ -13,4 +10,4 @@ docker run \
   -v $(pwd):/wkz \
   -v ~/.wkz:/root/.wkz \
   wkz \
-  /bin/bash -c "pip install -e . --no-deps --disable-pip-version-check && bash"
+  /bin/bash -c "source /tmp/venv/bin/activate && pip install -e . --no-deps --disable-pip-version-check && bash"
