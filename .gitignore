@@ -12,3 +12,4 @@ build/
 *.egg-info
 .eggs/
 venv/
+.vscode/settings.json
