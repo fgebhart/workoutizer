@@ -1,4 +1,5 @@
 ansible
+IPython
 pip-tools
 pytest
 pytest-django
