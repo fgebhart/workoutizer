@@ -3,6 +3,7 @@ import logging
 from wizer import models
 from wizer.apps import get_md5sums_from_model, get_all_files, calc_md5, parse_and_save_to_model, parse_data, \
     save_laps_to_model
+from wizer.tools.utils import limit_string
 
 log = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ class Reimporter:
                 else:
                     db_value = getattr(obj, attribute)
                     if not _values_equal(db_value, value):
-                        log.debug(f"overwriting value for {attribute} old: {db_value} to: {value}")
+                        log.debug(f"overwriting value for {attribute} old: {limit_string(db_value, 20)} to: {limit_string(value, 20)}")
                         setattr(obj, attribute, value)
                         self.activity_modified = True
                         updated = True

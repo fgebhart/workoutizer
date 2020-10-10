@@ -80,5 +80,9 @@ def extend_list_to_have_length(length: int, input_list: list):
     return list(s)
 
 
-def convert_list_to_km(list_in_meter: list):
-    return [distance_in_meter / 1000 for distance_in_meter in list_in_meter]
+def limit_string(string: str, max_length: int):
+    string = str(string)
+    if max_length >= len(string):
+        return string
+    else:
+        return f"{string[:(int(max_length/2))]}...{string[(-int(max_length/2)):]}"

@@ -9,6 +9,7 @@ from django.conf import settings
 
 from wizer.file_helper.lib.parser import Parser
 from wizer.tools.utils import remove_nones_from_list
+from wizer import naming
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +34,8 @@ class FITParser(Parser):
             timestamp = record.get('timestamp')
             self.timestamps_list.append(timestamp.timestamp() if timestamp else timestamp)
             self.distance_list.append(record.get('distance'))
-            self.coordinates_list.append([_to_coordinate(record.get('position_long')), _to_coordinate(record.get('position_lat'))])
+            self.longitude_list.append(_to_coordinate(record.get('position_long')))
+            self.latitude_list.append(_to_coordinate(record.get('position_lat')))
             altitude = record.get('altitude')
             self.altitude_list.append((float(altitude) / 10) if altitude else altitude)
             self.heart_rate_list.append(record.get('heart_rate'))
@@ -76,7 +78,7 @@ class FITParser(Parser):
                 self.avg_temperature = avg_temperature
             
         log.debug(f"found date: {self.date}")
-        log.debug(f"found number of coordinates: {len(self.coordinates_list)}")
+        log.debug(f"found number of coordinates: {len(self.longitude_list)}")
         log.debug(f"found number of altitude: {len(self.altitude_list)}")
         log.debug(f"found number of timestamps: {len(self.timestamps_list)}")
         log.debug(f"found avg_speed: {self.avg_speed}")
@@ -101,7 +103,7 @@ class FITParser(Parser):
     def set_min_max_values(self):
         attributes = self.__dict__.copy()
         for attribute, values in attributes.items():
-            if attribute.endswith("_list") and attribute != 'coordinates_list' and attribute != 'timestamps_list' and attribute != 'distance_list':
+            if attribute in naming.min_max_attributes:
                 name = attribute.replace("_list", "")
                 values = remove_nones_from_list(values)
                 if values:
@@ -111,8 +113,6 @@ class FITParser(Parser):
     def convert_list_attributes_to_json(self):
         for attribute, values in self.__dict__.items():
             if attribute.endswith("_list"):
-                print(attribute)
-                # print(values)
                 setattr(self, attribute, json.dumps(values))
 
 

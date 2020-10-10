@@ -4,6 +4,7 @@ import datetime
 
 from django.conf import settings
 from django.utils.duration import duration_microseconds
+import pandas as pd
 
 from wizer.tools.utils import sanitize, timestamp_format
 from wizer.gis.gis import add_elevation_data_to_coordinates
@@ -77,9 +78,15 @@ def _fill_list_of_timestamps(start: datetime.date, duration, length: int):
 def save_activity_to_gpx_file(activity):
     file_name = f"{activity.date.date()}_{sanitize(activity.name)}.gpx"
     path = os.path.join(settings.MEDIA_ROOT, file_name)
-    coordinates = json.loads(activity.trace_file.coordinates_list)
+    coordinates = list(zip(
+                    list(pd.Series(json.loads(activity.trace_file.longitude_list)).ffill().bfill()),
+                    list(pd.Series(json.loads(activity.trace_file.latitude_list)).ffill().bfill()),
+                ))
     if json.loads(activity.trace_file.altitude_list):
-        coordinates = add_elevation_data_to_coordinates(coordinates, json.loads(activity.trace_file.altitude_list))
+        coordinates = add_elevation_data_to_coordinates(
+            coordinates=coordinates,
+            altitude=list(pd.Series(json.loads(activity.trace_file.altitude_list)).ffill().bfill()),
+            )
     file_content = _build_gpx(
         time=activity.date,
         file_name=activity.name,

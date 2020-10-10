@@ -3,7 +3,7 @@ import logging
 import gpxpy
 import gpxpy.gpx
 
-from wizer.gis.gis import calc_distance_of_points
+from wizer.gis.gis import get_total_distance_of_trace
 from .lib.parser import Parser
 
 log = logging.getLogger(__name__)
@@ -59,8 +59,12 @@ class GPXParser(Parser):
                 for point in segment.points:
                     if point.elevation:
                         self.altitude_list.append(point.elevation)
-                    self.coordinates_list.append([point.longitude, point.latitude])
-        log.debug(f"found number of coordinates: {len(self.coordinates_list)}")
+                    self.latitude_list.append(point.latitude)
+                    self.longitude_list.append(point.longitude)
+        log.debug(f"found number of coordinates: {len(self.longitude_list)}")
         log.debug(f"found number of elevation points: {len(self.altitude_list)}")
-        self.distance = calc_distance_of_points(self.coordinates_list)
+        self.distance = get_total_distance_of_trace(
+            longitude_list=self.longitude_list,
+            latitude_list=self.latitude_list,
+            )
         log.debug(f"found distance: {self.distance}")

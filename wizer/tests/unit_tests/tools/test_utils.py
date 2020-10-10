@@ -1,5 +1,5 @@
 from wizer.tools.utils import sanitize, remove_nones_from_string, remove_nones_from_list, cut_list_to_have_same_length, \
-    extend_list_to_have_length
+    extend_list_to_have_length, limit_string
 
 
 def test_remove_nones_from_string():
@@ -44,3 +44,12 @@ def test_extend_list_to_have_length():
     assert extend_list_to_have_length(length=9, input_list=[1., 2., 3., 4., 5.]) == [1., 1.5, 2., 2.5, 3., 3.5, 4., 4.5,
                                                                                      5.]
     assert extend_list_to_have_length(length=2, input_list=[]) == []
+
+
+def test_limit_string():
+    assert limit_string(string="12345", max_length=10) == "12345"
+    assert limit_string(string="12345", max_length=2) == "1...5"
+    assert limit_string(string="12345", max_length=3) == "1...5"
+    assert limit_string(string="12345", max_length=4) == "12...45"
+    assert limit_string(string="12345", max_length=5) == "12345"
+    assert limit_string(string="some super duper long string", max_length=12) == "some s...string"

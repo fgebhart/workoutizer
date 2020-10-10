@@ -33,16 +33,17 @@ def test__parse_records(fit_parser):
     # check lengths of list attributes
     assert len(p.heart_rate_list) == 4442
     assert len(p.altitude_list) == 4442
-    assert len(p.coordinates_list) == 4442
+    assert len(p.latitude_list) == 4442
+    assert len(p.longitude_list) == 4442
     assert len(p.distance_list) == 4442
-    assert len(p.coordinates_list) == 4442
     assert len(p.cadence_list) == 4442
     assert len(p.temperature_list) == 4442
     assert len(p.speed_list) == 4442
     assert len(p.timestamps_list) == 4442
     # sanity check to see if element in list attributes
     assert 1.605 in p.speed_list
-    assert [8.694167453795673, 49.40601873211563] in p.coordinates_list
+    assert 8.697221484035255 in p.longitude_list
+    assert 49.40601873211563 in p.latitude_list
     assert 1.6 in p.distance_list
     assert 248.9 in p.altitude_list
     assert 99 in p.heart_rate_list
@@ -95,10 +96,12 @@ def test_get_min_max_values(fit_parser):
 def test_convert_list_attributes_to_json(fit_parser):
     p = fit_parser()
     assert type(p.timestamps_list) == list
-    assert type(p.coordinates_list) == list
+    assert type(p.latitude_list) == list
+    assert type(p.longitude_list) == list
     p.convert_list_attributes_to_json()
     assert type(p.timestamps_list) == str
-    assert type(p.coordinates_list) == str
+    assert type(p.latitude_list) == str
+    assert type(p.longitude_list) == str
 
 
 def test_convert_list_of_nones_to_empty_list(fit_parser):

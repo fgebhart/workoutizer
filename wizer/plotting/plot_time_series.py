@@ -4,13 +4,13 @@ from itertools import combinations
 
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.models import HoverTool, CrosshairTool
-from bokeh.models import CheckboxButtonGroup, CustomJS
+from bokeh.models import CheckboxButtonGroup, CustomJS, HoverTool, CrosshairTool
+from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.layouts import column
+import pandas as pd
 
 from django.conf import settings
-from wizer.tools.utils import cut_list_to_have_same_length, timestamp_to_local_time, extend_list_to_have_length, \
-    convert_list_to_km
+from wizer.tools.utils import cut_list_to_have_same_length, timestamp_to_local_time, extend_list_to_have_length
 from wizer.naming import attributes_to_create_time_series_plot_for
 from wizer import models
 
@@ -43,7 +43,7 @@ plot_matrix = {
         "second_color": "darkseagreen",
         "axis": "m",
         "title": "Altitude",
-    }
+    },
 }
 
 
@@ -70,48 +70,31 @@ def plot_time_series(activity: models.Activity):
     """
 
     attributes = activity.trace_file.__dict__
-    coordinates = json.loads(attributes["coordinates_list"])
-    initial_list_of_distances = []
-    list_of_distances = []
-    if coordinates:
-        initial_list_of_distances = convert_list_to_km(json.loads(attributes['distance_list']))
-        list_of_distances = extend_list_to_have_length(length=len(coordinates), input_list=initial_list_of_distances)
-
     lap_data = models.Lap.objects.filter(trace=activity.trace_file)
     plots = []
     lap_lines = []
 
+    timestamps = pd.to_datetime(pd.Series(json.loads(attributes["timestamps_list"])), unit='s')
+    x_axis = pd.to_datetime(timestamps).dt.tz_localize('utc').dt.tz_convert(settings.TIME_ZONE)
+    x_axis = x_axis - x_axis.min()
+
     for attribute, values in attributes.items():
         if attribute in attributes_to_create_time_series_plot_for:
-            values = json.loads(values)
-            if values:
+            values = pd.Series(json.loads(values))
+            if values.any():
                 attribute = attribute.replace("_list", "")
-                if activity.distance:
-                    x_axis = extend_list_to_have_length(length=len(values), input_list=initial_list_of_distances)
-                    p = figure(plot_height=int(settings.PLOT_HEIGHT / 2.5),
-                               sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"],
-                               x_range=(0, x_axis[-1]))
-                    lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
-                    x_hover = ("Distance", "@x km")
-                else:  # activity has no distance data, use time for x-axis instead
-                    timestamps_list = json.loads(attributes["timestamps_list"])
-                    start = timestamp_to_local_time(timestamps_list[0])
-                    x_axis = [timestamp_to_local_time(t) - start for t in timestamps_list]
-                    x_axis, values = cut_list_to_have_same_length(x_axis, values)
-                    p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2.5),
-                               sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
-                    lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values,
-                                            x_start_value=x_axis[0], use_time=True)
-                    x_hover = ("Time", "@x")
+
+                p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2.5),
+                            sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
+                lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values,
+                                        x_start_value=x_axis[0], use_time=True)
+                x_hover = ("Time", "@x")
                 lap_lines += lap
                 p.toolbar.logo = None
                 p.toolbar_location = None
                 p.xgrid.grid_line_color = None
-                if attribute == 'cadence':
-                    p.scatter(x_axis, values, radius=0.01, fill_alpha=1, color=plot_matrix[attribute]["color"],
-                              legend_label=plot_matrix[attribute]["title"])
-                elif attribute == 'altitude':
-                    p.varea(x_axis, values, [min(values) for i in range(len(values))],
+                if attribute == 'altitude':
+                    p.varea(x=x_axis, y1=values, y2=values.min(),
                             color=plot_matrix[attribute]["second_color"], fill_alpha=0.5)
                     p.line(x_axis, values, line_width=2, color=plot_matrix[attribute]["color"],
                            legend_label=plot_matrix[attribute]["title"])
@@ -128,17 +111,24 @@ def plot_time_series(activity: models.Activity):
                 p.legend.location = "top_left"
                 p.legend.label_text_font = "ubuntu"
                 p.legend.background_fill_alpha = 0.9
+                dtf = DatetimeTickFormatter()
+                dtf.minutes = ["%M:%S"]
+                p.xaxis.formatter = dtf
+                p.xaxis.major_label_overrides = {0: "0:00"}
                 plots.append(p)
+                values.ffill(inplace=True)
+                values.bfill(inplace=True)
+                x_axis.ffill(inplace=True)
+                x_axis.bfill(inplace=True)
 
-    _link_all_plots_with_each_other(all_plots=plots, x_values=list_of_distances)
 
-    # TODO
-    # connect all plots and share hovering line
-    # add hover info for each lap line with lap data info
+    # _link_all_plots_with_each_other(all_plots=plots, x_values=x_axis)
+
     all_plots = column(*plots)
     all_plots.sizing_mode = "stretch_width"
 
     if lap_data:
+        # include button to toggle rendering of laps
         log.debug(f"found some Lap data for {activity}: {lap_data}")
         checkbox = CheckboxButtonGroup(labels=["Show Laps"], active=[0], width=100)
 
@@ -189,6 +179,8 @@ def _add_vlinked_crosshairs(fig1, fig2, x_values):
     cross2 = CrosshairTool(dimensions="height")
     fig1.add_tools(cross1)
     fig2.add_tools(cross2)
+
+    # js for rendering the sport icon on leaflet map when hovering over bokeh time series plots
     js_move = '''
         if(cb_obj.x >= fig.x_range.start && cb_obj.x <= fig.x_range.end &&
            cb_obj.y >= fig.y_range.start && cb_obj.y <= fig.y_range.end)

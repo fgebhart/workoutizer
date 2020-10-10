@@ -31,5 +31,6 @@ def test_get_sport_from_type(gpx_parser):
 
 def test__parse_coordinates(gpx_parser):
     parser = gpx_parser()
-    assert parser.coordinates_list[0] == [8.687453, 49.405446]
+    assert parser.longitude_list[0] == 8.687453
+    assert parser.latitude_list[0] ==  49.405446
     assert parser.altitude_list[0] == 128.94

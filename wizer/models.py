@@ -37,7 +37,8 @@ class Traces(models.Model):
     md5sum = models.CharField(max_length=32, unique=True)
     calories = models.IntegerField(null=True, blank=True)
     # coordinates
-    coordinates_list = models.CharField(max_length=10000000000, default="[]")
+    latitude_list =  models.CharField(max_length=10000000000, default="[]")
+    longitude_list =  models.CharField(max_length=10000000000, default="[]")
     # distance
     distance_list = models.CharField(max_length=10000000000, default="[]")
     # elevation

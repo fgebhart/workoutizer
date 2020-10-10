@@ -15,6 +15,7 @@ ipython-genutils==0.2.0   # via traitlets
 ipython==7.18.1           # via -r dev-requirements.in
 jedi==0.17.2              # via ipython
 jinja2==2.11.2            # via ansible
+lxml==4.5.2               # via -r dev-requirements.in
 markupsafe==1.1.1         # via jinja2
 more-itertools==8.4.0     # via pytest
 packaging==20.4           # via pytest
