@@ -14,7 +14,8 @@ class Parser:
         self.calories = None
         # trace file info
         # coordinates
-        self.coordinates_list = []
+        self.latitude_list = []
+        self.longitude_list = []
         # distances
         self.distance_list = []
         # elevation
@@ -47,7 +48,8 @@ class Parser:
         # lists
         self.list_attributes = [
             self.timestamps_list,
-            self.coordinates_list,
+            self.longitude_list,
+            self.latitude_list,
             self.temperature_list,
             self.cadence_list,
             self.altitude_list,

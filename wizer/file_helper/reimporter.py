@@ -3,6 +3,7 @@ import logging
 from wizer import models
 from wizer.apps import get_md5sums_from_model, get_all_files, calc_md5, parse_and_save_to_model, parse_data, \
     save_laps_to_model
+from wizer.tools.utils import limit_string
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +23,9 @@ class Reimporter:
         log.info(f"starting reimport process...")
         md5sums_from_db = get_md5sums_from_model(traces_model=models.Traces)
         trace_files = get_all_files(path=self.path)
-        for trace_file in trace_files:
+        number_of_trace_files = len(trace_files)
+        for i, trace_file in enumerate(trace_files):
+            log.info(f"({i}/{number_of_trace_files}) reimporting: {trace_file} ")
             self.activity_modified = False
             md5sum = calc_md5(trace_file)
             if md5sum not in md5sums_from_db:  # trace file is not in db already
@@ -57,7 +60,6 @@ class Reimporter:
     def _compare_and_update(self, obj, parser):
         updated = False
         for attribute, value in parser.__dict__.items():
-            # log.debug(f"updating attribute: {attribute}")
             if attribute == 'sport':
                 continue
             if hasattr(obj, attribute):
@@ -69,7 +71,7 @@ class Reimporter:
                 else:
                     db_value = getattr(obj, attribute)
                     if not _values_equal(db_value, value):
-                        log.debug(f"overwriting value for {attribute} old: {db_value} to: {value}")
+                        log.debug(f"overwriting value for {attribute} old: {limit_string(db_value, 100)} to: {limit_string(value, 100)}")
                         setattr(obj, attribute, value)
                         self.activity_modified = True
                         updated = True

@@ -204,7 +204,8 @@ def save_trace_to_model(traces_model, md5sum, parser, trace_file):
         md5sum=md5sum,
         calories=parser.calories,
         # coordinates
-        coordinates_list=parser.coordinates_list,
+        latitude_list=parser.latitude_list,
+        longitude_list=parser.longitude_list,
         # distances
         distance_list=parser.distance_list,
         # altitude

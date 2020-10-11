@@ -5,10 +5,12 @@
         <div class="col-sm-5">
             <h5>Cadence</h5>
             <table class="table table-hover table-borderless text-muted">
-                <tr data-toggle="tooltip" data-placement="left" title="Average Cadence">
-                    <td><i class="fas fa-shoe-prints"></i><small> avg</small></td>
-                    <td>{{ activity.trace_file.avg_cadence }}</td>
-                </tr>
+                {% if activity.trace_file.avg_cadence %}
+                    <tr data-toggle="tooltip" data-placement="left" title="Average Cadence">
+                        <td><i class="fas fa-shoe-prints"></i><small> avg</small></td>
+                        <td>{{ activity.trace_file.avg_cadence }}</td>
+                    </tr>
+                {% endif %}
                 <tr data-toggle="tooltip" data-placement="left" title="Max Cadence">
                     <td><i class="fas fa-shoe-prints" style="color: grey"></i><small style="color: grey"> max</small>
                     </td>
@@ -93,11 +95,13 @@
                         min</small></td>
                     <td>{{ activity.trace_file.min_temperature }} °C</td>
                 </tr>
-                <tr data-toggle="tooltip" data-placement="left" title="Average Temperature">
-                    <td><i class="fas fa-thermometer-half" style="color: grey"></i><small style="color: grey">
-                        avg</small></td>
-                    <td>{{ activity.trace_file.avg_temperature }} °C</td>
-                </tr>
+                {% if activity.trace_file.avg_temperature %}
+                    <tr data-toggle="tooltip" data-placement="left" title="Average Temperature">
+                        <td><i class="fas fa-thermometer-half" style="color: grey"></i><small style="color: grey">
+                            avg</small></td>
+                        <td>{{ activity.trace_file.avg_temperature }} °C</td>
+                    </tr>
+                {% endif %}
                 <tr data-toggle="tooltip" data-placement="left" title="Max Temperature">
                     <td><i class="fas fa-thermometer-full" style="color: grey"></i><small style="color: grey">
                         max</small></td>

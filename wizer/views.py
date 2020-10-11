@@ -2,6 +2,8 @@ import logging
 import datetime
 import json
 
+import pandas as pd
+
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.views.generic import View
@@ -23,7 +25,7 @@ from wizer.gis.gis import GeoTrace
 from wizer.file_helper.reimporter import Reimporter
 from wizer.file_helper.fit_collector import try_to_mount_device, FitCollector
 from wizer.tools.colors import lines_colors
-from wizer.tools.utils import cut_list_to_have_same_length
+from wizer.tools.utils import cut_list_to_have_same_length, limit_string
 from workoutizer import settings
 
 log = logging.getLogger(__name__)
@@ -63,7 +65,10 @@ class MapView(View):
         traces = []
         for activity in list_of_activities:
             if activity.trace_file:
-                coordinates = json.loads(activity.trace_file.coordinates_list)
+                coordinates = json.dumps(list(zip(
+                    list(pd.Series(json.loads(activity.trace_file.longitude_list)).ffill().bfill()),
+                    list(pd.Series(json.loads(activity.trace_file.latitude_list)).ffill().bfill()),
+                )))
                 sport = activity.sport.name
                 if coordinates:
                     traces.append(GeoTrace(

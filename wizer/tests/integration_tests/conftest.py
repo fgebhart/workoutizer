@@ -35,7 +35,8 @@ def trace_file(db):
         path_to_file='some/path/to/file.gpx',
         file_name='file.gpx',
         md5sum='4c1185c55476269b442f424a9d80d964',
-        coordinates_list='[[8.47357001155615, 49.47972273454071], [8.47357001155615, 49.47972273454071]]',
+        latitude_list='[49.47972273454071, 49.47972273454071]',
+        longitude_list='[8.47357001155615, 8.47357001155615]',
         calories=123,
     )
     trace.save()
