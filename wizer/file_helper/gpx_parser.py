@@ -41,7 +41,7 @@ class GPXParser(Parser):
             self.duration = end - start
             log.debug(f"found duration: {self.duration}")
         else:
-            log.debug(f"could not find duration")
+            log.warning(f"could not find duration")
         if self.gpx.time:
             self.date = self.gpx.time
             log.debug(f"found date: {self.date}")
@@ -50,7 +50,7 @@ class GPXParser(Parser):
             log.debug(f"found date: {self.date}")
 
         if not self.date:
-            log.debug(f"could not find date in GPX file, will use OS file created date")
+            log.warning(f"could not find date in GPX file, will use OS file created date")
             self.get_file_created_datetime()
 
     def _parse_records(self):
@@ -61,7 +61,10 @@ class GPXParser(Parser):
                         self.altitude_list.append(point.elevation)
                     self.latitude_list.append(point.latitude)
                     self.longitude_list.append(point.longitude)
+                    if point.time:
+                        self.timestamps_list.append(point.time.timestamp())
         log.debug(f"found number of coordinates: {len(self.longitude_list)}")
+        log.debug(f"found number of timestamps: {len(self.timestamps_list)}")
         log.debug(f"found number of elevation points: {len(self.altitude_list)}")
         self.distance = get_total_distance_of_trace(
             longitude_list=self.longitude_list,

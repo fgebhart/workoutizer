@@ -4,11 +4,11 @@ import logging
 import datetime
 
 import pytz
+import pandas as pd
 from fitparse import FitFile
 from django.conf import settings
 
 from wizer.file_helper.lib.parser import Parser
-from wizer.tools.utils import remove_nones_from_list
 from wizer import naming
 
 log = logging.getLogger(__name__)
@@ -105,10 +105,10 @@ class FITParser(Parser):
         for attribute, values in attributes.items():
             if attribute in naming.min_max_attributes:
                 name = attribute.replace("_list", "")
-                values = remove_nones_from_list(values)
-                if values:
-                    setattr(self, f"max_{name}", round(float(max(values)), 2))
-                    setattr(self, f"min_{name}", round(float(min(values)), 2))
+                values = pd.Series(values)
+                if values.any():
+                    setattr(self, f"max_{name}", round(float(values.max()), 2))
+                    setattr(self, f"min_{name}", round(float(values.min()), 2))
 
     def convert_list_attributes_to_json(self):
         for attribute, values in self.__dict__.items():

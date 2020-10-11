@@ -10,7 +10,7 @@ from bokeh.layouts import column
 import pandas as pd
 
 from django.conf import settings
-from wizer.tools.utils import cut_list_to_have_same_length, timestamp_to_local_time, extend_list_to_have_length
+from pandas.core.arrays.sparse import dtype
 from wizer.naming import attributes_to_create_time_series_plot_for
 from wizer import models
 
@@ -74,25 +74,22 @@ def plot_time_series(activity: models.Activity):
     plots = []
     lap_lines = []
 
-    timestamps = pd.to_datetime(pd.Series(json.loads(attributes["timestamps_list"])), unit='s')
+    timestamps = pd.to_datetime(pd.Series(json.loads(attributes["timestamps_list"]), dtype=float), unit='s')
     x_axis = pd.to_datetime(timestamps).dt.tz_localize('utc').dt.tz_convert(settings.TIME_ZONE)
     x_axis = x_axis - x_axis.min()
 
     for attribute, values in attributes.items():
         if attribute in attributes_to_create_time_series_plot_for:
-            values = pd.Series(json.loads(values))
+            values = pd.Series(json.loads(values), dtype=float)
             if values.any():
                 attribute = attribute.replace("_list", "")
+                print(attribute)
+                print(values)
 
                 p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2.5),
                             sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
-                lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values,
-                                        x_start_value=x_axis[0], use_time=True)
-                x_hover = ("Time", "@x")
+                lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
                 lap_lines += lap
-                p.toolbar.logo = None
-                p.toolbar_location = None
-                p.xgrid.grid_line_color = None
                 if attribute == 'altitude':
                     p.varea(x=x_axis, y1=values, y2=values.min(),
                             color=plot_matrix[attribute]["second_color"], fill_alpha=0.5)
@@ -101,6 +98,7 @@ def plot_time_series(activity: models.Activity):
                 else:
                     p.line(x_axis, values, line_width=2, color=plot_matrix[attribute]["color"],
                            legend_label=plot_matrix[attribute]["title"])
+                x_hover = ("Time", "@x")
                 hover = HoverTool(
                     tooltips=[(plot_matrix[attribute]['title'], f"@y {plot_matrix[attribute]['axis']}"),
                               x_hover],
@@ -108,6 +106,9 @@ def plot_time_series(activity: models.Activity):
                 p.add_tools(hover)
                 cross = CrosshairTool(dimensions="height")
                 p.add_tools(cross)
+                p.toolbar.logo = None
+                p.toolbar_location = None
+                p.xgrid.grid_line_color = None
                 p.legend.location = "top_left"
                 p.legend.label_text_font = "ubuntu"
                 p.legend.background_fill_alpha = 0.9
@@ -122,7 +123,7 @@ def plot_time_series(activity: models.Activity):
                 x_axis.bfill(inplace=True)
 
 
-    # _link_all_plots_with_each_other(all_plots=plots, x_values=x_axis)
+    _link_all_plots_with_each_other(all_plots=plots, x_values=x_axis)
 
     all_plots = column(*plots)
     all_plots.sizing_mode = "stretch_width"
@@ -161,15 +162,13 @@ def plot_time_series(activity: models.Activity):
     return script, div
 
 
-def _add_laps_to_plot(laps: list, plot, y_values: list, x_start_value: int = 0, use_time: bool = False):
+def _add_laps_to_plot(laps: list, plot, y_values: list):
     lap_lines = []
+    x_value = pd.Timedelta(seconds=0)
     for lap in laps:
-        if use_time:
-            x_start_value = lap.elapsed_time
-        else:
-            x_start_value += lap.distance / 1000
+        x_value += lap.elapsed_time
         if lap.trigger == 'manual':
-            line = plot.line([x_start_value, x_start_value], [min(y_values) - 1, max(y_values) + 1], color='grey')
+            line = plot.line([x_value, x_value], [y_values.min() - 1, y_values.max() + 1], color='grey')
             lap_lines.append(line)
     return lap_lines
 

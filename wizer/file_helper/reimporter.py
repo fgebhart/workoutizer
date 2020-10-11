@@ -25,7 +25,7 @@ class Reimporter:
         trace_files = get_all_files(path=self.path)
         number_of_trace_files = len(trace_files)
         for i, trace_file in enumerate(trace_files):
-            log.debug(f"({i}/{number_of_trace_files}) reimporting: {trace_file} ")
+            log.info(f"({i}/{number_of_trace_files}) reimporting: {trace_file} ")
             self.activity_modified = False
             md5sum = calc_md5(trace_file)
             if md5sum not in md5sums_from_db:  # trace file is not in db already
@@ -71,7 +71,7 @@ class Reimporter:
                 else:
                     db_value = getattr(obj, attribute)
                     if not _values_equal(db_value, value):
-                        log.debug(f"overwriting value for {attribute} old: {limit_string(db_value, 20)} to: {limit_string(value, 20)}")
+                        log.debug(f"overwriting value for {attribute} old: {limit_string(db_value, 100)} to: {limit_string(value, 100)}")
                         setattr(obj, attribute, value)
                         self.activity_modified = True
                         updated = True

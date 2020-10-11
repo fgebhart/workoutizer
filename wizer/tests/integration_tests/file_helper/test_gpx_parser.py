@@ -34,3 +34,8 @@ def test__parse_coordinates(gpx_parser):
     assert parser.longitude_list[0] == 8.687453
     assert parser.latitude_list[0] ==  49.405446
     assert parser.altitude_list[0] == 128.94
+
+
+def test_parse_timestamps(gpx_parser):
+    parser = gpx_parser()
+    assert 1562951136.0 in parser.timestamps_list
