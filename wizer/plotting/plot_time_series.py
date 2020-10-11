@@ -83,8 +83,6 @@ def plot_time_series(activity: models.Activity):
             values = pd.Series(json.loads(values), dtype=float)
             if values.any():
                 attribute = attribute.replace("_list", "")
-                print(attribute)
-                print(values)
 
                 p = figure(x_axis_type='datetime', plot_height=int(settings.PLOT_HEIGHT / 2.5),
                             sizing_mode='stretch_width', y_axis_label=plot_matrix[attribute]["axis"])
@@ -111,7 +109,7 @@ def plot_time_series(activity: models.Activity):
                 p.xgrid.grid_line_color = None
                 p.legend.location = "top_left"
                 p.legend.label_text_font = "ubuntu"
-                p.legend.background_fill_alpha = 0.9
+                p.legend.background_fill_alpha = 0.7
                 dtf = DatetimeTickFormatter()
                 dtf.minutes = ["%M:%S"]
                 p.xaxis.formatter = dtf
@@ -211,5 +209,8 @@ def _add_vlinked_crosshairs(fig1, fig2, x_values):
 
 
 def _link_all_plots_with_each_other(all_plots: list, x_values: list):
-    for combi in combinations(all_plots, 2):
-        _add_vlinked_crosshairs(combi[0], combi[1], x_values=x_values)
+    if len(all_plots) < 2:
+        _add_vlinked_crosshairs(all_plots[0], all_plots[0], x_values=x_values)
+    else:
+        for combi in combinations(all_plots, 2):
+            _add_vlinked_crosshairs(combi[0], combi[1], x_values=x_values)
