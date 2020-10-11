@@ -209,7 +209,7 @@ def _add_vlinked_crosshairs(fig1, fig2, x_values):
 
 
 def _link_all_plots_with_each_other(all_plots: list, x_values: list):
-    if len(all_plots) < 2:
+    if len(all_plots) == 1:
         _add_vlinked_crosshairs(all_plots[0], all_plots[0], x_values=x_values)
     else:
         for combi in combinations(all_plots, 2):
