@@ -32,7 +32,7 @@ setuptools.setup(
         'Framework :: Django :: 2.2',
         'Framework :: Django :: 3.0',
     ],
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     extras_require={
         'testing': requirements_from_txt('dev-requirements.txt'),
     },
