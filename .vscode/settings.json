@@ -2,5 +2,14 @@
     "cSpell.words": [
         "wizer",
         "workoutizer"
-    ]
+    ],
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "wkz [DEV]",
+            "database": "${workspaceFolder:workoutizer}/db.sqlite3"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
 }
