@@ -10,7 +10,7 @@
     <div class="btn-group float-right">
         <a class="btn btn-warning" href="{{ activity.id }}/edit" data-toggle="tooltip" data-placement="bottom"
            title="Edit Activity"><i class="fas fa-pen"></i></a>
-        {% if traces %}
+        {% if activity.trace_file.longitude_list != "[]" %}
             <a class="btn btn-warning" href="{{ activity.id }}/download" data-toggle="tooltip" data-placement="bottom"
                title="Download GPX File"><i class="fas fa-download"></i></a>
         {% endif %}
