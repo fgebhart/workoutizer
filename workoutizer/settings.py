@@ -1,16 +1,17 @@
 import os
 from pathlib import Path
 
-import coloredlogs
-
 from workoutizer.logger import get_logging_config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 INITIAL_TRACE_DATA_DIR = os.path.join(BASE_DIR, 'setup', 'initial_trace_data')
 
-USER_HOME = Path.home()
-WORKOUTIZER_DIR = os.path.join(str(USER_HOME), ".wkz")
+if os.getenv('WKZ_ENV', None) == 'devel':
+    WORKOUTIZER_DIR = BASE_DIR
+else:
+    USER_HOME = Path.home()
+    WORKOUTIZER_DIR = os.path.join(str(USER_HOME), ".wkz")
 SQLITE_FILE = 'db.sqlite3'
 WORKOUTIZER_DB_PATH = os.path.join(WORKOUTIZER_DIR, SQLITE_FILE)
 TRACKS_DIR = os.path.join(WORKOUTIZER_DIR, 'tracks')

@@ -6,6 +6,7 @@ docker run \
   --rm \
   -it \
   -e WKZ_LOG_LEVEL='DEBUG' \
+  -e WKZ_ENV='devel' \
   -p 8000:8000 \
   -v $(pwd):/wkz \
   -v ~/.wkz:/root/.wkz \
