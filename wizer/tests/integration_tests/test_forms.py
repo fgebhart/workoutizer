@@ -43,4 +43,3 @@ def test_add_and_edit_activity_form(db, sport):
 
     form = EditActivityForm(data=form_data)
     assert form.is_valid() is True
-

@@ -11,14 +11,13 @@ log = logging.getLogger(__name__)
 
 
 class Sport(models.Model):
-
     def __str__(self):
         return self.name
 
     name = models.CharField(max_length=24, unique=True, verbose_name="Sport Name:")
     icon = models.CharField(max_length=24, verbose_name="Icon:")
     slug = models.SlugField(max_length=100, unique=True, blank=True)
-    color = ColorField(default='#42FF71', verbose_name="Color:")
+    color = ColorField(default="#42FF71", verbose_name="Color:")
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -28,7 +27,6 @@ class Sport(models.Model):
 
 
 class Traces(models.Model):
-
     def __str__(self):
         return self.file_name
 
@@ -37,8 +35,8 @@ class Traces(models.Model):
     md5sum = models.CharField(max_length=32, unique=True)
     calories = models.IntegerField(null=True, blank=True)
     # coordinates
-    latitude_list =  models.CharField(max_length=10000000000, default="[]")
-    longitude_list =  models.CharField(max_length=10000000000, default="[]")
+    latitude_list = models.CharField(max_length=10000000000, default="[]")
+    longitude_list = models.CharField(max_length=10000000000, default="[]")
     # distance
     distance_list = models.CharField(max_length=10000000000, default="[]")
     # elevation
@@ -74,23 +72,21 @@ class Traces(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         log.debug(f"creating file name from path {self.path_to_file} -> {self.file_name}")
         self.file_name = self.path_to_file.split("/")[-1]
         super(Traces, self).save()
 
 
 def default_sport():
-    sport = Sport.objects.filter(slug='unknown').first()
+    sport = Sport.objects.filter(slug="unknown").first()
     if not sport:
-        sport = Sport(name='unknown', color='gray', icon='question-circle', slug='unknown')
+        sport = Sport(name="unknown", color="gray", icon="question-circle", slug="unknown")
         sport.save()
     return sport.pk
 
 
 class Activity(models.Model):
-
     def __str__(self):
         return f"{self.name} ({self.sport})"
 
@@ -134,12 +130,14 @@ class Lap(models.Model):
 
 
 class Settings(models.Model):
-    days_choices = [(9999, 'all'), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10)]
+    days_choices = [(9999, "all"), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10)]
 
-    path_to_trace_dir = models.CharField(max_length=120, default="/home/pi/traces/",
-                                         verbose_name="Path to Traces Directory:")
-    path_to_garmin_device = models.CharField(max_length=120, default="/run/user/1000/gvfs/",
-                                             verbose_name="Path to Garmin Device:")
+    path_to_trace_dir = models.CharField(
+        max_length=120, default="/home/pi/traces/", verbose_name="Path to Traces Directory:"
+    )
+    path_to_garmin_device = models.CharField(
+        max_length=120, default="/run/user/1000/gvfs/", verbose_name="Path to Garmin Device:"
+    )
     file_checker_interval = models.IntegerField(default=60, verbose_name="File Checker Time Interval:")
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     reimporter_updates_all = models.BooleanField(verbose_name="Force Update all Fields:", default=False)

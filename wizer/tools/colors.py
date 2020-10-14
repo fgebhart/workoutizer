@@ -1,4 +1,3 @@
-
 lines_colors = [
     "Red",
     "DodgerBlue",
@@ -181,4 +180,3 @@ lines_colors = [
     "DarkOliveGreen",
     "Coral",
 ]
-

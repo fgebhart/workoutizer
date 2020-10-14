@@ -12,8 +12,8 @@ def migrate_traces(source_model, target_model):
     for trace in source:
         geojson = trace.geojson
         log.debug(f"got geojson: {geojson}")
-        geometry = geojson.replace("'", "\"")
-        geometry = json.loads(geometry)['features'][0]['geometry']
+        geometry = geojson.replace("'", '"')
+        geometry = json.loads(geometry)["features"][0]["geometry"]
         log.debug(f"got geometry: {geometry}")
         target = target_model(
             path_to_file=trace.path_to_file,
@@ -34,4 +34,5 @@ def migrate_duration(activities):
         activity.duration = timedelta
         activity.save()
         log.debug(
-            f"modified activity: {activity.pk}, duration_old: {activity.duration_old}, duration: {activity.duration}")
+            f"modified activity: {activity.pk}, duration_old: {activity.duration_old}, duration: {activity.duration}"
+        )

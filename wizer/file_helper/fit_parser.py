@@ -27,21 +27,21 @@ class FITParser(Parser):
         for record in self.fit.get_messages():
             record = record.get_values()
             # parse laps
-            if record.get('event') == 'lap':
+            if record.get("event") == "lap":
                 self.laps.append(_parse_lap_data(record))
-            
+
             # parse list attributes
-            timestamp = record.get('timestamp')
+            timestamp = record.get("timestamp")
             self.timestamps_list.append(timestamp.timestamp() if timestamp else timestamp)
-            self.distance_list.append(record.get('distance'))
-            self.longitude_list.append(_to_coordinate(record.get('position_long')))
-            self.latitude_list.append(_to_coordinate(record.get('position_lat')))
-            altitude = record.get('altitude')
+            self.distance_list.append(record.get("distance"))
+            self.longitude_list.append(_to_coordinate(record.get("position_long")))
+            self.latitude_list.append(_to_coordinate(record.get("position_lat")))
+            altitude = record.get("altitude")
             self.altitude_list.append((float(altitude) / 10) if altitude else altitude)
-            self.heart_rate_list.append(record.get('heart_rate'))
-            self.temperature_list.append(record.get('temperature'))
-            self.cadence_list.append(record.get('cadence'))
-            self.speed_list.append(record.get('enhanced_speed'))
+            self.heart_rate_list.append(record.get("heart_rate"))
+            self.temperature_list.append(record.get("temperature"))
+            self.cadence_list.append(record.get("cadence"))
+            self.speed_list.append(record.get("enhanced_speed"))
 
             # get first value of records
             if not self.sport:
@@ -50,7 +50,7 @@ class FITParser(Parser):
                 self.aerobic_training_effect = record.get("total_training_effect")
             if not self.anaerobic_training_effect:
                 self.anaerobic_training_effect = record.get("total_anaerobic_training_effect")
-            
+
             # get last value of records
             distance = record.get("total_distance")
             if distance:
@@ -76,7 +76,7 @@ class FITParser(Parser):
             avg_temperature = record.get("avg_temperature")
             if avg_temperature:
                 self.avg_temperature = avg_temperature
-            
+
         log.debug(f"found date: {self.date}")
         log.debug(f"found number of coordinates: {len(self.longitude_list)}")
         log.debug(f"found number of altitude: {len(self.altitude_list)}")
@@ -118,20 +118,20 @@ class FITParser(Parser):
 
 def _parse_lap_data(record):
     lap = LapData(
-        start_time=record['start_time'].replace(tzinfo=pytz.timezone(settings.TIME_ZONE)),
-        end_time=record['timestamp'].replace(tzinfo=pytz.timezone(settings.TIME_ZONE)),
-        elapsed_time=datetime.timedelta(seconds=record['total_elapsed_time']),
-        trigger=record.get('lap_trigger', 'unknown'),
+        start_time=record["start_time"].replace(tzinfo=pytz.timezone(settings.TIME_ZONE)),
+        end_time=record["timestamp"].replace(tzinfo=pytz.timezone(settings.TIME_ZONE)),
+        elapsed_time=datetime.timedelta(seconds=record["total_elapsed_time"]),
+        trigger=record.get("lap_trigger", "unknown"),
         # lap trigger could be 'manual', 'distance' or 'session_end'
-        distance=record['total_distance'],
-        start_lat=_to_coordinate(record.get('start_position_lat')),
-        start_long=_to_coordinate(record.get('start_position_long')),
-        end_lat=_to_coordinate(record.get('end_position_lat')),
-        end_long=_to_coordinate(record.get('end_position_long')),
+        distance=record["total_distance"],
+        start_lat=_to_coordinate(record.get("start_position_lat")),
+        start_long=_to_coordinate(record.get("start_position_long")),
+        end_lat=_to_coordinate(record.get("end_position_lat")),
+        end_long=_to_coordinate(record.get("end_position_long")),
     )
 
     if lap.elapsed_time and lap.distance:
-        lap.speed = round(lap.distance / record['total_elapsed_time'], 2)
+        lap.speed = round(lap.distance / record["total_elapsed_time"], 2)
     return lap
 
 

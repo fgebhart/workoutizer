@@ -28,7 +28,7 @@ def cut_list_to_have_same_length(list1, list2, mode="cut beginning", modify_only
     diff = len(list1) - len(list2)
     if mode == "cut beginning":
         if diff < 0:
-            list2 = list2[abs(diff):]
+            list2 = list2[abs(diff) :]
         elif diff > 0:
             if not modify_only_list2:
                 list1 = list1[diff:]
@@ -39,13 +39,14 @@ def cut_list_to_have_same_length(list1, list2, mode="cut beginning", modify_only
         elif diff > 0:  # list 1 is larger
             list2 = list2 + diff * [list2[-1]]
     else:
-        raise NotImplementedError('mode not implemented')
+        raise NotImplementedError("mode not implemented")
     return list1, list2
 
 
 def timestamp_to_local_time(timestamp: int):
     return pytz.utc.localize(datetime.datetime.fromtimestamp(timestamp), is_dst=False).astimezone(
-        pytz.timezone(settings.TIME_ZONE))
+        pytz.timezone(settings.TIME_ZONE)
+    )
 
 
 def remove_microseconds(delta):

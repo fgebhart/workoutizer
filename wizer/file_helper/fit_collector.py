@@ -11,19 +11,27 @@ class FitCollector:
         self.path_to_garmin_device = path_to_garmin_device
         self.delete_files_after_import = delete_files_after_import
         self.activity_path = "/Primary/GARMIN/Activity/"
-        self.target_location = os.path.join(target_location, 'garmin')
+        self.target_location = os.path.join(target_location, "garmin")
         if not os.path.isdir(self.target_location):
             os.makedirs(self.target_location)
 
     def copy_fit_files(self):
         log.debug(f"looking for garmin device at: {self.path_to_garmin_device}")
-        garmin_watch = [os.path.join(root, name) for root, dirs, files in os.walk(self.path_to_garmin_device)
-                        for name in dirs if name.startswith("mtp:host")]
+        garmin_watch = [
+            os.path.join(root, name)
+            for root, dirs, files in os.walk(self.path_to_garmin_device)
+            for name in dirs
+            if name.startswith("mtp:host")
+        ]
         if garmin_watch:
             garmin_watch = garmin_watch[0] + self.activity_path
             if os.path.isdir(garmin_watch):
-                fits = [os.path.join(root, name) for root, dirs, files in os.walk(garmin_watch)
-                        for name in files if name.endswith(".fit")]
+                fits = [
+                    os.path.join(root, name)
+                    for root, dirs, files in os.walk(garmin_watch)
+                    for name in files
+                    if name.endswith(".fit")
+                ]
                 for fit in fits:
                     file_name = str(fit.split("/")[-1])
                     target_file = os.path.join(self.target_location, file_name)
@@ -54,19 +62,20 @@ def try_to_mount_device():
     for line in split:
         if "Garmin" in line:
             bus_start = line.find("Bus") + 4
-            bus = line[bus_start:bus_start + 3]
+            bus = line[bus_start : bus_start + 3]
             device_start = line.find("Device") + 7
-            dev = line[device_start:device_start + 3]
+            dev = line[device_start : device_start + 3]
             try:
                 mount_output = subprocess.check_output(["gio", "mount", "-d", f"/dev/bus/usb/{bus}/{dev}"]).decode(
-                    'utf-8')
+                    "utf-8"
+                )
             except subprocess.CalledProcessError as e:
                 log.warning(f"could not mount device: {e}")
                 return None
     if mount_output:
         if "Mounted" in mount_output:
             path_start = mount_output.find("at")
-            mount_path = mount_output[path_start + 2:-1]
+            mount_path = mount_output[path_start + 2 : -1]
             log.info(f"successfully mounted device at: {mount_path}")
             return mount_path
         else:

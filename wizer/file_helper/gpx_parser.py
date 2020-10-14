@@ -15,7 +15,7 @@ class GPXParser(Parser):
         self.gpx = None
 
     def _parse_metadata(self):
-        gpx_file = open(self.path_to_file, 'r')
+        gpx_file = open(self.path_to_file, "r")
         self.file_name = self.get_file_name_from_path(self.path_to_file)
         self.gpx = gpxpy.parse(gpx_file)
         self._get_sport_from_gpx_file()
@@ -69,5 +69,5 @@ class GPXParser(Parser):
         self.distance = get_total_distance_of_trace(
             longitude_list=self.longitude_list,
             latitude_list=self.latitude_list,
-            )
+        )
         log.debug(f"found distance: {self.distance}")
