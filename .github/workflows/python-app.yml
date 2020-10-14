@@ -16,18 +16,18 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
+      - name: Check formatting
+        run: |
+          pip install flake8 black isort
+          # fail if there is an formatting error
+          flake8 .
+          isort -c .
+          black --check -l 121 .
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e .
           python -m pip install -r setup/requirements/dev-requirements.txt
-      - name: Check formatting
-        run: |
-          pip install flake8 black isort
-          # fail if there is an formatting error
-          flake8 . --max-line-length=127 --exclude wizer/migrations/
-          isort -c .
-          black --check -l 127 .
       - name: Run Unit Tests
         run: |
           pytest wizer/tests/unit_tests -v

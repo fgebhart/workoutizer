@@ -1,0 +1,14 @@
+[flake8]
+ignore = D203
+exclude =
+    .git,
+    __pycache__,
+    docs/source/conf.py,
+    old,
+    build,
+    dist,
+    wizer/migrations,
+    .eggs,
+    setup/other,
+max-complexity = 10
+max-line-length = 121
