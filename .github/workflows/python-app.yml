@@ -32,15 +32,15 @@ jobs:
           flake8 .
       - name: Install dependencies
         run: |
+          if: ${{ always() }}
           python -m pip install --upgrade pip
           python -m pip install -e .
           python -m pip install -r setup/requirements/dev-requirements.txt
       - name: Run Unit Tests
         run: |
+          if: ${{ always() }}
           pytest wizer/tests/unit_tests -v
       - name: Run Integration Tests
         run: |
+          if: ${{ always() }}
           pytest wizer/tests/integration_tests -v
-#      - name: Run end2end Test
-#        run: |
-#          pytest wizer/tests/end2end -v
