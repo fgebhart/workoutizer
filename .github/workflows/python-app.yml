@@ -20,11 +20,6 @@ jobs:
         run: |
           pip install black
           black --check -l 121 .
-      - name: isort formatting
-        if: ${{ always() }}
-        run: |
-          pip install isort
-          isort -c .
       - name: flake8 formatting
         if: ${{ always() }}
         run: |
