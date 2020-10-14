@@ -21,12 +21,12 @@ jobs:
           pip install black
           black --check -l 121 .
       - name: isort formatting
-        if: ${{ failure() }}
+        if: ${{ always() }}
         run: |
           pip install isort
           isort -c .
       - name: flake8 formatting
-        if: ${{ failure() }}
+        if: ${{ always() }}
         run: |
           pip install flake8
           flake8 .
