@@ -25,7 +25,7 @@ from wizer.gis.gis import GeoTrace
 from wizer.file_helper.reimporter import Reimporter
 from wizer.file_helper.fit_collector import try_to_mount_device, FitCollector
 from wizer.tools.colors import lines_colors
-from wizer.tools.utils import cut_list_to_have_same_length, limit_string
+from wizer.tools.utils import cut_list_to_have_same_length
 from workoutizer import settings
 
 log = logging.getLogger(__name__)
@@ -146,7 +146,7 @@ class DashboardView(View, PlotView):
             }
             return render(request, self.template_name, {**context, **plotting_context})
         else:
-            log.warning(f"no activities found...")
+            log.warning("no activities found...")
         return render(request, self.template_name, {**context})
 
 
@@ -223,7 +223,7 @@ def custom_404_view(request, exception=None):
 
 
 def reimport_activity_files(request):
-    messages.info(request, f"Running reimport in background...")
+    messages.info(request, "Running reimport in background...")
 
     reimporter = Process(target=Reimporter, args=())
     reimporter.start()

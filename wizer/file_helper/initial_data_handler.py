@@ -68,7 +68,7 @@ def _activity_data(sport_model, counter):
 
 def insert_settings_and_sports_to_model(settings_model, sport_model):
     settings_model.objects.get_or_create(pk=1, path_to_trace_dir=settings.TRACKS_DIR, number_of_days=30)
-    log.info(f"created initial settings")
+    log.info("created initial settings")
     for i in range(len(sport_data["name"])):
         sport_model.objects.get_or_create(
             name=sport_data.get("name")[i],
@@ -76,7 +76,7 @@ def insert_settings_and_sports_to_model(settings_model, sport_model):
             icon=sport_data.get("icon")[i],
             slug=sport_data.get("slug")[i],
         )
-    log.info(f"created initial sports")
+    log.info("created initial sports")
 
 
 def insert_activities_to_model(sport_model, activity_model):
@@ -89,7 +89,7 @@ def insert_activities_to_model(sport_model, activity_model):
             duration=activity.get("duration")[i],
             is_demo_activity=True,
         )
-    log.info(f"created initial activities")
+    log.info("created initial activities")
 
 
 def create_demo_trace_data_with_recent_time():

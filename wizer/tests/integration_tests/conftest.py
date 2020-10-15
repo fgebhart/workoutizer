@@ -1,9 +1,6 @@
 import datetime
 
 import pytest
-import pytz
-from django.utils import timezone
-from django.conf import settings as django_settings
 
 from wizer.models import Settings, Sport, Activity, Traces
 

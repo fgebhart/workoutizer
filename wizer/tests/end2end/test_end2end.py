@@ -36,7 +36,7 @@ def test_workoutizer_full():
     for sport in ["hiking", "swimming", "cycling", "jogging", "unknown"]:
         assert _get_site_status_code(f"{http_url}/sport/{sport}") == 200
 
-    print(f"SUCCESS - no errors found.")
+    print("SUCCESS - no errors found.")
 
     # end process
     proc.terminate()

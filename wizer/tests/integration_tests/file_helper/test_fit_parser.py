@@ -109,7 +109,3 @@ def test_convert_list_of_nones_to_empty_list(fit_parser):
     assert p.altitude_list[:3] == [None, None, None]
     p.convert_list_of_nones_to_empty_list()
     assert p.altitude_list == []
-
-
-def test_parse_fit_record_wise(fit_parser):
-    p = fit_parser()

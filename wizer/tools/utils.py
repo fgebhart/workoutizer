@@ -3,8 +3,6 @@ import hashlib
 import datetime
 
 import pytz
-import numpy as np
-import pandas as pd
 from django.conf import settings
 
 log = logging.getLogger(__name__)

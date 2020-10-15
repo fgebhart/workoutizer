@@ -50,7 +50,7 @@ class SportsView(MapView, PlotView):
     def get(self, request, sports_name_slug):
         log.debug(f"got sports name: {sports_name_slug}")
         if sports_name_slug == "undefined":
-            log.warning(f"could not find sport - redirecting to home")
+            log.warning("could not find sport - redirecting to home")
             return HttpResponseRedirect(reverse("home"))
         sport_id = Sport.objects.get(slug=sports_name_slug).id
         activities = self.get_activities(sport_id=sport_id)

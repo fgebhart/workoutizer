@@ -10,7 +10,6 @@ from bokeh.layouts import column
 import pandas as pd
 
 from django.conf import settings
-from pandas.core.arrays.sparse import dtype
 from wizer.naming import attributes_to_create_time_series_plot_for
 from wizer import models
 
@@ -201,14 +200,14 @@ def _add_vlinked_crosshairs(fig1, fig2, x_values):
            cb_obj.y >= fig.y_range.start && cb_obj.y <= fig.y_range.end)
         {
             cross.spans.height.computed_location = cb_obj.sx
-            
-            // determine closest point in list of x_values in order to render 
+
+            // determine closest point in list of x_values in order to render
             // the current position when hovering over time series plots
             var closest = x_values.reduce(function (prev, curr) {
                 return (Math.abs(curr - cb_obj.x) < Math.abs(prev - cb_obj.x) ? curr : prev);
             });
             var index = x_values.indexOf(closest);
-            
+
             // call rendering function, defined in activity_map.html
             render_position(index);
         }

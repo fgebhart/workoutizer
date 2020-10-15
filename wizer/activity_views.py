@@ -155,5 +155,5 @@ class DemoActivityDeleteView(DeleteView):
         log.debug(f"deleting: {self.activities}")
         for activity in self.activities:
             activity.delete()
-        log.info(f"deleted demo activities")
+        log.info("deleted demo activities")
         return HttpResponseRedirect(reverse("home"))

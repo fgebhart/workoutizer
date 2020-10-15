@@ -46,11 +46,11 @@ def setup_rpi(ip, vendor_id, product_id):
     if not ip:
         ip = _get_local_ip_address()
     answer = input(
-        f"Are you sure you want to setup your Raspberry Pi?\n\n"
-        f"This will copy the required udev rule and systemd service file\n"
-        f"to your system to enable automated mounting of your device.\n"
-        f"This might take a while...\n\n"
-        f"Start setup? [Y/n] "
+        "Are you sure you want to setup your Raspberry Pi?\n\n"
+        "This will copy the required udev rule and systemd service file\n"
+        "to your system to enable automated mounting of your device.\n"
+        "This might take a while...\n\n"
+        "Start setup? [Y/n] "
     )
     if answer.lower() == "y":
         click.echo("installing ansible...")

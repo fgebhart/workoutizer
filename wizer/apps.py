@@ -69,11 +69,11 @@ class WizerFileDaemon(AppConfig):
 
             # insert initial example activity data in the case there is none
             if models.Activity.objects.count() == 0:
-                log.debug(f"no data found, will create demo data...")
+                log.debug("no data found, will create demo data...")
                 insert_settings_and_sports_to_model(settings_model=models.Settings, sport_model=models.Sport)
                 create_demo_trace_data_with_recent_time()
                 insert_activities_to_model(sport_model=models.Sport, activity_model=models.Activity)
-                log.info(f"inserting initial demo data done.")
+                log.info("inserting initial demo data done.")
                 importing_demo_data = True
             fi = Process(target=FileImporter, args=(models, importing_demo_data))
             fi.start()
@@ -106,7 +106,7 @@ class FileImporter:
                     log.warning(f"path: {path} is not a valid directory!")
                     break
                 if self.importing_demo_data:
-                    log.info(f"finished inserting demo data")
+                    log.info("finished inserting demo data")
                     self.importing_demo_data = False
                 time.sleep(interval)
         except OperationalError as e:
@@ -269,10 +269,10 @@ def get_md5sums_from_model(traces_model):
 def parse_data(file):
     log.debug(f"importing file {file} ...")
     if file.endswith(".gpx"):
-        log.debug(f"parsing GPX file ...")
+        log.debug("parsing GPX file ...")
         parser = GPXParser(path_to_file=file)
     elif file.endswith(".fit"):
-        log.debug(f"parsing FIT file ...")
+        log.debug("parsing FIT file ...")
         parser = FITParser(path_to_file=file)
         parser.convert_list_of_nones_to_empty_list()
         parser.set_min_max_values()

@@ -79,6 +79,6 @@ def try_to_mount_device():
             log.info(f"successfully mounted device at: {mount_path}")
             return mount_path
         else:
-            log.warning(f"could not mount device")
+            log.warning("could not mount device")
     else:
-        log.warning(f"no Garmin device found in 'lsusb'")
+        log.warning("no Garmin device found in 'lsusb'")

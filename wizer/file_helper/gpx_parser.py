@@ -41,7 +41,7 @@ class GPXParser(Parser):
             self.duration = end - start
             log.debug(f"found duration: {self.duration}")
         else:
-            log.warning(f"could not find duration")
+            log.warning("could not find duration")
         if self.gpx.time:
             self.date = self.gpx.time
             log.debug(f"found date: {self.date}")
@@ -50,7 +50,7 @@ class GPXParser(Parser):
             log.debug(f"found date: {self.date}")
 
         if not self.date:
-            log.warning(f"could not find date in GPX file, will use OS file created date")
+            log.warning("could not find date in GPX file, will use OS file created date")
             self.get_file_created_datetime()
 
     def _parse_records(self):
