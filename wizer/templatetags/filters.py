@@ -12,7 +12,7 @@ def duration(td):
     total_seconds = int(td.total_seconds())
     hours = total_seconds // 3600
     minutes = (total_seconds % 3600) // 60
-    return f'{hours}h {minutes}m'
+    return f"{hours}h {minutes}m"
 
 
 @register.filter
@@ -22,7 +22,7 @@ def table_duration(td):
     minutes = (total_seconds % 3600) // 60
     if minutes < 10:
         minutes = f"0{minutes}"
-    return f'{hours}:{minutes}'
+    return f"{hours}:{minutes}"
 
 
 @register.filter
@@ -35,8 +35,8 @@ def speed_to_pace(speed):
     delta = datetime.timedelta(minutes=pace)
     hours, remainder = divmod(delta.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
-    pace = '{:02}:{:02}'.format(int(minutes), int(seconds))
-    return f'{pace}'
+    pace = "{:02}:{:02}".format(int(minutes), int(seconds))
+    return f"{pace}"
 
 
 @register.filter
@@ -69,7 +69,7 @@ def strfdelta(tdelta, format):
 @register.filter
 def queryset_to_list(queryset):
     if isinstance(queryset, QuerySet):
-        list_as_string = sorted(list(queryset.values_list('slug', flat=True)))
-        if 'unknown' in list_as_string:
-            list_as_string.remove('unknown')
+        list_as_string = sorted(list(queryset.values_list("slug", flat=True)))
+        if "unknown" in list_as_string:
+            list_as_string.remove("unknown")
         return list_as_string

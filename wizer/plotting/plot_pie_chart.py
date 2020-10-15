@@ -24,16 +24,29 @@ def plot_pie_chart(activities):
         if activity.sport.name in sport_distribution:
             sport_distribution[activity.sport.name] += 1
 
-    data = pd.Series(sport_distribution).reset_index(name='value').rename(columns={'index': 'country'})
-    data['angle'] = data['value'] / data['value'].sum() * 2 * pi
-    data['color'] = color_list
+    data = pd.Series(sport_distribution).reset_index(name="value").rename(columns={"index": "country"})
+    data["angle"] = data["value"] / data["value"].sum() * 2 * pi
+    data["color"] = color_list
 
-    p = figure(plot_height=120, toolbar_location=None, sizing_mode='stretch_width',
-               tools="hover", tooltips="@country: @value", x_range=(-0.5, 1.0))
+    p = figure(
+        plot_height=120,
+        toolbar_location=None,
+        sizing_mode="stretch_width",
+        tools="hover",
+        tooltips="@country: @value",
+        x_range=(-0.5, 1.0),
+    )
 
-    p.wedge(x=0.3, y=0.5, radius=0.3,
-            start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
-            line_color="white", fill_color='color', source=data)
+    p.wedge(
+        x=0.3,
+        y=0.5,
+        radius=0.3,
+        start_angle=cumsum("angle", include_zero=True),
+        end_angle=cumsum("angle"),
+        line_color="white",
+        fill_color="color",
+        source=data,
+    )
 
     p.axis.axis_label = None
     p.axis.visible = False

@@ -5,21 +5,21 @@ from wizer.models import Activity
 
 
 def test_help_view(db, client):
-    response = client.get(reverse('help'))
+    response = client.get(reverse("help"))
     assert response.status_code == 200
-    assert "Keyboard Navigation" in response.content.decode('UTF-8')
+    assert "Keyboard Navigation" in response.content.decode("UTF-8")
 
 
 def test_dashboard_view(db, client):
-    response = client.get(reverse('home'))
+    response = client.get(reverse("home"))
     assert response.status_code == 200
-    assert "Add Activity" in response.content.decode('UTF-8')
+    assert "Add Activity" in response.content.decode("UTF-8")
 
 
 def test_settings_view(db, client):
-    response = client.get(reverse('settings'))
+    response = client.get(reverse("settings"))
     assert response.status_code == 200
-    assert "Save" in response.content.decode('UTF-8')
+    assert "Save" in response.content.decode("UTF-8")
 
 
 def test_activity_view(db, client, settings, sport, activity):

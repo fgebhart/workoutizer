@@ -14,7 +14,7 @@ class GeoTrace:
     name: str
     coordinates: list
     sport: str
-    color: str = '#808080'
+    color: str = "#808080"
     opacity: float = 0.7
     weight: float = 3.0
 
@@ -30,8 +30,8 @@ def get_total_distance_of_trace(longitude_list: List[float], latitude_list: List
     total_distance = 0
     for index, row in coordinates_df.iterrows():
         if index < len(coordinates_df) - 1:
-            point = (row['lat'], row['lon'])
-            next_point = (coordinates_df.at[index + 1, 'lat'], coordinates_df.at[index + 1, 'lon'])
+            point = (row["lat"], row["lon"])
+            next_point = (coordinates_df.at[index + 1, "lat"], coordinates_df.at[index + 1, "lon"])
             dist = distance.geodesic(point, next_point)
             total_distance += dist.km
     return round(total_distance, 2)

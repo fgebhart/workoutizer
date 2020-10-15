@@ -56,11 +56,7 @@ def _track_points(coordinates: list, timestamps: list):
 
 
 def _build_gpx(time, file_name, coordinates: list, timestamps: list, sport: str):
-    return _gpx_file(
-        time=time,
-        name=file_name,
-        track_points=_track_points(coordinates, timestamps),
-        sport=sport)
+    return _gpx_file(time=time, name=file_name, track_points=_track_points(coordinates, timestamps), sport=sport)
 
 
 def _fill_list_of_timestamps(start: datetime.date, duration, length: int):
@@ -69,7 +65,7 @@ def _fill_list_of_timestamps(start: datetime.date, duration, length: int):
     one_step_of_time = duration / length
     start = datetime.datetime.combine(start, datetime.time(12, 00))
     for i in range(length):
-        interval = (start + one_step_of_time * i)
+        interval = start + one_step_of_time * i
         strftime = interval.strftime(timestamp_format)
         list_of_timestamps.append(strftime)
     return list_of_timestamps
@@ -78,15 +74,17 @@ def _fill_list_of_timestamps(start: datetime.date, duration, length: int):
 def save_activity_to_gpx_file(activity):
     file_name = f"{activity.date.date()}_{sanitize(activity.name)}.gpx"
     path = os.path.join(settings.MEDIA_ROOT, file_name)
-    coordinates = list(zip(
-                    list(pd.Series(json.loads(activity.trace_file.longitude_list)).ffill().bfill()),
-                    list(pd.Series(json.loads(activity.trace_file.latitude_list)).ffill().bfill()),
-                ))
+    coordinates = list(
+        zip(
+            list(pd.Series(json.loads(activity.trace_file.longitude_list)).ffill().bfill()),
+            list(pd.Series(json.loads(activity.trace_file.latitude_list)).ffill().bfill()),
+        )
+    )
     if json.loads(activity.trace_file.altitude_list):
         coordinates = add_elevation_data_to_coordinates(
             coordinates=coordinates,
             altitude=list(pd.Series(json.loads(activity.trace_file.altitude_list)).ffill().bfill()),
-            )
+        )
     file_content = _build_gpx(
         time=activity.date,
         file_name=activity.name,

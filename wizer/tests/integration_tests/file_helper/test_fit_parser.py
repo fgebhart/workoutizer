@@ -13,13 +13,13 @@ tz = pytz.timezone(settings.TIME_ZONE)
 
 def test__parse_metadata(fit_parser):
     p = fit_parser()
-    assert p.file_name == 'example.fit'
+    assert p.file_name == "example.fit"
 
 
 def test__parse_records(fit_parser):
     p = fit_parser()
     # test single value attributes
-    assert p.sport == 'running'
+    assert p.sport == "running"
     assert p.distance == 5.84
     assert p.duration == datetime.timedelta(seconds=3164)
     assert p.date == datetime.datetime(2019, 9, 14, 16, 15, tzinfo=tz)
@@ -60,7 +60,7 @@ def test__parse_records(fit_parser):
         start_long=8.694087238982322,
         end_long=8.696012729778888,
         end_lat=49.40549436025322,
-        trigger='distance',
+        trigger="distance",
         speed=2.15,
     )
 
@@ -86,11 +86,11 @@ def test_get_min_max_values(fit_parser):
     assert p.max_heart_rate == 160.0
     assert p.min_heart_rate == 95.0
     with pytest.raises(AttributeError):
-        assert p.max_timestamps == 0.
+        assert p.max_timestamps == 0.0
     with pytest.raises(AttributeError):
-        assert p.max_distance == 0.
+        assert p.max_distance == 0.0
     with pytest.raises(AttributeError):
-        assert p.max_coordinates == 0.
+        assert p.max_coordinates == 0.0
 
 
 def test_convert_list_attributes_to_json(fit_parser):
@@ -109,7 +109,3 @@ def test_convert_list_of_nones_to_empty_list(fit_parser):
     assert p.altitude_list[:3] == [None, None, None]
     p.convert_list_of_nones_to_empty_list()
     assert p.altitude_list == []
-
-
-def test_parse_fit_record_wise(fit_parser):
-    p = fit_parser()

@@ -11,21 +11,33 @@ from wizer.file_helper.gpx_parser import GPXParser
 from wizer.file_helper.fit_parser import FITParser
 from wizer.file_helper.fit_collector import FitCollector
 from wizer.tools.utils import sanitize, calc_md5
-from wizer.file_helper.initial_data_handler import insert_settings_and_sports_to_model, \
-    create_demo_trace_data_with_recent_time, insert_activities_to_model
+from wizer.file_helper.initial_data_handler import (
+    insert_settings_and_sports_to_model,
+    create_demo_trace_data_with_recent_time,
+    insert_activities_to_model,
+)
 
 log = logging.getLogger(__name__)
 
 sport_naming_map = {
-    'Jogging': ['jogging', 'running'],
-    'Cycling': ['cycle', 'cycling', 'biking'],
-    'Mountainbiking': ['mountainbiking', 'mountainbike', 'mountain biking', 'mountain bike', 'mountain-biking',
-                       'mountain-bike', 'mtbing', 'mtb', 'cycling_mountain'],
-    'Hiking': ['hiking', 'hike', 'wandern', 'walking', 'mountaineering'],
-    'Triathlon': ['triathlon', 'tria'],
-    'Swimming': ['swimming', 'swim', 'pool'],
-    'Yoga': ['yoga', 'yogi'],
-    'Workout': ['training'],
+    "Jogging": ["jogging", "running"],
+    "Cycling": ["cycle", "cycling", "biking"],
+    "Mountainbiking": [
+        "mountainbiking",
+        "mountainbike",
+        "mountain biking",
+        "mountain bike",
+        "mountain-biking",
+        "mountain-bike",
+        "mtbing",
+        "mtb",
+        "cycling_mountain",
+    ],
+    "Hiking": ["hiking", "hike", "wandern", "walking", "mountaineering"],
+    "Triathlon": ["triathlon", "tria"],
+    "Swimming": ["swimming", "swim", "pool"],
+    "Yoga": ["yoga", "yogi"],
+    "Workout": ["training"],
 }
 
 formats = [".gpx", ".fit"]
@@ -34,38 +46,34 @@ formats = [".gpx", ".fit"]
 def _was_runserver_triggered(args: list):
     triggered = False
     for arg in args:
-        if arg == 'run' or arg == 'runserver':
+        if arg == "run" or arg == "runserver":
             triggered = True
-        if 'runserver' in arg and 'help' not in arg:
+        if "runserver" in arg and "help" not in arg:
             triggered = True
-        if arg == 'help':
+        if arg == "help":
             triggered = False
 
     return triggered
 
 
 class WizerFileDaemon(AppConfig):
-    name = 'wizer'
-    verbose_name = 'Workoutizer'
+    name = "wizer"
+    verbose_name = "Workoutizer"
 
     def ready(self):
         # ensure to only run with 'manage.py runserver' and not in auto reload thread
-        if _was_runserver_triggered(sys.argv) and os.environ.get('RUN_MAIN', None) != 'true':
+        if _was_runserver_triggered(sys.argv) and os.environ.get("RUN_MAIN", None) != "true":
             from wizer import models
 
             importing_demo_data = False
 
             # insert initial example activity data in the case there is none
             if models.Activity.objects.count() == 0:
-                log.debug(f"no data found, will create demo data...")
-                insert_settings_and_sports_to_model(
-                    settings_model=models.Settings,
-                    sport_model=models.Sport)
+                log.debug("no data found, will create demo data...")
+                insert_settings_and_sports_to_model(settings_model=models.Settings, sport_model=models.Sport)
                 create_demo_trace_data_with_recent_time()
-                insert_activities_to_model(
-                    sport_model=models.Sport,
-                    activity_model=models.Activity)
-                log.info(f"inserting initial demo data done.")
+                insert_activities_to_model(sport_model=models.Sport, activity_model=models.Activity)
+                log.info("inserting initial demo data done.")
                 importing_demo_data = True
             fi = Process(target=FileImporter, args=(models, importing_demo_data))
             fi.start()
@@ -98,7 +106,7 @@ class FileImporter:
                     log.warning(f"path: {path} is not a valid directory!")
                     break
                 if self.importing_demo_data:
-                    log.info(f"finished inserting demo data")
+                    log.info("finished inserting demo data")
                     self.importing_demo_data = False
                 time.sleep(interval)
         except OperationalError as e:
@@ -128,16 +136,25 @@ class FileImporter:
             else:  # checksum is in db already
                 file_name = trace_file.split("/")[-1]
                 trace_file_path_instance = self.models.Traces.objects.get(md5sum=md5sum)
-                if trace_file_path_instance.file_name == file_name and trace_file_path_instance.path_to_file != trace_file:
+                if (
+                    trace_file_path_instance.file_name == file_name
+                    and trace_file_path_instance.path_to_file != trace_file
+                ):
                     log.debug(
-                        f"path of file: {trace_file_path_instance.path_to_file} has changed, updating to {trace_file}")
+                        f"path of file: {trace_file_path_instance.path_to_file} has changed, updating to {trace_file}"
+                    )
                     trace_file_path_instance.path_to_file = trace_file
                     trace_file_path_instance.save()
-                elif trace_file_path_instance.file_name != file_name and trace_file_path_instance.path_to_file != trace_file:
-                    log.warning(f"The following two files have the same checksum, "
-                                f"you might want to remove one of them:\n"
-                                f"{trace_file}\n"
-                                f"{trace_file_path_instance.path_to_file}")
+                elif (
+                    trace_file_path_instance.file_name != file_name
+                    and trace_file_path_instance.path_to_file != trace_file
+                ):
+                    log.warning(
+                        f"The following two files have the same checksum, "
+                        f"you might want to remove one of them:\n"
+                        f"{trace_file}\n"
+                        f"{trace_file_path_instance.path_to_file}"
+                    )
                 else:
                     pass  # means file is already in db
 
@@ -145,8 +162,8 @@ class FileImporter:
 def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=False):
     parser = parse_data(trace_file)
     trace_file_object = save_trace_to_model(
-        traces_model=models.Traces, md5sum=md5sum,
-        parser=parser, trace_file=trace_file)
+        traces_model=models.Traces, md5sum=md5sum, parser=parser, trace_file=trace_file
+    )
     trace_file_instance = models.Traces.objects.get(pk=trace_file_object.pk)
     sport = parser.sport
     mapped_sport = map_sport_name(sport, sport_naming_map)
@@ -157,16 +174,19 @@ def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=Fals
         trace_instance=trace_file_instance,
     )
     activity = _save_activity_to_model(
-        activities_model=models.Activity, parser=parser,
-        sport_instance=sport_instance, trace_instance=trace_file_instance,
-        importing_demo_data=importing_demo_data)
+        activities_model=models.Activity,
+        parser=parser,
+        sport_instance=sport_instance,
+        trace_instance=trace_file_instance,
+        importing_demo_data=importing_demo_data,
+    )
     log.info(f"created new {sport_instance} activity: {parser.file_name}. Id: {activity.pk}")
     return trace_file_instance
 
 
 def save_laps_to_model(lap_model, laps: list, trace_instance):
     for lap in laps:
-        log.debug(f'saving lap data: {lap} for trace: {trace_instance}')
+        log.debug(f"saving lap data: {lap} for trace: {trace_instance}")
         lap_object = lap_model(
             start_time=lap.start_time,
             end_time=lap.end_time,
@@ -249,10 +269,10 @@ def get_md5sums_from_model(traces_model):
 def parse_data(file):
     log.debug(f"importing file {file} ...")
     if file.endswith(".gpx"):
-        log.debug(f"parsing GPX file ...")
+        log.debug("parsing GPX file ...")
         parser = GPXParser(path_to_file=file)
     elif file.endswith(".fit"):
-        log.debug(f"parsing FIT file ...")
+        log.debug("parsing FIT file ...")
         parser = FITParser(path_to_file=file)
         parser.convert_list_of_nones_to_empty_list()
         parser.set_min_max_values()
@@ -271,13 +291,16 @@ def map_sport_name(sport_name, map_dict):
     if sport:
         log.debug(f"mapped activity sport: {sport_name} to {sport}")
     else:
-        sport = 'unknown'
+        sport = "unknown"
         log.warning(f"could not map '{sport_name}' to given sport names, use unknown instead")
     return sport
 
 
 def get_all_files(path):
-    trace_files = [os.path.join(root, name)
-                   for root, dirs, files in os.walk(path)
-                   for name in files if name.endswith(tuple(formats))]
+    trace_files = [
+        os.path.join(root, name)
+        for root, dirs, files in os.walk(path)
+        for name in files
+        if name.endswith(tuple(formats))
+    ]
     return trace_files

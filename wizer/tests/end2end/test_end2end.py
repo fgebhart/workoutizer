@@ -33,14 +33,14 @@ def test_workoutizer_full():
     assert _get_site_status_code(f"{http_url}/add-sport") == 200
     for activity in range(1, 10):
         assert _get_site_status_code(f"{http_url}/activity/{activity}") == 200
-    for sport in ['hiking', 'swimming', 'cycling', 'jogging', 'unknown']:
+    for sport in ["hiking", "swimming", "cycling", "jogging", "unknown"]:
         assert _get_site_status_code(f"{http_url}/sport/{sport}") == 200
 
-    print(f"SUCCESS - no errors found.")
+    print("SUCCESS - no errors found.")
 
     # end process
     proc.terminate()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_workoutizer_full()

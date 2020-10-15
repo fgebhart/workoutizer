@@ -25,51 +25,54 @@ class ActivityView(MapView):
         activity = Activity.objects.get(id=activity_id)
         context = super(ActivityView, self).get(request=request, list_of_activities=[activity])
         activity_context = {
-            'sports': Sport.objects.all().order_by('name'),
-            'activity': activity,
-            'form_field_ids': get_all_form_field_ids(),
+            "sports": Sport.objects.all().order_by("name"),
+            "activity": activity,
+            "form_field_ids": get_all_form_field_ids(),
         }
         if activity.trace_file:
             script_time_series, div_time_series = plot_time_series(activity)
-            activity_context['script_time_series'] = script_time_series
-            activity_context['div_time_series'] = div_time_series
-        laps = Lap.objects.filter(trace=activity.trace_file, trigger='manual')
+            activity_context["script_time_series"] = script_time_series
+            activity_context["div_time_series"] = div_time_series
+        laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
         if laps:
-            activity_context['laps'] = laps
+            activity_context["laps"] = laps
         return render(request, self.template_name, {**context, **activity_context})
 
 
 def add_activity_view(request):
-    sports = Sport.objects.all().order_by('name')
-    if request.method == 'POST':
+    sports = Sport.objects.all().order_by("name")
+    if request.method == "POST":
         form = AddActivityForm(request.POST)
         if form.is_valid():
             instance = form.save()
             instance.save()
             messages.success(request, f"Successfully added '{form.cleaned_data['name']}'")
-            return HttpResponseRedirect(reverse('home'))
+            return HttpResponseRedirect(reverse("home"))
         else:
             log.warning(f"form invalid: {form.errors}")
     else:
         form = AddActivityForm()
-    return render(request, 'activity/add_activity.html', {'sports': sports, 'form': form,
-                                                          'form_field_ids': get_all_form_field_ids()})
+    return render(
+        request,
+        "activity/add_activity.html",
+        {"sports": sports, "form": form, "form_field_ids": get_all_form_field_ids()},
+    )
 
 
 def edit_activity_view(request, activity_id):
     form_field_ids = get_all_form_field_ids()
-    sports = Sport.objects.all().order_by('name')
+    sports = Sport.objects.all().order_by("name")
     activity = Activity.objects.get(id=activity_id)
     activity_form = EditActivityForm(request.POST or None, instance=activity)
-    laps = Lap.objects.filter(trace=activity.trace_file, trigger='manual')
+    laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
     has_laps = True if laps else False
     if has_laps:
-        LapFormSet = modelformset_factory(Lap, fields=('label',))
+        LapFormSet = modelformset_factory(Lap, fields=("label",))
         formset = LapFormSet(request.POST or None, queryset=laps)
         form_field_ids = _add_formset_field_ids(form_field_ids, formset)
     else:
         formset = None
-    if request.method == 'POST':
+    if request.method == "POST":
         if activity_form.is_valid():
             activity_form.save()
             if has_laps:
@@ -81,9 +84,18 @@ def edit_activity_view(request, activity_id):
             log.warning(f"form invalid: {activity_form.errors}")
             if has_laps:
                 log.warning(f"form invalid: {activity_form.errors}")
-    return render(request, 'activity/edit_activity.html',
-                  {'activity_form': activity_form, 'sports': sports, 'activity': activity, "formset": formset,
-                   "has_laps": has_laps, 'form_field_ids': form_field_ids})
+    return render(
+        request,
+        "activity/edit_activity.html",
+        {
+            "activity_form": activity_form,
+            "sports": sports,
+            "activity": activity,
+            "formset": formset,
+            "has_laps": has_laps,
+            "form_field_ids": form_field_ids,
+        },
+    )
 
 
 def _add_formset_field_ids(form_field_ids, formset):
@@ -103,9 +115,9 @@ def download_activity(request, activity_id):
     activity = Activity.objects.get(id=activity_id)
     path = save_activity_to_gpx_file(activity=activity)
     if os.path.exists(path):
-        with open(path, 'rb') as fh:
+        with open(path, "rb") as fh:
             response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
-            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(path)
+            response["Content-Disposition"] = "inline; filename=" + os.path.basename(path)
             return response
     raise Http404
 
@@ -113,14 +125,17 @@ def download_activity(request, activity_id):
 class ActivityDeleteView(DeleteView):
     template_name = "activity/activity_confirm_delete.html"
     model = Activity
-    slug_field = 'activity_id'
+    slug_field = "activity_id"
     success_url = "/"
 
     def get(self, request, *args, **kwargs):
-        sports = Sport.objects.all().order_by('name')
-        activity = Activity.objects.get(id=kwargs['pk'])
-        return render(request, self.template_name, {'sports': sports, 'activity': activity,
-                                                    'form_field_ids': get_all_form_field_ids()})
+        sports = Sport.objects.all().order_by("name")
+        activity = Activity.objects.get(id=kwargs["pk"])
+        return render(
+            request,
+            self.template_name,
+            {"sports": sports, "activity": activity, "form_field_ids": get_all_form_field_ids()},
+        )
 
 
 class DemoActivityDeleteView(DeleteView):
@@ -128,14 +143,17 @@ class DemoActivityDeleteView(DeleteView):
     activities = Activity.objects.filter(is_demo_activity=True)
 
     def get(self, request, *args, **kwargs):
-        sports = Sport.objects.all().order_by('name')
+        sports = Sport.objects.all().order_by("name")
         log.debug(f"activities to be deleted: {self.activities}")
-        return render(request, self.template_name, {'sports': sports, 'activities': self.activities,
-                                                    'form_field_ids': get_all_form_field_ids()})
+        return render(
+            request,
+            self.template_name,
+            {"sports": sports, "activities": self.activities, "form_field_ids": get_all_form_field_ids()},
+        )
 
     def post(self, request, *args, **kwargs):
         log.debug(f"deleting: {self.activities}")
         for activity in self.activities:
             activity.delete()
-        log.info(f"deleted demo activities")
-        return HttpResponseRedirect(reverse('home'))
+        log.info("deleted demo activities")
+        return HttpResponseRedirect(reverse("home"))

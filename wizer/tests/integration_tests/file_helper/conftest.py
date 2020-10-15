@@ -26,19 +26,27 @@ def gpx_parser():
     return _pass_path
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def trace_coordinates():
-    return [[8.476648433133962, 49.48468884453178], [8.476595375686886, 49.48457719758154],
-            [8.47659705206752, 49.48453864082695], [8.47659654915333, 49.48450796306134]]
+    return [
+        [8.476648433133962, 49.48468884453178],
+        [8.476595375686886, 49.48457719758154],
+        [8.47659705206752, 49.48453864082695],
+        [8.47659654915333, 49.48450796306134],
+    ]
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def trace_coordinates_with_elevation():
-    return [[8.476648433133962, 49.48468884453178, 200], [8.476595375686886, 49.48457719758154, 201],
-            [8.47659705206752, 49.48453864082695, 202], [8.47659654915333, 49.48450796306134, 203]]
+    return [
+        [8.476648433133962, 49.48468884453178, 200],
+        [8.476595375686886, 49.48457719758154, 201],
+        [8.47659705206752, 49.48453864082695, 202],
+        [8.47659654915333, 49.48450796306134, 203],
+    ]
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def gpx_string():
     return f"""{gpx_header}
     <metadata>
@@ -70,7 +78,7 @@ def gpx_string():
 """
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def gpx_string_with_elevation():
     return f"""{gpx_header}
     <metadata>

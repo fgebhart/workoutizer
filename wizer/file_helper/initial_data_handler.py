@@ -10,32 +10,38 @@ from wizer.tools.utils import timestamp_format
 log = logging.getLogger(__name__)
 
 sport_data = {
-    'name': ['Hiking', 'Swimming', 'Cycling', 'Jogging'],
-    'color': ['ForestGreen', 'Navy', 'Gold', 'DarkOrange'],
-    'icon': ['hiking', 'swimmer', 'bicycle', 'running'],
-    'slug': ['hiking', 'swimming', 'cycling', 'jogging'],
+    "name": ["Hiking", "Swimming", "Cycling", "Jogging"],
+    "color": ["ForestGreen", "Navy", "Gold", "DarkOrange"],
+    "icon": ["hiking", "swimmer", "bicycle", "running"],
+    "slug": ["hiking", "swimming", "cycling", "jogging"],
 }
 
 
 def _activity_data(sport_model, counter):
     return {
-        'name': [
-            'Indoor Club Training', 'Cycling on Hometrainer', 'Indoor Club Training',
-            'Indoor Club Training', 'Cycling on Hometrainer', 'Indoor Club Training',
-            'Indoor Club Training', 'Cycling on Hometrainer', 'Indoor Club Training',
+        "name": [
+            "Indoor Club Training",
+            "Cycling on Hometrainer",
+            "Indoor Club Training",
+            "Indoor Club Training",
+            "Cycling on Hometrainer",
+            "Indoor Club Training",
+            "Indoor Club Training",
+            "Cycling on Hometrainer",
+            "Indoor Club Training",
         ],
-        'sport': [
-            sport_model.objects.get(name='Swimming'),
-            sport_model.objects.get(name='Cycling'),
-            sport_model.objects.get(name='Swimming'),
-            sport_model.objects.get(name='Swimming'),
-            sport_model.objects.get(name='Cycling'),
-            sport_model.objects.get(name='Swimming'),
-            sport_model.objects.get(name='Swimming'),
-            sport_model.objects.get(name='Cycling'),
-            sport_model.objects.get(name='Swimming'),
+        "sport": [
+            sport_model.objects.get(name="Swimming"),
+            sport_model.objects.get(name="Cycling"),
+            sport_model.objects.get(name="Swimming"),
+            sport_model.objects.get(name="Swimming"),
+            sport_model.objects.get(name="Cycling"),
+            sport_model.objects.get(name="Swimming"),
+            sport_model.objects.get(name="Swimming"),
+            sport_model.objects.get(name="Cycling"),
+            sport_model.objects.get(name="Swimming"),
         ],
-        'date': [
+        "date": [
             pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
             pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
             pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
@@ -46,7 +52,7 @@ def _activity_data(sport_model, counter):
             pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
             pytz.utc.localize(datetime.datetime.now() - datetime.timedelta(days=3 * counter + 2)),
         ],
-        'duration': [
+        "duration": [
             datetime.timedelta(minutes=90),
             datetime.timedelta(minutes=48),
             datetime.timedelta(minutes=82),
@@ -62,27 +68,28 @@ def _activity_data(sport_model, counter):
 
 def insert_settings_and_sports_to_model(settings_model, sport_model):
     settings_model.objects.get_or_create(pk=1, path_to_trace_dir=settings.TRACKS_DIR, number_of_days=30)
-    log.info(f"created initial settings")
-    for i in range(len(sport_data['name'])):
+    log.info("created initial settings")
+    for i in range(len(sport_data["name"])):
         sport_model.objects.get_or_create(
-            name=sport_data.get('name')[i],
-            color=sport_data.get('color')[i],
-            icon=sport_data.get('icon')[i],
-            slug=sport_data.get('slug')[i])
-    log.info(f"created initial sports")
+            name=sport_data.get("name")[i],
+            color=sport_data.get("color")[i],
+            icon=sport_data.get("icon")[i],
+            slug=sport_data.get("slug")[i],
+        )
+    log.info("created initial sports")
 
 
 def insert_activities_to_model(sport_model, activity_model):
-    for i in range(len(_activity_data(sport_model, 2)['name'])):
+    for i in range(len(_activity_data(sport_model, 2)["name"])):
         activity = _activity_data(sport_model, i)
         activity_model.objects.get_or_create(
-            name=activity.get('name')[i],
-            sport=activity.get('sport')[i],
-            date=activity.get('date')[i],
-            duration=activity.get('duration')[i],
+            name=activity.get("name")[i],
+            sport=activity.get("sport")[i],
+            date=activity.get("date")[i],
+            duration=activity.get("duration")[i],
             is_demo_activity=True,
         )
-    log.info(f"created initial activities")
+    log.info("created initial activities")
 
 
 def create_demo_trace_data_with_recent_time():
@@ -92,8 +99,8 @@ def create_demo_trace_data_with_recent_time():
                 gpx_file_name=trace_file,
                 source_path=settings.INITIAL_TRACE_DATA_DIR,
                 target_path=settings.TRACKS_DIR,
-                strf_timestamp=(datetime.datetime.now() - datetime.timedelta(days=3 * i + 1)).strftime(
-                    timestamp_format))
+                strf_timestamp=(datetime.datetime.now() - datetime.timedelta(days=3 * i + 1)).strftime(timestamp_format),
+            )
 
 
 def _insert_current_date_into_gpx(gpx_file_name: str, source_path: str, target_path: str, strf_timestamp: str):

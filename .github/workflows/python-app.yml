@@ -16,24 +16,26 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
+      - name: black formatting
+        run: |
+          pip install black
+          black --check -l 121 .
+      - name: flake8 formatting
+        if: ${{ always() }}
+        run: |
+          pip install flake8
+          flake8 .
       - name: Install dependencies
+        if: ${{ always() }}
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e .
           python -m pip install -r setup/requirements/dev-requirements.txt
-      - name: Lint with flake8
-        run: |
-          pip install flake8
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Run Unit Tests
+        if: ${{ always() }}
         run: |
           pytest wizer/tests/unit_tests -v
       - name: Run Integration Tests
+        if: ${{ always() }}
         run: |
           pytest wizer/tests/integration_tests -v
-#      - name: Run end2end Test
-#        run: |
-#          pytest wizer/tests/end2end -v
