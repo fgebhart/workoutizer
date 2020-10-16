@@ -1,9 +1,4 @@
-import builtins
-import io
-import os
-import pytest
-
-from workoutizer.__main__ import _get_local_ip_address, _setup_rpi, _get_latest_version_of
+from workoutizer.__main__ import _get_local_ip_address, _get_latest_version_of
 
 
 def test__get_local_ip_address():
