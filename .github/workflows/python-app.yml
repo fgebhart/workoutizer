@@ -19,7 +19,7 @@ jobs:
       - name: black formatting
         run: |
           pip install black
-          black --check -l 121 .
+          black --check .
       - name: flake8 formatting
         if: ${{ always() }}
         run: |

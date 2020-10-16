@@ -1,4 +1,6 @@
 ansible
+black
+flake8
 IPython
 lxml
 pip-tools
