@@ -1,9 +1,5 @@
 FROM python:3.8
 
-# install systemctl replacement script for testing ansible playbooks
-COPY setup/other/systemctl.py /usr/bin/systemctl
-RUN chmod +x /usr/bin/systemctl
-
  # install sqlite3 package for the use of djangos db shell
 RUN apt-get update
 RUN apt-get install -y sqlite3 virtualenv vim

@@ -77,16 +77,6 @@ def run(url):
     execute_from_command_line(["manage.py", "runserver", url])
 
 
-@click.argument("url", default="")
-@click.command(
-    help="Configure workoutizer to run as systemd service. Passing the local ip address and port is "
-    "optionally. In case of no ip address being passed, it will be determined automatically."
-)
-def wkz_as_service(url):
-    _pip_install("ansible==2.9.10")
-    _wkz_as_service(url=url)
-
-
 @click.argument("cmd", nargs=1)
 @click.command(
     help="Pass commands to django's manage.py. Convenience function to access all django commands which are "
@@ -113,7 +103,6 @@ cli.add_command(init)
 cli.add_command(setup_rpi)
 cli.add_command(run)
 cli.add_command(manage)
-cli.add_command(wkz_as_service)
 
 
 def _upgrade():
@@ -159,26 +148,6 @@ def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
     else:
         click.echo("ERROR: Could not configure Raspberry Pi, see above errors.")
         quit()
-    return result
-
-
-def _wkz_as_service(url: str):
-    click.echo("configuring workoutizer to run as system service")
-    if not url:
-        url = f"{_get_local_ip_address()}:8000"
-    env_binaries = sys.executable
-    wkz_executable = env_binaries[: env_binaries.find("python")] + "wkz"
-    result = _run_ansible(
-        playbook="wkz_as_service.yml",
-        variables={
-            "address_plus_port": url,
-            "wkz_executable": wkz_executable,
-        },
-    )
-    if result == 0:
-        click.echo("Successfully configured workoutizer as systemd service. Run it with: systemctl start wkz.service")
-    else:
-        click.echo("ERROR: Could not configure workoutizer as systemd service, see above errors.")
     return result
 
 
