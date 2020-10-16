@@ -5,10 +5,6 @@ docker run \
   --name workoutizer \
   --rm \
   -it \
-  -e WKZ_LOG_LEVEL='DEBUG' \
-  -e WKZ_ENV='devel' \
-  -p 8000:8000 \
   -v $(pwd):/wkz \
-  -v ~/.wkz:/root/.wkz \
   wkz \
-  /bin/bash -c "source /tmp/venv/bin/activate && pip install -e . --no-deps --disable-pip-version-check && bash"
+  /bin/bash -c "source /tmp/venv/bin/activate && bash"
