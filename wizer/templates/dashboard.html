@@ -4,15 +4,18 @@
 {% block body %}
     <div class="container-fluid" style="margin-left: -20px">
         <div class="row">
-            <div class="col-sm-9">
+            <div class="col-sm-9 content_left">
                 {% include "lib/messages.html" %}
                 {% include 'plotting/plot_history.html' %}
                 {% include 'lib/table.html' %}
             </div>
-            <div class="col-sm-3 sidebar_right">
+            <div id="sidebar" class="col-sm-3 sidebar_right">
                 {% include 'plotting/plot_pie_chart.html' %}
                 {% include 'lib/sidenav/summary_facts.html' %}
                 {% include 'plotting/plot_trend.html' %}
+            </div>
+            <div id="open-sidebar">
+                <i class="fas fa-chart-pie fa-2x"></i>
             </div>
         </div>
     </div>
