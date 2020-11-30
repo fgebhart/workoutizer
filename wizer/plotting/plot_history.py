@@ -53,14 +53,11 @@ def _plot_activities(activities, sport_model, settings_model):
         muted_color=colors,
         muted_alpha=0.2,
         source=df,
-        legend_label=sports_list,
     )
 
     # render zero hours properly
     p.yaxis.major_label_overrides = {0: "0h"}
-    p.legend.location = "top_left"
-    p.legend.click_policy = "mute"
-    p.legend.label_text_font = "ubuntu"
+    p.legend.visible = False
 
     return p
 
