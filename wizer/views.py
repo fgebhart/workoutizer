@@ -182,7 +182,7 @@ class HelpView(WKZView):
     template_name = "lib/help.html"
 
     def get(self, request):
-        self.context['version'] = __version__
+        self.context["version"] = __version__
         return render(request, template_name=self.template_name, context=self.context)
 
 
