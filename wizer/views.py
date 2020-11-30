@@ -27,6 +27,8 @@ from wizer.file_helper.fit_collector import try_to_mount_device, FitCollector
 from wizer.tools.colors import lines_colors
 from wizer.tools.utils import cut_list_to_have_same_length
 from workoutizer import settings
+from workoutizer import __version__
+
 
 log = logging.getLogger(__name__)
 
@@ -180,6 +182,7 @@ class HelpView(WKZView):
     template_name = "lib/help.html"
 
     def get(self, request):
+        self.context['version'] = __version__
         return render(request, template_name=self.template_name, context=self.context)
 
 
