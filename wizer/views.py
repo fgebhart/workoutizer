@@ -76,7 +76,7 @@ class MapView(View):
                     )
                 )
                 sport = activity.sport.name
-                if coordinates:
+                if coordinates != "[]":
                     traces.append(GeoTrace(pk=activity.pk, name=activity.name, sport=sport, coordinates=coordinates))
         has_traces = True if traces else False
 

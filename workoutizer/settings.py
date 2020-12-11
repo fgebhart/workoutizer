@@ -12,6 +12,7 @@ if os.getenv("WKZ_ENV", None) == "devel":
 else:
     USER_HOME = Path.home()
     WORKOUTIZER_DIR = os.path.join(str(USER_HOME), ".wkz")
+print(f"using workoutizer home at: {WORKOUTIZER_DIR}")
 SQLITE_FILE = "db.sqlite3"
 WORKOUTIZER_DB_PATH = os.path.join(WORKOUTIZER_DIR, SQLITE_FILE)
 TRACKS_DIR = os.path.join(WORKOUTIZER_DIR, "tracks")
