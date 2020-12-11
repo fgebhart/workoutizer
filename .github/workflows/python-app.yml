@@ -39,3 +39,7 @@ jobs:
         if: ${{ always() }}
         run: |
           pytest wizer/tests/integration_tests -v
+      - name: Run Browser Tests
+        if: ${{ always() }}
+        run: |
+          pytest wizer/tests/browser_tests -v
