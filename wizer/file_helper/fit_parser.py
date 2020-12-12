@@ -8,7 +8,7 @@ import pandas as pd
 from fitparse import FitFile
 from django.conf import settings
 
-from wizer.file_helper.lib.parser import Parser
+from wizer.file_helper.parser import Parser
 from wizer import naming
 
 log = logging.getLogger(__name__)
