@@ -57,7 +57,6 @@ def _plot_activities(activities, sport_model, settings_model):
 
     # render zero hours properly
     p.yaxis.major_label_overrides = {0: "0h"}
-    p.legend.visible = False
 
     return p
 

@@ -13,6 +13,7 @@
 	"settings": { 
 		"python.pythonPath": "/tmp/venv/bin/python",
 		"python.terminal.activateEnvironment": true,
+		"terminal.integrated.shellArgs.linux": ["--init-file", ".vscode/terminal.sh"],
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
@@ -20,7 +21,8 @@
 		"ms-python.python",
 		"eamodio.gitlens",
 		"ryuta46.multi-command",
-		"ms-python.vscode-pylance"
+		"ms-python.vscode-pylance",
+		"anjali.clipboard-history",
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
