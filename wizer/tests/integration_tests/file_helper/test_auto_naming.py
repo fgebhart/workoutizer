@@ -1,8 +1,11 @@
+import os
 import datetime
 
 import pytest
 
-from wizer.file_helper.auto_naming import _get_location_name, _get_daytime_name
+from wizer.file_helper.auto_naming import _get_location_name, _get_daytime_name, _get_sport_name
+from wizer.apps import run_parser
+from wizer import models
 
 
 def test__get_location_name():
@@ -54,3 +57,26 @@ def test__get_daytime_name():
 
     with pytest.raises(ValueError, match="hour must be in 0..23"):
         assert _get_daytime_name(datetime.datetime(2020, 1, 1, 24)) == "Late Night"
+
+
+def test__get_sport_name():
+    assert _get_sport_name("running") == "Running"
+    assert _get_sport_name("unknown") == "Sport"
+    assert _get_sport_name("KAYAKING") == "Kayaking"
+    assert _get_sport_name("----") == "----"
+
+
+def test_automatic_naming_of_activity__with_coordinates(db):
+    path_to_trace = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data/example.gpx")
+    run_parser(models=models, trace_files=[path_to_trace], importing_demo_data=False)
+
+    activity = models.Activity.objects.all()[0]
+    assert activity.name == "Evening Running in Heidelberg"
+
+
+def test_automatic_naming_of_activity__no_coordinates(db):
+    path_to_trace = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data/example.fit")
+    run_parser(models=models, trace_files=[path_to_trace], importing_demo_data=False)
+
+    activity = models.Activity.objects.all()[0]
+    assert activity.name == "Noon Running"

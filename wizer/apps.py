@@ -10,6 +10,7 @@ from django.db.utils import OperationalError
 from wizer.file_helper.gpx_parser import GPXParser
 from wizer.file_helper.fit_parser import FITParser
 from wizer.file_helper.fit_collector import FitCollector
+from wizer.file_helper.auto_naming import get_automatic_name
 from wizer.tools.utils import sanitize, calc_md5
 from wizer.file_helper.initial_data_handler import (
     insert_settings_and_sports_to_model,
@@ -101,7 +102,7 @@ class FileImporter:
                 trace_files = get_all_files(path)
                 if os.path.isdir(path):
                     log.info(f"found {len(trace_files)} files in trace dir: {path}")
-                    self._run_parser(trace_files)
+                    run_parser(self.models, trace_files, self.importing_demo_data)
                 else:
                     log.warning(f"path: {path} is not a valid directory!")
                     break
@@ -112,51 +113,44 @@ class FileImporter:
         except OperationalError as e:
             log.warning(f"cannot run FileImporter. Maybe run django migrations first: {e}")
 
-    def _run_parser(self, trace_files):
-        md5sums_from_db = get_md5sums_from_model(traces_model=self.models.Traces)
-        for trace_file in trace_files:
-            md5sum = calc_md5(trace_file)
-            if md5sum not in md5sums_from_db:  # current file is not stored in model yet
+
+def run_parser(models, trace_files: list, importing_demo_data: bool):
+    md5sums_from_db = get_md5sums_from_model(traces_model=models.Traces)
+    for trace_file in trace_files:
+        md5sum = calc_md5(trace_file)
+        if md5sum not in md5sums_from_db:  # current file is not stored in model yet
+            try:
+                trace_file_instance = parse_and_save_to_model(
+                    models=models,
+                    md5sum=md5sum,
+                    trace_file=trace_file,
+                    importing_demo_data=importing_demo_data,
+                )
+            except Exception as e:
+                log.error(f"could not import activity of file: {trace_file}. {e}", exc_info=True)
+                # It might be the case, that the trace file object was created, but no activity.
+                # Delete the trace file object again, to enable reimporting
                 try:
-                    trace_file_instance = parse_and_save_to_model(
-                        models=self.models,
-                        md5sum=md5sum,
-                        trace_file=trace_file,
-                        importing_demo_data=self.importing_demo_data,
-                    )
+                    log.debug(f"removed {trace_file_instance} from model, since activity was not created")
+                    trace_file_instance.delete()
                 except Exception as e:
-                    log.error(f"could not import activity of file: {trace_file}. {e}", exc_info=True)
-                    # It might be the case, that the trace file object was created, but no activity.
-                    # Delete the trace file object again, to enable reimporting
-                    try:
-                        log.debug(f"removed {trace_file_instance} from model, since activity was not created")
-                        trace_file_instance.delete()
-                    except Exception as e:
-                        log.debug(f"could not delete trace file object, since it was not created yet, {e}")
-            else:  # checksum is in db already
-                file_name = trace_file.split("/")[-1]
-                trace_file_path_instance = self.models.Traces.objects.get(md5sum=md5sum)
-                if (
-                    trace_file_path_instance.file_name == file_name
-                    and trace_file_path_instance.path_to_file != trace_file
-                ):
-                    log.debug(
-                        f"path of file: {trace_file_path_instance.path_to_file} has changed, updating to {trace_file}"
-                    )
-                    trace_file_path_instance.path_to_file = trace_file
-                    trace_file_path_instance.save()
-                elif (
-                    trace_file_path_instance.file_name != file_name
-                    and trace_file_path_instance.path_to_file != trace_file
-                ):
-                    log.warning(
-                        f"The following two files have the same checksum, "
-                        f"you might want to remove one of them:\n"
-                        f"{trace_file}\n"
-                        f"{trace_file_path_instance.path_to_file}"
-                    )
-                else:
-                    pass  # means file is already in db
+                    log.debug(f"could not delete trace file object, since it was not created yet, {e}")
+        else:  # checksum is in db already
+            file_name = trace_file.split("/")[-1]
+            trace_file_path_instance = models.Traces.objects.get(md5sum=md5sum)
+            if trace_file_path_instance.file_name == file_name and trace_file_path_instance.path_to_file != trace_file:
+                log.debug(f"path of file: {trace_file_path_instance.path_to_file} has changed, updating to {trace_file}")
+                trace_file_path_instance.path_to_file = trace_file
+                trace_file_path_instance.save()
+            elif trace_file_path_instance.file_name != file_name and trace_file_path_instance.path_to_file != trace_file:
+                log.warning(
+                    f"The following two files have the same checksum, "
+                    f"you might want to remove one of them:\n"
+                    f"{trace_file}\n"
+                    f"{trace_file_path_instance.path_to_file}"
+                )
+            else:
+                pass  # means file is already in db
 
 
 def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=False):
@@ -168,11 +162,14 @@ def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=Fals
     sport = parser.sport
     mapped_sport = map_sport_name(sport, sport_naming_map)
     sport_instance = models.Sport.objects.filter(slug=sanitize(mapped_sport)).first()
+    if sport_instance is None:  # needs to be adapted in GH #4
+        sport_instance = models.Sport.objects.filter(slug="unknown").first()
     save_laps_to_model(
         lap_model=models.Lap,
         laps=parser.laps,
         trace_instance=trace_file_instance,
     )
+    setattr(parser, "activity_name", get_automatic_name(parser, sport))
     activity = _save_activity_to_model(
         activities_model=models.Activity,
         parser=parser,
@@ -180,7 +177,7 @@ def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=Fals
         trace_instance=trace_file_instance,
         importing_demo_data=importing_demo_data,
     )
-    log.info(f"created new {sport_instance} activity: {parser.file_name}. Id: {activity.pk}")
+    log.info(f"created new {sport_instance} activity: '{parser.activity_name}'. ID: {activity.pk}")
     return trace_file_instance
 
 
@@ -205,7 +202,7 @@ def save_laps_to_model(lap_model, laps: list, trace_instance):
 
 def _save_activity_to_model(activities_model, parser, sport_instance, trace_instance, importing_demo_data):
     activity_object = activities_model(
-        name=parser.file_name.replace(".gpx", "").replace(".fit", ""),
+        name=parser.activity_name,
         sport=sport_instance,
         date=parser.date,
         duration=parser.duration,
@@ -283,7 +280,7 @@ def parse_data(file):
     return parser
 
 
-def map_sport_name(sport_name, map_dict):
+def map_sport_name(sport_name, map_dict):  # will be adapted in GH #4
     sport = None
     for k, v in map_dict.items():
         if sanitize(sport_name) in v:
@@ -296,7 +293,7 @@ def map_sport_name(sport_name, map_dict):
     return sport
 
 
-def get_all_files(path):
+def get_all_files(path) -> list:
     trace_files = [
         os.path.join(root, name)
         for root, dirs, files in os.walk(path)
