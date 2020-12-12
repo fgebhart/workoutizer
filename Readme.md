@@ -9,15 +9,16 @@ uploading all your sensitive health data to some 3rd party cloud.
 
 #### Features
 * Automatic import of Garmin `.fit` files and `.gpx` files
+* Automatic naming of activities based on daytime, sport and geo location
 * Dashboard overview page of all activities
 * Render your activity gps data on different OSM maps
 * Show either all activities of one sport or only one activity on the map
 * Plots of activity specific data like: heart rate, pace, temperature, cadence and altitude
 * Integrate laps into both plots and maps
-* Connect plots and map via mouse hovering
+* Connected plots and map via mouse hovering
 * Keyboard navigation in browser
 * Add untracked activities manually via the GUI
-* Create and download `.gpx` files to share your activities
+* Export activities as `.gpx` files
 * Add as many different sports as you want.
 * Convenience CLI for installing, configuring, updating, ...
 
@@ -90,6 +91,3 @@ This will build the image, run the container and initialize workoutizer. Once up
 pytest wizer/tests/
 ```
 Once this was successful you are good to go.
-
-Note: The `browser_tests` cannot (yet) be ran from within the docker container, but it is possible to run them form your
-host system. You might need to install [gecko driver](https://github.com/mozilla/geckodriver/releases) though.
