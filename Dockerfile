@@ -1,8 +1,19 @@
-FROM python:3.8
+FROM ubuntu:latest
 
- # install sqlite3 package for the use of djangos db shell
+# set apt to noninteractive mode  (for installing firefox)
+ENV DEBIAN_FRONTEND='noninteractive'
+# install sqlite3 package for the use of djangos db shell
 RUN apt-get update
-RUN apt-get install -y sqlite3 virtualenv vim
+RUN apt-get install -y sqlite3 virtualenv vim git zsh wget firefox
+
+# install oh-my-zsh
+RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+
+# install gecko driver 
+RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz
+RUN sh -c 'tar -x geckodriver -zf geckodriver-v0.28.0-linux64.tar.gz -O > /usr/bin/geckodriver'
+RUN chmod +x /usr/bin/geckodriver
+RUN rm geckodriver-v0.28.0-linux64.tar.gz
 
 # first copy only requirements files to only invalidate the next setps in case of changed requirements
 COPY ./setup/requirements/ /workoutizer/setup/requirements/
