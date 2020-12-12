@@ -7,3 +7,4 @@ pip-tools
 pytest
 pytest-django
 selenium
+pre-commit
