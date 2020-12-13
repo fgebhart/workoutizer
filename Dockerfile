@@ -20,8 +20,8 @@ COPY ./setup/requirements/ /workoutizer/setup/requirements/
 
 # install pip dependencies
 RUN virtualenv -p python3.8 /tmp/venv
-RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workoutizer/setup/requirements/requirements.txt'
 RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workoutizer/setup/requirements/dev-requirements.txt'
+RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workoutizer/setup/requirements/requirements.txt'
 
 ENV WKZ_ENV='devel'
 ENV WKZ_LOG_LEVEL='DEBUG'

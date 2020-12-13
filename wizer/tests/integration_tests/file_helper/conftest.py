@@ -6,9 +6,9 @@ from wizer.file_helper.fit_parser import FITParser
 from wizer.file_helper.gpx_parser import GPXParser
 
 
-@pytest.fixture(scope="module")
-def fit_parser():
-    test_file_path = os.path.join(os.path.dirname(__file__), "../data/example.fit")
+@pytest.fixture
+def fit_parser(test_data_dir):
+    test_file_path = os.path.join(test_data_dir, "example.fit")
 
     def _pass_path(path=test_file_path):
         return FITParser(path_to_file=path)
@@ -16,9 +16,9 @@ def fit_parser():
     return _pass_path
 
 
-@pytest.fixture(scope="module")
-def gpx_parser():
-    test_file_path = os.path.join(os.path.dirname(__file__), "../data/example.gpx")
+@pytest.fixture
+def gpx_parser(test_data_dir):
+    test_file_path = os.path.join(test_data_dir, "example.gpx")
 
     def _pass_path(path=test_file_path):
         return GPXParser(path_to_file=path)
@@ -26,7 +26,7 @@ def gpx_parser():
     return _pass_path
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def trace_coordinates():
     return [
         [8.476648433133962, 49.48468884453178],
@@ -36,7 +36,7 @@ def trace_coordinates():
     ]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def trace_coordinates_with_elevation():
     return [
         [8.476648433133962, 49.48468884453178, 200],
@@ -46,7 +46,7 @@ def trace_coordinates_with_elevation():
     ]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def gpx_string():
     return f"""{gpx_header}
     <metadata>
@@ -71,14 +71,14 @@ def gpx_string():
             <trkpt lat="49.48450796306134" lon="8.47659654915333">
                 <time>2019-07-12T12:03:00Z</time>
             </trkpt>
-            
+
         </trkseg>
     </trk>
 </gpx>
 """
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def gpx_string_with_elevation():
     return f"""{gpx_header}
     <metadata>
@@ -107,7 +107,7 @@ def gpx_string_with_elevation():
                 <time>2019-07-12T12:03:00Z</time>
                 <ele>203</ele>
             </trkpt>
-            
+
         </trkseg>
     </trk>
 </gpx>

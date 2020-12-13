@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx creator="Fabian Gebhart" version="1.1" xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+     xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
+     xmlns:gpxtrkx="http://www.garmin.com/xmlschemas/TrackStatsExtension/v1"
+     xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3">
+    <metadata>
+        <time>2020-04-01 00:00:00+00:00</time>
+        <link href="https://github.com/fgebhart/workoutizer">
+            <text>Workoutizer</text>
+        </link>
+    </metadata>
+    <trk>
+        <name>2019-07-12 19:04:29</name>
+        <trkseg>
+            <trkpt lat="49.405446" lon="8.687453">
+                <time>2019-07-12T17:05:36.000Z</time>
+            </trkpt>
+            <trkpt lat="49.405562" lon="8.687577">
+                <time>2019-07-12T17:30:38.000Z</time>
+            </trkpt>
+        </trkseg>
+    </trk>
+</gpx>

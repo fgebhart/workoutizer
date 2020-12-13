@@ -1,3 +1,4 @@
+import os
 import datetime
 
 import pytest
@@ -88,3 +89,8 @@ def vendor_id():
 @pytest.fixture
 def product_id():
     return "4b48"
+
+
+@pytest.fixture
+def test_data_dir():
+    return os.path.join(os.path.dirname(__file__), "data")

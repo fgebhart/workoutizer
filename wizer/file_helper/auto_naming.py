@@ -1,7 +1,9 @@
-from typing import Tuple
+from typing import Tuple, Union
 import datetime
+import json
 
 from geopy.geocoders import Nominatim
+import pandas as pd
 
 
 def _get_location_name(coordinate: Tuple[float, float]) -> str:
@@ -39,11 +41,26 @@ def _get_sport_name(sport_name: str) -> str:
         return sport_name.capitalize()
 
 
+def _get_coordinate_not_null(coordinates: Union[str, list]):
+    try:
+        if isinstance(coordinates, str):
+            coordinate = pd.Series(json.loads(coordinates)).dropna().iloc[0]
+        elif isinstance(coordinates, list):
+            coordinate = pd.Series(coordinates).dropna().iloc[0]
+        else:
+            raise NotImplementedError
+    except IndexError:
+        coordinate = None
+    return coordinate
+
+
 def get_automatic_name(parser, sport_name: str) -> str:
-    location = None
-    if parser.latitude_list:
-        coordinate = (parser.latitude_list[0], parser.longitude_list[1])
-        location = _get_location_name(coordinate)
+    lat = _get_coordinate_not_null(coordinates=parser.latitude_list)
+    lon = _get_coordinate_not_null(coordinates=parser.longitude_list)
+    if lat and lon:
+        location = _get_location_name((lat, lon))
+    else:
+        location = None
     daytime = _get_daytime_name(parser.date)
     sport = _get_sport_name(sport_name)
     if location:

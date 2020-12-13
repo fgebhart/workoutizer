@@ -3,7 +3,12 @@ import datetime
 
 import pytest
 
-from wizer.file_helper.auto_naming import _get_location_name, _get_daytime_name, _get_sport_name
+from wizer.file_helper.auto_naming import (
+    _get_location_name,
+    _get_daytime_name,
+    _get_sport_name,
+    _get_coordinate_not_null,
+)
 from wizer.apps import run_parser
 from wizer import models
 
@@ -66,17 +71,30 @@ def test__get_sport_name():
     assert _get_sport_name("----") == "----"
 
 
-def test_automatic_naming_of_activity__with_coordinates(db):
-    path_to_trace = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data/example.gpx")
+def test__get_coordinate_not_null():
+    assert _get_coordinate_not_null("[null, null, 48.123, null, null, 48.234]") == 48.123
+    assert _get_coordinate_not_null("[null, null]") is None
+
+
+def test_automatic_naming_of_activity__gpx_with_coordinates(db, test_data_dir):
+    path_to_trace = os.path.join(test_data_dir, "example.gpx")
     run_parser(models=models, trace_files=[path_to_trace], importing_demo_data=False)
 
     activity = models.Activity.objects.all()[0]
     assert activity.name == "Evening Running in Heidelberg"
 
 
-def test_automatic_naming_of_activity__no_coordinates(db):
-    path_to_trace = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data/example.fit")
+def test_automatic_naming_of_activity__fit_with_coordinates(db, test_data_dir):
+    path_to_trace = os.path.join(test_data_dir, "hike_with_coordinates.fit")
     run_parser(models=models, trace_files=[path_to_trace], importing_demo_data=False)
 
     activity = models.Activity.objects.all()[0]
-    assert activity.name == "Noon Running"
+    assert activity.name == "Evening Walking in Ringgenberg (BE)"
+
+
+def test_automatic_naming_of_activity__fit_no_coordinates(db, test_data_dir):
+    path_to_trace = os.path.join(test_data_dir, "swim_no_coordinates.fit")
+    run_parser(models=models, trace_files=[path_to_trace], importing_demo_data=False)
+
+    activity = models.Activity.objects.all()[0]
+    assert activity.name == "Noon Swimming"
