@@ -13,8 +13,6 @@ repos:
           - flake8-comprehensions
           - flake8-builtins
       - id: requirements-txt-fixer
-      - id: trailing-whitespace
-        types: [python]
 
   - repo: https://github.com/psf/black
     rev: stable

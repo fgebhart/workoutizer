@@ -71,7 +71,7 @@ def gpx_string():
             <trkpt lat="49.48450796306134" lon="8.47659654915333">
                 <time>2019-07-12T12:03:00Z</time>
             </trkpt>
-
+            
         </trkseg>
     </trk>
 </gpx>
@@ -107,7 +107,7 @@ def gpx_string_with_elevation():
                 <time>2019-07-12T12:03:00Z</time>
                 <ele>203</ele>
             </trkpt>
-
+            
         </trkseg>
     </trk>
 </gpx>
