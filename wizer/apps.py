@@ -17,6 +17,8 @@ from wizer.file_helper.initial_data_handler import (
     create_demo_trace_data_with_recent_time,
     insert_activities_to_model,
 )
+from workoutizer import settings
+
 
 log = logging.getLogger(__name__)
 
@@ -64,6 +66,7 @@ class WizerFileDaemon(AppConfig):
     def ready(self):
         # ensure to only run with 'manage.py runserver' and not in auto reload thread
         if _was_runserver_triggered(sys.argv) and os.environ.get("RUN_MAIN", None) != "true":
+            log.info(f"using workoutizer home at {settings.WORKOUTIZER_DIR}")
             from wizer import models
 
             importing_demo_data = False
