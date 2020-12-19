@@ -109,7 +109,7 @@ def _upgrade():
     latest_version = _get_latest_version_of("workoutizer")
     from workoutizer import __version__ as current_version
 
-    if latest_version:
+    if latest_version != current_version:
         click.echo(f"found newer version: {latest_version}, you have {current_version} installed")
         _pip_install("workoutizer", upgrade=True)
         execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
@@ -121,15 +121,16 @@ def _upgrade():
 
 
 def _get_latest_version_of(package: str):
-    outdated = str(
-        subprocess.check_output([sys.executable, "-m", "pip", "list", "--outdated", "--disable-pip-version-check"])
-    )
-    if package in outdated:
-        output = str(subprocess.check_output([sys.executable, "-m", "pip", "search", package]))
-        latest_version = output[output.find("LATEST") :].split("\\n")[0].split(" ")[-1]
-        return latest_version
-    else:
-        return False
+    latest_version = str(subprocess.run([sys.executable, '-m', 'pip', 'install', '{}==random'.format(package)], capture_output=True, text=True))
+    latest_version = latest_version[latest_version.find('(from versions:')+15:]
+    latest_version = latest_version[:latest_version.find(')')]
+    latest_version = latest_version.replace(' ','').split(',')[-1]
+
+    current_version = str(subprocess.run([sys.executable, '-m', 'pip', 'show', '{}'.format(package)], capture_output=True, text=True))
+    current_version = current_version[current_version.find('Version:')+8:]
+    current_version = current_version[:current_version.find('\\n')].replace(' ','') 
+
+    return latest_version
 
 
 def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
