@@ -34,6 +34,12 @@ def test__get_location_name():
     assert location_name is None
 
 
+def test_get_other_location_names():
+    coordinate = (49.46278064511717, 8.160513974726202)
+    location_name = _get_location_name(coordinate=coordinate)
+    assert location_name == "Bad Dürkheim"
+
+
 def test__get_daytime_name():
     assert _get_daytime_name(datetime.datetime(2020, 1, 1, 0)) == "Late Night"
     assert _get_daytime_name(datetime.datetime(2020, 1, 1, 1)) == "Late Night"

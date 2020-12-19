@@ -10,10 +10,13 @@ def _get_location_name(coordinate: Tuple[float, float]) -> str:
     app = Nominatim(user_agent="tutorial")
     try:
         address = app.reverse(coordinate, language="en").raw["address"]
-        if "city" in address.keys():
-            return address["city"]
-        elif "village" in address.keys():
+        # use name of location from village, town or city (in this order)
+        if "village" in address.keys():
             return address["village"]
+        elif "town" in address.keys():
+            return address["town"]
+        elif "city" in address.keys():
+            return address["city"]
     except (TypeError, ValueError):
         return None
 
