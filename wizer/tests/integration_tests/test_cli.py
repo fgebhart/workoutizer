@@ -10,6 +10,6 @@ def test__get_local_ip_address():
 
 def test__get_latest_version_of():
     # basic sanity check, because actual versions might always change
-    latest_version = _get_latest_version_of("django-leaflet")
+    latest_version = _get_latest_version_of("requests")
     assert len(latest_version) > 4
     assert "." in latest_version
