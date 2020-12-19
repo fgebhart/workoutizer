@@ -15,6 +15,8 @@ from wizer.tools.utils import sanitize, calc_md5
 from wizer.file_helper.initial_data_handler import (
     copy_demo_fit_files_to_track_dir,
     change_date_of_demo_activities,
+    insert_settings_and_sports_to_model,
+    insert_custom_demo_activities,
 )
 from wizer.naming import supported_formats
 from workoutizer import settings
@@ -72,6 +74,7 @@ class WizerFileDaemon(AppConfig):
             # insert initial example activity data in case there is no activity in the db
             if models.Activity.objects.count() == 0:
                 log.debug("no data found, will create demo activities...")
+                insert_settings_and_sports_to_model(models.Settings, models.Sport)
                 copy_demo_fit_files_to_track_dir(
                     source_dir=settings.INITIAL_TRACE_DATA_DIR, targe_dir=settings.TRACKS_DIR
                 )
@@ -108,7 +111,10 @@ class FileImporter:
                     break
                 if self.importing_demo_data:
                     demo_activities = self.models.Activity.objects.filter(is_demo_activity=True)
-                    change_date_of_demo_activities(demo_activities)
+                    change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
+                    insert_custom_demo_activities(
+                        count=9, every_nth_day=3, activity_model=self.models.Activity, sport_model=self.models.Sport
+                    )
                     log.info("finished inserting demo data")
                     self.importing_demo_data = False
                 time.sleep(interval)

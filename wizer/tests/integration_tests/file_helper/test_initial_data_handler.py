@@ -3,13 +3,28 @@ import datetime
 
 import pytz
 
-from wizer.models import Activity
+from wizer.models import Activity, Settings, Sport
 from wizer.file_helper.initial_data_handler import (
     change_date_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
+    insert_custom_demo_activities,
+    insert_settings_and_sports_to_model,
     # insert_custom_demo_activities,
 )
 from workoutizer import settings
+
+
+def test_insert_settings_and_sports_to_model(db):
+    # assert that there are no settings
+    assert Settings.objects.count() == 0
+
+    # insert settings and sports
+    insert_settings_and_sports_to_model(Settings, Sport)
+    assert Settings.objects.count() == 1
+    assert Settings.objects.get(pk=1).number_of_days == 30
+
+    # check that at least one sport object is present
+    assert Sport.objects.count() > 0
 
 
 def test_copy_demo_fit_files_to_track_dir(test_data_dir, demo_data_dir):
@@ -50,7 +65,7 @@ def test_change_date_of_demo_activities(db, sport):
     )
     activity_c.save()
     demo_activities = Activity.objects.all()
-    change_date_of_demo_activities(demo_activities)
+    change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
 
     a = Activity.objects.get(name="activity_a")
     b = Activity.objects.get(name="activity_b")
@@ -58,11 +73,20 @@ def test_change_date_of_demo_activities(db, sport):
 
     # the date of activity a and b will be shifted to today - 1 or today - 3
     assert datetime.datetime.now(pytz.timezone(settings.TIME_ZONE)).date() - datetime.timedelta(days=1) == a.date.date()
-    assert datetime.datetime.now(pytz.timezone(settings.TIME_ZONE)).date() - datetime.timedelta(days=3) == b.date.date()
+    assert datetime.datetime.now(pytz.timezone(settings.TIME_ZONE)).date() - datetime.timedelta(days=4) == b.date.date()
 
     # the date of c should not be shifted
     assert datetime.datetime(2000, 1, 1, tzinfo=pytz.utc) == c.date
 
 
 def test_insert_custom_demo_activities(db):
-    pass
+    activities = Activity.objects.all()
+    assert len(activities) == 0
+    insert_custom_demo_activities(
+        count=8,
+        every_nth_day=4,
+        activity_model=Activity,
+        sport_model=Sport,
+    )
+    activities = Activity.objects.all()
+    assert len(activities) == 8
