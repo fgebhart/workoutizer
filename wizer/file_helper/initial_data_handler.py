@@ -49,6 +49,7 @@ def insert_custom_demo_activities(count: int, every_nth_day: int, activity_model
             name="Swimming",
             date=today - datetime.timedelta(days=i * every_nth_day + 2),
             sport=sport[0],
+            distance=2.0,
             duration=datetime.timedelta(minutes=90),
             is_demo_activity=True,
             description="Swimming training in my awesome pool.",
