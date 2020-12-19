@@ -13,10 +13,10 @@ from wizer.file_helper.fit_collector import FitCollector
 from wizer.file_helper.auto_naming import get_automatic_name
 from wizer.tools.utils import sanitize, calc_md5
 from wizer.file_helper.initial_data_handler import (
-    insert_settings_and_sports_to_model,
-    create_demo_trace_data_with_recent_time,
-    insert_activities_to_model,
+    copy_demo_fit_files_to_track_dir,
+    change_date_of_demo_activities,
 )
+from wizer.naming import supported_formats
 from workoutizer import settings
 
 
@@ -42,8 +42,6 @@ sport_naming_map = {
     "Yoga": ["yoga", "yogi"],
     "Workout": ["training"],
 }
-
-formats = [".gpx", ".fit"]
 
 
 def _was_runserver_triggered(args: list):
@@ -71,13 +69,12 @@ class WizerFileDaemon(AppConfig):
 
             importing_demo_data = False
 
-            # insert initial example activity data in the case there is none
+            # insert initial example activity data in case there is no activity in the db
             if models.Activity.objects.count() == 0:
-                log.debug("no data found, will create demo data...")
-                insert_settings_and_sports_to_model(settings_model=models.Settings, sport_model=models.Sport)
-                create_demo_trace_data_with_recent_time()
-                insert_activities_to_model(sport_model=models.Sport, activity_model=models.Activity)
-                log.info("inserting initial demo data done.")
+                log.debug("no data found, will create demo activities...")
+                copy_demo_fit_files_to_track_dir(
+                    source_dir=settings.INITIAL_TRACE_DATA_DIR, targe_dir=settings.TRACKS_DIR
+                )
                 importing_demo_data = True
             fi = Process(target=FileImporter, args=(models, importing_demo_data))
             fi.start()
@@ -107,9 +104,11 @@ class FileImporter:
                     log.info(f"found {len(trace_files)} files in trace dir: {path}")
                     run_parser(self.models, trace_files, self.importing_demo_data)
                 else:
-                    log.warning(f"path: {path} is not a valid directory!")
+                    log.error(f"path: {path} is not a valid directory!")
                     break
                 if self.importing_demo_data:
+                    demo_activities = self.models.Activity.objects.filter(is_demo_activity=True)
+                    change_date_of_demo_activities(demo_activities)
                     log.info("finished inserting demo data")
                     self.importing_demo_data = False
                 time.sleep(interval)
@@ -186,7 +185,6 @@ def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=Fals
 
 def save_laps_to_model(lap_model, laps: list, trace_instance):
     for lap in laps:
-        log.debug(f"saving lap data: {lap} for trace: {trace_instance}")
         lap_object = lap_model(
             start_time=lap.start_time,
             end_time=lap.end_time,
@@ -301,6 +299,6 @@ def get_all_files(path) -> list:
         os.path.join(root, name)
         for root, dirs, files in os.walk(path)
         for name in files
-        if name.endswith(tuple(formats))
+        if name.endswith(tuple(supported_formats))
     ]
     return trace_files
