@@ -4,7 +4,7 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND='noninteractive'
 # install sqlite3 package for the use of djangos db shell
 RUN apt-get update
-RUN apt-get install -y sqlite3 virtualenv vim git zsh wget 
+RUN apt-get install -y sqlite3 virtualenv vim git zsh wget htop
 RUN apt-get update
 RUN apt-get install -y firefox
 
@@ -18,19 +18,19 @@ RUN chmod +x /usr/bin/geckodriver
 RUN rm geckodriver-v0.28.0-linux64.tar.gz
 
 # first copy only requirements files to only invalidate the next setps in case of changed requirements
-COPY ./setup/requirements/ /workoutizer/setup/requirements/
+COPY ./setup/requirements/ /workspaces/workoutizer/setup/requirements/
 
 # install pip dependencies
 RUN virtualenv -p python3.8 /tmp/venv
-RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workoutizer/setup/requirements/dev-requirements.txt'
-RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workoutizer/setup/requirements/requirements.txt'
+RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workspaces/workoutizer/setup/requirements/dev-requirements.txt'
+RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workspaces/workoutizer/setup/requirements/requirements.txt'
 
 ENV WKZ_ENV='devel'
 ENV WKZ_LOG_LEVEL='DEBUG'
 
 EXPOSE 8000
 
-COPY . /workoutizer
-WORKDIR /workoutizer
+COPY . /workspaces/workoutizer
+WORKDIR /workspaces/workoutizer
 
 RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -e . --no-deps --disable-pip-version-check'
