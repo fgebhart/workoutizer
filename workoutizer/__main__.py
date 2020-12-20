@@ -162,7 +162,7 @@ def _get_local_ip_address():
 def _build_home():
     if os.path.isdir(WORKOUTIZER_DIR):
         if os.path.isfile(WORKOUTIZER_DB_PATH):
-            click.echo("Found existing workoutizer database at: {WORKOUTIZER_DB_PATH}\n")
+            click.echo(f"Found existing workoutizer database at: {WORKOUTIZER_DB_PATH}\n")
             answer = input(
                 "Workoutizer could try to use the existing database instead of creating a new one.\n"
                 "Note that this could lead to faulty behaviour because of mismatching applied\n"
