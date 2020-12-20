@@ -67,27 +67,33 @@ class WizerFileDaemon(AppConfig):
         # ensure to only run with 'manage.py runserver' and not in auto reload thread
         if _was_runserver_triggered(sys.argv) and os.environ.get("RUN_MAIN", None) != "true":
             log.info(f"using workoutizer home at {settings.WORKOUTIZER_DIR}")
-            from wizer import models
+            run_file_importer(forking=True)
 
-            importing_demo_data = False
 
-            # insert initial example activity data in case there is no activity in the db
-            if models.Activity.objects.count() == 0:
-                log.debug("no data found, will create demo activities...")
-                insert_settings_and_sports_to_model(models.Settings, models.Sport)
-                copy_demo_fit_files_to_track_dir(
-                    source_dir=settings.INITIAL_TRACE_DATA_DIR, targe_dir=settings.TRACKS_DIR
-                )
-                importing_demo_data = True
-            fi = Process(target=FileImporter, args=(models, importing_demo_data))
-            fi.start()
+def run_file_importer(forking: bool):
+    from wizer import models
+
+    importing_demo_data = False
+
+    # insert initial example activity data in case there is no activity in the db
+    if models.Activity.objects.count() == 0:
+        log.debug("no data found, will create demo activities...")
+        insert_settings_and_sports_to_model(models.Settings, models.Sport)
+        copy_demo_fit_files_to_track_dir(source_dir=settings.INITIAL_TRACE_DATA_DIR, targe_dir=settings.TRACKS_DIR)
+        importing_demo_data = True
+    if forking:
+        fi = Process(target=FileImporter, args=(models, importing_demo_data, False))
+        fi.start()
+    else:
+        FileImporter(models, importing_demo_data, single_run=True)
 
 
 class FileImporter:
-    def __init__(self, models, importing_demo_data):
+    def __init__(self, models, importing_demo_data, single_run):
         self.importing_demo_data = importing_demo_data
         self.settings = models.Settings.objects.get(pk=1)
         self.models = models
+        self.single_run = single_run
         self._start_listening()
 
     def _start_listening(self):
@@ -117,6 +123,8 @@ class FileImporter:
                     )
                     log.info("finished inserting demo data")
                     self.importing_demo_data = False
+                if self.single_run:  # used for testing only
+                    break
                 time.sleep(interval)
         except OperationalError as e:
             log.warning(f"cannot run FileImporter. Maybe run django migrations first: {e}")
