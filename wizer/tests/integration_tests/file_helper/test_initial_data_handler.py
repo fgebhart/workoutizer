@@ -9,7 +9,6 @@ from wizer.file_helper.initial_data_handler import (
     copy_demo_fit_files_to_track_dir,
     insert_custom_demo_activities,
     insert_settings_and_sports_to_model,
-    # insert_custom_demo_activities,
 )
 from workoutizer import settings
 
