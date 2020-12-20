@@ -1,3 +1,6 @@
+# supported for parsing
+supported_formats = [".gpx", ".fit"]
+
 # cannot be edited nor deleted
 protected_sports = ["unknown"]
 

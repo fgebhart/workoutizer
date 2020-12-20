@@ -6,6 +6,7 @@ tracks/*.fit
 .pytest_cache/
 *.sqlite3
 wizer/tests/integration_tests/data/tested_data/*.gpx
+wizer/tests/integration_tests/data/tested_data/*.fit
 geckodriver.log
 dist/
 build/
@@ -13,3 +14,4 @@ build/
 .eggs/
 venv/
 .vscode/settings.json
+.vscode/.ropeproject/objectdb

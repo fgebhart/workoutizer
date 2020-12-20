@@ -13,10 +13,12 @@ from wizer.file_helper.fit_collector import FitCollector
 from wizer.file_helper.auto_naming import get_automatic_name
 from wizer.tools.utils import sanitize, calc_md5
 from wizer.file_helper.initial_data_handler import (
+    copy_demo_fit_files_to_track_dir,
+    change_date_of_demo_activities,
     insert_settings_and_sports_to_model,
-    create_demo_trace_data_with_recent_time,
-    insert_activities_to_model,
+    insert_custom_demo_activities,
 )
+from wizer.naming import supported_formats
 from workoutizer import settings
 
 
@@ -43,8 +45,6 @@ sport_naming_map = {
     "Workout": ["training"],
 }
 
-formats = [".gpx", ".fit"]
-
 
 def _was_runserver_triggered(args: list):
     triggered = False
@@ -67,27 +67,33 @@ class WizerFileDaemon(AppConfig):
         # ensure to only run with 'manage.py runserver' and not in auto reload thread
         if _was_runserver_triggered(sys.argv) and os.environ.get("RUN_MAIN", None) != "true":
             log.info(f"using workoutizer home at {settings.WORKOUTIZER_DIR}")
-            from wizer import models
+            run_file_importer(forking=True)
 
-            importing_demo_data = False
 
-            # insert initial example activity data in the case there is none
-            if models.Activity.objects.count() == 0:
-                log.debug("no data found, will create demo data...")
-                insert_settings_and_sports_to_model(settings_model=models.Settings, sport_model=models.Sport)
-                create_demo_trace_data_with_recent_time()
-                insert_activities_to_model(sport_model=models.Sport, activity_model=models.Activity)
-                log.info("inserting initial demo data done.")
-                importing_demo_data = True
-            fi = Process(target=FileImporter, args=(models, importing_demo_data))
-            fi.start()
+def run_file_importer(forking: bool):
+    from wizer import models
+
+    importing_demo_data = False
+
+    # insert initial example activity data in case there is no activity in the db
+    if models.Activity.objects.count() == 0:
+        log.debug("no data found, will create demo activities...")
+        insert_settings_and_sports_to_model(models.Settings, models.Sport)
+        copy_demo_fit_files_to_track_dir(source_dir=settings.INITIAL_TRACE_DATA_DIR, targe_dir=settings.TRACKS_DIR)
+        importing_demo_data = True
+    if forking:
+        fi = Process(target=FileImporter, args=(models, importing_demo_data, False))
+        fi.start()
+    else:
+        FileImporter(models, importing_demo_data, single_run=True)
 
 
 class FileImporter:
-    def __init__(self, models, importing_demo_data):
+    def __init__(self, models, importing_demo_data, single_run):
         self.importing_demo_data = importing_demo_data
         self.settings = models.Settings.objects.get(pk=1)
         self.models = models
+        self.single_run = single_run
         self._start_listening()
 
     def _start_listening(self):
@@ -107,11 +113,18 @@ class FileImporter:
                     log.info(f"found {len(trace_files)} files in trace dir: {path}")
                     run_parser(self.models, trace_files, self.importing_demo_data)
                 else:
-                    log.warning(f"path: {path} is not a valid directory!")
+                    log.error(f"path: {path} is not a valid directory!")
                     break
                 if self.importing_demo_data:
+                    demo_activities = self.models.Activity.objects.filter(is_demo_activity=True)
+                    change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
+                    insert_custom_demo_activities(
+                        count=9, every_nth_day=3, activity_model=self.models.Activity, sport_model=self.models.Sport
+                    )
                     log.info("finished inserting demo data")
                     self.importing_demo_data = False
+                if self.single_run:  # used for testing only
+                    break
                 time.sleep(interval)
         except OperationalError as e:
             log.warning(f"cannot run FileImporter. Maybe run django migrations first: {e}")
@@ -186,7 +199,6 @@ def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=Fals
 
 def save_laps_to_model(lap_model, laps: list, trace_instance):
     for lap in laps:
-        log.debug(f"saving lap data: {lap} for trace: {trace_instance}")
         lap_object = lap_model(
             start_time=lap.start_time,
             end_time=lap.end_time,
@@ -301,6 +313,6 @@ def get_all_files(path) -> list:
         os.path.join(root, name)
         for root, dirs, files in os.walk(path)
         for name in files
-        if name.endswith(tuple(formats))
+        if name.endswith(tuple(supported_formats))
     ]
     return trace_files
