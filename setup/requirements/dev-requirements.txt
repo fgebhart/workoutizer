@@ -18,8 +18,8 @@ distlib==0.3.1            # via virtualenv
 filelock==3.0.12          # via virtualenv
 flake8==3.8.4             # via -r setup/requirements/dev-requirements.in
 identify==1.5.10          # via pre-commit
-ipython-genutils==0.2.0   # via traitlets
 ipython==7.18.1           # via -r setup/requirements/dev-requirements.in
+ipython-genutils==0.2.0   # via traitlets
 jedi==0.17.2              # via ipython
 jinja2==2.11.2            # via ansible
 lxml==4.5.2               # via -r setup/requirements/dev-requirements.in
@@ -44,10 +44,11 @@ pycparser==2.20           # via cffi
 pyflakes==2.2.0           # via flake8
 pygments==2.7.1           # via ipython
 pyparsing==2.4.7          # via packaging
-pytest-django==3.9.0      # via -r setup/requirements/dev-requirements.in
 pytest==5.4.3             # via -r setup/requirements/dev-requirements.in, pytest-django
+pytest-django==3.9.0      # via -r setup/requirements/dev-requirements.in
 pyyaml==5.3.1             # via ansible, pre-commit
 regex==2020.10.15         # via black
+rope==0.18.0              # via -r setup/requirements/dev-requirements.in
 selenium==3.141.0         # via -r setup/requirements/dev-requirements.in
 six==1.15.0               # via cryptography, packaging, pip-tools, virtualenv
 toml==0.10.1              # via black, pre-commit
