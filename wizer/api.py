@@ -31,13 +31,6 @@ def mount_device_endpoint(request):
         return Response("failed", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def kill_process_and_children(pid: int):
-    parent = psutil.Process(pid)
-    for child in parent.children(recursive=True):
-        child.kill()
-    parent.kill()
-
-
 @api_view(["POST"])
 def stop_django_server(request):
     log.info("Stopped.")

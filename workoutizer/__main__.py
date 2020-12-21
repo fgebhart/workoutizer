@@ -5,6 +5,7 @@ import socket
 import sys
 
 import click
+import requests
 from django.core.management import execute_from_command_line
 
 from workoutizer.settings import WORKOUTIZER_DIR, WORKOUTIZER_DB_PATH, TRACKS_DIR
@@ -97,7 +98,13 @@ def upgrade():
     _upgrade()
 
 
+@click.command(help="Stop a running workoutizer instance.")
+def stop():
+    _stop()
+
+
 cli.add_command(upgrade)
+cli.add_command(stop)
 cli.add_command(version)
 cli.add_command(init)
 cli.add_command(setup_rpi)
@@ -151,7 +158,7 @@ def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
     return result
 
 
-def _get_local_ip_address():
+def _get_local_ip_address() -> str:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
     ip_address = s.getsockname()[0]
@@ -251,6 +258,15 @@ def _run_ansible(playbook: str, variables: dict = None):
         passwords={},
     )
     return pbex.run()
+
+
+def _stop():
+    url = f"http://{_get_local_ip_address()}:8000/stop/"
+    try:
+        requests.post(url)
+        print("Stopped.")
+    except requests.exceptions.ConnectionError:
+        print("Workoutizer is not running.")
 
 
 if __name__ == "__main__":
