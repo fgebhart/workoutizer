@@ -9,4 +9,5 @@ fitparse
 geopy
 gpxpy
 pandas
+psutil
 requests

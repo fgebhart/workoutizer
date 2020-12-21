@@ -4,7 +4,7 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND='noninteractive'
 # install sqlite3 package for the use of djangos db shell
 RUN apt-get update
-RUN apt-get install -y sqlite3 virtualenv vim git zsh wget htop
+RUN apt-get install -y sqlite3 virtualenv vim git zsh wget htop curl
 RUN apt-get update
 RUN apt-get install -y firefox
 
