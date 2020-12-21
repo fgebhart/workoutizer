@@ -1,11 +1,12 @@
-from wizer.models import Activity, Sport, Settings
-from wizer.apps import run_file_importer
+from wizer import models
+from wizer.file_importer import run_file_importer, prepare_import_of_demo_activities
 
 
-def test_import_of_demo_activities_by_running_server(db):
-    run_file_importer(forking=False)
+def test_import_of_demo_activities(db):
+    prepare_import_of_demo_activities(models)
+    assert len(models.Sport.objects.all()) == 5
+    assert len(models.Settings.objects.all()) == 1
 
+    run_file_importer(models, importing_demo_data=True)
     # verify activities got imported
-    assert len(Sport.objects.all()) == 5
-    assert len(Settings.objects.all()) == 1
-    assert len(Activity.objects.all()) == 19
+    assert len(models.Activity.objects.all()) == 19

@@ -1,4 +1,4 @@
-from wizer.apps import map_sport_name, sport_naming_map, _was_runserver_triggered
+from wizer.file_importer import map_sport_name, sport_naming_map, _was_runserver_triggered
 
 
 def test_map_sport_name():
@@ -13,5 +13,7 @@ def test__was_runserver_triggered():
     assert _was_runserver_triggered(args) is True
     args = ["runserver", "help"]
     assert _was_runserver_triggered(args) is False
-    args = ["manage", "runserver 0.0.0.0:8000 --noreload"]
+    args = ["runserver", "--help"]
+    assert _was_runserver_triggered(args) is False
+    args = ["manage", "runserver", "0.0.0.0:8000", "--noreload"]
     assert _was_runserver_triggered(args) is True

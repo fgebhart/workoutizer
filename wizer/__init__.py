@@ -1,1 +1,1 @@
-default_app_config = "wizer.apps.WizerFileDaemon"
+default_app_config = "wizer.file_importer.WizerFileDaemon"

@@ -39,15 +39,22 @@
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-3">{{ form.file_checker_interval.label }}</div>
-                <div class="col-sm-9">{{ form.file_checker_interval }}&nbsp;&nbsp;seconds</div>
-            </div>
-            <div class="form-group row">
                 <div class="col-sm-3">{{ form.delete_files_after_import.label }}</div>
                 <div class="col-sm-9">{{ form.delete_files_after_import }}&nbsp;
                     <i class="fas fa-question" data-toggle="tooltip" data-placement="right"
                        title="Enable this setting to delete fit files from your Garmin device after a successful import. The imported copy in the 'Traces Directory' will stay untouched."></i>
                 </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-3">{{ form.run_file_importer_in_background.label }}</div>
+                <div class="col-sm-9">{{ form.run_file_importer_in_background }}&nbsp;
+                    <i class="fas fa-question" data-toggle="tooltip" data-placement="right"
+                       title="TODO."></i>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-3">{{ form.file_checker_interval.label }}</div>
+                <div class="col-sm-9">{{ form.file_checker_interval }}&nbsp;&nbsp;seconds</div>
             </div>
             <br>
             <h5><b>Reimporter</b></h5>

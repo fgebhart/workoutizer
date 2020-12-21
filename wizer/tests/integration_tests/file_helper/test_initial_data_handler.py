@@ -10,7 +10,7 @@ from wizer.file_helper.initial_data_handler import (
     insert_custom_demo_activities,
     insert_settings_and_sports_to_model,
 )
-from workoutizer import settings
+from workoutizer import settings as django_settings
 
 
 def test_insert_settings_and_sports_to_model(db):
@@ -71,8 +71,14 @@ def test_change_date_of_demo_activities(db, sport):
     c = Activity.objects.get(name="activity_c")
 
     # the date of activity a and b will be shifted to today - 1 or today - 3
-    assert datetime.datetime.now(pytz.timezone(settings.TIME_ZONE)).date() - datetime.timedelta(days=1) == a.date.date()
-    assert datetime.datetime.now(pytz.timezone(settings.TIME_ZONE)).date() - datetime.timedelta(days=4) == b.date.date()
+    assert (
+        datetime.datetime.now(pytz.timezone(django_settings.TIME_ZONE)).date() - datetime.timedelta(days=1)
+        == a.date.date()
+    )
+    assert (
+        datetime.datetime.now(pytz.timezone(django_settings.TIME_ZONE)).date() - datetime.timedelta(days=4)
+        == b.date.date()
+    )
 
     # the date of c should not be shifted
     assert datetime.datetime(2000, 1, 1, tzinfo=pytz.utc) == c.date

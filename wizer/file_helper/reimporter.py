@@ -1,7 +1,7 @@
 import logging
 
 from wizer import models
-from wizer.apps import (
+from wizer.file_importer import (
     get_md5sums_from_model,
     get_all_files,
     calc_md5,
