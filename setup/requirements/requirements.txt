@@ -10,9 +10,9 @@ certifi==2020.6.20        # via requests
 chardet==3.0.4            # via requests
 click==7.1.2              # via -r setup/requirements/requirements.in
 coloredlogs==14.0         # via -r setup/requirements/requirements.in
+django==3.0.8             # via -r setup/requirements/requirements.in, django-leaflet, djangorestframework
 django-colorfield==0.3.1  # via -r setup/requirements/requirements.in
 django-leaflet==0.26.0    # via -r setup/requirements/requirements.in
-django==3.0.8             # via -r setup/requirements/requirements.in, django-leaflet, djangorestframework
 djangorestframework==3.11.0  # via -r setup/requirements/requirements.in
 fitparse==1.1.0           # via -r setup/requirements/requirements.in
 geographiclib==1.50       # via geopy
@@ -26,6 +26,7 @@ numpy==1.19.0             # via bokeh, pandas
 packaging==20.4           # via bokeh
 pandas==1.0.5             # via -r setup/requirements/requirements.in
 pillow==7.2.0             # via bokeh
+psutil==5.8.0             # via -r setup/requirements/requirements.in
 pyparsing==2.4.7          # via packaging
 python-dateutil==2.8.1    # via bokeh, pandas
 pytz==2020.1              # via django, pandas
