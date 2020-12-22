@@ -47,7 +47,7 @@ def test_mount_device__importing(db, monkeypatch, demo_data_dir, tmpdir, client)
     settings.save()
 
     def check_output(dummy):
-        return "dummy\nstring\nsome\ncontent"
+        return "dummy\nstring\nsome\ncontent\ncontaining\nGarmin"
 
     monkeypatch.setattr(subprocess, "check_output", check_output)
 
@@ -56,6 +56,12 @@ def test_mount_device__importing(db, monkeypatch, demo_data_dir, tmpdir, client)
         return "dummy-string"
 
     monkeypatch.setattr(fit_collector, "try_to_mount_device", try_to_mount_device)
+
+    # mock output of actual mounting command
+    def mount(bus, dev):
+        return "Mounted"
+
+    monkeypatch.setattr(fit_collector, "_mount_device_using_gio", mount)
 
     # create directory to import the fit files from
     fake_device_dir = os.path.join(tmpdir, "mtp:host/Primary/GARMIN/Activity/")
