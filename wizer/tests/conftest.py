@@ -4,7 +4,7 @@ import datetime
 import pytest
 
 from wizer.models import Settings, Sport, Activity, Traces
-from workoutizer import settings as wkz_settings
+from workoutizer import settings as django_settings
 
 
 @pytest.fixture
@@ -99,4 +99,4 @@ def test_data_dir():
 
 @pytest.fixture
 def demo_data_dir():
-    return wkz_settings.INITIAL_TRACE_DATA_DIR
+    return django_settings.INITIAL_TRACE_DATA_DIR

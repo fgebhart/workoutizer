@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Sport, Activity, Settings, Traces, Lap
+from wizer.models import Sport, Activity, Settings, Traces, Lap
 
 admin.site.register(Sport)
 admin.site.register(Activity)

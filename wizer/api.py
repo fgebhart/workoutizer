@@ -8,7 +8,8 @@ from rest_framework import status
 import psutil
 
 
-from wizer.file_helper.fit_collector import try_to_mount_device, FitCollector
+from wizer.file_helper.fit_collector import try_to_mount_device
+from wizer.file_importer import FileImporter
 from wizer import models
 
 
@@ -18,14 +19,8 @@ log = logging.getLogger(__name__)
 @api_view(["POST"])
 def mount_device_endpoint(request):
     mount_path = try_to_mount_device()
-    settings = models.Settings.objects.get_or_create(pk=1)[0]
     if mount_path:
-        fit_collector = FitCollector(
-            path_to_garmin_device=settings.path_to_garmin_device,
-            target_location=settings.path_to_trace_dir,
-            delete_files_after_import=settings.delete_files_after_import,
-        )
-        fit_collector.copy_fit_files()
+        FileImporter(models=models, importing_demo_data=False, single_run=True)
         return Response("mounted", status=status.HTTP_200_OK)
     else:
         return Response("failed", status=status.HTTP_500_INTERNAL_SERVER_ERROR)

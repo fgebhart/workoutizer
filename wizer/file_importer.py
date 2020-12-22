@@ -19,7 +19,7 @@ from wizer.file_helper.initial_data_handler import (
     insert_custom_demo_activities,
 )
 from wizer.naming import supported_formats
-from workoutizer import settings
+from workoutizer import settings as django_settings
 
 
 log = logging.getLogger(__name__)
@@ -48,13 +48,14 @@ sport_naming_map = {
 
 def _was_runserver_triggered(args: list):
     triggered = False
-    for arg in args:
-        if arg == "run" or arg == "runserver":
-            triggered = True
-        if "runserver" in arg and "help" not in arg:
-            triggered = True
-        if arg == "help":
-            triggered = False
+    if "run" in args:
+        triggered = True
+    if "runserver" in args:
+        triggered = True
+    if "help" in args:
+        triggered = False
+    if "--help" in args:
+        triggered = False
 
     return triggered
 
@@ -66,22 +67,28 @@ class WizerFileDaemon(AppConfig):
     def ready(self):
         # ensure to only run with 'manage.py runserver' and not in auto reload thread
         if _was_runserver_triggered(sys.argv) and os.environ.get("RUN_MAIN", None) != "true":
-            log.info(f"using workoutizer home at {settings.WORKOUTIZER_DIR}")
-            run_file_importer(forking=True)
+            log.info(f"using workoutizer home at {django_settings.WORKOUTIZER_DIR}")
+            from wizer import models
+
+            # insert initial example activity data in case there is no activity in the db
+            importing_demo_data = False
+            if models.Activity.objects.count() == 0:
+                log.debug("no activity data found, will add demo activities...")
+                prepare_import_of_demo_activities(models)
+                importing_demo_data = True
+
+            run_file_importer(models, importing_demo_data)
 
 
-def run_file_importer(forking: bool):
-    from wizer import models
+def prepare_import_of_demo_activities(models):
+    insert_settings_and_sports_to_model(models.Settings, models.Sport)
+    copy_demo_fit_files_to_track_dir(
+        source_dir=django_settings.INITIAL_TRACE_DATA_DIR, targe_dir=django_settings.TRACKS_DIR
+    )
 
-    importing_demo_data = False
 
-    # insert initial example activity data in case there is no activity in the db
-    if models.Activity.objects.count() == 0:
-        log.debug("no data found, will create demo activities...")
-        insert_settings_and_sports_to_model(models.Settings, models.Sport)
-        copy_demo_fit_files_to_track_dir(source_dir=settings.INITIAL_TRACE_DATA_DIR, targe_dir=settings.TRACKS_DIR)
-        importing_demo_data = True
-    if forking:
+def run_file_importer(models, importing_demo_data: bool):
+    if models.Settings.objects.get(pk=1).run_file_importer_in_background:
         fi = Process(target=FileImporter, args=(models, importing_demo_data, False))
         fi.start()
     else:

@@ -9,7 +9,7 @@ from wizer.file_helper.auto_naming import (
     _get_sport_name,
     _get_coordinate_not_null,
 )
-from wizer.apps import run_parser
+from wizer.file_importer import run_parser
 from wizer import models
 
 

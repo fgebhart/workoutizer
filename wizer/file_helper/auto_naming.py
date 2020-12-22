@@ -47,11 +47,11 @@ def _get_sport_name(sport_name: str) -> str:
 def _get_coordinate_not_null(coordinates: Union[str, list]):
     try:
         if isinstance(coordinates, str):
-            coordinate = pd.Series(json.loads(coordinates)).dropna().iloc[0]
+            coordinate = pd.Series(json.loads(coordinates), dtype=float).dropna().iloc[0]
         elif isinstance(coordinates, list):
-            coordinate = pd.Series(coordinates).dropna().iloc[0]
+            coordinate = pd.Series(coordinates, dtype=float).dropna().iloc[0]
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"Input coordinates must be either of type list or str - not {type(coordinates)}.")
     except IndexError:
         coordinate = None
     return coordinate

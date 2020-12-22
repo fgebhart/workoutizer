@@ -66,12 +66,12 @@ def try_to_mount_device():
             device_start = line.find("Device") + 7
             dev = line[device_start : device_start + 3]
             try:
-                mount_output = subprocess.check_output(["gio", "mount", "-d", f"/dev/bus/usb/{bus}/{dev}"]).decode(
-                    "utf-8"
-                )
+                mount_output = _mount_device_using_gio(bus, dev)
             except subprocess.CalledProcessError as e:
                 log.warning(f"could not mount device: {e}")
                 return None
+        else:
+            log.warning("no Garmin device found in 'lsusb'")
     if mount_output:
         if "Mounted" in mount_output:
             path_start = mount_output.find("at")
@@ -81,4 +81,8 @@ def try_to_mount_device():
         else:
             log.warning("could not mount device")
     else:
-        log.warning("no Garmin device found in 'lsusb'")
+        log.warning("Found Garmin device, but could not mount it.")
+
+
+def _mount_device_using_gio(bus: str, dev: str) -> str:
+    return subprocess.check_output(["gio", "mount", "-d", f"/dev/bus/usb/{bus}/{dev}"]).decode("utf-8")

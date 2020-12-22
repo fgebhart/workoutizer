@@ -105,7 +105,7 @@ class FITParser(Parser):
         for attribute, values in attributes.items():
             if attribute in naming.min_max_attributes:
                 name = attribute.replace("_list", "")
-                values = pd.Series(values)
+                values = pd.Series(values, dtype="float")
                 if values.any():
                     setattr(self, f"max_{name}", round(float(values.max()), 2))
                     setattr(self, f"min_{name}", round(float(values.min()), 2))
