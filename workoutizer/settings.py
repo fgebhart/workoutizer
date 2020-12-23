@@ -117,5 +117,5 @@ trace_line_opacity = 0.9
 LOGGING = get_logging_config(
     django_log_level=os.getenv("DJANGO_LOG_LEVEL", "INFO"),
     wkz_log_level=os.getenv("WKZ_LOG_LEVEL", "INFO"),
-    path_to_logfile=WORKOUTIZER_DIR,
+    path_to_log_dir=WORKOUTIZER_DIR,
 )
