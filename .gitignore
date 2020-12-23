@@ -7,7 +7,6 @@ tracks/*.fit
 *.sqlite3
 wizer/tests/integration_tests/data/tested_data/*.gpx
 wizer/tests/integration_tests/data/tested_data/*.fit
-geckodriver.log
 dist/
 build/
 *.egg-info
@@ -15,3 +14,4 @@ build/
 venv/
 .vscode/settings.json
 .vscode/.ropeproject/objectdb
+*.log
