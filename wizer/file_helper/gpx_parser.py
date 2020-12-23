@@ -3,7 +3,7 @@ import logging
 import gpxpy
 import gpxpy.gpx
 
-from wizer.gis.gis import get_total_distance_of_trace
+from wizer.gis.geo import get_total_distance_of_trace
 from wizer.file_helper.parser import Parser
 
 log = logging.getLogger(__name__)

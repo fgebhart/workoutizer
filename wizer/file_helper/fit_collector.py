@@ -3,6 +3,9 @@ import os
 import shutil
 import subprocess
 
+from wizer.tools.utils import calc_md5
+
+
 log = logging.getLogger("wizer.fit_collector")
 
 
@@ -38,21 +41,20 @@ class FitCollector:
                     if not os.path.isfile(target_file):
                         shutil.copy(fit, target_file)
                         log.debug(f"copied file: {file_name}")
-                        if self.delete_files_after_import:
-                            _delete_imported_fit_file_from_device(
-                                path_to_file_on_device=fit,
-                                path_to_local_file=target_file,
-                            )
+                        if _file_are_same(fit, target_file):
+                            log.debug(f"files {fit} and {target_file} are equal")
+                            if self.delete_files_after_import:
+                                log.debug(f"deleting fit file from device: {fit}")
+                                os.remove(fit)
+                        else:
+                            log.warning(f"files {fit} and {target_file} are NOT equal after copying.")
 
 
-def _delete_imported_fit_file_from_device(path_to_file_on_device: str, path_to_local_file: str):
-    """
-    Check if both the original file on the device and the copy on the local file
-    system are present and if so, delete the file on the device.
-    """
-    if os.path.isfile(path_to_file_on_device) and os.path.isfile(path_to_local_file):
-        os.remove(path_to_file_on_device)
-        log.debug(f"deleted file from device: {path_to_file_on_device}")
+def _file_are_same(file_a: str, file_b: str) -> bool:
+    if calc_md5(file_a) == calc_md5(file_b):
+        return True
+    else:
+        return False
 
 
 def try_to_mount_device():

@@ -1,7 +1,9 @@
+from typing import Tuple
 import logging
 from dataclasses import dataclass
 from typing import List
 
+from geopy.geocoders import Nominatim
 from geopy import distance
 import pandas as pd
 
@@ -43,3 +45,18 @@ def add_elevation_data_to_coordinates(coordinates: list, altitude: list):
         coordinate = coordinate + (altitude,)
         coordinates_with_elevation.append(coordinate)
     return coordinates_with_elevation
+
+
+def get_location_name(coordinate: Tuple[float, float]) -> str:
+    app = Nominatim(user_agent="tutorial")
+    try:
+        address = app.reverse(coordinate, language="en").raw["address"]
+        # use name of location from village, town or city (in this order)
+        if "village" in address.keys():
+            return address["village"]
+        elif "town" in address.keys():
+            return address["town"]
+        elif "city" in address.keys():
+            return address["city"]
+    except (TypeError, ValueError):
+        return None

@@ -1,24 +1,10 @@
-from typing import Tuple, Union
+from typing import Union
 import datetime
 import json
 
-from geopy.geocoders import Nominatim
 import pandas as pd
 
-
-def _get_location_name(coordinate: Tuple[float, float]) -> str:
-    app = Nominatim(user_agent="tutorial")
-    try:
-        address = app.reverse(coordinate, language="en").raw["address"]
-        # use name of location from village, town or city (in this order)
-        if "village" in address.keys():
-            return address["village"]
-        elif "town" in address.keys():
-            return address["town"]
-        elif "city" in address.keys():
-            return address["city"]
-    except (TypeError, ValueError):
-        return None
+from wizer.gis.geo import get_location_name
 
 
 def _get_daytime_name(date: datetime.datetime) -> str:
@@ -61,7 +47,7 @@ def get_automatic_name(parser, sport_name: str) -> str:
     lat = _get_coordinate_not_null(coordinates=parser.latitude_list)
     lon = _get_coordinate_not_null(coordinates=parser.longitude_list)
     if lat and lon:
-        location = _get_location_name((lat, lon))
+        location = get_location_name((lat, lon))
     else:
         location = None
     daytime = _get_daytime_name(parser.date)

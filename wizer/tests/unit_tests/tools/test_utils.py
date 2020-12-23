@@ -1,4 +1,4 @@
-from wizer.tools.utils import sanitize, cut_list_to_have_same_length, limit_string
+from wizer.tools.utils import sanitize, cut_list_to_have_same_length, limit_string, _get_local_ip_address
 
 
 def test_sanitize():
@@ -31,3 +31,10 @@ def test_limit_string():
     assert limit_string(string="12345", max_length=4) == "12...45"
     assert limit_string(string="12345", max_length=5) == "12345"
     assert limit_string(string="some super duper long string", max_length=12) == "some s...string"
+
+
+def test__get_local_ip_address():
+    ip_address = _get_local_ip_address()
+    assert type(ip_address) == str
+    assert len(ip_address) >= 8
+    assert "." in ip_address

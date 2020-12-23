@@ -1,7 +1,5 @@
 import os
-import argparse
 import subprocess
-import socket
 import sys
 
 import click
@@ -10,6 +8,8 @@ from django.core.management import execute_from_command_line
 
 from workoutizer.settings import WORKOUTIZER_DIR, WORKOUTIZER_DB_PATH, TRACKS_DIR
 from workoutizer import __version__
+from wizer.tools.utils import _get_local_ip_address
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SETUP_DIR = os.path.join(BASE_DIR, "setup")
@@ -158,14 +158,6 @@ def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
     return result
 
 
-def _get_local_ip_address() -> str:
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    ip_address = s.getsockname()[0]
-    s.close()
-    return ip_address
-
-
 def _build_home():
     if os.path.isdir(WORKOUTIZER_DIR):
         if os.path.isfile(WORKOUTIZER_DB_PATH):
@@ -174,7 +166,10 @@ def _build_home():
                 "Workoutizer could try to use the existing database instead of creating a new one.\n"
                 "Note that this could lead to faulty behaviour because of mismatching applied\n"
                 "migrations on this database.\n\n"
-                "Do you want to use the existing database instead of creating a new one? [Y/n] "
+                "Do you want to use the existing database instead of creating a new one? \n"
+                "   - Enter 'n' to delete the found database and create a new one. \n"
+                "   - Enter 'y' to keep and use the found database. \n"
+                "Enter [Y/n] "
             )
             if answer.lower() == "y":
                 click.echo(f"keeping existing database at {WORKOUTIZER_DB_PATH}")
@@ -191,19 +186,6 @@ def _build_home():
 def _make_tracks_dir(path):
     if not os.path.isdir(path):
         os.mkdir(path)
-
-
-class ParseDict(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        d = {}
-        if values:
-            for item in values:
-                split_items = item.split("=", 1)
-                key = split_items[0].strip()  # we remove blanks around keys, as is logical
-                value = split_items[1]
-                d[key] = value
-
-        setattr(namespace, self.dest, d)
 
 
 def _pip_install(package, upgrade: bool = False):

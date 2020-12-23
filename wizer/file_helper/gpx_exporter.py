@@ -7,7 +7,7 @@ from django.utils.duration import duration_microseconds
 import pandas as pd
 
 from wizer.tools.utils import sanitize, timestamp_format
-from wizer.gis.gis import add_elevation_data_to_coordinates
+from wizer.gis.geo import add_elevation_data_to_coordinates
 
 gpx_header = """<?xml version="1.0" encoding="UTF-8"?>
 <gpx creator="Fabian Gebhart" version="1.1" xmlns="http://www.topografix.com/GPX/1/1"

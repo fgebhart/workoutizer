@@ -17,7 +17,7 @@ from wizer import forms
 from wizer.plotting.plot_history import plot_history
 from wizer.plotting.plot_pie_chart import plot_pie_chart
 from wizer.plotting.plot_trend import plot_trend
-from wizer.gis.gis import GeoTrace
+from wizer.gis.geo import GeoTrace
 from wizer.file_helper.reimporter import Reimporter
 
 from wizer.tools.colors import lines_colors
