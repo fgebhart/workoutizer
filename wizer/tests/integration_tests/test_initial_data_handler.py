@@ -26,12 +26,11 @@ def test_insert_settings_and_sports_to_model(db):
     assert Sport.objects.count() > 0
 
 
-def test_copy_demo_fit_files_to_track_dir(test_data_dir, demo_data_dir):
+def test_copy_demo_fit_files_to_track_dir(tmpdir, demo_data_dir):
     # copy demo data to tested data dir
     src = demo_data_dir
-    target = os.path.join(test_data_dir, "tested_data")
-    copy_demo_fit_files_to_track_dir(src, target)
-    assert os.path.isfile(os.path.join(target, "hike_with_coordinates.fit"))
+    copy_demo_fit_files_to_track_dir(src, tmpdir)
+    assert os.path.isfile(os.path.join(tmpdir, "hike_with_coordinates.fit"))
 
 
 def test_change_date_of_demo_activities(db, sport):
