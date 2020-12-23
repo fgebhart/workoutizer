@@ -3,11 +3,11 @@ import numpy as np
 from bokeh.embed import components
 from bokeh.plotting import figure
 
-from wizer.models import Settings
+from wizer import models
 
 
 def plot_trend(activities, sport_model):
-    number_of_days = Settings.objects.get(pk=1).number_of_days
+    number_of_days = models.get_settings().number_of_days
 
     df = pd.DataFrame.from_records(activities.values("sport_id", "duration", "date"))
     df["date"] = pd.to_datetime(df["date"])

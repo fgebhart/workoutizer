@@ -88,7 +88,7 @@ def prepare_import_of_demo_activities(models):
 
 
 def run_file_importer(models, importing_demo_data: bool):
-    if models.Settings.objects.get(pk=1).run_file_importer_in_background:
+    if models.get_settings().run_file_importer_in_background:
         fi = Process(target=FileImporter, args=(models, importing_demo_data, False))
         fi.start()
     else:
@@ -98,7 +98,7 @@ def run_file_importer(models, importing_demo_data: bool):
 class FileImporter:
     def __init__(self, models, importing_demo_data, single_run):
         self.importing_demo_data = importing_demo_data
-        self.settings = models.Settings.objects.get(pk=1)
+        self.settings = models.get_settings()
         self.models = models
         self.single_run = single_run
         self._start_listening()
@@ -186,7 +186,7 @@ def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=Fals
     mapped_sport = map_sport_name(sport, sport_naming_map)
     sport_instance = models.Sport.objects.filter(slug=sanitize(mapped_sport)).first()
     if sport_instance is None:  # needs to be adapted in GH #4
-        sport_instance = models.Sport.objects.filter(slug="unknown").first()
+        sport_instance = models.default_sport(return_pk=False)
     save_laps_to_model(
         lap_model=models.Lap,
         laps=parser.laps,

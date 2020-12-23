@@ -3,7 +3,7 @@ import datetime
 
 import pytz
 
-from wizer.models import Activity, Settings, Sport
+from wizer.models import Activity, Settings, Sport, get_settings
 from wizer.file_helper.initial_data_handler import (
     change_date_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
@@ -20,7 +20,7 @@ def test_insert_settings_and_sports_to_model(db):
     # insert settings and sports
     insert_settings_and_sports_to_model(Settings, Sport)
     assert Settings.objects.count() == 1
-    assert Settings.objects.get(pk=1).number_of_days == 30
+    assert get_settings().number_of_days == 30
 
     # check that at least one sport object is present
     assert Sport.objects.count() > 0
