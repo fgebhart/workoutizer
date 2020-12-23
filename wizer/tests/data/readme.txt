@@ -1,0 +1,1 @@
+This folder contains example activity data used for testing.

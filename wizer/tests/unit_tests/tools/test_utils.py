@@ -1,4 +1,7 @@
-from wizer.tools.utils import sanitize, cut_list_to_have_same_length, limit_string
+import os
+import shutil
+
+from wizer.tools.utils import sanitize, cut_list_to_have_same_length, limit_string, get_local_ip_address, files_are_same
 
 
 def test_sanitize():
@@ -31,3 +34,24 @@ def test_limit_string():
     assert limit_string(string="12345", max_length=4) == "12...45"
     assert limit_string(string="12345", max_length=5) == "12345"
     assert limit_string(string="some super duper long string", max_length=12) == "some s...string"
+
+
+def test__get_local_ip_address():
+    ip_address = get_local_ip_address()
+    assert type(ip_address) == str
+    assert len(ip_address) >= 8
+    assert "." in ip_address
+
+
+def test_files_are_same(tmpdir, test_data_dir):
+    # copy a file to temp dir for comparison
+    file_a = os.path.join(test_data_dir, "example.fit")
+    file_b = os.path.join(tmpdir, "example.fit")
+    shutil.copy2(src=file_a, dst=file_b)
+
+    # files are the same
+    assert files_are_same(file_a, file_b) is True
+
+    file_c = os.path.join(test_data_dir, "example.gpx")
+    # files are not the same
+    assert files_are_same(file_a, file_c) is False
