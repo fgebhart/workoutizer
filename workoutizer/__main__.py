@@ -8,7 +8,7 @@ from django.core.management import execute_from_command_line
 
 from workoutizer.settings import WORKOUTIZER_DIR, WORKOUTIZER_DB_PATH, TRACKS_DIR
 from workoutizer import __version__
-from wizer.tools.utils import _get_local_ip_address
+from wizer.tools.utils import get_local_ip_address
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -45,7 +45,7 @@ def init():
 )
 def setup_rpi(ip, vendor_id, product_id):
     if not ip:
-        ip = _get_local_ip_address()
+        ip = get_local_ip_address()
     answer = input(
         "Are you sure you want to setup your Raspberry Pi?\n\n"
         "This will copy the required udev rule and systemd service file\n"
@@ -74,7 +74,7 @@ def setup_rpi(ip, vendor_id, product_id):
 )
 def run(url):
     if not url:
-        url = f"{_get_local_ip_address()}:8000"
+        url = f"{get_local_ip_address()}:8000"
     execute_from_command_line(["manage.py", "runserver", url])
 
 
@@ -141,7 +141,7 @@ def _get_latest_version_of(package: str):
 
 def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
     if not ip_port:
-        ip_port = f"{_get_local_ip_address()}:8000"
+        ip_port = f"{get_local_ip_address()}:8000"
     result = _run_ansible(
         playbook="setup_on_rpi.yml",
         variables={
@@ -243,7 +243,7 @@ def _run_ansible(playbook: str, variables: dict = None):
 
 
 def _stop():
-    url = f"http://{_get_local_ip_address()}:8000/stop/"
+    url = f"http://{get_local_ip_address()}:8000/stop/"
     try:
         requests.post(url)
         print("Stopped.")

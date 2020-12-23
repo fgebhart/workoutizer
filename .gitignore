@@ -14,4 +14,4 @@ build/
 venv/
 .vscode/settings.json
 .vscode/.ropeproject/objectdb
-*.log
+*.log*

@@ -60,9 +60,16 @@ def limit_string(string: str, max_length: int):
         return f"{string[:(int(max_length/2))]}...{string[(-int(max_length/2)):]}"
 
 
-def _get_local_ip_address() -> str:
+def get_local_ip_address() -> str:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
     ip_address = s.getsockname()[0]
     s.close()
     return ip_address
+
+
+def files_are_same(file_a: str, file_b: str) -> bool:
+    if calc_md5(file_a) == calc_md5(file_b):
+        return True
+    else:
+        return False
