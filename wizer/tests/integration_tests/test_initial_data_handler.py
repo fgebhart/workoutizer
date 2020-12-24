@@ -2,8 +2,10 @@ import os
 import datetime
 
 import pytz
-from wizer import models
+import pytest
+from django.core.management import call_command
 
+from wizer import models
 from wizer.file_helper.initial_data_handler import (
     change_date_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
@@ -13,7 +15,12 @@ from wizer.file_helper.initial_data_handler import (
 from workoutizer import settings as django_settings
 
 
-def test_insert_demo_sports_to_model(db):
+@pytest.fixture
+def flush_db():
+    call_command("flush", verbosity=0, interactive=False)
+
+
+def test_insert_demo_sports_to_model(db, flush_db):
     # assert that there are no sports
     assert models.Sport.objects.count() == 0
     # insert sports
