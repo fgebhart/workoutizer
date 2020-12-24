@@ -5,7 +5,7 @@ from wizer.file_importer import run_file_importer, prepare_import_of_demo_activi
 from wizer.file_helper.reimporter import Reimporter
 
 
-def test_reimport_of_activities(db, tmpdir):
+def test_reimport_of_activities(db, tracks_in_tmpdir):
     """
     Test reimporter in following steps:
     1. import demo activities
@@ -13,12 +13,6 @@ def test_reimport_of_activities(db, tmpdir):
     3. trigger reimporter
     4. check that attributes have been overwritten with the original values
     """
-
-    # prepare settings
-    target_dir = tmpdir.mkdir("tracks")
-    settings = models.get_settings()
-    settings.path_to_trace_dir = target_dir
-    settings.save()
 
     # 1. import one cycling and one hiking activities
     prepare_import_of_demo_activities(
