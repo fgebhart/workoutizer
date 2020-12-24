@@ -19,7 +19,7 @@ sport_data = {
 
 
 def insert_settings_and_sports_to_model(models):
-    models.Settings.objects.get_or_create(pk=1, path_to_trace_dir=django_settings.TRACKS_DIR, number_of_days=30)
+    models.get_settings()
     # also insert default unknown sport
     models.default_sport()
     for i in range(len(sport_data["name"])):
