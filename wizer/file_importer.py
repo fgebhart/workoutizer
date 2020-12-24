@@ -81,7 +81,7 @@ class WizerFileDaemon(AppConfig):
 
 
 def prepare_import_of_demo_activities(models):
-    insert_settings_and_sports_to_model(models.Settings, models.Sport)
+    insert_settings_and_sports_to_model(models)
     copy_demo_fit_files_to_track_dir(
         source_dir=django_settings.INITIAL_TRACE_DATA_DIR, targe_dir=django_settings.TRACKS_DIR
     )

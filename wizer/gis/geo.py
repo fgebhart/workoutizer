@@ -50,7 +50,7 @@ def add_elevation_data_to_coordinates(coordinates: list, altitude: list):
 def get_location_name(coordinate: Tuple[float, float]) -> str:
     app = Nominatim(user_agent="tutorial")
     try:
-        address = app.reverse(coordinate, language="en").raw["address"]
+        address = app.reverse(coordinate, language="en", timeout=5).raw["address"]
         # use name of location from village, town or city (in this order)
         if "village" in address.keys():
             return address["village"]

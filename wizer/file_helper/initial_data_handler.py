@@ -18,10 +18,12 @@ sport_data = {
 }
 
 
-def insert_settings_and_sports_to_model(settings_model, sport_model):
-    settings_model.objects.get_or_create(pk=1, path_to_trace_dir=django_settings.TRACKS_DIR, number_of_days=30)
+def insert_settings_and_sports_to_model(models):
+    models.Settings.objects.get_or_create(pk=1, path_to_trace_dir=django_settings.TRACKS_DIR, number_of_days=30)
+    # also insert default unknown sport
+    models.default_sport()
     for i in range(len(sport_data["name"])):
-        sport_model.objects.get_or_create(
+        models.Sport.objects.get_or_create(
             name=sport_data.get("name")[i],
             color=sport_data.get("color")[i],
             icon=sport_data.get("icon")[i],
