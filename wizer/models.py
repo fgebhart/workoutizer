@@ -78,12 +78,15 @@ class Traces(models.Model):
         super(Traces, self).save()
 
 
-def default_sport():
+def default_sport(return_pk: bool = True):
     sport = Sport.objects.filter(slug="unknown").first()
     if not sport:
         sport = Sport(name="unknown", color="gray", icon="question-circle", slug="unknown")
         sport.save()
-    return sport.pk
+    if return_pk:
+        return sport.pk
+    else:
+        return sport
 
 
 class Activity(models.Model):
@@ -145,3 +148,7 @@ class Settings(models.Model):
     delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying: ", default=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+
+def get_settings():
+    return Settings.objects.get_or_create(pk=1)[0]

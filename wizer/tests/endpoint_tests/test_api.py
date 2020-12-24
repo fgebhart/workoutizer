@@ -40,10 +40,9 @@ def test_mount_device__not_importing(db, monkeypatch, client):
 def test_mount_device__importing(db, monkeypatch, demo_data_dir, tmpdir, client):
     # prepare settings
     target_dir = tmpdir.mkdir("tracks")
-    settings = models.Settings(
-        path_to_garmin_device=tmpdir,  # source
-        path_to_trace_dir=target_dir,  # target
-    )
+    settings = models.get_settings()
+    settings.path_to_garmin_device = tmpdir  # source
+    settings.path_to_trace_dir = target_dir  # target
     settings.save()
 
     def check_output(dummy):

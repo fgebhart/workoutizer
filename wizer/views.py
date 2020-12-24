@@ -55,7 +55,7 @@ class MapView(View):
 
     def get(self, request, list_of_activities: list):
         log.debug(f"got list_of_activity_ids: {list_of_activities}")
-        self.settings = models.Settings.objects.get(pk=1)
+        self.settings = models.get_settings()
         setattr(self.settings, "trace_width", django_settings.trace_line_width)
         setattr(self.settings, "trace_opacity", django_settings.trace_line_opacity)
         self.number_of_days = self.settings.number_of_days
@@ -94,7 +94,7 @@ class PlotView:
     settings = None
 
     def get_days_config(self):
-        self.settings = models.Settings.objects.get_or_create(pk=1)[0]
+        self.settings = models.get_settings()
         self.number_of_days = self.settings.number_of_days
         self.days_choices = models.Settings.days_choices
 
@@ -150,7 +150,7 @@ class DashboardView(View, PlotView):
 
 def settings_view(request):
     sports = models.Sport.objects.all().order_by("name")
-    settings = models.Settings.objects.get_or_create(pk=1)[0]
+    settings = models.get_settings()
     activities = models.Activity.objects.filter(is_demo_activity=True).count()
     form = forms.EditSettingsForm(request.POST or None, instance=settings)
     if request.method == "POST":
@@ -183,7 +183,7 @@ class HelpView(WKZView):
 
 
 def set_number_of_days(request, number_of_days):
-    settings = models.Settings.objects.get(pk=1)
+    settings = models.get_settings()
     settings.number_of_days = number_of_days
     log.debug(f"number of days: {number_of_days}")
     settings.save()

@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class Reimporter:
     def __init__(self):
-        self.settings = models.Settings.objects.get(pk=1)
+        self.settings = models.get_settings()
         self.force_overwrite = self.settings.reimporter_updates_all
         self.path = self.settings.path_to_trace_dir
         self.activity_modified = None

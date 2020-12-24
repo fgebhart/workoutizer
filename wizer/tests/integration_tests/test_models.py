@@ -15,16 +15,15 @@ def test_sport__slugify_of_sport_name(db):
 
 def test_activity__with_default_unknown_sport(db):
     name = "My Activity 1"
-    activity = models.Activity(name=name)
-    activity.save()
-    assert activity.name == name
-    assert activity.sport.name == "unknown"
-    assert activity.sport.icon == "question-circle"
-    assert activity.sport.color == "gray"
-    assert activity.sport.pk == 1
+    activity_1 = models.Activity(name=name)
+    activity_1.save()
+    assert activity_1.name == name
+    assert activity_1.sport.name == "unknown"
+    assert activity_1.sport.icon == "question-circle"
+    assert activity_1.sport.color == "gray"
     # add second activity to verify that the same unknown sport instance is used
     name = "My Activity 2"
-    activity = models.Activity(name=name)
-    activity.save()
-    assert activity.name == name
-    assert activity.sport.pk == 1
+    activity_2 = models.Activity(name=name)
+    activity_2.save()
+    assert activity_2.name == name
+    assert activity_2.sport == activity_1.sport

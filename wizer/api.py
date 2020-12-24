@@ -33,7 +33,7 @@ def stop_django_server(request):
     parent = psutil.Process(pid)
     # first kill all child processes
     for child in parent.children(recursive=True):
-        os.kill(child, signal.SIGINT)
+        os.kill(child.pid, signal.SIGINT)
     # lastely kill the parent process
     os.kill(pid, signal.SIGINT)
     return Response("failed", status=status.HTTP_200_OK)
