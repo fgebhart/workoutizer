@@ -1,6 +1,7 @@
 import datetime
 import shutil
 import logging
+import os
 
 import pytz
 from django.db.models import QuerySet
@@ -18,8 +19,7 @@ sport_data = {
 }
 
 
-def insert_settings_and_sports_to_model(models):
-    models.get_settings()
+def insert_demo_sports_to_model(models):
     # also insert default unknown sport
     models.default_sport()
     for i in range(len(sport_data["name"])):
@@ -31,8 +31,12 @@ def insert_settings_and_sports_to_model(models):
         )
 
 
-def copy_demo_fit_files_to_track_dir(source_dir: str, targe_dir: str):
-    shutil.copytree(source_dir, targe_dir, dirs_exist_ok=True)
+def copy_demo_fit_files_to_track_dir(source_dir: str, targe_dir: str, list_of_files_to_copy: list = []):
+    if not list_of_files_to_copy:
+        shutil.copytree(source_dir, targe_dir, dirs_exist_ok=True)
+    else:
+        for file in list_of_files_to_copy:
+            shutil.copy2(os.path.join(source_dir, file), targe_dir)
 
 
 def change_date_of_demo_activities(every_nth_day: int, activities: QuerySet):
