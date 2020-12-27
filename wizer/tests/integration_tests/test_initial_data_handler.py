@@ -2,41 +2,62 @@ import os
 import datetime
 
 import pytz
-from wizer import models
+import pytest
+from django.core.management import call_command
 
-from wizer.models import Activity, Settings, Sport, get_settings
+from wizer import models
 from wizer.file_helper.initial_data_handler import (
     change_date_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
     insert_custom_demo_activities,
-    insert_settings_and_sports_to_model,
+    insert_demo_sports_to_model,
 )
 from workoutizer import settings as django_settings
 
 
-def test_insert_settings_and_sports_to_model(db):
-    # assert that there are no settings
-    assert Settings.objects.count() == 0
+@pytest.fixture
+def flush_db():
+    call_command("flush", verbosity=0, interactive=False)
 
-    # insert settings and sports
-    insert_settings_and_sports_to_model(models)
-    assert Settings.objects.count() == 1
-    assert get_settings().number_of_days == 30
 
+def test_insert_demo_sports_to_model(db, flush_db):
+    # assert that there are no sports
+    assert models.Sport.objects.count() == 0
+    # insert sports
+    insert_demo_sports_to_model(models)
     # check that all sports are created
-    assert Sport.objects.count() == 5
+    assert models.Sport.objects.count() == 5
 
 
-def test_copy_demo_fit_files_to_track_dir(tmpdir, demo_data_dir):
+def test_copy_demo_fit_files_to_track_dir__all(tmpdir, demo_data_dir):
     # copy demo data to tested data dir
     src = demo_data_dir
-    copy_demo_fit_files_to_track_dir(src, tmpdir)
+    copy_demo_fit_files_to_track_dir(src, tmpdir, list_of_files_to_copy=[])
     assert os.path.isfile(os.path.join(tmpdir, "hike_with_coordinates.fit"))
+    number_of_files_in_dir = len([name for name in os.listdir(tmpdir) if os.path.isfile(os.path.join(tmpdir, name))])
+    assert number_of_files_in_dir == 10
+
+
+def test_copy_demo_fit_files_to_track_dir__not_all(tmpdir, demo_data_dir):
+    # copy demo data to tested data dir
+    src = demo_data_dir
+    copy_demo_fit_files_to_track_dir(
+        src,
+        tmpdir,
+        list_of_files_to_copy=[
+            "hike_with_coordinates.fit",
+            "2020-08-20-09-34-33.fit",
+        ],
+    )
+    assert os.path.isfile(os.path.join(tmpdir, "hike_with_coordinates.fit"))
+    assert os.path.isfile(os.path.join(tmpdir, "2020-08-20-09-34-33.fit"))
+    number_of_files_in_dir = len([name for name in os.listdir(tmpdir) if os.path.isfile(os.path.join(tmpdir, name))])
+    assert number_of_files_in_dir == 2
 
 
 def test_change_date_of_demo_activities(db, sport):
     # add Activities to test the changed date
-    activity_a = Activity(
+    activity_a = models.Activity(
         name="activity_a",
         sport=sport,
         date=datetime.datetime(2000, 1, 1, tzinfo=pytz.utc),
@@ -45,7 +66,7 @@ def test_change_date_of_demo_activities(db, sport):
         is_demo_activity=True,
     )
     activity_a.save()
-    activity_b = Activity(
+    activity_b = models.Activity(
         name="activity_b",
         sport=sport,
         date=datetime.datetime(2000, 1, 1, tzinfo=pytz.utc),
@@ -54,7 +75,7 @@ def test_change_date_of_demo_activities(db, sport):
         is_demo_activity=True,
     )
     activity_b.save()
-    activity_c = Activity(
+    activity_c = models.Activity(
         name="activity_c",
         sport=sport,
         date=datetime.datetime(2000, 1, 1, tzinfo=pytz.utc),
@@ -63,12 +84,12 @@ def test_change_date_of_demo_activities(db, sport):
         is_demo_activity=False,  # no demo activity
     )
     activity_c.save()
-    demo_activities = Activity.objects.all()
+    demo_activities = models.Activity.objects.all()
     change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
 
-    a = Activity.objects.get(name="activity_a")
-    b = Activity.objects.get(name="activity_b")
-    c = Activity.objects.get(name="activity_c")
+    a = models.Activity.objects.get(name="activity_a")
+    b = models.Activity.objects.get(name="activity_b")
+    c = models.Activity.objects.get(name="activity_c")
 
     # the date of activity a and b will be shifted to today - 1 or today - 3
     assert (
@@ -85,13 +106,13 @@ def test_change_date_of_demo_activities(db, sport):
 
 
 def test_insert_custom_demo_activities(db):
-    activities = Activity.objects.all()
+    activities = models.Activity.objects.all()
     assert len(activities) == 0
     insert_custom_demo_activities(
         count=8,
         every_nth_day=4,
-        activity_model=Activity,
-        sport_model=Sport,
+        activity_model=models.Activity,
+        sport_model=models.Sport,
     )
-    activities = Activity.objects.all()
+    activities = models.Activity.objects.all()
     assert len(activities) == 8

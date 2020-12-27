@@ -15,7 +15,7 @@ from wizer.tools.utils import sanitize, calc_md5
 from wizer.file_helper.initial_data_handler import (
     copy_demo_fit_files_to_track_dir,
     change_date_of_demo_activities,
-    insert_settings_and_sports_to_model,
+    insert_demo_sports_to_model,
     insert_custom_demo_activities,
 )
 from wizer.naming import supported_formats
@@ -80,10 +80,13 @@ class WizerFileDaemon(AppConfig):
             run_file_importer(models, importing_demo_data)
 
 
-def prepare_import_of_demo_activities(models):
-    insert_settings_and_sports_to_model(models)
+def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
+    models.get_settings()
+    insert_demo_sports_to_model(models)
     copy_demo_fit_files_to_track_dir(
-        source_dir=django_settings.INITIAL_TRACE_DATA_DIR, targe_dir=django_settings.TRACKS_DIR
+        source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
+        targe_dir=models.get_settings().path_to_trace_dir,
+        list_of_files_to_copy=list_of_files_to_copy,
     )
 
 
