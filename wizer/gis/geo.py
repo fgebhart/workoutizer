@@ -1,7 +1,8 @@
-from typing import Tuple
 import logging
+import json
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple
+
 
 from geopy.geocoders import Nominatim
 from geopy import distance
@@ -60,3 +61,14 @@ def get_location_name(coordinate: Tuple[float, float]) -> str:
             return address["city"]
     except (TypeError, ValueError):
         return None
+
+
+def get_list_of_coordinates(list_of_lon: List[float], list_of_lat: List[float]) -> List[Tuple[float]]:
+    return json.dumps(
+        list(
+            zip(
+                list(pd.Series(json.loads(list_of_lon)).ffill().bfill()),
+                list(pd.Series(json.loads(list_of_lat)).ffill().bfill()),
+            )
+        )
+    )

@@ -1,6 +1,11 @@
 import pytest
 
-from wizer.gis.geo import add_elevation_data_to_coordinates, get_total_distance_of_trace, get_location_name
+from wizer.gis.geo import (
+    add_elevation_data_to_coordinates,
+    get_total_distance_of_trace,
+    get_location_name,
+    get_list_of_coordinates,
+)
 
 
 def test_get_total_distance_of_trace__basic():
@@ -55,3 +60,30 @@ def test_get_other_location_names():
     coordinate = (49.46278064511717, 8.160513974726202)
     location_name = get_location_name(coordinate=coordinate)
     assert location_name == "Bad Dürkheim"
+
+
+def test_get_list_of_coordinates__empty_data():
+    lon = "[]"
+    lat = "[]"
+    coordinates = get_list_of_coordinates(lon, lat)
+
+    assert coordinates == "[]"
+
+
+def test_get_list_of_coordinates__dummy_data():
+    lon = "[48.1234, 49.2345]"
+    lat = "[9.4567, 10.5678]"
+    coordinates = get_list_of_coordinates(lon, lat)
+
+    assert coordinates == "[[48.1234, 9.4567], [49.2345, 10.5678]]"
+
+
+def test_get_list_of_coordinates__data_with_gaps():
+    lon = "[null, 48.1234, null, 49.2345, null]"
+    lat = "[null, 9.4567, null, 10.5678, null]"
+    coordinates = get_list_of_coordinates(lon, lat)
+
+    assert (
+        coordinates
+        == "[[48.1234, 9.4567], [48.1234, 9.4567], [48.1234, 9.4567], [49.2345, 10.5678], [49.2345, 10.5678]]"
+    )
