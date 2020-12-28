@@ -33,6 +33,7 @@ pytz==2020.1              # via django, pandas
 pyyaml==5.3.1             # via bokeh
 requests==2.24.0          # via -r setup/requirements/requirements.in
 six==1.15.0               # via bokeh, packaging, python-dateutil
+sportgems==0.2.0          # via -r setup/requirements/requirements.in
 sqlparse==0.3.1           # via django
 tornado==6.0.4            # via bokeh
 urllib3==1.25.9           # via requests

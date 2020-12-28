@@ -1,12 +1,11 @@
 import logging
-import json
 from dataclasses import dataclass
 from typing import List, Tuple
-
+from math import pi, sin, cos, acos
 
 from geopy.geocoders import Nominatim
-from geopy import distance
 import pandas as pd
+
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +21,22 @@ class GeoTrace:
     weight: float = 3.0
 
 
-def get_total_distance_of_trace(longitude_list: List[float], latitude_list: List[float]):
+def _to_rad(degree: float) -> float:
+    return degree / 180 * pi
+
+
+def calculate_distance_between_points(coordinate_1: Tuple[float], coordinate_2: Tuple[float]) -> float:
+    if coordinate_1[0] == coordinate_2[0] and coordinate_1[1] == coordinate_2[1]:
+        return 0.0
+    distance = acos(
+        sin(_to_rad(coordinate_1[0])) * sin(_to_rad(coordinate_2[0]))
+        + cos(_to_rad(coordinate_1[0])) * cos(_to_rad(coordinate_2[0])) * cos(_to_rad(coordinate_1[1] - coordinate_2[1]))
+    )
+    # multiply by earth radius (nominal "zero tide" equatorial) in centimeter
+    return distance * 6378100
+
+
+def get_total_distance_of_trace(longitude_list: List[float], latitude_list: List[float]) -> float:
     if len(latitude_list) != len(longitude_list):
         raise ValueError("lat and lon lists need to have same length")
     if len(latitude_list) < 2 or len(longitude_list) < 2:
@@ -35,9 +49,9 @@ def get_total_distance_of_trace(longitude_list: List[float], latitude_list: List
         if index < len(coordinates_df) - 1:
             point = (row["lat"], row["lon"])
             next_point = (coordinates_df.at[index + 1, "lat"], coordinates_df.at[index + 1, "lon"])
-            dist = distance.geodesic(point, next_point)
-            total_distance += dist.km
-    return round(total_distance, 2)
+            dist = calculate_distance_between_points(point, next_point)
+            total_distance += dist
+    return round(total_distance / 1000, 2)
 
 
 def add_elevation_data_to_coordinates(coordinates: list, altitude: list):
@@ -64,11 +78,9 @@ def get_location_name(coordinate: Tuple[float, float]) -> str:
 
 
 def get_list_of_coordinates(list_of_lon: List[float], list_of_lat: List[float]) -> List[Tuple[float]]:
-    return json.dumps(
-        list(
-            zip(
-                list(pd.Series(json.loads(list_of_lon)).ffill().bfill()),
-                list(pd.Series(json.loads(list_of_lat)).ffill().bfill()),
-            )
+    return list(
+        zip(
+            list(pd.Series(list_of_lon).ffill().bfill()),
+            list(pd.Series(list_of_lat).ffill().bfill()),
         )
     )

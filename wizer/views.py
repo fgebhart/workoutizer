@@ -1,4 +1,5 @@
 import logging
+import json
 import datetime
 
 from django.shortcuts import render, redirect
@@ -59,8 +60,10 @@ class MapView(View):
         traces = []
         for activity in list_of_activities:
             if activity.trace_file:
-                coordinates = get_list_of_coordinates(
-                    activity.trace_file.longitude_list, activity.trace_file.latitude_list
+                coordinates = json.dumps(
+                    get_list_of_coordinates(
+                        json.loads(activity.trace_file.longitude_list), json.loads(activity.trace_file.latitude_list)
+                    )
                 )
                 sport = activity.sport.name
                 if coordinates != "[]":
