@@ -33,7 +33,6 @@ class FitCollector:
                     if name.endswith(".fit")
                 ]
                 for fit in fits:
-                    log.debug(f"copying fit file: {fit}")
                     file_name = str(fit.split("/")[-1])
                     target_file = os.path.join(self.target_location, file_name)
                     if not os.path.isfile(target_file):
@@ -65,10 +64,11 @@ def try_to_mount_device():
     log.debug("trying to mount device...")
     time.sleep(3)
     lsusb_output = subprocess.check_output("lsusb")
-    split = str(lsusb_output).split("\\n")
+    split = str(lsusb_output).split("`\\n")
     mount_output = None
     for line in split:
         if "Garmin" in line:
+            log.debug(f"found Garmin device in: {line}")
             bus_start = line.find("Bus") + 4
             bus = line[bus_start : bus_start + 3]
             device_start = line.find("Device") + 7
