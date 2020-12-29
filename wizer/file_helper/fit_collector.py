@@ -3,6 +3,7 @@ import os
 import time
 import shutil
 import subprocess
+from typing import Union
 
 from wizer.tools.utils import files_are_same
 
@@ -21,14 +22,9 @@ class FitCollector:
 
     def copy_fit_files(self):
         log.debug(f"looking for garmin device at: {self.path_to_garmin_device}")
-        garmin_watch = [
-            os.path.join(root, name)
-            for root, dirs, files in os.walk(self.path_to_garmin_device)
-            for name in dirs
-            if name.startswith("mtp:host")
-        ]
+        garmin_watch = _find_complete_garmin_device_path(self.path_to_garmin_device)
         if garmin_watch:
-            garmin_watch = garmin_watch[0] + self.activity_path
+            garmin_watch = garmin_watch + self.activity_path
             if os.path.isdir(garmin_watch):
                 fits = [
                     os.path.join(root, name)
@@ -50,6 +46,19 @@ class FitCollector:
                                 os.remove(fit)
                         else:
                             log.warning(f"files {fit} and {target_file} are NOT equal after copying.")
+
+
+def _find_complete_garmin_device_path(begin_of_path_to_device: str) -> Union[str, None]:
+    complete_paths = [
+        os.path.join(root, name)
+        for root, dirs, files in os.walk(begin_of_path_to_device)
+        for name in dirs
+        if name.startswith("mtp:host")
+    ]
+    if complete_paths:
+        return complete_paths[0]
+    else:
+        return None
 
 
 def try_to_mount_device():
@@ -85,3 +94,10 @@ def try_to_mount_device():
 
 def _mount_device_using_gio(bus: str, dev: str) -> str:
     return subprocess.check_output(["gio", "mount", "-d", f"/dev/bus/usb/{bus}/{dev}"]).decode("utf-8")
+
+
+def unmount_device_using_gio(path_to_device):
+    complete_device_path = _find_complete_garmin_device_path(path_to_device)
+    log.debug(f"unmounting device at: {complete_device_path}")
+    time.sleep(1)
+    return subprocess.check_output(["gio", "mount", "-u", complete_device_path])
