@@ -2,14 +2,12 @@ import time
 import os
 import sys
 import logging
-from multiprocessing import Process
 
 from django.apps import AppConfig
 from django.db.utils import OperationalError
 
 from wizer.file_helper.gpx_parser import GPXParser
 from wizer.file_helper.fit_parser import FITParser
-from wizer.file_helper.fit_collector import FitCollector
 from wizer.file_helper.auto_naming import get_automatic_name
 from wizer.tools.utils import sanitize, calc_md5
 from wizer.file_helper.initial_data_handler import (
@@ -77,7 +75,7 @@ class WizerFileDaemon(AppConfig):
                 prepare_import_of_demo_activities(models)
                 importing_demo_data = True
 
-            run_file_importer(models, importing_demo_data)
+            FileImporter(models, importing_demo_data)
 
 
 def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
@@ -90,52 +88,33 @@ def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
     )
 
 
-def run_file_importer(models, importing_demo_data: bool):
-    if models.get_settings().run_file_importer_in_background:
-        fi = Process(target=FileImporter, args=(models, importing_demo_data, False))
-        fi.start()
-    else:
-        FileImporter(models, importing_demo_data, single_run=True)
-
-
 class FileImporter:
-    def __init__(self, models, importing_demo_data, single_run):
+    def __init__(self, models, importing_demo_data):
         self.importing_demo_data = importing_demo_data
         self.settings = models.get_settings()
         self.models = models
-        self.single_run = single_run
-        self._start_listening()
+        self._run_importer()
 
-    def _start_listening(self):
+    def _run_importer(self):
+        time.sleep(3)
         try:
-            fit_collector = FitCollector(
-                path_to_garmin_device=self.settings.path_to_garmin_device,
-                target_location=self.settings.path_to_trace_dir,
-                delete_files_after_import=self.settings.delete_files_after_import,
-            )
-            while True:
-                fit_collector.copy_fit_files()
-                path = self.settings.path_to_trace_dir
-                interval = self.settings.file_checker_interval
-                # find activity files in directory
-                trace_files = get_all_files(path)
-                if os.path.isdir(path):
-                    log.info(f"found {len(trace_files)} files in trace dir: {path}")
-                    run_parser(self.models, trace_files, self.importing_demo_data)
-                else:
-                    log.error(f"path: {path} is not a valid directory!")
-                    break
-                if self.importing_demo_data:
-                    demo_activities = self.models.Activity.objects.filter(is_demo_activity=True)
-                    change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
-                    insert_custom_demo_activities(
-                        count=9, every_nth_day=3, activity_model=self.models.Activity, sport_model=self.models.Sport
-                    )
-                    log.info("finished inserting demo data")
-                    self.importing_demo_data = False
-                if self.single_run:  # used for testing only
-                    break
-                time.sleep(interval)
+            path = self.settings.path_to_trace_dir
+            # find activity files in directory
+            trace_files = get_all_files(path)
+            if os.path.isdir(path):
+                log.info(f"found {len(trace_files)} files in trace dir: {path}")
+                run_parser(self.models, trace_files, self.importing_demo_data)
+            else:
+                log.error(f"path: {path} is not a valid directory!")
+                return
+            if self.importing_demo_data:
+                demo_activities = self.models.Activity.objects.filter(is_demo_activity=True)
+                change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
+                insert_custom_demo_activities(
+                    count=9, every_nth_day=3, activity_model=self.models.Activity, sport_model=self.models.Sport
+                )
+                log.info("finished inserting demo data")
+                self.importing_demo_data = False
         except OperationalError as e:
             log.warning(f"cannot run FileImporter. Maybe run django migrations first: {e}")
 

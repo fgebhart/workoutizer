@@ -12,7 +12,6 @@ def settings(db):
     settings = Settings(
         path_to_trace_dir="/home/pi/traces/",
         path_to_garmin_device="/home/pi/traces/",
-        file_checker_interval=90,
         number_of_days=30,
         reimporter_updates_all=False,
         delete_files_after_import=False,
