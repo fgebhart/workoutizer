@@ -72,4 +72,6 @@ def test_mount_device__importing(db, monkeypatch, demo_data_dir, tmpdir, client)
     res = client.post("/mount-device/")
 
     assert res.status_code == 200
+
+    # verify activities got imported
     assert len(models.Activity.objects.all()) == 10

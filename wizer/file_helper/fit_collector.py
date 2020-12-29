@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 import shutil
 import subprocess
 
@@ -36,6 +37,7 @@ class FitCollector:
                     if name.endswith(".fit")
                 ]
                 for fit in fits:
+                    log.debug(f"copying fit file: {fit}")
                     file_name = str(fit.split("/")[-1])
                     target_file = os.path.join(self.target_location, file_name)
                     if not os.path.isfile(target_file):
@@ -51,6 +53,8 @@ class FitCollector:
 
 
 def try_to_mount_device():
+    log.debug("trying to mount device...")
+    time.sleep(3)
     lsusb_output = subprocess.check_output("lsusb")
     split = str(lsusb_output).split("\\n")
     mount_output = None
@@ -66,7 +70,7 @@ def try_to_mount_device():
                 log.warning(f"could not mount device: {e}")
                 return None
         else:
-            log.warning("no Garmin device found in 'lsusb'")
+            log.debug(f"no Garmin device found in 'lsusb' line: {line}")
     if mount_output:
         if "Mounted" in mount_output:
             path_start = mount_output.find("at")
