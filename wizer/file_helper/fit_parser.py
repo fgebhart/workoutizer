@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import json
 import logging
 import datetime
 
@@ -109,11 +108,6 @@ class FITParser(Parser):
                 if values.any():
                     setattr(self, f"max_{name}", round(float(values.max()), 2))
                     setattr(self, f"min_{name}", round(float(values.min()), 2))
-
-    def convert_list_attributes_to_json(self):
-        for attribute, values in self.__dict__.items():
-            if attribute.endswith("_list"):
-                setattr(self, attribute, json.dumps(values))
 
 
 def _parse_lap_data(record):
