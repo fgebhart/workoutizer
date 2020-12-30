@@ -63,7 +63,7 @@ class Parser:
         self.laps = []
 
         # fastest sections
-        self.fastest_sections = []
+        self.best_sections = []
 
         # run parser
         self._parse_metadata()
@@ -92,4 +92,4 @@ class Parser:
                         section_distance=section_distance,
                         velocity=velocity,
                     )
-                    self.fastest_sections.append(sec)
+                    self.best_sections.append(sec)

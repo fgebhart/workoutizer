@@ -2,6 +2,7 @@ import time
 import os
 import sys
 import logging
+import json
 
 from django.apps import AppConfig
 from django.db.utils import OperationalError
@@ -160,7 +161,7 @@ def run_parser(models, trace_files: list, importing_demo_data: bool):
 
 def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=False):
     parser = parse_data(trace_file)
-    trace_file_object = save_trace_to_model(
+    trace_file_object = _save_trace_to_model(
         traces_model=models.Traces, md5sum=md5sum, parser=parser, trace_file=trace_file
     )
     trace_file_instance = models.Traces.objects.get(pk=trace_file_object.pk)
@@ -175,14 +176,16 @@ def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=Fals
         trace_instance=trace_file_instance,
     )
     setattr(parser, "activity_name", get_automatic_name(parser, sport))
-    activity = _save_activity_to_model(
+    activity_object = _save_activity_to_model(
         activities_model=models.Activity,
         parser=parser,
         sport_instance=sport_instance,
         trace_instance=trace_file_instance,
         importing_demo_data=importing_demo_data,
     )
-    log.info(f"created new {sport_instance} activity: '{parser.activity_name}'. ID: {activity.pk}")
+    activity_instace = models.Activity.objects.get(pk=activity_object.pk)
+    save_best_sections_to_model(best_section_model=models.BestSection, parser=parser, activity_instance=activity_instace)
+    log.info(f"created new {sport_instance} activity: '{parser.activity_name}'. ID: {activity_object.pk}")
     return trace_file_instance
 
 
@@ -204,6 +207,21 @@ def save_laps_to_model(lap_model, laps: list, trace_instance):
         lap_object.save()
 
 
+def save_best_sections_to_model(best_section_model, parser, activity_instance):
+    # save fastest sections to model
+    for section in parser.best_sections:
+        best_section_object = best_section_model(
+            activity=activity_instance,
+            section_type=section.section_type,
+            section_distance=section.section_distance,
+            start_index=section.start_index,
+            end_index=section.end_index,
+            max_value=section.velocity,
+        )
+        best_section_object.save()
+    # save also other section types to model here...
+
+
 def _save_activity_to_model(activities_model, parser, sport_instance, trace_instance, importing_demo_data):
     activity_object = activities_model(
         name=parser.activity_name,
@@ -218,8 +236,9 @@ def _save_activity_to_model(activities_model, parser, sport_instance, trace_inst
     return activity_object
 
 
-def save_trace_to_model(traces_model, md5sum, parser, trace_file):
+def _save_trace_to_model(traces_model, md5sum, parser, trace_file):
     log.debug(f"saving trace file {trace_file} to traces model")
+    parser = convert_list_attributes_to_json(parser)
     trace_object = traces_model(
         path_to_file=trace_file,
         md5sum=md5sum,
@@ -259,6 +278,13 @@ def save_trace_to_model(traces_model, md5sum, parser, trace_file):
     )
     trace_object.save()
     return trace_object
+
+
+def convert_list_attributes_to_json(parser):
+    for attribute, values in parser.__dict__.items():
+        if attribute.endswith("_list"):
+            setattr(parser, attribute, json.dumps(values))
+    return parser
 
 
 def get_md5sums_from_model(traces_model):

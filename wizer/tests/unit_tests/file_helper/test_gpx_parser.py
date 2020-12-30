@@ -46,14 +46,14 @@ def test_get_fastest_sections(gpx_parser):
     p = gpx_parser()
 
     # check that fastest sections dict is empty
-    assert p.fastest_sections == []
+    assert p.best_sections == []
 
     p.get_fastest_sections()
 
-    assert p.fastest_sections != []
+    assert p.best_sections != []
 
     sec1 = FastestSection(1, 54, 103, 3.14)
     sec2 = FastestSection(2, 54, 167, 3.07)
     sec3 = FastestSection(3, 1, 161, 2.98)
 
-    assert p.fastest_sections == [sec1, sec2, sec3]
+    assert p.best_sections == [sec1, sec2, sec3]

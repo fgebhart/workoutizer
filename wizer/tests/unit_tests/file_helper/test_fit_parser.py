@@ -105,15 +105,15 @@ def test_get_fastest_sections(fit_parser):
     p = fit_parser()
 
     # check that fastest sections dict is empty
-    assert p.fastest_sections == []
+    assert p.best_sections == []
 
     p.get_fastest_sections()
 
-    assert p.fastest_sections != []
+    assert p.best_sections != []
 
     sec1 = FastestSection(1, 577, 666, 2.91)
     sec2 = FastestSection(2, 485, 760, 2.33)
     sec3 = FastestSection(3, 378, 883, 2.13)
     sec5 = FastestSection(5, 27, 1109, 1.84)
 
-    assert p.fastest_sections == [sec1, sec2, sec3, sec5]
+    assert p.best_sections == [sec1, sec2, sec3, sec5]

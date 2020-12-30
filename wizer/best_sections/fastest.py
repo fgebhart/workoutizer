@@ -12,6 +12,7 @@ class FastestSection:
     start_index: int
     end_index: int
     velocity: float
+    section_type: str = "fastest"
 
 
 def _prepare_coordinates_and_times_for_fastest_secions(parser) -> Tuple[List[float], List[Tuple[float]]]:

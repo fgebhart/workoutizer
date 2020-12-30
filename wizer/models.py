@@ -137,7 +137,8 @@ class Lap(models.Model):
 
 class BestSection(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
-    secion_type = models.CharField(max_length=120, blank=False)
+    section_type = models.CharField(max_length=120, blank=False)
+    section_distance = models.IntegerField(blank=False)
     start_index = models.IntegerField(blank=False)
     end_index = models.IntegerField(blank=False)
     max_value = models.FloatField(blank=False)

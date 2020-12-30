@@ -2,7 +2,7 @@ from wizer import models
 from wizer.file_importer import FileImporter, prepare_import_of_demo_activities
 
 
-def test_import_of_demo_activities(db, tracks_in_tmpdir):
+def test_import_of_demo_activities(db, tracks_in_tmpdir, client):
 
     prepare_import_of_demo_activities(models)
     assert len(models.Sport.objects.all()) == 5
@@ -10,7 +10,12 @@ def test_import_of_demo_activities(db, tracks_in_tmpdir):
 
     FileImporter(models, importing_demo_data=True)
     # verify activities got imported
-    assert len(models.Activity.objects.all()) == 19
+    all_activities = models.Activity.objects.all()
+    assert len(all_activities) == 19
+
+    for activity in all_activities:
+        response = client.get(f"/activity/{activity.pk}")
+        assert response.status_code == 200
 
     swimming = models.Activity.objects.filter(sport__slug="swimming")
     assert len(swimming) == 9
@@ -23,3 +28,10 @@ def test_import_of_demo_activities(db, tracks_in_tmpdir):
 
     hiking = models.Activity.objects.filter(sport__slug="hiking")
     assert len(hiking) == 3
+
+    # verify that best sections got parsed and imported
+    best_sections = models.BestSection.objects.all()
+    assert len(best_sections) == 61
+
+    fastest_sections = models.BestSection.objects.filter(section_type="fastest")
+    assert len(fastest_sections) == 61
