@@ -1,12 +1,20 @@
 from typing import List, Tuple
+from dataclasses import dataclass
 
+import numpy as np
 import pandas as pd
 from sportgems import find_gems
 
-from wizer.file_helper.parser import Parser
+
+@dataclass
+class FastestSection:
+    section_distance: int
+    start_index: int
+    end_index: int
+    velocity: float
 
 
-def _prepare_coordinates_and_times_for_fastest_secions(parser: Parser) -> Tuple[List[float], List[Tuple[float]]]:
+def _prepare_coordinates_and_times_for_fastest_secions(parser) -> Tuple[List[float], List[Tuple[float]]]:
     lat_lon_times_df = pd.DataFrame(
         {
             "times": parser.timestamps_list,
@@ -21,7 +29,9 @@ def _prepare_coordinates_and_times_for_fastest_secions(parser: Parser) -> Tuple[
     return times, coordinates
 
 
-def get_fastest_section(section_distance: int, parser: Parser) -> Tuple[float, int, int]:
+def get_fastest_section(section_distance: int, parser) -> Tuple[float, int, int]:
+    if not parser.latitude_list:
+        return False, np.NaN, np.NaN, np.NaN
     times, coordinates = _prepare_coordinates_and_times_for_fastest_secions(parser)
 
     found_section, start_index, end_index, velocity = find_gems(section_distance, times, coordinates)

@@ -16,7 +16,7 @@ from wizer.file_helper.initial_data_handler import (
     insert_demo_sports_to_model,
     insert_custom_demo_activities,
 )
-from wizer.naming import supported_formats
+from wizer.configuration import supported_formats
 from workoutizer import settings as django_settings
 
 
@@ -277,10 +277,12 @@ def parse_data(file):
         parser = FITParser(path_to_file=file)
         parser.convert_list_of_nones_to_empty_list()
         parser.set_min_max_values()
-        parser.convert_list_attributes_to_json()
+        # parser.convert_list_attributes_to_json()
     else:
-        log.warning(f"file type: {file} unknown")
-        parser = None
+        log.error(f"file type: {file} unknown")
+        raise NotImplementedError(f"Cannot parse {file} files. Only {supported_formats} are supported.")
+    # parse best sections
+    parser.get_fastest_sections()
     return parser
 
 

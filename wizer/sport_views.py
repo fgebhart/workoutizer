@@ -13,7 +13,7 @@ from wizer.views import MapView, PlotView, get_summary_of_activities, get_all_fo
 from wizer.models import Sport, Settings, Activity
 from wizer.forms import AddSportsForm
 from wizer.plotting.plot_history import plot_history
-from wizer.naming import protected_sports
+from wizer.configuration import protected_sports
 from wizer.tools.utils import remove_microseconds
 
 log = logging.getLogger(__name__)

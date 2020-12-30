@@ -2,6 +2,7 @@ import os
 import datetime
 
 from gpxpy.gpxfield import SimpleTZ
+from wizer.best_sections.fastest import FastestSection
 
 
 def test__parse_metadata(gpx_parser):
@@ -39,3 +40,20 @@ def test__parse_coordinates(gpx_parser):
 def test_parse_timestamps(gpx_parser):
     parser = gpx_parser()
     assert 1562951136.0 in parser.timestamps_list
+
+
+def test_get_fastest_sections(gpx_parser):
+    p = gpx_parser()
+
+    # check that fastest sections dict is empty
+    assert p.fastest_sections == []
+
+    p.get_fastest_sections()
+
+    assert p.fastest_sections != []
+
+    sec1 = FastestSection(1, 54, 103, 3.14)
+    sec2 = FastestSection(2, 54, 167, 3.07)
+    sec3 = FastestSection(3, 1, 161, 2.98)
+
+    assert p.fastest_sections == [sec1, sec2, sec3]

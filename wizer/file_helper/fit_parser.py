@@ -9,7 +9,7 @@ from fitparse import FitFile
 from django.conf import settings
 
 from wizer.file_helper.parser import Parser
-from wizer import naming
+from wizer import configuration
 
 log = logging.getLogger(__name__)
 
@@ -103,7 +103,7 @@ class FITParser(Parser):
     def set_min_max_values(self):
         attributes = self.__dict__.copy()
         for attribute, values in attributes.items():
-            if attribute in naming.min_max_attributes:
+            if attribute in configuration.min_max_attributes:
                 name = attribute.replace("_list", "")
                 values = pd.Series(values, dtype="float")
                 if values.any():

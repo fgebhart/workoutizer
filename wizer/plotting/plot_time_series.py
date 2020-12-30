@@ -10,7 +10,7 @@ from bokeh.layouts import column
 import pandas as pd
 
 from django.conf import settings
-from wizer.naming import attributes_to_create_time_series_plot_for
+from wizer.configuration import attributes_to_create_time_series_plot_for
 from wizer import models
 
 
@@ -166,7 +166,7 @@ def plot_time_series(activity: models.Activity):
                 }
             }
         """
-        callback = CustomJS(args=dict(laps=lap_lines, checkbox=checkbox), code=js)
+        callback = CustomJS(args={"laps": lap_lines, "checkbox": checkbox}, code=js)
         checkbox.js_on_change("active", callback)
         layout = column(all_plots, checkbox)
         layout.sizing_mode = "stretch_width"

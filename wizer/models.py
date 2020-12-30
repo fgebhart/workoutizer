@@ -18,6 +18,7 @@ class Sport(models.Model):
     icon = models.CharField(max_length=24, verbose_name="Icon:")
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     color = ColorField(default="#42FF71", verbose_name="Color:")
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -101,6 +102,7 @@ class Activity(models.Model):
     description = models.CharField(max_length=600, blank=True, null=True, verbose_name="Description:")
     trace_file = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=True, null=True)
     is_demo_activity = models.BooleanField(verbose_name="Is this a Demo Activity:", default=False)
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -128,6 +130,18 @@ class Lap(models.Model):
     speed = models.FloatField(blank=True, null=True)
     trace = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=False)
     label = models.CharField(max_length=100, blank=True, null=True, verbose_name="Label:")
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
+class BestSection(models.Model):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
+    secion_type = models.CharField(max_length=120, blank=False)
+    start_index = models.IntegerField(blank=False)
+    end_index = models.IntegerField(blank=False)
+    max_value = models.FloatField(blank=False)
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -144,6 +158,7 @@ class Settings(models.Model):
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     reimporter_updates_all = models.BooleanField(verbose_name="Force Update all Fields:", default=False)
     delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying: ", default=False)
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

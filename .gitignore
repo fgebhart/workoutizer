@@ -15,3 +15,4 @@ venv/
 .vscode/settings.json
 .vscode/.ropeproject/objectdb
 *.log*
+spike/

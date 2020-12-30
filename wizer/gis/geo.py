@@ -80,7 +80,7 @@ def get_location_name(coordinate: Tuple[float, float]) -> str:
 def get_list_of_coordinates(list_of_lon: List[float], list_of_lat: List[float]) -> List[Tuple[float]]:
     return list(
         zip(
-            list(pd.Series(list_of_lon).ffill().bfill()),
-            list(pd.Series(list_of_lat).ffill().bfill()),
+            list(pd.Series(list_of_lon, dtype="float64").ffill().bfill()),
+            list(pd.Series(list_of_lat, dtype="float64").ffill().bfill()),
         )
     )
