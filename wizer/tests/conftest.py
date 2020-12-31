@@ -3,7 +3,7 @@ import datetime
 
 import pytest
 
-from wizer.models import Settings, Sport, Activity, Traces
+from wizer.models import BestSection, Settings, Sport, Activity, Traces
 from workoutizer import settings as django_settings
 
 
@@ -22,7 +22,7 @@ def settings(db):
 
 @pytest.fixture
 def sport(db):
-    sport = Sport(name="Some Crazy Stuff", color="red", icon="Bike")
+    sport = Sport(name="Cycling", color="red", icon="Bike")
     sport.save()
     return sport
 
@@ -44,7 +44,7 @@ def trace_file(db):
 @pytest.fixture
 def activity(db, sport, trace_file):
     activity = Activity(
-        name="Running",
+        name="Evening Cycling along the River",
         sport=sport,
         date=datetime.datetime(2020, 7, 7),
         duration=datetime.timedelta(minutes=30),
@@ -54,6 +54,23 @@ def activity(db, sport, trace_file):
     )
     activity.save()
     return activity
+
+
+@pytest.fixture
+def insert_best_section(db, activity):
+    def _create_section(max_value: float):
+        best_section = BestSection(
+            activity=activity,
+            section_type="fastest",
+            section_distance=1,
+            start_index=5,
+            end_index=517,
+            max_value=max_value,
+        )
+        best_section.save()
+        return best_section
+
+    return _create_section
 
 
 @pytest.fixture

@@ -1,4 +1,5 @@
 import pytest
+from django.core.management import call_command
 
 from wizer import models
 
@@ -9,3 +10,8 @@ def tracks_in_tmpdir(tmpdir):
     settings = models.get_settings()
     settings.path_to_trace_dir = target_dir
     settings.save()
+
+
+@pytest.fixture
+def flush_db():
+    call_command("flush", verbosity=0, interactive=False)

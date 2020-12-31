@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.forms import modelformset_factory
 
 from wizer.views import MapView, get_all_form_field_ids
-from wizer.models import Sport, Activity, Lap
+from wizer.models import Sport, Activity, Lap, BestSection
 from wizer.forms import AddActivityForm, EditActivityForm
 from wizer.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wizer.plotting.plot_time_series import plot_time_series
@@ -36,6 +36,9 @@ class ActivityView(MapView):
         laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
         if laps:
             activity_context["laps"] = laps
+        fastest_sections = BestSection.objects.filter(activity=activity, section_type="fastest")
+        if fastest_sections:
+            activity_context["fastest_sections"] = fastest_sections
         return render(request, self.template_name, {**context, **activity_context})
 
 

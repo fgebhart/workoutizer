@@ -135,7 +135,34 @@ class Lap(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 
+class BestSectionTopScores(models.Model):
+    """
+    Collection of the top three best sections of each sport.
+    """
+
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
+    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, blank=False)
+    section_type = models.CharField(max_length=120, blank=False)
+    section_distance = models.IntegerField(blank=False)
+    max_value = models.FloatField(blank=False)
+
+    class Rank(models.IntegerChoices):
+        FIRST = 1
+        SECOND = 2
+        THIRD = 3
+
+    rank = models.IntegerField(choices=Rank.choices)
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
 class BestSection(models.Model):
+    """
+    Contains all best sections of all activities. Best sections could be e.g. the fastest 5km of an activity. This model
+    stores the start and end of each section, which is used to render the sections in the activity view.
+    """
+
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
     section_type = models.CharField(max_length=120, blank=False)
     section_distance = models.IntegerField(blank=False)
@@ -145,6 +172,67 @@ class BestSection(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.check_if_section_suits_for_top_score_and_update()
+        super(BestSection, self).save()
+
+    def save_section_as_new_top_score(self, rank: int):
+        new_top_score = BestSectionTopScores(
+            activity=self.activity,
+            sport=self.activity.sport,
+            section_type=self.section_type,
+            section_distance=self.section_distance,
+            max_value=self.max_value,
+            rank=rank,
+        )
+        new_top_score.save()
+
+    def check_if_section_suits_for_top_score_and_update(self):
+        log.debug(
+            f"Evaluating if activity {self.activity.name} will be in tops score for {self.section_type} "
+            f"{self.section_distance}km for sport {self.activity.sport.name}."
+        )
+        relevant_top_scores = BestSectionTopScores.objects.filter(
+            sport=self.activity.sport, section_type=self.section_type, section_distance=self.section_distance
+        ).order_by("-rank")
+        found_rank = 0
+        if len(relevant_top_scores) == 0:
+            log.info(f"No top score present, saving activity {self.activity.name} as new rank 1.")
+            self.save_section_as_new_top_score(rank=1)
+        else:
+            for top_score_section in relevant_top_scores:
+                looking_at_rank = top_score_section.rank
+                if self.max_value > top_score_section.max_value:
+                    # shift current top score section back one rank
+                    top_score_section.rank += 1
+                    top_score_section.save()
+                    # self section should be stored at current rank
+                    found_rank = looking_at_rank
+                elif self.max_value <= top_score_section.max_value:
+                    if len(relevant_top_scores) == 1:
+                        found_rank = 2
+                    elif len(relevant_top_scores) == 2:
+                        found_rank = 3
+            if found_rank:
+                log.info(
+                    f"Activity scored rank {found_rank} for {self.section_type} {self.activity.sport.name} "
+                    f"{self.section_distance}km!"
+                )
+                self.save_section_as_new_top_score(rank=found_rank)
+                # delete all top scores, where rank > 3
+                top_scores_to_be_deleted = BestSectionTopScores.objects.filter(
+                    sport=self.activity.sport,
+                    section_type=self.section_type,
+                    section_distance=self.section_distance,
+                    rank__gt=3,
+                ).order_by("rank")
+                for top_score_section in top_scores_to_be_deleted:
+                    log.debug(
+                        f"Deleting top score section of {top_score_section.activity.name} "
+                        f"because a better one was found."
+                    )
+                    top_score_section.delete()
 
 
 class Settings(models.Model):
