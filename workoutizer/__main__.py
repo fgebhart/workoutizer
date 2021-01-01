@@ -74,7 +74,10 @@ def setup_rpi(ip, vendor_id, product_id):
 )
 def run(url):
     if not url:
-        url = f"{get_local_ip_address()}:8000"
+        if os.getenv("WKZ_ENV") == "devel":
+            url = "127.0.0.1:8000"
+        else:
+            url = f"{get_local_ip_address()}:8000"
     execute_from_command_line(["manage.py", "runserver", url])
 
 
