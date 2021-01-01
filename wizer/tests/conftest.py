@@ -3,7 +3,7 @@ import datetime
 
 import pytest
 
-from wizer.models import BestSection, Settings, Sport, Activity, Traces
+from wizer.models import BestSection, Settings, Sport, Activity, Traces, get_settings
 from workoutizer import settings as django_settings
 
 
@@ -116,3 +116,11 @@ def test_data_dir():
 @pytest.fixture
 def demo_data_dir():
     return django_settings.INITIAL_TRACE_DATA_DIR
+
+
+@pytest.fixture
+def tracks_in_tmpdir(tmpdir):
+    target_dir = tmpdir.mkdir("tracks")
+    settings = get_settings()
+    settings.path_to_trace_dir = target_dir
+    settings.save()

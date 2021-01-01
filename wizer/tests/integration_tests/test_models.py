@@ -38,38 +38,38 @@ def test_best_section__always_add_top_one(db, insert_best_section):
     # verify that the above added best section is in top scores rank 1
     top_scores = models.BestSectionTopScores.objects.all()
     assert len(top_scores) == 1
-    assert top_scores[0].max_value == 1.0
+    assert top_scores[0].section.max_value == 1.0
 
     # insert another best section with even higher max value
     insert_best_section(max_value=2.0)
     top_scores = models.BestSectionTopScores.objects.all().order_by("rank")
     assert len(top_scores) == 2
-    assert top_scores[0].max_value == 2.0
-    assert top_scores[1].max_value == 1.0
+    assert top_scores[0].section.max_value == 2.0
+    assert top_scores[1].section.max_value == 1.0
 
     # insert another best section with even higher max value
     insert_best_section(max_value=3.0)
     top_scores = models.BestSectionTopScores.objects.all().order_by("rank")
     assert len(top_scores) == 3
-    assert top_scores[0].max_value == 3.0
-    assert top_scores[1].max_value == 2.0
-    assert top_scores[2].max_value == 1.0
+    assert top_scores[0].section.max_value == 3.0
+    assert top_scores[1].section.max_value == 2.0
+    assert top_scores[2].section.max_value == 1.0
 
     # insert another new best score which should be position 1 and the lowest should be dropped
     insert_best_section(max_value=4.0)
     top_scores = models.BestSectionTopScores.objects.all().order_by("rank")
     assert len(top_scores) == 3
-    assert top_scores[0].max_value == 4.0
-    assert top_scores[1].max_value == 3.0
-    assert top_scores[2].max_value == 2.0
+    assert top_scores[0].section.max_value == 4.0
+    assert top_scores[1].section.max_value == 3.0
+    assert top_scores[2].section.max_value == 2.0
 
     # insert another section with lower max value which should not end up in top scores
     insert_best_section(max_value=0.5)
     top_scores = models.BestSectionTopScores.objects.all().order_by("rank")
     assert len(top_scores) == 3
-    assert top_scores[0].max_value == 4.0
-    assert top_scores[1].max_value == 3.0
-    assert top_scores[2].max_value == 2.0
+    assert top_scores[0].section.max_value == 4.0
+    assert top_scores[1].section.max_value == 3.0
+    assert top_scores[2].section.max_value == 2.0
 
 
 def test_best_section__also_add_from_behind(db, insert_best_section):
@@ -77,35 +77,35 @@ def test_best_section__also_add_from_behind(db, insert_best_section):
 
     top_scores = models.BestSectionTopScores.objects.all()
     assert len(top_scores) == 1
-    assert top_scores[0].max_value == 5.0
+    assert top_scores[0].section.max_value == 5.0
 
     # insert new section which would be rank 2
     insert_best_section(max_value=4.0)
     top_scores = models.BestSectionTopScores.objects.all().order_by("rank")
     assert len(top_scores) == 2
-    assert top_scores[0].max_value == 5.0
-    assert top_scores[1].max_value == 4.0
+    assert top_scores[0].section.max_value == 5.0
+    assert top_scores[1].section.max_value == 4.0
 
     # insert another new section which would be rank 3
     insert_best_section(max_value=3.0)
     top_scores = models.BestSectionTopScores.objects.all().order_by("rank")
     assert len(top_scores) == 3
-    assert top_scores[0].max_value == 5.0
-    assert top_scores[1].max_value == 4.0
-    assert top_scores[2].max_value == 3.0
+    assert top_scores[0].section.max_value == 5.0
+    assert top_scores[1].section.max_value == 4.0
+    assert top_scores[2].section.max_value == 3.0
 
     # insert another new section which would be rank 4, but rank 4 should not be stored to db
     insert_best_section(max_value=2.0)
     top_scores = models.BestSectionTopScores.objects.all().order_by("rank")
     assert len(top_scores) == 3
-    assert top_scores[0].max_value == 5.0
-    assert top_scores[1].max_value == 4.0
-    assert top_scores[2].max_value == 3.0
+    assert top_scores[0].section.max_value == 5.0
+    assert top_scores[1].section.max_value == 4.0
+    assert top_scores[2].section.max_value == 3.0
 
     # insert new section with exactly the same max value as rank 2 to verify rank 2 and 3 are equal
     insert_best_section(max_value=4.0)
     top_scores = models.BestSectionTopScores.objects.all().order_by("rank")
     assert len(top_scores) == 3
-    assert top_scores[0].max_value == 5.0
-    assert top_scores[1].max_value == 4.0
-    assert top_scores[2].max_value == 4.0
+    assert top_scores[0].section.max_value == 5.0
+    assert top_scores[1].section.max_value == 4.0
+    assert top_scores[2].section.max_value == 4.0

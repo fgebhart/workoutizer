@@ -135,28 +135,6 @@ class Lap(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 
-class BestSectionTopScores(models.Model):
-    """
-    Collection of the top three best sections of each sport.
-    """
-
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
-    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, blank=False)
-    section_type = models.CharField(max_length=120, blank=False)
-    section_distance = models.IntegerField(blank=False)
-    max_value = models.FloatField(blank=False)
-
-    class Rank(models.IntegerChoices):
-        FIRST = 1
-        SECOND = 2
-        THIRD = 3
-
-    rank = models.IntegerField(choices=Rank.choices)
-
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
-
 class BestSection(models.Model):
     """
     Contains all best sections of all activities. Best sections could be e.g. the fastest 5km of an activity. This model
@@ -174,16 +152,14 @@ class BestSection(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.check_if_section_suits_for_top_score_and_update()
         super(BestSection, self).save()
+        self.check_if_section_suits_for_top_score_and_update()
 
     def save_section_as_new_top_score(self, rank: int):
         new_top_score = BestSectionTopScores(
             activity=self.activity,
             sport=self.activity.sport,
-            section_type=self.section_type,
-            section_distance=self.section_distance,
-            max_value=self.max_value,
+            section=self,
             rank=rank,
         )
         new_top_score.save()
@@ -194,7 +170,9 @@ class BestSection(models.Model):
             f"{self.section_distance}km for sport {self.activity.sport.name}."
         )
         relevant_top_scores = BestSectionTopScores.objects.filter(
-            sport=self.activity.sport, section_type=self.section_type, section_distance=self.section_distance
+            sport=self.activity.sport,
+            section__section_type=self.section_type,
+            section__section_distance=self.section_distance,
         ).order_by("-rank")
         found_rank = 0
         if len(relevant_top_scores) == 0:
@@ -203,13 +181,13 @@ class BestSection(models.Model):
         else:
             for top_score_section in relevant_top_scores:
                 looking_at_rank = top_score_section.rank
-                if self.max_value > top_score_section.max_value:
+                if self.max_value > top_score_section.section.max_value:
                     # shift current top score section back one rank
                     top_score_section.rank += 1
                     top_score_section.save()
                     # self section should be stored at current rank
                     found_rank = looking_at_rank
-                elif self.max_value <= top_score_section.max_value:
+                elif self.max_value <= top_score_section.section.max_value:
                     if len(relevant_top_scores) == 1:
                         found_rank = 2
                     elif len(relevant_top_scores) == 2:
@@ -223,8 +201,6 @@ class BestSection(models.Model):
                 # delete all top scores, where rank > 3
                 top_scores_to_be_deleted = BestSectionTopScores.objects.filter(
                     sport=self.activity.sport,
-                    section_type=self.section_type,
-                    section_distance=self.section_distance,
                     rank__gt=3,
                 ).order_by("rank")
                 for top_score_section in top_scores_to_be_deleted:
@@ -233,6 +209,26 @@ class BestSection(models.Model):
                         f"because a better one was found."
                     )
                     top_score_section.delete()
+
+
+class BestSectionTopScores(models.Model):
+    """
+    Collection of the top three best sections of each sport.
+    """
+
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
+    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, blank=False)
+    section = models.ForeignKey(BestSection, on_delete=models.CASCADE, blank=False)
+
+    class Rank(models.IntegerChoices):
+        FIRST = 1
+        SECOND = 2
+        THIRD = 3
+
+    rank = models.IntegerField(choices=Rank.choices)
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class Settings(models.Model):

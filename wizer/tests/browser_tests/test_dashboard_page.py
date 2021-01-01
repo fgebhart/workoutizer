@@ -2,6 +2,10 @@ import time
 
 from django.urls import reverse
 
+from wizer import models
+from wizer.file_importer import FileImporter, prepare_import_of_demo_activities
+
+
 delay = 1
 
 
@@ -47,3 +51,29 @@ def test_drop_down_visible(live_server, webdriver, settings):
 
     dropdown_button = webdriver.find_element_by_id("dropdown-btn")
     assert dropdown_button.text == str(days)
+
+
+def test_activity_data_is_available(db, tracks_in_tmpdir, live_server, webdriver):
+    prepare_import_of_demo_activities(models)
+    assert len(models.Sport.objects.all()) == 5
+    assert len(models.Settings.objects.all()) == 1
+
+    FileImporter(models, importing_demo_data=True)
+
+    webdriver.get(live_server.url + reverse("home"))
+
+    time.sleep(delay)
+
+    table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+
+    # check that all activity names are in the table
+    assert "Noon Running in Heidelberg" in table_data
+    assert "Swimming" in table_data
+    assert "Noon Cycling in Bad Schandau" in table_data
+    assert "Noon Cycling in Hinterzarten" in table_data
+    assert "Noon Cycling in Dahn" in table_data
+    assert "Evening Walking in Ringgenberg (BE)" in table_data
+    assert "Noon Walking in Kornau" in table_data
+
+    # check that the trophy icons are present
+    assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0

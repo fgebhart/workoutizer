@@ -121,6 +121,7 @@ class DashboardView(View, PlotView):
             "summary": summary,
             "page": "dashboard",
             "form_field_ids": get_all_form_field_ids(),
+            "top_awards": [section.activity.pk for section in models.BestSectionTopScores.objects.all()],
         }
         if activities:
             script_history, div_history = plot_history(
