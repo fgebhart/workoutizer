@@ -2,9 +2,6 @@ import time
 
 from django.urls import reverse
 
-from wizer import models
-from wizer.file_importer import FileImporter, prepare_import_of_demo_activities
-
 
 delay = 1
 
@@ -53,13 +50,7 @@ def test_drop_down_visible(live_server, webdriver, settings):
     assert dropdown_button.text == str(days)
 
 
-def test_activity_data_is_available(db, tracks_in_tmpdir, live_server, webdriver):
-    prepare_import_of_demo_activities(models)
-    assert len(models.Sport.objects.all()) == 5
-    assert len(models.Settings.objects.all()) == 1
-
-    FileImporter(models, importing_demo_data=True)
-
+def test_activity_data_is_available(import_demo_data, live_server, webdriver):
     webdriver.get(live_server.url + reverse("home"))
 
     time.sleep(delay)

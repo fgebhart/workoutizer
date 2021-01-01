@@ -1,14 +1,7 @@
 from wizer import models
-from wizer.file_importer import FileImporter, prepare_import_of_demo_activities
 
 
-def test_import_of_demo_activities(db, tracks_in_tmpdir, client):
-
-    prepare_import_of_demo_activities(models)
-    assert len(models.Sport.objects.all()) == 5
-    assert len(models.Settings.objects.all()) == 1
-
-    FileImporter(models, importing_demo_data=True)
+def test_import_of_demo_activities(import_demo_data, client):
     # verify activities got imported
     all_activities = models.Activity.objects.all()
     assert len(all_activities) == 19

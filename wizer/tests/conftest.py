@@ -3,13 +3,14 @@ import datetime
 
 import pytest
 
-from wizer.models import BestSection, Settings, Sport, Activity, Traces, get_settings
+from wizer import models
+from wizer.file_importer import FileImporter, prepare_import_of_demo_activities
 from workoutizer import settings as django_settings
 
 
 @pytest.fixture
 def settings(db):
-    settings = Settings(
+    settings = models.Settings(
         path_to_trace_dir="/home/pi/traces/",
         path_to_garmin_device="/home/pi/traces/",
         number_of_days=30,
@@ -22,14 +23,14 @@ def settings(db):
 
 @pytest.fixture
 def sport(db):
-    sport = Sport(name="Cycling", color="red", icon="Bike")
+    sport = models.Sport(name="Cycling", color="red", icon="Bike")
     sport.save()
     return sport
 
 
 @pytest.fixture
 def trace_file(db):
-    trace = Traces(
+    trace = models.Traces(
         path_to_file="some/path/to/file.gpx",
         file_name="file.gpx",
         md5sum="4c1185c55476269b442f424a9d80d964",
@@ -43,7 +44,7 @@ def trace_file(db):
 
 @pytest.fixture
 def activity(db, sport, trace_file):
-    activity = Activity(
+    activity = models.Activity(
         name="Evening Cycling along the River",
         sport=sport,
         date=datetime.datetime(2020, 7, 7),
@@ -59,7 +60,7 @@ def activity(db, sport, trace_file):
 @pytest.fixture
 def insert_best_section(db, activity):
     def _create_section(max_value: float):
-        best_section = BestSection(
+        best_section = models.BestSection(
             activity=activity,
             section_type="fastest",
             section_distance=1,
@@ -121,6 +122,15 @@ def demo_data_dir():
 @pytest.fixture
 def tracks_in_tmpdir(tmpdir):
     target_dir = tmpdir.mkdir("tracks")
-    settings = get_settings()
+    settings = models.get_settings()
     settings.path_to_trace_dir = target_dir
     settings.save()
+
+
+@pytest.fixture
+def import_demo_data(db, tracks_in_tmpdir):
+    prepare_import_of_demo_activities(models)
+    assert len(models.Sport.objects.all()) == 5
+    assert len(models.Settings.objects.all()) == 1
+
+    FileImporter(models, importing_demo_data=True)
