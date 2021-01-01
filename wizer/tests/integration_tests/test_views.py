@@ -1,7 +1,7 @@
 from django.urls import reverse
 import pytest
 
-from wizer.models import Activity
+from wizer import models
 
 
 def test_help_view(db, client):
@@ -22,11 +22,12 @@ def test_settings_view(db, client):
     assert "Save" in response.content.decode("UTF-8")
 
 
-def test_activity_view(db, client, settings, sport, activity):
-    response = client.get("/activity/1")
+def test_activity_view__activity_present(db, client, settings, sport, activity):
+    pk = models.Activity.objects.get().pk
+    response = client.get(f"/activity/{pk}")
     assert response.status_code == 200
 
 
 def test_activity_view__no_activity(db, client):
-    with pytest.raises(Activity.DoesNotExist):
+    with pytest.raises(models.Activity.DoesNotExist):
         client.get("/activity/1")
