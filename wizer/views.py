@@ -210,3 +210,13 @@ def reimport_activity_files(request):
         return redirect(request.META.get("HTTP_REFERER"))
     else:
         return HttpResponseRedirect(reverse("settings"))
+
+
+class BestSectionsView(WKZView):
+    template_name = "best_sections.html"
+
+    def get(self, request):
+        self.context["version"] = __version__
+        self.context["page"] = "awards"
+        self.context["top_awards"] = [section.activity.pk for section in models.BestSectionTopScores.objects.all()]
+        return render(request, template_name=self.template_name, context=self.context)
