@@ -50,7 +50,7 @@ def test_drop_down_visible(live_server, webdriver, settings):
     assert dropdown_button.text == str(days)
 
 
-def test_activity_data_is_available(import_demo_data, live_server, webdriver):
+def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     webdriver.get(live_server.url + reverse("home"))
 
     time.sleep(delay)
