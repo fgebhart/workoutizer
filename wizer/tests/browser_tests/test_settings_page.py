@@ -1,4 +1,7 @@
 from django.urls import reverse
+from selenium.common.exceptions import NoSuchElementException
+
+import pytest
 
 from wizer import models
 
@@ -51,6 +54,47 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
     assert len(models.Activity.objects.filter(is_demo_activity=True)) == 0
 
 
-def test_settings_page__form(live_server, webdriver):
-    # TODO test form fields and filling out and saving the form
-    pass
+def test_settings_page__edit_and_submit_form(live_server, webdriver):
+    # get settings and check that all values are at their default configuration
+    settings = models.get_settings()
+    assert settings.path_to_trace_dir == "/home/pi/traces/"
+    assert settings.path_to_garmin_device == "/run/user/1000/gvfs/"
+    assert settings.reimporter_updates_all is False
+    assert settings.delete_files_after_import is False
+    assert settings.number_of_days == 30
+
+    # go to settings page
+    webdriver.get(live_server.url + reverse("settings"))
+    assert webdriver.find_element_by_tag_name("h3").text == "Settings"
+
+    # modify values by inserting into input fields
+    trace_dir_input_field = webdriver.find_element_by_css_selector("#id_path_to_trace_dir")
+    trace_dir_input_field.clear()
+    trace_dir_input_field.send_keys("some/dummy/path")
+
+    garmin_device_input_field = webdriver.find_element_by_css_selector("#id_path_to_garmin_device")
+    garmin_device_input_field.clear()
+    garmin_device_input_field.send_keys("garmin/dummy/path")
+
+    force_update_input_field = webdriver.find_element_by_css_selector("#id_reimporter_updates_all")
+    force_update_input_field.click()
+
+    delete_files_input_field = webdriver.find_element_by_css_selector("#id_delete_files_after_import")
+    delete_files_input_field.click()
+
+    # verify that the number of days field is not present nor editable
+    with pytest.raises(NoSuchElementException):
+        webdriver.find_element_by_css_selector("#id_number_of_days")
+
+    # find button and submit
+    button = webdriver.find_element_by_id("button")
+    button.click()
+
+    # again get settings and check that the values are the once entered above
+    settings = models.get_settings()
+    assert settings.path_to_trace_dir == "some/dummy/path"
+    assert settings.path_to_garmin_device == "garmin/dummy/path"
+    assert settings.reimporter_updates_all is True
+    assert settings.delete_files_after_import is True
+    # number of days should not be changed
+    assert settings.number_of_days == 30
