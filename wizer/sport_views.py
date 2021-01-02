@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.urls import reverse
 
 from wizer.views import MapView, PlotView, get_summary_of_activities, get_all_form_field_ids
-from wizer.models import Sport, Settings, Activity
+from wizer import models
 from wizer.forms import AddSportsForm
 from wizer.plotting.plot_history import plot_history
 from wizer.configuration import protected_sports
@@ -23,12 +23,12 @@ class AllSportsView(View):
     template_name = "sport/all_sports.html"
 
     def get(self, request):
-        sports = Sport.objects.all().order_by("name")
+        sports = models.Sport.objects.all().order_by("name")
         sport_data = {}
         for sport in sports:
             if sport.name not in protected_sports:
                 activities_df = pd.DataFrame(
-                    list(Activity.objects.filter(sport=sport.id).values("duration", "distance"))
+                    list(models.Activity.objects.filter(sport=sport.id).values("duration", "distance"))
                 )
                 setattr(sport, "total_count", len(activities_df))
                 if activities_df.empty:
@@ -52,17 +52,19 @@ class SportsView(MapView, PlotView):
         if sports_name_slug == "undefined":
             log.warning("could not find sport - redirecting to home")
             return HttpResponseRedirect(reverse("home"))
-        sport_id = Sport.objects.get(slug=sports_name_slug).id
+        sport_id = models.Sport.objects.get(slug=sports_name_slug).id
         activities = self.get_activities(sport_id=sport_id)
         map_context = super(SportsView, self).get(request=request, list_of_activities=activities)
-        sports = Sport.objects.all().order_by("name")
+        sports = models.Sport.objects.all().order_by("name")
         summary = get_summary_of_activities(activities=activities)
         if activities:
-            script_history, div_history = plot_history(activities=activities, sport_model=Sport, settings_model=Settings)
+            script_history, div_history = plot_history(
+                activities=activities, sport_model=models.Sport, settings_model=models.Settings
+            )
             map_context["script_history"] = script_history
             map_context["div_history"] = div_history
         try:
-            sport = model_to_dict(Sport.objects.get(slug=sports_name_slug))
+            sport = model_to_dict(models.Sport.objects.get(slug=sports_name_slug))
             sport["slug"] = sports_name_slug
         except ObjectDoesNotExist:
             log.critical("this sport does not exist")
@@ -77,12 +79,13 @@ class SportsView(MapView, PlotView):
                 "summary": summary,
                 "sport": sport,
                 "form_field_ids": get_all_form_field_ids(),
+                "top_awards": [section.activity.pk for section in models.BestSectionTopScores.objects.all()],
             },
         )
 
 
 def add_sport_view(request):
-    sports = Sport.objects.all().order_by("name")
+    sports = models.Sport.objects.all().order_by("name")
     if request.method == "POST":
         form = AddSportsForm(request.POST)
         if form.is_valid():
@@ -102,8 +105,8 @@ def add_sport_view(request):
 
 
 def edit_sport_view(request, sports_name_slug):
-    sports = Sport.objects.all().order_by("name")
-    sport = Sport.objects.get(slug=sports_name_slug)
+    sports = models.Sport.objects.all().order_by("name")
+    sport = models.Sport.objects.get(slug=sports_name_slug)
     if sport.name in protected_sports:
         messages.warning(request, f"Can't edit sport '{sport.name}'")
         return HttpResponseRedirect(f"/sport/{sport.slug}")
@@ -125,13 +128,13 @@ def edit_sport_view(request, sports_name_slug):
 
 class SportDeleteView(DeleteView):
     template_name = "sport/sport_confirm_delete.html"
-    model = Sport
+    model = models.Sport
     slug_field = "slug"
     success_url = "/sports/"
 
     def get(self, request, *args, **kwargs):
-        sports = Sport.objects.all().order_by("name")
-        sport = Sport.objects.get(slug=kwargs["slug"])
+        sports = models.Sport.objects.all().order_by("name")
+        sport = models.Sport.objects.get(slug=kwargs["slug"])
         if sport.name in protected_sports:
             messages.warning(request, f"Can't delete sport '{sport.name}'")
             return HttpResponseRedirect(f"/sport/{sport.slug}")
