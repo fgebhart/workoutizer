@@ -176,7 +176,7 @@ class BestSection(models.Model):
         ).order_by("-rank")
         found_rank = 0
         if len(relevant_top_scores) == 0:
-            log.info(f"No top score present, saving activity {self.activity.name} as new rank 1.")
+            log.debug(f"No top score present, saving activity {self.activity.name} as new rank 1.")
             self.save_section_as_new_top_score(rank=1)
         else:
             for top_score_section in relevant_top_scores:
@@ -193,7 +193,7 @@ class BestSection(models.Model):
                     elif len(relevant_top_scores) == 2:
                         found_rank = 3
             if found_rank:
-                log.info(
+                log.debug(
                     f"Activity scored rank {found_rank} for {self.section_type} {self.activity.sport.name} "
                     f"{self.section_distance}km!"
                 )
