@@ -40,8 +40,11 @@
         } else if (map['g'] && map['s']) {
             window.location.href = '/sports';
             map = {};
-        } else if (map['g'] && map['a']) {
+        } else if (map['g'] && map['n']) {
             window.location.href = '/add-activity';
+            map = {};
+        } else if (map['g'] && map['a']) {
+            window.location.href = '/awards';
             map = {};
         } else if (map['g'] && map[',']) {
             window.location.href = '/settings';
