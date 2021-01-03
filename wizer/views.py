@@ -219,7 +219,9 @@ class BestSectionsView(WKZView):
         self.context["version"] = __version__
         self.context["page"] = "awards"
         top_awards = {}
-        for section in models.BestSectionTopScores.objects.all().order_by("section__section_distance", "rank"):
+        for section in models.BestSectionTopScores.objects.all().order_by(
+            "sport__name", "section__section_distance", "rank"
+        ):
             if section.sport not in top_awards.keys():
                 top_awards[section.sport] = []
             top_awards[section.sport].append(section)
