@@ -1,5 +1,6 @@
 from django.urls import reverse
 from selenium.common.exceptions import NoSuchElementException
+from workoutizer import settings as django_settings
 
 import pytest
 
@@ -57,7 +58,7 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
 def test_settings_page__edit_and_submit_form(live_server, webdriver):
     # get settings and check that all values are at their default configuration
     settings = models.get_settings()
-    assert settings.path_to_trace_dir == "/home/pi/traces/"
+    assert settings.path_to_trace_dir == django_settings.TRACKS_DIR
     assert settings.path_to_garmin_device == "/run/user/1000/gvfs/"
     assert settings.reimporter_updates_all is False
     assert settings.delete_files_after_import is False

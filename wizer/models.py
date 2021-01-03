@@ -6,6 +6,7 @@ from django.db import models
 from django.utils import timezone
 from django.template.defaultfilters import slugify
 from colorfield.fields import ColorField
+from workoutizer import settings as django_settings
 
 log = logging.getLogger(__name__)
 
@@ -230,7 +231,7 @@ class Settings(models.Model):
     days_choices = [(9999, "all"), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10)]
 
     path_to_trace_dir = models.CharField(
-        max_length=120, default="/home/pi/traces/", verbose_name="Path to Traces Directory:"
+        max_length=120, default=django_settings.TRACKS_DIR, verbose_name="Path to Traces Directory:"
     )
     path_to_garmin_device = models.CharField(
         max_length=120, default="/run/user/1000/gvfs/", verbose_name="Path to Garmin Device:"
