@@ -165,50 +165,45 @@ class BestSection(models.Model):
         new_top_score.save()
 
     def check_if_section_suits_for_top_score_and_update(self):
-        log.debug(
-            f"Evaluating if activity {self.activity.name} will be in tops score for {self.section_type} "
-            f"{self.section_distance}km for sport {self.activity.sport.name}."
-        )
         relevant_top_scores = BestSectionTopScores.objects.filter(
             sport=self.activity.sport,
             section__section_type=self.section_type,
             section__section_distance=self.section_distance,
-        ).order_by("-rank")
+        ).order_by("rank")
         found_rank = 0
-        if len(relevant_top_scores) == 0:
-            log.debug(f"No top score present, saving activity {self.activity.name} as new rank 1.")
-            self.save_section_as_new_top_score(rank=1)
-        else:
-            for top_score_section in relevant_top_scores:
-                looking_at_rank = top_score_section.rank
-                if self.max_value > top_score_section.section.max_value:
-                    # shift current top score section back one rank
-                    top_score_section.rank += 1
-                    top_score_section.save()
-                    # self section should be stored at current rank
+        looking_at_rank = 0
+        for top_score_section in relevant_top_scores:
+            looking_at_rank = top_score_section.rank
+            if self.max_value > top_score_section.section.max_value:
+                # self section should be stored at current rank
+                if not found_rank:
                     found_rank = looking_at_rank
-                elif self.max_value <= top_score_section.section.max_value:
-                    if len(relevant_top_scores) == 1:
-                        found_rank = 2
-                    elif len(relevant_top_scores) == 2:
-                        found_rank = 3
             if found_rank:
-                log.debug(
-                    f"Activity scored rank {found_rank} for {self.section_type} {self.activity.sport.name} "
-                    f"{self.section_distance}km!"
-                )
-                self.save_section_as_new_top_score(rank=found_rank)
-                # delete all top scores, where rank > 3
-                top_scores_to_be_deleted = BestSectionTopScores.objects.filter(
-                    sport=self.activity.sport,
-                    rank__gt=3,
-                ).order_by("rank")
-                for top_score_section in top_scores_to_be_deleted:
-                    log.debug(
-                        f"Deleting top score section of {top_score_section.activity.name} "
-                        f"because a better one was found."
-                    )
-                    top_score_section.delete()
+                # shift current top score section back by one rank
+                top_score_section.rank += 1
+                top_score_section.save()
+        # if no suitable rank was found among the available top score sections, use the looking_at_rank + 1
+        if not found_rank:
+            found_rank = looking_at_rank + 1
+
+        log.debug(
+            f"Activity scored rank {found_rank} for {self.section_type} {self.activity.sport.name} "
+            f"{self.section_distance}km!"
+        )
+        self.save_section_as_new_top_score(rank=found_rank)
+        self.delete_all_ranks_worse_than_three()
+
+    def delete_all_ranks_worse_than_three(self):
+        # delete all top scores, where rank > 3
+        top_scores_to_be_deleted = BestSectionTopScores.objects.filter(
+            sport=self.activity.sport,
+            rank__gt=3,
+        ).order_by("rank")
+        for top_score_section in top_scores_to_be_deleted:
+            log.debug(
+                f"Deleting top score section of {top_score_section.activity.name} " f"because a better one was found."
+            )
+            top_score_section.delete()
 
 
 class BestSectionTopScores(models.Model):
