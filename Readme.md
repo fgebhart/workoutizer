@@ -10,17 +10,16 @@ uploading all your sensitive health data to some 3rd party cloud.
 #### Features
 * Automatic import of Garmin `.fit` files and `.gpx` files
 * Automatic naming of activities based on daytime, sport and geo location
-* Dashboard overview page of all activities
 * Render your activity gps data on different OSM maps
-* Show either all activities of one sport or only one activity on the map
-* Plots of activity specific data like: heart rate, pace, temperature, cadence and altitude
+* Plot your activity specific data e.g. heart rate, pace, temperature, cadence and altitude
 * Integrate laps into both plots and maps
 * Connected plots and map via mouse hovering
+* Find the fastest sections in your activities using [sportgems](https://github.com/fgebhart/sportgems)
 * Keyboard navigation in browser
 * Add untracked activities manually via the GUI
 * Export activities as `.gpx` files
-* Add as many different sports as you want.
-* Convenience CLI for installing, configuring, updating, ...
+* Add as many different sports as you want
+* Convenience CLI for installing, running, stopping, updating, ...
 
 
 ## Getting Started
@@ -78,16 +77,31 @@ For older releases have a look at the [archived project at gitlab](https://gitla
 Contributions are welcome! Feel free to pick an [open issue](https://github.com/fgebhart/workoutizer/issues), open up 
 a pull request or file a new issue.
 
-For local development first clone the repo and install the `dev-requirements.txt` like
+For local development I recommend to run the development docker container. First clone the repo:
 ```shell script
-pip install -r setup/requirements/dev-requirements.txt
-``` 
-Afterwards I recommend to run the development docker container:
+git clone git@github.com:fgebhart/workoutizer.git
+cd workoutizer
+```
+and then start workoutizer in docker using the convenience script:
 ```shell script
 ./run_docker.sh
 ```
-This will build the image, run the container and initialize workoutizer. Once up and running, run the tests
+This might take a while to build the image, run the container and initialize workoutizer. Once up and running, run the
+tests with
 ```shell script
 pytest wizer/tests/
 ```
 Once this was successful you are good to go.
+
+In order to run workoutizer you could either run it using django's `manage.py` script
+```shell script
+python manage.py runserver
+```
+or using the `wkz` cli
+```shell script
+wkz run
+```
+In case you encounter any issues in the setup process, feel free to file an issue.
+
+Note: If you are using VS-Code you might want to open the folder of this repo in a docker container directly using the
+Remote - Containers extension.
