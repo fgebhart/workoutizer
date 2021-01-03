@@ -32,6 +32,7 @@ def insert_demo_sports_to_model(models):
 
 
 def copy_demo_fit_files_to_track_dir(source_dir: str, targe_dir: str, list_of_files_to_copy: list = []):
+    log.debug(f"copying demo activities from {source_dir} to {targe_dir}")
     if not list_of_files_to_copy:
         shutil.copytree(source_dir, targe_dir, dirs_exist_ok=True)
     else:
