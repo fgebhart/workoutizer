@@ -65,6 +65,6 @@ def test__fill_list_of_timestamps():
 def test_save_activity_to_gpx_file(activity):
     path = save_activity_to_gpx_file(activity)
     assert os.path.isfile(path)
-    assert path.split("/")[-1] == "2020-07-07_running.gpx"
+    assert path.split("/")[-1] == "2020-07-07_evening-cycling-along-the-river.gpx"
     # verify xml file is well formed this would raise lxml.etree.XMLSyntaxError if not
     etree.parse(path)

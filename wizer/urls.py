@@ -29,6 +29,8 @@ urlpatterns = [
     path("add-sport/", sport_views.add_sport_view, name="add-sport"),
     path("sport/<slug:sports_name_slug>/edit/", sport_views.edit_sport_view, name="edit-sport"),
     url(r"^sport/(?P<slug>[a-zA-Z0-9-]+)/delete/$", sport_views.SportDeleteView.as_view(), name="delete-sport"),
+    # Best Sections
+    path("awards/", views.BestSectionsView.as_view(), name="awards"),
     # Rest API endpoints
     path("mount-device/", api.mount_device_endpoint),
     path("stop/", api.stop_django_server),

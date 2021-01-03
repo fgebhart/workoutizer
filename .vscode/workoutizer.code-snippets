@@ -1,0 +1,19 @@
+{
+	"IPython embed": {
+		"scope": "python",
+		"prefix": "embed",
+		"body": [
+			"from IPython import embed",
+			"embed()"
+		],
+		"description": "embedding with IPython"
+	},
+	"Pandas Display Settings": {
+		"scope": "python",
+		"prefix": "pandas-display-settings",
+		"body": [
+			"pd.options.display.max_rows = pd.options.display.max_columns = None",
+		],
+		"description": "Pandas Display Settings"
+	},
+}

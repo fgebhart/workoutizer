@@ -5,6 +5,7 @@
     <tr>
         <th>Date</th>
         <th>Activity</th>
+        <th></th>
         <th>Track</th>
         <th>Sport</th>
         <th>Duration</th>
@@ -15,7 +16,17 @@
     {% for a in activities %}
         <tr>
             <td>{{ a.date|date:"M d, Y" }}</td>
-            <td class="limit"><a href="/activity/{{ a.id }}">{{ a.name }}</a></td>
+            <td class="limit">
+                <a href="/activity/{{ a.id }}">{{ a.name }}</a>
+            </td>
+            <td>
+                {% if a.pk in top_awards %}
+                <a href="/activity/{{ a.id }}" data-toggle="tooltip" data-placement="bottom"
+                    title="Activity has an Award" style="color: black;">
+                    <i class="fas fa-trophy"></i>
+                </a>
+                {% endif %}
+            </td>
             <td>
                 {% if a.trace_file.longitude_list|length > 2 %}
                     <a href="/activity/{{ a.id }}" data-toggle="tooltip" data-placement="bottom"

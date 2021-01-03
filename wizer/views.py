@@ -1,8 +1,6 @@
 import logging
-import datetime
 import json
-
-import pandas as pd
+import datetime
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
@@ -17,9 +15,8 @@ from wizer import forms
 from wizer.plotting.plot_history import plot_history
 from wizer.plotting.plot_pie_chart import plot_pie_chart
 from wizer.plotting.plot_trend import plot_trend
-from wizer.gis.geo import GeoTrace
+from wizer.gis.geo import GeoTrace, get_list_of_coordinates
 from wizer.file_helper.reimporter import Reimporter
-
 from wizer.tools.colors import lines_colors
 from wizer.tools.utils import cut_list_to_have_same_length
 from workoutizer import settings as django_settings
@@ -64,11 +61,8 @@ class MapView(View):
         for activity in list_of_activities:
             if activity.trace_file:
                 coordinates = json.dumps(
-                    list(
-                        zip(
-                            list(pd.Series(json.loads(activity.trace_file.longitude_list)).ffill().bfill()),
-                            list(pd.Series(json.loads(activity.trace_file.latitude_list)).ffill().bfill()),
-                        )
+                    get_list_of_coordinates(
+                        json.loads(activity.trace_file.longitude_list), json.loads(activity.trace_file.latitude_list)
                     )
                 )
                 sport = activity.sport.name
@@ -127,6 +121,7 @@ class DashboardView(View, PlotView):
             "summary": summary,
             "page": "dashboard",
             "form_field_ids": get_all_form_field_ids(),
+            "top_awards": [section.activity.pk for section in models.BestSectionTopScores.objects.all()],
         }
         if activities:
             script_history, div_history = plot_history(
@@ -215,3 +210,18 @@ def reimport_activity_files(request):
         return redirect(request.META.get("HTTP_REFERER"))
     else:
         return HttpResponseRedirect(reverse("settings"))
+
+
+class BestSectionsView(WKZView):
+    template_name = "best_sections.html"
+
+    def get(self, request):
+        self.context["version"] = __version__
+        self.context["page"] = "awards"
+        top_awards = {}
+        for section in models.BestSectionTopScores.objects.all().order_by("section__section_distance", "rank"):
+            if section.sport not in top_awards.keys():
+                top_awards[section.sport] = []
+            top_awards[section.sport].append(section)
+        self.context["top_awards"] = top_awards
+        return render(request, template_name=self.template_name, context=self.context)

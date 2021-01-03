@@ -1,0 +1,18 @@
+{% extends 'lib/base.html' %}
+{% load static %}
+{% block body %}
+<title>Awards | Workoutizer</title>
+<h3>Your Awards</h3>
+<hr>
+<br>
+{% include "lib/messages.html" %}
+<div class="container">
+    {% for sport, top_award in top_awards.items %}
+        <h4>{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
+        <br>
+        {% include "lib/best_sections_table.html" %}
+        <br>
+        <br>
+    {% endfor %}
+</div>
+{% endblock %}

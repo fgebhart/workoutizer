@@ -1,6 +1,9 @@
 import os
 import datetime
 
+from wizer.best_sections.fastest import get_fastest_section, FastestSection
+from wizer.configuration import fastest_sections
+
 
 class Parser:
     def __init__(self, path_to_file):
@@ -59,6 +62,9 @@ class Parser:
         # lap info
         self.laps = []
 
+        # fastest sections
+        self.best_sections = []
+
         # run parser
         self._parse_metadata()
         self._parse_records()
@@ -74,3 +80,16 @@ class Parser:
 
     def get_file_name_from_path(self, path):
         return path.split("/")[-1]
+
+    def get_fastest_sections(self):
+        for section_distance in fastest_sections:
+            if self.distance > section_distance:
+                found_section, start_index, end_index, velocity = get_fastest_section(int(section_distance * 1000), self)
+                if found_section:
+                    sec = FastestSection(
+                        start_index=start_index,
+                        end_index=end_index,
+                        section_distance=section_distance,
+                        velocity=velocity,
+                    )
+                    self.best_sections.append(sec)

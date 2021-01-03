@@ -8,6 +8,7 @@ from wizer.file_importer import (
     parse_and_save_to_model,
     parse_data,
     save_laps_to_model,
+    save_best_sections_to_model,
 )
 from wizer.tools.utils import limit_string
 
@@ -45,14 +46,27 @@ class Reimporter:
                 parser = parse_data(file=trace_file)
                 trace = models.Traces.objects.get(md5sum=md5sum)
                 activity = models.Activity.objects.get(trace_file=trace)
+                # update activity
                 self._compare_and_update(activity, parser)
+                # update trace
                 self._compare_and_update(trace, parser)
+                # update laps
                 laps = models.Lap.objects.filter(trace=trace)
                 if laps:  # activity has laps in db already
                     for lap_instance, parser_lap in zip(laps, parser.laps):
                         self._compare_and_update(lap_instance, parser_lap)
                 elif not laps and parser.laps:  # no laps in db but parser
                     save_laps_to_model(models.Lap, parser.laps, trace)
+                    self.activity_modified = True
+                # update best sections
+                best_sections = models.BestSection.objects.filter(activity=activity)
+                if best_sections:  # activity has best sections in db already
+                    for best_section_instance, parser_best_section in zip(best_sections, parser.best_sections):
+                        self._compare_and_update(
+                            best_section_instance, parser_best_section, update_best_sections_max_value=True
+                        )
+                elif not best_sections and parser.best_sections:  # no best_sections present in db, but in parser
+                    save_best_sections_to_model(models.BestSection, parser, activity)
                     self.activity_modified = True
 
                 if self.activity_modified:
@@ -63,7 +77,7 @@ class Reimporter:
         log.debug(f"updated {len(self.updated_activities)} activities:\n{self.updated_activities}")
         log.info("successfully parsed trace files and updated corresponding database objects")
 
-    def _compare_and_update(self, obj, parser):
+    def _compare_and_update(self, obj, parser, update_best_sections_max_value=False):
         updated = False
         for attribute, value in parser.__dict__.items():
             if attribute == "sport":
@@ -88,8 +102,22 @@ class Reimporter:
                         # log.debug(f"values for {attribute} are the same")
                         pass
             else:
-                # log.debug(f"model does not have the attribute: '{attribute}'")
+                # log.warning(f"model does not have the attribute: '{attribute}'")
                 pass
+            if update_best_sections_max_value:
+                if attribute == "velocity":  # add also more conditions for other best sections
+                    db_value = getattr(obj, "max_value")
+                    if not _values_equal(db_value, value):
+                        log.debug(
+                            f"overwriting value for {attribute} old: {limit_string(db_value, 100)} "
+                            f"to: {limit_string(value, 100)}"
+                        )
+                        setattr(obj, "max_value", value)
+                        self.activity_modified = True
+                        updated = True
+                    else:
+                        # log.debug(f"values for {attribute} are the same")
+                        pass
         if updated:
             obj.save()
 

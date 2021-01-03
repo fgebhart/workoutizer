@@ -18,6 +18,7 @@ class Sport(models.Model):
     icon = models.CharField(max_length=24, verbose_name="Icon:")
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     color = ColorField(default="#42FF71", verbose_name="Color:")
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -101,6 +102,7 @@ class Activity(models.Model):
     description = models.CharField(max_length=600, blank=True, null=True, verbose_name="Description:")
     trace_file = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=True, null=True)
     is_demo_activity = models.BooleanField(verbose_name="Is this a Demo Activity:", default=False)
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -128,6 +130,98 @@ class Lap(models.Model):
     speed = models.FloatField(blank=True, null=True)
     trace = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=False)
     label = models.CharField(max_length=100, blank=True, null=True, verbose_name="Label:")
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
+class BestSection(models.Model):
+    """
+    Contains all best sections of all activities. Best sections could be e.g. the fastest 5km of an activity. This model
+    stores the start and end of each section, which is used to render the sections in the activity view.
+    """
+
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
+    section_type = models.CharField(max_length=120, blank=False)
+    section_distance = models.IntegerField(blank=False)
+    start_index = models.IntegerField(blank=False)
+    end_index = models.IntegerField(blank=False)
+    max_value = models.FloatField(blank=False)
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super(BestSection, self).save()
+        self.check_if_section_suits_for_top_score_and_update()
+
+    def save_section_as_new_top_score(self, rank: int):
+        new_top_score = BestSectionTopScores(
+            activity=self.activity,
+            sport=self.activity.sport,
+            section=self,
+            rank=rank,
+        )
+        new_top_score.save()
+
+    def check_if_section_suits_for_top_score_and_update(self):
+        relevant_top_scores = BestSectionTopScores.objects.filter(
+            sport=self.activity.sport,
+            section__section_type=self.section_type,
+            section__section_distance=self.section_distance,
+        ).order_by("rank")
+        found_rank = 0
+        looking_at_rank = 0
+        for top_score_section in relevant_top_scores:
+            looking_at_rank = top_score_section.rank
+            if self.max_value > top_score_section.section.max_value:
+                # self section should be stored at current rank
+                if not found_rank:
+                    found_rank = looking_at_rank
+            if found_rank:
+                # shift current top score section back by one rank
+                top_score_section.rank += 1
+                top_score_section.save()
+        # if no suitable rank was found among the available top score sections, use the looking_at_rank + 1
+        if not found_rank:
+            found_rank = looking_at_rank + 1
+
+        log.debug(
+            f"Activity scored rank {found_rank} for {self.section_type} {self.activity.sport.name} "
+            f"{self.section_distance}km!"
+        )
+        self.save_section_as_new_top_score(rank=found_rank)
+        self.delete_all_ranks_worse_than_three()
+
+    def delete_all_ranks_worse_than_three(self):
+        # delete all top scores, where rank > 3
+        top_scores_to_be_deleted = BestSectionTopScores.objects.filter(
+            sport=self.activity.sport,
+            rank__gt=3,
+        ).order_by("rank")
+        for top_score_section in top_scores_to_be_deleted:
+            log.debug(
+                f"Deleting top score section of {top_score_section.activity.name} " f"because a better one was found."
+            )
+            top_score_section.delete()
+
+
+class BestSectionTopScores(models.Model):
+    """
+    Collection of the top three best sections of each sport.
+    """
+
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
+    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, blank=False)
+    section = models.ForeignKey(BestSection, on_delete=models.CASCADE, blank=False)
+
+    class Rank(models.IntegerChoices):
+        FIRST = 1
+        SECOND = 2
+        THIRD = 3
+
+    rank = models.IntegerField(choices=Rank.choices)
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -144,6 +238,7 @@ class Settings(models.Model):
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     reimporter_updates_all = models.BooleanField(verbose_name="Force Update all Fields:", default=False)
     delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying: ", default=False)
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

@@ -2,8 +2,6 @@ import os
 import datetime
 
 import pytz
-import pytest
-from django.core.management import call_command
 
 from wizer import models
 from wizer.file_helper.initial_data_handler import (
@@ -13,11 +11,6 @@ from wizer.file_helper.initial_data_handler import (
     insert_demo_sports_to_model,
 )
 from workoutizer import settings as django_settings
-
-
-@pytest.fixture
-def flush_db():
-    call_command("flush", verbosity=0, interactive=False)
 
 
 def test_insert_demo_sports_to_model(db, flush_db):

@@ -3,13 +3,14 @@ import datetime
 
 import pytest
 
-from wizer.models import Settings, Sport, Activity, Traces
+from wizer import models
+from wizer.file_importer import FileImporter, prepare_import_of_demo_activities, copy_demo_fit_files_to_track_dir
 from workoutizer import settings as django_settings
 
 
 @pytest.fixture
 def settings(db):
-    settings = Settings(
+    settings = models.Settings(
         path_to_trace_dir="/home/pi/traces/",
         path_to_garmin_device="/home/pi/traces/",
         number_of_days=30,
@@ -22,14 +23,14 @@ def settings(db):
 
 @pytest.fixture
 def sport(db):
-    sport = Sport(name="Some Crazy Stuff", color="red", icon="Bike")
+    sport = models.Sport(name="Cycling", color="red", icon="Bike")
     sport.save()
     return sport
 
 
 @pytest.fixture
 def trace_file(db):
-    trace = Traces(
+    trace = models.Traces(
         path_to_file="some/path/to/file.gpx",
         file_name="file.gpx",
         md5sum="4c1185c55476269b442f424a9d80d964",
@@ -43,8 +44,8 @@ def trace_file(db):
 
 @pytest.fixture
 def activity(db, sport, trace_file):
-    activity = Activity(
-        name="Running",
+    activity = models.Activity(
+        name="Evening Cycling along the River",
         sport=sport,
         date=datetime.datetime(2020, 7, 7),
         duration=datetime.timedelta(minutes=30),
@@ -54,6 +55,23 @@ def activity(db, sport, trace_file):
     )
     activity.save()
     return activity
+
+
+@pytest.fixture
+def insert_best_section(db, activity):
+    def _create_section(max_value: float):
+        best_section = models.BestSection(
+            activity=activity,
+            section_type="fastest",
+            section_distance=1,
+            start_index=5,
+            end_index=517,
+            max_value=max_value,
+        )
+        best_section.save()
+        return best_section
+
+    return _create_section
 
 
 @pytest.fixture
@@ -99,3 +117,36 @@ def test_data_dir():
 @pytest.fixture
 def demo_data_dir():
     return django_settings.INITIAL_TRACE_DATA_DIR
+
+
+@pytest.fixture
+def tracks_in_tmpdir(tmpdir):
+    target_dir = tmpdir.mkdir("tracks")
+    settings = models.get_settings()
+    settings.path_to_trace_dir = target_dir
+    settings.save()
+
+
+@pytest.fixture
+def import_demo_data(db, tracks_in_tmpdir):
+    prepare_import_of_demo_activities(models)
+    assert len(models.Sport.objects.all()) == 5
+    assert len(models.Settings.objects.all()) == 1
+
+    FileImporter(models, importing_demo_data=True)
+    assert len(models.Activity.objects.all()) > 1
+
+
+@pytest.fixture
+def import_one_activity(db, tracks_in_tmpdir):
+    models.get_settings()
+    copy_demo_fit_files_to_track_dir(
+        source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
+        targe_dir=models.get_settings().path_to_trace_dir,
+        list_of_files_to_copy=["2020-08-29-13-04-37.fit"],
+    )
+    assert len(models.Sport.objects.all()) == 1
+    assert len(models.Settings.objects.all()) == 1
+
+    FileImporter(models, importing_demo_data=False)
+    assert len(models.Activity.objects.all()) == 1

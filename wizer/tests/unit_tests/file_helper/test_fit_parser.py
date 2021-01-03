@@ -6,6 +6,7 @@ import pytest
 from django.conf import settings
 
 from wizer.file_helper.fit_parser import LapData
+from wizer.best_sections.fastest import FastestSection
 
 
 tz = pytz.timezone(settings.TIME_ZONE)
@@ -93,19 +94,26 @@ def test_get_min_max_values(fit_parser):
         assert p.max_coordinates == 0.0
 
 
-def test_convert_list_attributes_to_json(fit_parser):
-    p = fit_parser()
-    assert type(p.timestamps_list) == list
-    assert type(p.latitude_list) == list
-    assert type(p.longitude_list) == list
-    p.convert_list_attributes_to_json()
-    assert type(p.timestamps_list) == str
-    assert type(p.latitude_list) == str
-    assert type(p.longitude_list) == str
-
-
 def test_convert_list_of_nones_to_empty_list(fit_parser, test_data_dir):
     p = fit_parser(path=os.path.join(test_data_dir, "with_nones.fit"))
     assert p.altitude_list[:3] == [None, None, None]
     p.convert_list_of_nones_to_empty_list()
     assert p.altitude_list == []
+
+
+def test_get_fastest_sections(fit_parser):
+    p = fit_parser()
+
+    # check that fastest sections dict is empty
+    assert p.best_sections == []
+
+    p.get_fastest_sections()
+
+    assert p.best_sections != []
+
+    sec1 = FastestSection(1, 577, 666, 2.91)
+    sec2 = FastestSection(2, 485, 760, 2.33)
+    sec3 = FastestSection(3, 378, 883, 2.13)
+    sec5 = FastestSection(5, 27, 1109, 1.84)
+
+    assert p.best_sections == [sec1, sec2, sec3, sec5]
