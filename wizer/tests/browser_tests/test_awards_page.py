@@ -45,6 +45,4 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Dec 12, 2020" in table_data
 
     assert len(webdriver.find_elements_by_class_name("fa-medal")) > 0
-
-    # from IPython import embed
-    # embed()
+    assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0

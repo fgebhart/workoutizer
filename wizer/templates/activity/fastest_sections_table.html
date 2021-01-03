@@ -13,7 +13,6 @@
         <tr>
             <td><i class="fas fa-medal"></i>&nbsp; {{ section.section_distance }}km</td>
             <td>{{ section.max_value | m_per_s_to_km_per_h }} km/h</td>
-            <td>
                 {% for top_award in top_awards %}
                 {% if section.pk == top_award.section.pk %}
                 {% if top_award.rank == 1 %}
