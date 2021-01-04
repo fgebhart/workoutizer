@@ -42,7 +42,6 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Running in Mirow" in table_data
     assert "10.2 km/h" in table_data
     assert "30 km" in table_data
-    assert "Dec 12, 2020" in table_data
 
     assert len(webdriver.find_elements_by_class_name("fa-medal")) > 0
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
