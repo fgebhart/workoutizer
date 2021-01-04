@@ -29,11 +29,7 @@ def cli():
     "and applies the required migrations."
 )
 def init():
-    _build_home()
-    execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
-    execute_from_command_line(["manage.py", "migrate"])
-    execute_from_command_line(["manage.py", "check"])
-    click.echo(f"database and track files are stored in: {WORKOUTIZER_DIR}")
+    _init()
 
 
 @click.option("--ip", default="", help=url_help)
@@ -93,7 +89,7 @@ def manage(cmd):
 
 @click.command(help="Show the version of currently installed workoutizer.")
 def version():
-    click.echo(__version__)
+    click.echo(_version())
 
 
 @click.command(help="Check for a newer version and install if there is any.")
@@ -119,6 +115,10 @@ cli.add_command(setup_rpi)
 cli.add_command(run)
 cli.add_command(manage)
 cli.add_command(check)
+
+
+def _version():
+    return __version__
 
 
 def _upgrade():
@@ -192,6 +192,21 @@ def _build_home():
         _make_tracks_dir(TRACKS_DIR)
 
 
+def _init():
+    _build_home()
+    execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
+    execute_from_command_line(["manage.py", "migrate"])
+    execute_from_command_line(["manage.py", "check"])
+
+    # import demo activities
+    from wizer import models
+    from wizer.file_importer import FileImporter, prepare_import_of_demo_activities
+
+    prepare_import_of_demo_activities(models)
+    FileImporter(models, importing_demo_data=True)
+    click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
+
+
 def _make_tracks_dir(path):
     if not os.path.isdir(path):
         os.mkdir(path)
@@ -255,24 +270,26 @@ def _stop():
     url = f"http://{get_local_ip_address()}:8000/stop/"
     try:
         requests.post(url)
-        print("Stopped.")
+        click.echo("Stopped.")
     except requests.exceptions.ConnectionError:
-        print("Workoutizer is not running.")
+        click.echo("Workoutizer is not running.")
+
+
+class NotInitializedError(Exception):
+    pass
 
 
 def _check():
-    # first run django's check
     execute_from_command_line(["manage.py", "check"])
 
     # second ensure that some activity data was imported
-    os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
     from wizer import models
 
-    assert len(models.Settings.objects.all()) == 1
-    print("Settings got properly initialized.")
+    if len(models.Settings.objects.all()) != 1:
+        raise NotInitializedError("Make sure to execute 'wkz init' first")
 
-    assert len(models.Activity.objects.all()) > 0
-    print("Activities got properly imported.")
+    if len(models.Activity.objects.all()) == 0:
+        raise NotInitializedError("Make sure to execute 'wkz init' first")
 
 
 if __name__ == "__main__":

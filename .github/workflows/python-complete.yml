@@ -1,7 +1,5 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python Tests - all together
+name: Run Tests and Build
 
 on: push
 
@@ -19,8 +17,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e .
           python -m pip install -r setup/requirements/dev-requirements.txt
+          python -m pip install -e .
       - name: Run all Tests
         run: |
           pytest wizer/tests/ -v
+      - name: Init and Check
+        env:
+          WKZ_LOG_LEVEL: DEBUG
+        run: |
+          wkz init
+          wkz check
