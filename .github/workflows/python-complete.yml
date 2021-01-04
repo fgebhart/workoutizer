@@ -22,9 +22,11 @@ jobs:
       - name: Run all Tests
         run: |
           pytest wizer/tests/ -v
-      - name: Init and Check
+      - name: Init
         env:
           WKZ_LOG_LEVEL: DEBUG
         run: |
           wkz init
+      - name: Check
+        run: |
           wkz check

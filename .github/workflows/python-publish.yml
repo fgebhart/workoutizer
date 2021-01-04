@@ -28,7 +28,7 @@ jobs:
     - name: Install workoutizer
       run: |
         pip install dist/workoutizer-*.whl --no-deps
-    - name: Initialize and Check Installation
+    - name: Check Installation
       env:
         WKZ_LOG_LEVEL: DEBUG
       run: |
