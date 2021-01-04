@@ -20,14 +20,18 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools wheel twine
+        pip install -r setup/requirements/dev-requirements.txt
+        pip install -r setup/requirements/requirements.txt
     - name: Build workoutizer
       run: |
         python setup.py sdist bdist_wheel
-    - name: Check installation
+    - name: Install workoutizer
+      run: |
+        pip install dist/workoutizer-*.whl --no-deps
+    - name: Initialize and Check Installation
       env:
         WKZ_LOG_LEVEL: DEBUG
       run: |
-        pip install dist/workoutizer-*.whl
         wkz init
         wkz check
     # - name: Publish workoutizer on PyPi
