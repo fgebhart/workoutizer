@@ -106,6 +106,11 @@ def stop():
     _stop()
 
 
+@click.command(help="Check if workoutizer was properly installed")
+def check():
+    _check()
+
+
 cli.add_command(upgrade)
 cli.add_command(stop)
 cli.add_command(version)
@@ -113,6 +118,7 @@ cli.add_command(init)
 cli.add_command(setup_rpi)
 cli.add_command(run)
 cli.add_command(manage)
+cli.add_command(check)
 
 
 def _upgrade():
@@ -252,6 +258,21 @@ def _stop():
         print("Stopped.")
     except requests.exceptions.ConnectionError:
         print("Workoutizer is not running.")
+
+
+def _check():
+    # first run django's check
+    execute_from_command_line(["manage.py", "check"])
+
+    # second ensure that some activity data was imported
+    os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
+    from wizer import models
+
+    assert len(models.Settings.objects.all()) == 1
+    print("Settings got properly initialized.")
+
+    assert len(models.Activity.objects.all()) > 0
+    print("Activities got properly imported.")
 
 
 if __name__ == "__main__":
