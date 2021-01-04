@@ -1,11 +1,11 @@
 
-name: Run Python Tests
+name: Test
 
 on: push
 
 jobs:
   test:
-
+    name: Test
     runs-on: ubuntu-latest
 
     steps:
@@ -45,3 +45,18 @@ jobs:
         if: ${{ always() }}
         run: |
           pytest wizer/tests/browser_tests -v
+
+  check:
+    name: Init & Check
+    runs-on: ubuntu-latest
+    needs: [test]
+
+    steps:
+      - name: Init
+        env:
+          WKZ_LOG_LEVEL: DEBUG
+        run: |
+          wkz init
+      - name: Check
+        run: |
+          wkz check
