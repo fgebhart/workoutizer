@@ -6,6 +6,24 @@ on: push
   #   types: [created]
 
 jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        pip install -r setup/requirements/dev-requirements.txt
+        pip install -r setup/requirements/requirements.txt
+        pip install -e . --no-deps
+    - name: Run Tests
+      run: |
+        pytest wizer/tests -v
+
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -17,9 +35,7 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install setuptools wheel twine
-        pip install -r setup/requirements/requirements.txt
     - name: Build workoutizer
       run: |
         python setup.py sdist bdist_wheel
@@ -33,22 +49,6 @@ jobs:
         wkz init
         wkz check
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      run: |
-        pip install -r setup/requirements/dev-requirements.txt
-    - name: Run Tests
-      run: |
-        pytest wizer/tests -v
-
   release:
     name: Release
     runs-on: ubuntu-latest
@@ -61,7 +61,6 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install setuptools wheel twine
     - name: Release
       env:
