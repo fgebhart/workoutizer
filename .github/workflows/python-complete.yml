@@ -17,8 +17,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r setup/requirements/dev-requirements.txt
-          python -m pip install -e .
+          pip install -r setup/requirements/dev-requirements.txt
+          pip install -e .
       - name: Run all Tests
         run: |
           pytest wizer/tests/ -v

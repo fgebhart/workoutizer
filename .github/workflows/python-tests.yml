@@ -16,6 +16,7 @@ jobs:
           python-version: 3.8
       - name: black formatting
         run: |
+          python -m pip install --upgrade pip
           pip install black
           black --check .
       - name: flake8 formatting
@@ -26,9 +27,8 @@ jobs:
       - name: Install dependencies
         if: ${{ always() }}
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e .
-          python -m pip install -r setup/requirements/dev-requirements.txt
+          pip install -r setup/requirements/dev-requirements.txt
+          pip install -e .
       - name: Run Unit Tests
         if: ${{ always() }}
         run: |
