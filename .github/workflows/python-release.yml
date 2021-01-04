@@ -22,11 +22,10 @@ jobs:
         pip install -e . --no-deps
     - name: Run Tests
       run: |
-        whoami
-        # pytest wizer/tests -v
+        pytest wizer/tests -v
 
   build:
-    name: Build
+    name: Build, Check & Release
     runs-on: ubuntu-latest
     needs: [test]
     steps:
