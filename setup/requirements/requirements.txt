@@ -16,7 +16,7 @@ django-leaflet==0.26.0    # via -r setup/requirements/requirements.in
 djangorestframework==3.11.0  # via -r setup/requirements/requirements.in
 fitparse==1.1.0           # via -r setup/requirements/requirements.in
 geographiclib==1.50       # via geopy
-geopy==2.0.0              # via -r setup/requirements/requirements.in
+geopy==2.1.0              # via -r setup/requirements/requirements.in
 gpxpy==1.4.2              # via -r setup/requirements/requirements.in
 humanfriendly==8.2        # via coloredlogs
 idna==2.10                # via requests

@@ -7,5 +7,6 @@ pip-tools
 pre-commit
 pytest
 pytest-django
+pytest-xdist
 rope
 selenium

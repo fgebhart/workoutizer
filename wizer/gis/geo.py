@@ -4,6 +4,7 @@ from typing import List, Tuple
 from math import pi, sin, cos, acos
 
 from geopy.geocoders import Nominatim
+from geopy.point import Point
 import pandas as pd
 
 
@@ -63,9 +64,10 @@ def add_elevation_data_to_coordinates(coordinates: list, altitude: list):
 
 
 def get_location_name(coordinate: Tuple[float, float]) -> str:
-    app = Nominatim(user_agent="tutorial")
+    app = Nominatim(user_agent="workoutizer")
     try:
-        address = app.reverse(coordinate, language="en", timeout=5).raw["address"]
+        p = Point(coordinate[0], coordinate[1])
+        address = app.reverse(query=p, language="en", timeout=5).raw["address"]
         # use name of location from village, town or city (in this order)
         if "village" in address.keys():
             return address["village"]
@@ -73,7 +75,7 @@ def get_location_name(coordinate: Tuple[float, float]) -> str:
             return address["town"]
         elif "city" in address.keys():
             return address["city"]
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, AttributeError):
         return None
 
 
