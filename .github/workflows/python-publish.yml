@@ -22,18 +22,26 @@ jobs:
         pip install -e . --no-deps
     - name: Run Tests
       run: |
-        pytest wizer/tests -v
+        whoami
+        # pytest wizer/tests -v
 
   build:
     name: Build
     runs-on: ubuntu-latest
     needs: [test]
     steps:
+    - uses: actions/checkout@v2
+    # - name: Set up Python
+    #   uses: actions/setup-python@v2
+    #   with:
+    #     python-version: 3.8
     - name: Install dependencies
       run: |
-        pip install setuptools wheel twine
+        pip install setuptools wheel
     - name: Build workoutizer
       run: |
+        pwd
+        ls -l
         python setup.py sdist bdist_wheel
     - name: Install workoutizer
       run: |
@@ -52,7 +60,7 @@ jobs:
     steps:
     - name: Install dependencies
       run: |
-        pip install setuptools wheel twine
+        pip install twine
     - name: Release
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
