@@ -2,6 +2,7 @@ import os
 import datetime
 
 import pytest
+import pytz
 
 from wizer import models
 from wizer.file_importer import FileImporter, prepare_import_of_demo_activities, copy_demo_fit_files_to_track_dir
@@ -47,7 +48,7 @@ def activity(db, sport, trace_file):
     activity = models.Activity(
         name="Evening Cycling along the River",
         sport=sport,
-        date=datetime.datetime(2020, 7, 7),
+        date=datetime.datetime(2020, 7, 7, tzinfo=pytz.timezone(django_settings.TIME_ZONE)),
         duration=datetime.timedelta(minutes=30),
         distance=5.2,
         description="some super sport",
