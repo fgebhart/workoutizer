@@ -21,7 +21,7 @@ def test_cli_version():
 
 
 def test_cli__init(db):
-    cli._init()
+    cli._init(answer="n")
     assert os.path.isdir(django_settings.WORKOUTIZER_DIR)
     assert len(models.Sport.objects.all()) == 5
     assert len(models.Settings.objects.all()) == 1
