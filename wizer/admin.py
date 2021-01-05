@@ -1,9 +1,11 @@
 from django.contrib import admin
 
-from wizer.models import Sport, Activity, Settings, Traces, Lap
+from wizer import models
 
-admin.site.register(Sport)
-admin.site.register(Activity)
-admin.site.register(Settings)
-admin.site.register(Traces)
-admin.site.register(Lap)
+admin.site.register(models.Sport)
+admin.site.register(models.Activity)
+admin.site.register(models.Settings)
+admin.site.register(models.Traces)
+admin.site.register(models.Lap)
+admin.site.register(models.BestSection)
+admin.site.register(models.BestSectionTopScores)
