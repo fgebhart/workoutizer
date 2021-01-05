@@ -12,3 +12,4 @@ pandas
 psutil
 requests
 sportgems>=0.2.1
+watchdog

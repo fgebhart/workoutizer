@@ -37,3 +37,4 @@ sportgems==0.2.1          # via -r setup/requirements/requirements.in
 sqlparse==0.4.1           # via django
 tornado==6.1              # via bokeh
 urllib3==1.26.2           # via requests
+watchdog==1.0.2           # via -r setup/requirements/requirements.in

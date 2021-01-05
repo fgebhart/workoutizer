@@ -1,8 +1,12 @@
-import time
 import os
 import sys
 import logging
 import json
+from typing import List
+
+
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 from django.apps import AppConfig
 from django.db.utils import OperationalError
@@ -59,9 +63,20 @@ def _was_runserver_triggered(args: list):
     return triggered
 
 
+class Handler(FileSystemEventHandler):
+    @staticmethod
+    def on_any_event(event):
+        if event.event_type == "created":
+            if str(event.src_path).endswith(".fit") or str(event.src_path).endswith(".gpx"):
+                log.debug("activity file was added, triggering FileImporter...")
+
+                from wizer import models
+
+                FileImporter(models, importing_demo_data=False)
+
+
 class WizerFileDaemon(AppConfig):
     name = "wizer"
-    verbose_name = "Workoutizer"
 
     def ready(self):
         # ensure to only run with 'manage.py runserver' and not in auto reload thread
@@ -69,14 +84,17 @@ class WizerFileDaemon(AppConfig):
             log.info(f"using workoutizer home at {django_settings.WORKOUTIZER_DIR}")
             from wizer import models
 
-            # insert initial example activity data in case there is no activity in the db
-            importing_demo_data = False
-            if models.Activity.objects.count() == 0:
-                log.debug("no activity data found, will add demo activities...")
-                prepare_import_of_demo_activities(models)
-                importing_demo_data = True
+            FileImporter(models, importing_demo_data=False)
 
-            FileImporter(models, importing_demo_data)
+            _start_watchdog(path=django_settings.TRACKS_DIR)
+
+
+def _start_watchdog(path: str):
+    event_handler = Handler()
+    watchdog = Observer()
+    watchdog.schedule(event_handler, path=path, recursive=True)
+    watchdog.start()
+    log.debug(f"started watchdog to watch for incoming files in {path}")
 
 
 def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
@@ -94,10 +112,10 @@ class FileImporter:
         self.importing_demo_data = importing_demo_data
         self.settings = models.get_settings()
         self.models = models
+        log.debug("triggered file importer")
         self._run_importer()
 
     def _run_importer(self):
-        time.sleep(3)
         try:
             path = self.settings.path_to_trace_dir
             # find activity files in directory
@@ -324,7 +342,7 @@ def map_sport_name(sport_name, map_dict):  # will be adapted in GH #4
     return sport
 
 
-def get_all_files(path) -> list:
+def get_all_files(path) -> List[str]:
     trace_files = [
         os.path.join(root, name)
         for root, dirs, files in os.walk(path)
@@ -332,3 +350,8 @@ def get_all_files(path) -> list:
         if name.endswith(tuple(supported_formats))
     ]
     return trace_files
+
+
+def _get_all_dirs(path: str) -> List[str]:
+    dirs_in_path = [os.path.join(root, name) for root, dirs, files in os.walk(path) for name in dirs]
+    return dirs_in_path

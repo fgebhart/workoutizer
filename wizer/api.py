@@ -8,7 +8,6 @@ from rest_framework import status
 import psutil
 
 from wizer.file_helper.fit_collector import try_to_mount_device, FitCollector, unmount_device_using_gio
-from wizer.file_importer import FileImporter
 from wizer import models
 
 
@@ -29,13 +28,13 @@ def mount_device_endpoint(request):
                 delete_files_after_import=settings.delete_files_after_import,
             )
             fit_collector.copy_fit_files()
-            # 3. after collecting, import fit files
-            FileImporter(models=models, importing_demo_data=False)
+            # no need to trigger file importer here anymore since watchdog
+            # will automatically realize new files and trigger the file importer
 
             # 4. once collecting and importing was successful unmount device
             unmount_device_using_gio(settings.path_to_garmin_device)
 
-            return Response("mounted, checked for files and unmounted", status=status.HTTP_200_OK)
+            return Response("mounted and checked for files", status=status.HTTP_200_OK)
         else:
             log.error(f"could not mount device, no valid mount path available - got: {mount_path}")
             return Response("failed", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -54,4 +53,4 @@ def stop_django_server(request):
         os.kill(child.pid, signal.SIGINT)
     # lastely kill the parent process
     os.kill(pid, signal.SIGINT)
-    return Response("failed", status=status.HTTP_200_OK)
+    return Response("stopped", status=status.HTTP_200_OK)
