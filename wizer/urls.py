@@ -1,5 +1,5 @@
 from django.urls import path
-from django.conf.urls import url
+from django.urls import re_path
 
 from wizer import views
 from wizer import activity_views
@@ -21,14 +21,14 @@ urlpatterns = [
     path("activity/<slug:activity_id>/edit/", activity_views.edit_activity_view, name="edit-activity"),
     path("activity/<slug:activity_id>/download/", activity_views.download_activity, name="download-activity"),
     path("add-activity/", activity_views.add_activity_view, name="add-activity"),
-    url(r"^activity/(?P<pk>\d+)/delete/$", activity_views.ActivityDeleteView.as_view(), name="delete-activity"),
+    re_path(r"^activity/(?P<pk>\d+)/delete/$", activity_views.ActivityDeleteView.as_view(), name="delete-activity"),
     path("delete-demo-data/", activity_views.DemoActivityDeleteView.as_view(), name="delete-demo-data"),
     # Sports
     path("sport/<slug:sports_name_slug>", sport_views.SportsView.as_view(), name="sport"),
     path("sports/", sport_views.AllSportsView.as_view(), name="sports"),
     path("add-sport/", sport_views.add_sport_view, name="add-sport"),
     path("sport/<slug:sports_name_slug>/edit/", sport_views.edit_sport_view, name="edit-sport"),
-    url(r"^sport/(?P<slug>[a-zA-Z0-9-]+)/delete/$", sport_views.SportDeleteView.as_view(), name="delete-sport"),
+    re_path(r"^sport/(?P<slug>[a-zA-Z0-9-]+)/delete/$", sport_views.SportDeleteView.as_view(), name="delete-sport"),
     # Best Sections
     path("awards/", views.BestSectionsView.as_view(), name="awards"),
     # Rest API endpoints

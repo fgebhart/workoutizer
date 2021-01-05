@@ -8,75 +8,77 @@ jobs:
     name: Formatting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: black formatting
-        run: |
-          python -m pip install --upgrade pip
-          pip install black
-          black --check .
-      - name: flake8 formatting
-        if: always()
-        run: |
-          pip install flake8
-          flake8 .
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: black formatting
+      run: |
+        python -m pip install --upgrade pip
+        pip install black
+        black --check .
+    - name: flake8 formatting
+      if: always()
+      run: |
+        pip install flake8
+        flake8 .
 
   test:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Install dependencies
-        if: always()
-        run: |
-          pip install -r setup/requirements/dev-requirements.txt
-          pip install -e .
-      - name: Run Unit Tests
-        if: always()
-        run: |
-          pytest wizer/tests/unit_tests -v
-      - name: Run Integration Tests
-        if: always()
-        run: |
-          pytest wizer/tests/integration_tests -v
-      - name: Run Endpoint Tests
-        if: always()
-        run: |
-          pytest wizer/tests/endpoint_tests -v
-      - name: Run Browser Tests
-        if: always()
-        run: |
-          pytest wizer/tests/browser_tests -v
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install gdal geospatial lib
+      run: sudo apt-get install gdal-bin
+    - name: Install dependencies
+      if: always()
+      run: |
+        pip install -r setup/requirements/dev-requirements.txt
+        pip install -e .
+    - name: Run Unit Tests
+      if: always()
+      run: |
+        pytest wizer/tests/unit_tests -v -n2
+    - name: Run Integration Tests
+      if: always()
+      run: |
+        pytest wizer/tests/integration_tests -v -n2
+    - name: Run Endpoint Tests
+      if: always()
+      run: |
+        pytest wizer/tests/endpoint_tests -v -n2
+    - name: Run Browser Tests
+      if: always()
+      run: |
+        pytest wizer/tests/browser_tests -v -n2
 
   check:
     name: Check
     runs-on: ubuntu-latest
     needs: [test]
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Install dependencies
-        if: always()
-        run: |
-          pip install -r setup/requirements/dev-requirements.txt
-          pip install -e .
-      - name: Init
-        if: always()
-        env:
-          WKZ_LOG_LEVEL: DEBUG
-        run: |
-          wkz init
-      - name: Check
-        if: always()
-        run: |
-          wkz check
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      if: always()
+      run: |
+        pip install -r setup/requirements/dev-requirements.txt
+        pip install -e .
+    - name: Init
+      if: always()
+      env:
+        WKZ_LOG_LEVEL: DEBUG
+      run: |
+        wkz init
+    - name: Check
+      if: always()
+      run: |
+        wkz check
