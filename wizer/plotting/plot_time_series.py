@@ -1,6 +1,7 @@
 import logging
 import json
 from itertools import combinations
+from typing import List
 
 from bokeh.plotting import figure
 from bokeh.embed import components
@@ -29,7 +30,7 @@ plot_matrix = {
     },
     "speed": {
         "color": "darkred",
-        "axis": "m/s",
+        "axis": "km/h",
         "title": "Speed",
     },
     "heart_rate": {
@@ -91,6 +92,9 @@ def plot_time_series(activity: models.Activity):
                 )
                 lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
                 lap_lines += lap
+                if attribute == "speed":
+                    # turn speed values from m/s into km/h to be consistent with other speed values
+                    values = values.mul(3.6)
                 if attribute == "altitude":
                     p.varea(
                         x=x_axis,
@@ -177,7 +181,7 @@ def plot_time_series(activity: models.Activity):
     return script, div
 
 
-def _add_laps_to_plot(laps: list, plot, y_values: list):
+def _add_laps_to_plot(laps: list, plot, y_values: list) -> List:
     lap_lines = []
     x_value = pd.Timedelta(seconds=0)
     for lap in laps:
