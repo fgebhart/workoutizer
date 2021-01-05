@@ -167,33 +167,34 @@ def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
     return result
 
 
-def _build_home():
+def _build_home(answer: str):
     if os.path.isdir(WORKOUTIZER_DIR):
         if os.path.isfile(WORKOUTIZER_DB_PATH):
             click.echo(f"Found existing workoutizer database at: {WORKOUTIZER_DB_PATH}\n")
-            answer = input(
-                "Workoutizer could try to use the existing database instead of creating a new one.\n"
-                "Note that this could lead to faulty behaviour because of mismatching applied\n"
-                "migrations on this database.\n\n"
-                "Do you want to use the existing database instead of creating a new one? \n"
-                "   - Enter 'n' to delete the found database and create a new one. \n"
-                "   - Enter 'y' to keep and use the found database. \n"
-                "Enter [Y/n] "
-            )
-            if answer.lower() == "y":
-                click.echo(f"keeping existing database at {WORKOUTIZER_DB_PATH}")
-                return
-            else:
+            if not answer:
+                answer = input(
+                    "Workoutizer could try to use the existing database instead of creating a new one.\n"
+                    "Note that this could lead to faulty behaviour because of mismatching applied\n"
+                    "migrations on this database.\n\n"
+                    "Do you want to use the existing database instead of creating a new one? \n"
+                    "   - Enter 'n' to delete the found database and create a new one. \n"
+                    "   - Enter 'y' to keep and use the found database. \n"
+                    "Enter [Y/n] "
+                )
+            if answer.lower() == "n":
                 click.echo(f"removed database at {WORKOUTIZER_DB_PATH}")
                 os.remove(WORKOUTIZER_DB_PATH)
+            else:
+                click.echo(f"keeping existing database at {WORKOUTIZER_DB_PATH}")
+                return
         _make_tracks_dir(TRACKS_DIR)
     else:
         os.mkdir(WORKOUTIZER_DIR)
         _make_tracks_dir(TRACKS_DIR)
 
 
-def _init():
-    _build_home()
+def _init(answer: str = ""):
+    _build_home(answer=answer)
     execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
     execute_from_command_line(["manage.py", "migrate"])
     execute_from_command_line(["manage.py", "check"])

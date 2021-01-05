@@ -1,4 +1,4 @@
-ansible
+ansible==2.9.10
 black
 flake8
 IPython
@@ -7,5 +7,6 @@ pip-tools
 pre-commit
 pytest
 pytest-django
+pytest-xdist
 rope
 selenium

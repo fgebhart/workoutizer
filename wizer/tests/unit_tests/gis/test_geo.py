@@ -68,12 +68,6 @@ def test__get_location_name():
     location_name = get_location_name(coordinate=coordinate)
     assert location_name is None
 
-    # also this would raise an exception, however this
-    # is not the location which is supposed to fail
-    coordinate = (-1000, 90)
-    location_name = get_location_name(coordinate=coordinate)
-    assert location_name is None
-
 
 def test_get_other_location_names():
     coordinate = (49.46278064511717, 8.160513974726202)
