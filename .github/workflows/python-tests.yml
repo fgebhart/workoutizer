@@ -48,14 +48,6 @@ jobs:
       if: always()
       run: |
         pytest wizer/tests/integration_tests -v -n2
-    - name: Run Endpoint Tests
-      if: always()
-      run: |
-        pytest wizer/tests/endpoint_tests -v -n2
-    - name: Run Browser Tests
-      if: always()
-      run: |
-        pytest wizer/tests/browser_tests -v -n2
     - name: Init
       if: always()
       env:

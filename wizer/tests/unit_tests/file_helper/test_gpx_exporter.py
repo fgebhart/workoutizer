@@ -1,9 +1,7 @@
-import os
 import datetime
 
-from lxml import etree
 
-from wizer.file_helper.gpx_exporter import _build_gpx, _fill_list_of_timestamps, save_activity_to_gpx_file
+from wizer.file_helper.gpx_exporter import _build_gpx, _fill_list_of_timestamps
 
 
 def test__build_gpx(trace_coordinates, gpx_string):
@@ -60,11 +58,3 @@ def test__fill_list_of_timestamps():
         )
         == ["2019-07-12T12:00:00Z", "2019-07-12T12:10:00Z", "2019-07-12T12:20:00Z"]
     )
-
-
-def test_save_activity_to_gpx_file(activity):
-    path = save_activity_to_gpx_file(activity)
-    assert os.path.isfile(path)
-    assert path.split("/")[-1] == "2020-07-07_evening-cycling-along-the-river.gpx"
-    # verify xml file is well formed this would raise lxml.etree.XMLSyntaxError if not
-    etree.parse(path)
