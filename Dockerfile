@@ -7,10 +7,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # set apt to noninteractive mode  (for installing firefox)
 ENV DEBIAN_FRONTEND='noninteractive'
 # install sqlite3 package for the use of djangos db shell
-RUN apt-get update
-RUN apt-get install -y sqlite3 virtualenv vim git zsh wget htop curl gdal-bin
-RUN apt-get update
-RUN apt-get install -y firefox
+RUN apt-get update && \
+    apt-get install -y sqlite3 virtualenv vim git zsh wget htop curl gdal-bin firefox
 
 # install oh-my-zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
