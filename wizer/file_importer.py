@@ -350,8 +350,3 @@ def get_all_files(path) -> List[str]:
         if name.endswith(tuple(supported_formats))
     ]
     return trace_files
-
-
-def _get_all_dirs(path: str) -> List[str]:
-    dirs_in_path = [os.path.join(root, name) for root, dirs, files in os.walk(path) for name in dirs]
-    return dirs_in_path
