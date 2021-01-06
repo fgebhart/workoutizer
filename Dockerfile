@@ -1,9 +1,9 @@
 FROM ubuntu:latest
 
-ENV TZ=Europe/Berlin
+COPY ./.devcontainer/tz /tmp/tz
+RUN ./tmp/tz
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-# check tz
-RUN cat /etc/timezone
+
 # set apt to noninteractive mode  (for installing firefox)
 ENV DEBIAN_FRONTEND='noninteractive'
 # install sqlite3 package for the use of djangos db shell
