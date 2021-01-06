@@ -268,7 +268,9 @@ def _run_ansible(playbook: str, variables: dict = None):
 
 
 def _stop():
-    url = f"http://{get_local_ip_address()}:8000/stop/"
+    host = get_local_ip_address()
+    click.echo(f"trying to stop workoutizer at {host}")
+    url = f"http://{host}:8000/stop/"
     try:
         requests.post(url)
         click.echo("Stopped.")

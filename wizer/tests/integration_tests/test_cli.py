@@ -34,5 +34,5 @@ def test_cli__check(db):
         cli._check()
 
     # now initialized wkz first and then run check
-    cli._init()
+    cli._init(answer="n")
     cli._check()

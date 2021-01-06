@@ -5,7 +5,6 @@ from rest_framework.test import APIClient
 import pytest
 
 from wizer.file_helper import fit_collector
-from wizer.file_helper.initial_data_handler import copy_demo_fit_files_to_track_dir
 from wizer import models
 
 
@@ -25,7 +24,7 @@ def test_stop(client):
         client.post("/stop/")
 
 
-def test_mount_device__not_importing(db, monkeypatch, client):
+def test_mount_device__failure(db, monkeypatch, client):
     # mock output of subprocess to prevent function from failing
     def dummy_output(dummy):
         return "dummy-string"
@@ -37,7 +36,7 @@ def test_mount_device__not_importing(db, monkeypatch, client):
     assert res.status_code == 500
 
 
-def test_mount_device__importing(db, monkeypatch, demo_data_dir, tmpdir, client):
+def test_mount_device__success(db, monkeypatch, tmpdir, client):
     # prepare settings
     target_dir = tmpdir.mkdir("tracks")
     settings = models.get_settings()
@@ -66,12 +65,5 @@ def test_mount_device__importing(db, monkeypatch, demo_data_dir, tmpdir, client)
     fake_device_dir = os.path.join(tmpdir, "mtp:host/Primary/GARMIN/Activity/")
     os.makedirs(fake_device_dir)
 
-    # copy demo data to fake device dir
-    copy_demo_fit_files_to_track_dir(source_dir=demo_data_dir, targe_dir=fake_device_dir)
-
     res = client.post("/mount-device/")
-
     assert res.status_code == 200
-
-    # verify activities got imported
-    assert len(models.Activity.objects.all()) == 10

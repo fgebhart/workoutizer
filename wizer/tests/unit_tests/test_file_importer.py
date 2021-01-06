@@ -3,6 +3,7 @@ from wizer.file_importer import (
     sport_naming_map,
     _was_runserver_triggered,
     convert_list_attributes_to_json,
+    get_all_files,
 )
 
 
@@ -33,3 +34,12 @@ def test_convert_list_attributes_to_json(fit_parser):
     assert type(parser.timestamps_list) == str
     assert type(parser.latitude_list) == str
     assert type(parser.longitude_list) == str
+
+
+def test_get_all_files(tmpdir):
+    gpx = tmpdir.mkdir("gpx").join("test.gpx")
+    fit = tmpdir.mkdir("fit").join("test.fit")
+    invalid = tmpdir.mkdir("txt").join("test.txt")
+    for file in [gpx, fit, invalid]:
+        file.write("some-content")
+    assert len(get_all_files(tmpdir)) == 2
