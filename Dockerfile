@@ -1,9 +1,5 @@
 FROM ubuntu:latest
 
-COPY ./.devcontainer/tz /tmp/tz
-RUN ./tmp/tz
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 # set apt to noninteractive mode  (for installing firefox)
 ENV DEBIAN_FRONTEND='noninteractive'
 # install sqlite3 package for the use of djangos db shell
@@ -12,6 +8,10 @@ RUN apt-get update && \
 
 # install oh-my-zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+
+RUN echo "Europe/Berlin" > /etc/timezone && \
+    ln -fs /usr/share/zoneinfo/`cat /etc/timezone` /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata
 
 # install gecko driver 
 RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz
