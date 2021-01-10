@@ -1,5 +1,6 @@
 from sportgems import find_gems
 import pandas as pd
+import pytest
 
 from wizer.best_sections.fastest import _prepare_coordinates_and_times_for_fastest_secions, get_fastest_section
 
@@ -173,3 +174,20 @@ def test_get_fastest_section__gpx(gpx_parser):
     assert start_index == 0
     assert end_index == 0
     assert velocity == 0.0
+
+
+@pytest.mark.parametrize("test_file", ["2020-09-12-11-15-46.fit", "2020-10-25-10-54-06.fit"])
+def test_sportgems_fastest_interface__fit_file_which_cause_panic(fit_parser, test_file):
+    parser = fit_parser(test_file)
+    times, coordinates = _prepare_coordinates_and_times_for_fastest_secions(parser)
+    print()
+    with open("testfile.txt", "w") as f:
+        f.write(coordinates)
+    # print(f"coordinates: {coordinates}")
+    # print()
+    # print(f"times: {times}")
+    print()
+    result_1km = find_gems(1000, times, coordinates)
+
+    found_section = result_1km[0]
+    assert found_section is True
