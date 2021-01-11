@@ -4,6 +4,7 @@ import sys
 
 import click
 import requests
+import luddite
 from django.core.management import execute_from_command_line
 
 from workoutizer.settings import WORKOUTIZER_DIR, WORKOUTIZER_DB_PATH, TRACKS_DIR
@@ -122,30 +123,19 @@ def _version():
 
 
 def _upgrade():
-    latest_version = _get_latest_version_of("workoutizer")
+
+    latest_version = luddite.get_version_pypi("workoutizer")
     from workoutizer import __version__ as current_version
 
-    if latest_version:
+    if latest_version == current_version:
+        click.echo(f"No update available. You are running the latest version: {latest_version}")
+    else:
         click.echo(f"found newer version: {latest_version}, you have {current_version} installed")
         _pip_install("workoutizer", upgrade=True)
         execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
         execute_from_command_line(["manage.py", "migrate"])
         execute_from_command_line(["manage.py", "check"])
         click.echo(f"Successfully upgraded from {current_version} to {latest_version}")
-    else:
-        click.echo(f"No update available. You are running the latest version: {current_version}")
-
-
-def _get_latest_version_of(package: str):
-    outdated = str(
-        subprocess.check_output([sys.executable, "-m", "pip", "list", "--outdated", "--disable-pip-version-check"])
-    )
-    if package in outdated:
-        output = str(subprocess.check_output([sys.executable, "-m", "pip", "search", package]))
-        latest_version = output[output.find("LATEST") :].split("\\n")[0].split(" ")[-1]
-        return latest_version
-    else:
-        return False
 
 
 def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
