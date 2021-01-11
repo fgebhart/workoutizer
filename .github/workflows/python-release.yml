@@ -15,6 +15,8 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
+    - name: Install gdal geospatial lib
+      run: sudo apt-get install gdal-bin
     - name: Install Dependencies
       run: |
         pip install -r setup/requirements/dev-requirements.txt
