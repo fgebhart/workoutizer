@@ -13,3 +13,4 @@ psutil
 requests
 sportgems>=0.2.3
 watchdog
+luddite
