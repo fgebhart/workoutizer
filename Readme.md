@@ -64,13 +64,9 @@ Thanks to the authors of projects I integrated into workoutizer:
 * [leaflet-color-markers](https://github.com/pointhi/leaflet-color-markers) by [pointhi](https://github.com/pointhi)
 * [Font Awesome Icons](https://fontawesome.com/)
 
-Enjoy!
-
 ## Changelog
 
 See the [releases section](https://github.com/fgebhart/workoutizer/releases).
-
-For older releases have a look at the [archived project at gitlab](https://gitlab.com/fgebhart/workoutizer).
 
 ## Contributing
 
