@@ -11,5 +11,5 @@ gpxpy
 pandas
 psutil
 requests
-sportgems>=0.2.1
+sportgems>=0.2.3
 watchdog
