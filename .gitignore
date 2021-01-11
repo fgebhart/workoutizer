@@ -17,3 +17,4 @@ venv/
 *.log*
 spike/
 .devcontainer/tz
+.DS_Store

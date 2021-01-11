@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.140.1/containers/docker-existing-dockerfile
 {
-	"name": "Existing Dockerfile",
+	"name": "Workoutizer",
 
 	// Sets the run context to one level up instead of the .devcontainer folder.
 	"context": "..",
@@ -20,9 +20,10 @@
 	"extensions": [
 		"ms-python.python",
 		"eamodio.gitlens",
-		"ryuta46.multi-command",
+		"alefragnani.bookmarks",
 		"ms-python.vscode-pylance",
 		"anjali.clipboard-history",
+		"streetsidesoftware.code-spell-checker",
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
