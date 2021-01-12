@@ -27,6 +27,7 @@ setuptools.setup(
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.8",
         "Framework :: Django",
