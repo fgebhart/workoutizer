@@ -1,4 +1,6 @@
 # Workoutizer
+[![PyPI](https://badge.fury.io/py/workoutizer.svg)](https://badge.fury.io/py/workoutizer) [![Python](https://img.shields.io/pypi/pyversions/workoutizer.svg?style=plastic)](https://badge.fury.io/py/workoutizer) [![Build Status](https://github.com/fgebhart/workoutizer/workflows/Test/badge.svg)](https://github.com/fgebhart/workoutizer/actions?query=workflow%3ATest)
+
 
 The Workoutizer is a simple web application for organizing your workouts and sports activities. It is designed to work
 locally on any UNIX-like system running Python.
