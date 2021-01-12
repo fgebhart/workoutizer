@@ -1,3 +1,5 @@
+import math
+
 from sportgems import find_gems
 import pandas as pd
 import pytest
@@ -21,7 +23,7 @@ def test_sportgems_fastest_interface__dummy_data():
     assert found_section is True
     assert start_index == 1
     assert end_index == 2
-    assert velocity == 743.0908195788583
+    assert math.isclose(velocity, 743.0908195788583)
 
 
 def test_sportgems_fastest_interface__real_activity_data__fit(fit_parser):
@@ -36,7 +38,7 @@ def test_sportgems_fastest_interface__real_activity_data__fit(fit_parser):
     assert found_section is True
     assert start_index == 577
     assert end_index == 666
-    assert velocity == 2.9142410749856014
+    assert math.isclose(velocity, 2.9142410749856014)
 
 
 def test_sportgems_fastest_interface__real_activity_data__gpx(gpx_parser):
@@ -51,7 +53,7 @@ def test_sportgems_fastest_interface__real_activity_data__gpx(gpx_parser):
     assert found_section is True
     assert start_index == 54
     assert end_index == 103
-    assert velocity == 3.1352588094779272
+    assert math.isclose(velocity, 3.1352588094779272)
 
 
 def test__prepare_coordinates_and_times_for_fastest_secions__fit(fit_parser):

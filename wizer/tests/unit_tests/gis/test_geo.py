@@ -1,3 +1,5 @@
+import math
+
 import pytest
 
 from wizer.gis.geo import (
@@ -18,13 +20,15 @@ def test_calculate_distance_between_points__same_points():
 def test_calculate_distance_between_points__different_points():
     coordinate_1 = (48.123, 9.456)
     coordinate_2 = (49.678, 9.567)
-    assert calculate_distance_between_points(coordinate_1, coordinate_2) == 173291.21920642233
+    distance = calculate_distance_between_points(coordinate_1, coordinate_2)
+    assert math.isclose(distance, 173291.21920642233)
 
 
 def test_calculate_distance_between_points__other_points():
     coordinate_1 = (48.0, 8.0)
     coordinate_2 = (48.0, 8.1)
-    assert calculate_distance_between_points(coordinate_1, coordinate_2) == 7448.684105664539
+    distance = calculate_distance_between_points(coordinate_1, coordinate_2)
+    assert math.isclose(distance, 7448.684105664539)
 
 
 def test_get_total_distance_of_trace__basic():
