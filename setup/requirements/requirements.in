@@ -1,7 +1,7 @@
 bokeh==1.4.0        # pinned due to CustomJS "use_strict" mode, will break my CustomJS
 coloredlogs
 click
-django
+django<=3.0.8
 django-colorfield
 django-leaflet
 djangorestframework
