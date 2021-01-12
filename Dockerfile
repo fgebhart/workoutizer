@@ -4,7 +4,7 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND='noninteractive'
 # install sqlite3 package for the use of djangos db shell
 RUN apt-get update && \
-    apt-get install -y sqlite3 virtualenv vim git zsh wget htop curl gdal-bin firefox
+    apt-get install -y sqlite3 virtualenv vim git zsh wget htop curl firefox
 
 # install oh-my-zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
