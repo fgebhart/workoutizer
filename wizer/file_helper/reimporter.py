@@ -9,6 +9,7 @@ from wizer.file_importer import (
     parse_data,
     save_laps_to_model,
     save_best_sections_to_model,
+    convert_list_attributes_to_json,
 )
 from wizer.tools.utils import limit_string
 
@@ -43,6 +44,7 @@ class Reimporter:
                 )
             else:  # trace file is in db already
                 parser = parse_data(file=trace_file)
+                parser = convert_list_attributes_to_json(parser)
                 trace = models.Traces.objects.get(md5sum=md5sum)
                 activity = models.Activity.objects.get(trace_file=trace)
                 # update activity

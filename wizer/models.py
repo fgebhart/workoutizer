@@ -187,14 +187,16 @@ class BestSection(models.Model):
         if not found_rank:
             found_rank = looking_at_rank + 1
 
-        log.debug(
-            f"Activity scored rank {found_rank} for {self.section_type} {self.activity.sport.name} "
-            f"{self.section_distance}km!"
-        )
-        self.save_section_as_new_top_score(rank=found_rank)
-        self.delete_all_ranks_worse_than_three()
+        # only save top score in case found_rank <= 3
+        if found_rank <= 3:
+            log.debug(
+                f"Activity scored rank {found_rank} for {self.section_type} {self.activity.sport.name} "
+                f"{self.section_distance}km!"
+            )
+            self.save_section_as_new_top_score(rank=found_rank)
+            self.delete_all_ranks_worse_than_third_rank()
 
-    def delete_all_ranks_worse_than_three(self):
+    def delete_all_ranks_worse_than_third_rank(self):
         # delete all top scores, where rank > 3
         top_scores_to_be_deleted = BestSectionTopScores.objects.filter(
             sport=self.activity.sport,
@@ -202,7 +204,7 @@ class BestSection(models.Model):
         ).order_by("rank")
         for top_score_section in top_scores_to_be_deleted:
             log.debug(
-                f"Deleting top score section of {top_score_section.activity.name} " f"because a better one was found."
+                f"Deleting top score section of '{top_score_section.activity.name}' because a better one was found."
             )
             top_score_section.delete()
 
