@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.8, 3.9]
+        python-version: [3.8]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
@@ -44,7 +44,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install gdal geospatial lib
-      if: ${{ matrix.os }} == "ubuntu-latest"
+      if: ${{ matrix.os }} == ubuntu-latest
       run: sudo apt-get install gdal-bin
 
     - name: Install dependencies
