@@ -21,14 +21,14 @@ def test_calculate_distance_between_points__different_points():
     coordinate_1 = (48.123, 9.456)
     coordinate_2 = (49.678, 9.567)
     distance = calculate_distance_between_points(coordinate_1, coordinate_2)
-    assert math.isclose(distance, 173291.21920642233)
+    assert math.isclose(distance, 173291.21920642233, abs_tol=0.01)
 
 
 def test_calculate_distance_between_points__other_points():
     coordinate_1 = (48.0, 8.0)
     coordinate_2 = (48.0, 8.1)
     distance = calculate_distance_between_points(coordinate_1, coordinate_2)
-    assert math.isclose(distance, 7448.684105664539)
+    assert math.isclose(distance, 7448.684105664539, abs_tol=0.01)
 
 
 def test_get_total_distance_of_trace__basic():
