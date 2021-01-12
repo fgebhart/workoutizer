@@ -18,7 +18,6 @@ log = logging.getLogger(__name__)
 class Reimporter:
     def __init__(self):
         self.settings = models.get_settings()
-        self.force_overwrite = self.settings.reimporter_updates_all
         self.path = self.settings.path_to_trace_dir
         self.activity_modified = None
         self.updated_activities = set()
@@ -83,24 +82,18 @@ class Reimporter:
             if attribute == "sport":
                 continue
             if hasattr(obj, attribute):
-                if self.force_overwrite:
-                    log.debug(f"force overwriting value for {attribute}")
+                db_value = getattr(obj, attribute)
+                if not _values_equal(db_value, value):
+                    log.debug(
+                        f"overwriting value for {attribute} old: {limit_string(db_value, 100)} "
+                        f"to: {limit_string(value, 100)}"
+                    )
                     setattr(obj, attribute, value)
                     self.activity_modified = True
                     updated = True
                 else:
-                    db_value = getattr(obj, attribute)
-                    if not _values_equal(db_value, value):
-                        log.debug(
-                            f"overwriting value for {attribute} old: {limit_string(db_value, 100)} "
-                            f"to: {limit_string(value, 100)}"
-                        )
-                        setattr(obj, attribute, value)
-                        self.activity_modified = True
-                        updated = True
-                    else:
-                        # log.debug(f"values for {attribute} are the same")
-                        pass
+                    # log.debug(f"values for {attribute} are the same")
+                    pass
             else:
                 # log.warning(f"model does not have the attribute: '{attribute}'")
                 pass

@@ -60,7 +60,6 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     settings = models.get_settings()
     assert settings.path_to_trace_dir == django_settings.TRACKS_DIR
     assert settings.path_to_garmin_device == "/run/user/1000/gvfs/"
-    assert settings.reimporter_updates_all is False
     assert settings.delete_files_after_import is False
     assert settings.number_of_days == 30
 
@@ -77,8 +76,9 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     garmin_device_input_field.clear()
     garmin_device_input_field.send_keys("garmin/dummy/path")
 
-    force_update_input_field = webdriver.find_element_by_css_selector("#id_reimporter_updates_all")
-    force_update_input_field.click()
+    # got removed, should not be accessible
+    with pytest.raises(NoSuchElementException):
+        webdriver.find_element_by_css_selector("#id_reimporter_updates_all")
 
     delete_files_input_field = webdriver.find_element_by_css_selector("#id_delete_files_after_import")
     delete_files_input_field.click()
@@ -95,7 +95,10 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     settings = models.get_settings()
     assert settings.path_to_trace_dir == "some/dummy/path"
     assert settings.path_to_garmin_device == "garmin/dummy/path"
-    assert settings.reimporter_updates_all is True
     assert settings.delete_files_after_import is True
     # number of days should not be changed
     assert settings.number_of_days == 30
+
+    # this attribute got removed, so verifying that is does no longer exist
+    with pytest.raises(AttributeError):
+        assert settings.reimporter_updates_all is True

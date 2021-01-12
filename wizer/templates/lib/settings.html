@@ -49,13 +49,6 @@
             <h5><b>Reimporter</b></h5>
             <hr>
             <div class="form-group row">
-                <div class="col-sm-3">{{ form.reimporter_updates_all.label }}</div>
-                <div class="col-sm-9">{{ form.reimporter_updates_all }}&nbsp;
-                    <i class="fas fa-question" data-toggle="tooltip" data-placement="right"
-                       title="Use with caution: Forces reimporter to overwrite existing activity data. This ensures to trigger backend related parsing."></i>
-                </div>
-            </div>
-            <div class="form-group row">
                 <div class="col-sm-3">Reimport all Files:</div>
                 <div class="col-sm-9">
                     <a href="{% url 'reimport' %}" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip"
