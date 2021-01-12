@@ -237,7 +237,6 @@ class Settings(models.Model):
         max_length=120, default="/run/user/1000/gvfs/", verbose_name="Path to Garmin Device:"
     )
     number_of_days = models.IntegerField(choices=days_choices, default=30)
-    reimporter_updates_all = models.BooleanField(verbose_name="Force Update all Fields:", default=False)
     delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying: ", default=False)
 
     created = models.DateTimeField(auto_now_add=True)
