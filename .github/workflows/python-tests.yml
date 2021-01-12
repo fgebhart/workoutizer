@@ -26,34 +26,50 @@ jobs:
 
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.8, 3.9]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
+
     - name: Install gdal geospatial lib
+      if: ${{ matrix.os }} == "ubuntu-latest"
       run: sudo apt-get install gdal-bin
+
     - name: Install dependencies
       if: always()
       run: |
         pip install -r setup/requirements/dev-requirements.txt
         pip install -e .
+
     - name: Run Unit Tests
       if: always()
       run: |
         pytest wizer/tests/unit_tests -v -n2
+
     - name: Run Integration Tests
       if: always()
       run: |
         pytest wizer/tests/integration_tests -v -n2
+
     - name: Init
       if: always()
       env:
         WKZ_LOG_LEVEL: DEBUG
       run: |
         wkz init
+
     - name: Check
       if: always()
       run: |

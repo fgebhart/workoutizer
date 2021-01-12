@@ -26,6 +26,7 @@ setuptools.setup(
     url="https://github.com/fgebhart/workoutizer",
     classifiers=[
         "License :: OSI Approved :: MIT License",
+        "Operating System :: POSIX :: Linux",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.8",
         "Framework :: Django",
