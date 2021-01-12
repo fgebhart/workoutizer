@@ -5,13 +5,14 @@ from wizer.file_importer import FileImporter, prepare_import_of_demo_activities
 from wizer.file_helper.reimporter import Reimporter
 
 
-def test_reimport_of_activities(db, tracks_in_tmpdir):
+def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     """
     Test reimporter in following steps:
     1. import demo activities
     2. modify some attributes of a given activity
     3. trigger reimporter
     4. check that attributes have been overwritten with the original values
+    5. check that activity page is accessible
     """
 
     # 1. import one cycling and one hiking activities
@@ -97,3 +98,9 @@ def test_reimport_of_activities(db, tracks_in_tmpdir):
 
     # verify that all cycling best sections got reimported and created again
     assert len(models.BestSection.objects.filter(activity=cycling.pk)) == orig_number_of_cycling_best_sections
+
+    # 5. verify that the activity pages are accessible after reimporting
+    activities = models.Activity.objects.all()
+    for activity in activities:
+        response = client.get(f"/activity/{activity.pk}")
+        assert response.status_code == 200

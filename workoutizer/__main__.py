@@ -26,8 +26,8 @@ def cli():
 
 
 @click.command(
-    help="Mandatory command to initialize workoutizer. This fetches the static files, creates the database "
-    "and applies the required migrations."
+    help="Mandatory command to initialize workoutizer. This fetches the static files, creates the database, "
+    "applies the required migrations and inserts the demo activities."
 )
 def init():
     _init()
