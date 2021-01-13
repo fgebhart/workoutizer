@@ -75,8 +75,8 @@ class Traces(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        log.debug(f"creating file name from path {self.path_to_file} -> {self.file_name}")
         self.file_name = self.path_to_file.split("/")[-1]
+        log.debug(f"creating file name from path {self.path_to_file} -> {self.file_name}")
         super(Traces, self).save()
 
 

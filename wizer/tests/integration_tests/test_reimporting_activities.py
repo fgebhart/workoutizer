@@ -1,8 +1,7 @@
 import datetime
 
 from wizer import models
-from wizer.file_importer import FileImporter, prepare_import_of_demo_activities
-from wizer.file_helper.reimporter import Reimporter
+from wizer.file_importer import run_file_importer, prepare_import_of_demo_activities
 
 
 def test_reimport_of_activities(db, tracks_in_tmpdir, client):
@@ -26,7 +25,7 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     assert len(models.Sport.objects.all()) == 5
     assert len(models.Settings.objects.all()) == 1
 
-    FileImporter(models, importing_demo_data=True)
+    run_file_importer(models, importing_demo_data=True, reimporting=False)
     assert len(models.Activity.objects.all()) == 11
     assert len(models.Activity.objects.filter(sport__slug="swimming")) == 9
     assert len(models.Activity.objects.filter(sport__slug="jogging")) == 0
@@ -73,8 +72,8 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
 
     assert len(models.BestSection.objects.filter(activity=cycling.pk)) == 0
 
-    # 3. trigger reimporter to update values
-    Reimporter()
+    # 3. trigger reimport to update values
+    run_file_importer(models, importing_demo_data=True, reimporting=True)
 
     # 4. check that attributes have been overwritten with the original values
     updated_hiking = models.Activity.objects.get(sport__slug="hiking")

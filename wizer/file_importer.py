@@ -9,19 +9,18 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 from django.apps import AppConfig
-from django.db.utils import OperationalError
 
 from wizer.file_helper.gpx_parser import GPXParser
 from wizer.file_helper.fit_parser import FITParser
 from wizer.file_helper.auto_naming import get_automatic_name
-from wizer.tools.utils import sanitize, calc_md5
+from wizer.tools.utils import sanitize, calc_md5, limit_string
 from wizer.file_helper.initial_data_handler import (
     copy_demo_fit_files_to_track_dir,
     change_date_of_demo_activities,
     insert_demo_sports_to_model,
     insert_custom_demo_activities,
 )
-from wizer.configuration import supported_formats
+from wizer.configuration import supported_formats, fastest_sections
 from workoutizer import settings as django_settings
 
 
@@ -68,14 +67,14 @@ class Handler(FileSystemEventHandler):
     def on_any_event(event):
         if event.event_type == "created":
             if str(event.src_path).endswith(".fit") or str(event.src_path).endswith(".gpx"):
-                log.debug("activity file was added, triggering FileImporter...")
+                log.debug("activity file was added, triggering file importer...")
 
                 from wizer import models
 
-                FileImporter(models, importing_demo_data=False)
+                run_file_importer(models, importing_demo_data=False)
 
 
-class WizerFileDaemon(AppConfig):
+class FileImporter(AppConfig):
     name = "wizer"
 
     def ready(self):
@@ -84,8 +83,7 @@ class WizerFileDaemon(AppConfig):
             log.info(f"using workoutizer home at {django_settings.WORKOUTIZER_DIR}")
             from wizer import models
 
-            FileImporter(models, importing_demo_data=False)
-
+            run_file_importer(models, importing_demo_data=False)
             _start_watchdog(path=django_settings.TRACKS_DIR)
 
 
@@ -107,58 +105,38 @@ def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
     )
 
 
-class FileImporter:
-    def __init__(self, models, importing_demo_data):
-        self.importing_demo_data = importing_demo_data
-        self.settings = models.get_settings()
-        self.models = models
-        log.debug("triggered file importer")
-        self._run_importer()
-
-    def _run_importer(self):
-        try:
-            path = self.settings.path_to_trace_dir
-            # find activity files in directory
-            trace_files = get_all_files(path)
-            if os.path.isdir(path):
-                log.info(f"found {len(trace_files)} files in trace dir: {path}")
-                run_parser(self.models, trace_files, self.importing_demo_data)
-            else:
-                log.error(f"path: {path} is not a valid directory!")
-                return
-            if self.importing_demo_data:
-                demo_activities = self.models.Activity.objects.filter(is_demo_activity=True)
-                change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
-                insert_custom_demo_activities(
-                    count=9, every_nth_day=3, activity_model=self.models.Activity, sport_model=self.models.Sport
-                )
-                log.info("finished inserting demo data")
-                self.importing_demo_data = False
-        except OperationalError as e:
-            log.warning(f"cannot run FileImporter. Maybe run django migrations first: {e}")
+def run_file_importer(models, importing_demo_data: bool, reimporting: bool = False):
+    settings = models.get_settings()
+    log.debug("triggered file importer")
+    path = settings.path_to_trace_dir
+    # find activity files in directory
+    trace_files = _get_all_files(path)
+    if os.path.isdir(path):
+        log.info(f"found {len(trace_files)} files in trace dir: {path}")
+        _run_parser(models, trace_files, importing_demo_data, reimporting)
+    else:
+        log.error(f"path: {path} is not a valid directory!")
+        return
+    if importing_demo_data:
+        demo_activities = models.Activity.objects.filter(is_demo_activity=True)
+        change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
+        insert_custom_demo_activities(count=9, every_nth_day=3, activity_model=models.Activity, sport_model=models.Sport)
+        log.info("finished inserting demo data")
+        importing_demo_data = False
 
 
-def run_parser(models, trace_files: list, importing_demo_data: bool):
-    md5sums_from_db = get_md5sums_from_model(traces_model=models.Traces)
+def _run_parser(models, trace_files: list, importing_demo_data: bool, reimporting: bool = False):
+    md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
     for trace_file in trace_files:
         md5sum = calc_md5(trace_file)
         if md5sum not in md5sums_from_db:  # current file is not stored in model yet
-            try:
-                trace_file_instance = parse_and_save_to_model(
-                    models=models,
-                    md5sum=md5sum,
-                    trace_file=trace_file,
-                    importing_demo_data=importing_demo_data,
-                )
-            except Exception as e:
-                log.error(f"could not import activity of file: {trace_file}. {e}", exc_info=True)
-                # It might be the case, that the trace file object was created, but no activity.
-                # Delete the trace file object again, to enable reimporting
-                try:
-                    log.debug(f"removed {trace_file_instance} from model, since activity was not created")
-                    trace_file_instance.delete()
-                except Exception as e:
-                    log.debug(f"could not delete trace file object, since it was not created yet, {e}")
+            _parse_and_save_to_model(
+                models=models,
+                md5sum=md5sum,
+                trace_file=trace_file,
+                update_existing=False,
+                importing_demo_data=importing_demo_data,
+            )
         else:  # checksum is in db already
             file_name = trace_file.split("/")[-1]
             trace_file_path_instance = models.Traces.objects.get(md5sum=md5sum)
@@ -173,145 +151,231 @@ def run_parser(models, trace_files: list, importing_demo_data: bool):
                     f"{trace_file}\n"
                     f"{trace_file_path_instance.path_to_file}"
                 )
-            else:
-                pass  # means file is already in db
+            else:  # means file is already in db
+                if reimporting:
+                    log.debug("reimporting activity... ")
+                    _parse_and_save_to_model(
+                        models=models,
+                        md5sum=md5sum,
+                        trace_file=trace_file,
+                        update_existing=True,
+                        importing_demo_data=importing_demo_data,
+                    )
+                else:
+                    # file is in db and not supposed to reimport -> do nothing
+                    pass
 
 
-def parse_and_save_to_model(models, md5sum, trace_file, importing_demo_data=False):
-    parser = parse_data(trace_file)
+def _parse_and_save_to_model(models, md5sum: str, trace_file, update_existing: bool, importing_demo_data: bool = False):
+    # run actual file parser
+    parser = _parse_data(trace_file)
+    # save trace data to model
     trace_file_object = _save_trace_to_model(
-        traces_model=models.Traces, md5sum=md5sum, parser=parser, trace_file=trace_file
+        traces_model=models.Traces,
+        md5sum=md5sum,
+        parser=parser,
+        trace_file=trace_file,
+        update_existing=update_existing,
     )
     trace_file_instance = models.Traces.objects.get(pk=trace_file_object.pk)
+    # get appropriate sport from db
     sport = parser.sport
-    mapped_sport = map_sport_name(sport, sport_naming_map)
+    mapped_sport = _map_sport_name(sport, sport_naming_map)
     sport_instance = models.Sport.objects.filter(slug=sanitize(mapped_sport)).first()
     if sport_instance is None:  # needs to be adapted in GH #4
         sport_instance = models.default_sport(return_pk=False)
-    save_laps_to_model(
-        lap_model=models.Lap,
-        laps=parser.laps,
-        trace_instance=trace_file_instance,
+    # save laps to model
+    _save_laps_to_model(
+        lap_model=models.Lap, laps=parser.laps, trace_instance=trace_file_instance, update_existing=update_existing
     )
+    # determine automatic name (based on location and daytime)
     setattr(parser, "activity_name", get_automatic_name(parser, sport))
+    # save activity itself to model
     activity_object = _save_activity_to_model(
         activities_model=models.Activity,
         parser=parser,
         sport_instance=sport_instance,
         trace_instance=trace_file_instance,
         importing_demo_data=importing_demo_data,
+        update_existing=update_existing,
     )
     activity_instace = models.Activity.objects.get(pk=activity_object.pk)
-    save_best_sections_to_model(best_section_model=models.BestSection, parser=parser, activity_instance=activity_instace)
-    log.info(f"created new {sport_instance} activity: '{parser.activity_name}'. ID: {activity_object.pk}")
+    # save best sections to model
+    _save_best_sections_to_model(
+        best_section_model=models.BestSection,
+        parser=parser,
+        activity_instance=activity_instace,
+        update_existing=update_existing,
+    )
+    if update_existing:
+        log.info(f"updated {sport_instance} activity: '{parser.activity_name}'. ID: {activity_object.pk}")
+    else:
+        log.info(f"created new {sport_instance} activity: '{parser.activity_name}'. ID: {activity_object.pk}")
     return trace_file_instance
 
 
-def save_laps_to_model(lap_model, laps: list, trace_instance):
-    for lap in laps:
-        lap_object = lap_model(
-            start_time=lap.start_time,
-            end_time=lap.end_time,
-            elapsed_time=lap.elapsed_time,
-            trigger=lap.trigger,
-            start_lat=lap.start_lat,
-            start_long=lap.start_long,
-            end_lat=lap.end_lat,
-            end_long=lap.end_long,
-            distance=lap.distance,
-            speed=lap.speed,
-            trace=trace_instance,
+def _save_laps_to_model(lap_model, laps: list, trace_instance, update_existing: bool):
+    if update_existing:
+        for lap in laps:
+            lap_model.objects.update_or_create(
+                trace=trace_instance,
+                start_time=lap.start_time,
+                end_time=lap.end_time,
+                elapsed_time=lap.elapsed_time,
+                trigger=lap.trigger,
+                start_lat=lap.start_lat,
+                start_long=lap.start_long,
+                end_lat=lap.end_lat,
+                end_long=lap.end_long,
+                distance=lap.distance,
+                defaults={"speed": lap.speed},  # only speed could really be updated
+            )
+    else:
+        for lap in laps:
+            lap_object = lap_model(
+                start_time=lap.start_time,
+                end_time=lap.end_time,
+                elapsed_time=lap.elapsed_time,
+                trigger=lap.trigger,
+                start_lat=lap.start_lat,
+                start_long=lap.start_long,
+                end_lat=lap.end_lat,
+                end_long=lap.end_long,
+                distance=lap.distance,
+                speed=lap.speed,
+                trace=trace_instance,
+            )
+            lap_object.save()
+
+
+def _save_best_sections_to_model(best_section_model, parser, activity_instance, update_existing: bool):
+    if update_existing:
+        for section in parser.best_sections:
+            best_section_model.objects.update_or_create(
+                activity=activity_instance,
+                section_type=section.section_type,
+                section_distance=section.section_distance,
+                defaults={
+                    "start_index": section.start_index,
+                    "end_index": section.end_index,
+                    "max_value": section.max_value,
+                },
+            )
+        # What if some section distances get dropped and the db contains more sections than the parser? In this case
+        # all section in the db which have distances which are not present in the configuration should be deleted.
+        db_sections = best_section_model.objects.filter(activity=activity_instance)
+        if len(db_sections) > len(parser.best_sections):
+            for section in db_sections:
+                if section.section_distance not in fastest_sections:
+                    section.delete()
+    else:
+        # save fastest sections to model
+        for section in parser.best_sections:
+            best_section_object = best_section_model(
+                activity=activity_instance,
+                section_type=section.section_type,
+                section_distance=section.section_distance,
+                start_index=section.start_index,
+                end_index=section.end_index,
+                max_value=section.max_value,
+            )
+            best_section_object.save()
+        # save also other section types to model here...
+
+
+def _save_activity_to_model(
+    activities_model, parser, sport_instance, trace_instance, importing_demo_data: bool, update_existing: bool
+):
+    if update_existing:
+        activity_object = activities_model.objects.get(trace_file=trace_instance)
+        activity_object.date = parser.date
+        activity_object.duration = parser.duration
+        activity_object.distance = parser.distance
+    else:
+        activity_object = activities_model(
+            name=parser.activity_name,
+            sport=sport_instance,
+            date=parser.date,
+            duration=parser.duration,
+            distance=parser.distance,
+            trace_file=trace_instance,
+            is_demo_activity=importing_demo_data,
         )
-        lap_object.save()
-
-
-def save_best_sections_to_model(best_section_model, parser, activity_instance):
-    # save fastest sections to model
-    for section in parser.best_sections:
-        best_section_object = best_section_model(
-            activity=activity_instance,
-            section_type=section.section_type,
-            section_distance=section.section_distance,
-            start_index=section.start_index,
-            end_index=section.end_index,
-            max_value=section.velocity,
-        )
-        best_section_object.save()
-    # save also other section types to model here...
-
-
-def _save_activity_to_model(activities_model, parser, sport_instance, trace_instance, importing_demo_data):
-    activity_object = activities_model(
-        name=parser.activity_name,
-        sport=sport_instance,
-        date=parser.date,
-        duration=parser.duration,
-        distance=parser.distance,
-        trace_file=trace_instance,
-        is_demo_activity=importing_demo_data,
-    )
     activity_object.save()
     return activity_object
 
 
-def _save_trace_to_model(traces_model, md5sum, parser, trace_file):
+def _save_trace_to_model(traces_model, md5sum: str, parser, trace_file, update_existing: bool):
     log.debug(f"saving trace file {trace_file} to traces model")
-    parser = convert_list_attributes_to_json(parser)
-    trace_object = traces_model(
-        path_to_file=trace_file,
-        md5sum=md5sum,
-        calories=parser.calories,
-        # coordinates
-        latitude_list=parser.latitude_list,
-        longitude_list=parser.longitude_list,
-        # distances
-        distance_list=parser.distance_list,
-        # altitude
-        altitude_list=parser.altitude_list,
-        # heart rate
-        heart_rate_list=parser.heart_rate_list,
-        min_heart_rate=parser.min_heart_rate,
-        avg_heart_rate=parser.avg_heart_rate,
-        max_heart_rate=parser.max_heart_rate,
-        # cadence
-        cadence_list=parser.cadence_list,
-        min_cadence=parser.min_cadence,
-        avg_cadence=parser.avg_cadence,
-        max_cadence=parser.max_cadence,
-        # speed
-        speed_list=parser.speed_list,
-        min_speed=parser.min_speed,
-        avg_speed=parser.avg_speed,
-        max_speed=parser.max_speed,
-        # temperature
-        temperature_list=parser.temperature_list,
-        min_temperature=parser.min_temperature,
-        avg_temperature=parser.avg_temperature,
-        max_temperature=parser.max_temperature,
-        # training effect
-        aerobic_training_effect=parser.aerobic_training_effect,
-        anaerobic_training_effect=parser.anaerobic_training_effect,
-        # timestamps
-        timestamps_list=parser.timestamps_list,
-    )
+    parser = _convert_list_attributes_to_json(parser)
+    if update_existing:
+        trace_object = traces_model.objects.get(md5sum=md5sum)
+        for attribute, value in parser.__dict__.items():
+            if attribute == "sport":
+                continue
+            if hasattr(trace_object, attribute):
+                db_value = getattr(trace_object, attribute)
+                log.debug(
+                    f"overwriting value for {attribute} old: {limit_string(db_value, 100)} "
+                    f"to: {limit_string(value, 100)}"
+                )
+                setattr(trace_object, attribute, value)
+    else:
+        trace_object = traces_model(
+            path_to_file=trace_file,
+            md5sum=md5sum,
+            calories=parser.calories,
+            # coordinates
+            latitude_list=parser.latitude_list,
+            longitude_list=parser.longitude_list,
+            # distances
+            distance_list=parser.distance_list,
+            # altitude
+            altitude_list=parser.altitude_list,
+            # heart rate
+            heart_rate_list=parser.heart_rate_list,
+            min_heart_rate=parser.min_heart_rate,
+            avg_heart_rate=parser.avg_heart_rate,
+            max_heart_rate=parser.max_heart_rate,
+            # cadence
+            cadence_list=parser.cadence_list,
+            min_cadence=parser.min_cadence,
+            avg_cadence=parser.avg_cadence,
+            max_cadence=parser.max_cadence,
+            # speed
+            speed_list=parser.speed_list,
+            min_speed=parser.min_speed,
+            avg_speed=parser.avg_speed,
+            max_speed=parser.max_speed,
+            # temperature
+            temperature_list=parser.temperature_list,
+            min_temperature=parser.min_temperature,
+            avg_temperature=parser.avg_temperature,
+            max_temperature=parser.max_temperature,
+            # training effect
+            aerobic_training_effect=parser.aerobic_training_effect,
+            anaerobic_training_effect=parser.anaerobic_training_effect,
+            # timestamps
+            timestamps_list=parser.timestamps_list,
+        )
     trace_object.save()
     return trace_object
 
 
-def convert_list_attributes_to_json(parser):
+def _convert_list_attributes_to_json(parser):
     for attribute, values in parser.__dict__.items():
         if attribute.endswith("_list"):
             setattr(parser, attribute, json.dumps(values))
     return parser
 
 
-def get_md5sums_from_model(traces_model):
+def _get_md5sums_from_model(traces_model):
     md5sums_from_db = list(traces_model.objects.all())
     md5sums_from_db = [m.md5sum for m in md5sums_from_db]
     return md5sums_from_db
 
 
-def parse_data(file):
+def _parse_data(file):
     log.debug(f"importing file {file} ...")
     if file.endswith(".gpx"):
         log.debug("parsing GPX file ...")
@@ -329,7 +393,7 @@ def parse_data(file):
     return parser
 
 
-def map_sport_name(sport_name, map_dict):  # will be adapted in GH #4
+def _map_sport_name(sport_name, map_dict):  # will be adapted in GH #4
     sport = None
     for k, v in map_dict.items():
         if sanitize(sport_name) in v:
@@ -342,7 +406,7 @@ def map_sport_name(sport_name, map_dict):  # will be adapted in GH #4
     return sport
 
 
-def get_all_files(path) -> List[str]:
+def _get_all_files(path) -> List[str]:
     trace_files = [
         os.path.join(root, name)
         for root, dirs, files in os.walk(path)

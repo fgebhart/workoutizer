@@ -6,6 +6,7 @@ import click
 import requests
 import luddite
 from django.core.management import execute_from_command_line
+from django.db.utils import OperationalError
 
 from workoutizer.settings import WORKOUTIZER_DIR, WORKOUTIZER_DB_PATH, TRACKS_DIR
 from workoutizer import __version__
@@ -70,6 +71,7 @@ def setup_rpi(ip, vendor_id, product_id):
     "being passed, it will be determined automatically. Usage, e.g.: 'wkz run 0.0.0.0:8000'."
 )
 def run(url):
+    _check()
     if not url:
         if os.getenv("WKZ_ENV") == "devel":
             url = "127.0.0.1:8000"
@@ -108,6 +110,11 @@ def check():
     _check()
 
 
+@click.command(help="Reimport all activities to update the given data.")
+def reimport():
+    _reimport()
+
+
 cli.add_command(upgrade)
 cli.add_command(stop)
 cli.add_command(version)
@@ -116,6 +123,7 @@ cli.add_command(setup_rpi)
 cli.add_command(run)
 cli.add_command(manage)
 cli.add_command(check)
+cli.add_command(reimport)
 
 
 def _version():
@@ -191,10 +199,10 @@ def _init(answer: str = ""):
 
     # import demo activities
     from wizer import models
-    from wizer.file_importer import FileImporter, prepare_import_of_demo_activities
+    from wizer.file_importer import run_file_importer, prepare_import_of_demo_activities
 
     prepare_import_of_demo_activities(models)
-    FileImporter(models, importing_demo_data=True)
+    run_file_importer(models, importing_demo_data=True)
     click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
@@ -273,16 +281,29 @@ class NotInitializedError(Exception):
 
 
 def _check():
-    execute_from_command_line(["manage.py", "check"])
+    msg = "Make sure to execute 'wkz init' first"
+    try:
+        execute_from_command_line(["manage.py", "check"])
 
-    # second ensure that some activity data was imported
+        # second ensure that some activity data was imported
+        from wizer import models
+
+        if len(models.Settings.objects.all()) != 1:
+            raise NotInitializedError(msg)
+
+        if len(models.Activity.objects.all()) == 0:
+            raise NotInitializedError(msg)
+    except OperationalError:
+        raise NotInitializedError(msg)
+
+
+def _reimport():
+    _check()
+
     from wizer import models
+    from wizer.file_importer import run_file_importer
 
-    if len(models.Settings.objects.all()) != 1:
-        raise NotInitializedError("Make sure to execute 'wkz init' first")
-
-    if len(models.Activity.objects.all()) == 0:
-        raise NotInitializedError("Make sure to execute 'wkz init' first")
+    run_file_importer(models, importing_demo_data=False, reimporting=True)
 
 
 if __name__ == "__main__":

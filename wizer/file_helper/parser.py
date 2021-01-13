@@ -90,6 +90,6 @@ class Parser:
                         start_index=start_index,
                         end_index=end_index,
                         section_distance=section_distance,
-                        velocity=velocity,
+                        max_value=velocity,
                     )
                     self.best_sections.append(sec)

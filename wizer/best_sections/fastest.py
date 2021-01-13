@@ -11,7 +11,7 @@ class FastestSection:
     section_distance: int
     start_index: int
     end_index: int
-    velocity: float
+    max_value: float
     section_type: str = "fastest"
 
 

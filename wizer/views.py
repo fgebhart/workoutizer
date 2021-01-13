@@ -12,11 +12,11 @@ from django.utils import timezone
 
 from wizer import models
 from wizer import forms
+from wizer.file_importer import run_file_importer
 from wizer.plotting.plot_history import plot_history
 from wizer.plotting.plot_pie_chart import plot_pie_chart
 from wizer.plotting.plot_trend import plot_trend
 from wizer.gis.geo import GeoTrace, get_list_of_coordinates
-from wizer.file_helper.reimporter import Reimporter
 from wizer.tools.colors import lines_colors
 from wizer.tools.utils import cut_list_to_have_same_length
 from workoutizer import settings as django_settings
@@ -203,7 +203,14 @@ def custom_404_view(request, exception=None):
 def reimport_activity_files(request):
     messages.info(request, "Running reimport in background...")
 
-    reimporter = Process(target=Reimporter, args=())
+    reimporter = Process(
+        target=run_file_importer(),
+        args=(
+            models,
+            False,
+            True,
+        ),
+    )
     reimporter.start()
 
     if request.META.get("HTTP_REFERER"):
