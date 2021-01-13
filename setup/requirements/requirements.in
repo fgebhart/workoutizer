@@ -5,12 +5,12 @@ django
 django-colorfield
 django-leaflet<=0.26.0  # pinned since newer version require the separate installation of gdal 
 djangorestframework
-fitparse==1.1.0         # pinned because 1.2.0 changed its API
+fitparse==1.1.0         # pinned because 1.2.0 changed its API (altitude data changed)
 geopy>=2.1.0
 gpxpy
 pandas
 psutil
 requests
-sportgems>=0.2.3
+sportgems>=0.2.4
 watchdog
 luddite
