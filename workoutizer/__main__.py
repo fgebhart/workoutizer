@@ -199,10 +199,10 @@ def _init(answer: str = ""):
 
     # import demo activities
     from wizer import models
-    from wizer.file_importer import run_file_importer, prepare_import_of_demo_activities
+    from wizer.file_importer import import_activity_files, prepare_import_of_demo_activities
 
     prepare_import_of_demo_activities(models)
-    run_file_importer(models, importing_demo_data=True)
+    import_activity_files(models, importing_demo_data=True)
     click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
@@ -301,9 +301,9 @@ def _reimport():
     _check()
 
     from wizer import models
-    from wizer.file_importer import run_file_importer
+    from wizer.file_importer import reimport_activity_files
 
-    run_file_importer(models, importing_demo_data=False, reimporting=True)
+    reimport_activity_files(models)
 
 
 if __name__ == "__main__":

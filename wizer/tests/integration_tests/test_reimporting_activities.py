@@ -1,7 +1,7 @@
 import datetime
 
 from wizer import models
-from wizer.file_importer import run_file_importer, prepare_import_of_demo_activities
+from wizer.file_importer import import_activity_files, prepare_import_of_demo_activities, reimport_activity_files
 
 
 def test_reimport_of_activities(db, tracks_in_tmpdir, client):
@@ -9,9 +9,10 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     Test reimporter in following steps:
     1. import demo activities
     2. modify some attributes of a given activity
-    3. trigger reimporter
-    4. check that attributes have been overwritten with the original values
-    5. check that activity page is accessible
+    3. remove demo activity flag, because demo activity won't get updated by reimporting
+    4. trigger reimporter
+    5. check that attributes have been overwritten with the original values
+    6. check that activity page is accessible
     """
 
     # 1. import one cycling and one hiking activities
@@ -25,8 +26,9 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     assert len(models.Sport.objects.all()) == 5
     assert len(models.Settings.objects.all()) == 1
 
-    run_file_importer(models, importing_demo_data=True, reimporting=False)
-    assert len(models.Activity.objects.all()) == 11
+    import_activity_files(models, importing_demo_data=True)
+    all_activities = models.Activity.objects.all()
+    assert len(all_activities) == 11
     assert len(models.Activity.objects.filter(sport__slug="swimming")) == 9
     assert len(models.Activity.objects.filter(sport__slug="jogging")) == 0
 
@@ -47,12 +49,16 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     orig_hiking_duration = hiking.duration
     orig_hiking_name = hiking.name
 
+    # check that min and max altitude got imported, related to bug fix
+    assert hiking.trace_file.max_altitude is not None
+    assert hiking.trace_file.min_altitude is not None
+
     hiking_best_sections = models.BestSection.objects.get(activity=hiking.pk, section_distance=1)
     orig_1km_start_index = hiking_best_sections.start_index
     orig_1km_velocity = hiking_best_sections.max_value
 
     # 2. modify some attributes of a given activity
-    hiking.distance = 5000.0
+    hiking.distance = 5_000.0
     hiking.duration = datetime.timedelta(hours=500)
     hiking.name = "some arbitrary hiking name"
     hiking.save()
@@ -61,7 +67,7 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     hiking_best_sections.max_value = 999.999
     hiking_best_sections.save()
 
-    cycling.distance = 9000.0
+    cycling.distance = 9_000.0
     cycling.duration = datetime.timedelta(hours=900)
     cycling.name = "some arbitrary cycling name"
     cycling.save()
@@ -72,10 +78,18 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
 
     assert len(models.BestSection.objects.filter(activity=cycling.pk)) == 0
 
-    # 3. trigger reimport to update values
-    run_file_importer(models, importing_demo_data=True, reimporting=True)
+    # 3. remove demo activity flag
+    all_activities = models.Activity.objects.all()
+    for activity in all_activities:
+        activity.is_demo_activity = False
+        activity.save()
 
-    # 4. check that attributes have been overwritten with the original values
+    # 4. trigger reimport to update values
+    reimport_activity_files(models)
+
+    all_activities = models.Activity.objects.all()
+    assert len(all_activities) == 11
+    # 5. check that attributes have been overwritten with the original values
     updated_hiking = models.Activity.objects.get(sport__slug="hiking")
     assert updated_hiking.distance == orig_hiking_distance
     assert updated_hiking.duration == orig_hiking_duration
@@ -98,8 +112,8 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     # verify that all cycling best sections got reimported and created again
     assert len(models.BestSection.objects.filter(activity=cycling.pk)) == orig_number_of_cycling_best_sections
 
-    # 5. verify that the activity pages are accessible after reimporting
-    activities = models.Activity.objects.all()
+    # 6. verify that the activity pages are accessible after reimporting
+    activities = all_activities
     for activity in activities:
         response = client.get(f"/activity/{activity.pk}")
         assert response.status_code == 200

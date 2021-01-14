@@ -5,7 +5,11 @@ import pytest
 from django.core.management import call_command
 
 from workoutizer import settings as django_settings
-from wizer.file_importer import run_file_importer, prepare_import_of_demo_activities, copy_demo_fit_files_to_track_dir
+from wizer.file_importer import (
+    import_activity_files,
+    prepare_import_of_demo_activities,
+    copy_demo_fit_files_to_track_dir,
+)
 from wizer import models
 
 
@@ -93,7 +97,7 @@ def import_demo_data(db, tracks_in_tmpdir):
     assert len(models.Sport.objects.all()) == 5
     assert len(models.Settings.objects.all()) == 1
 
-    run_file_importer(models, importing_demo_data=True)
+    import_activity_files(models, importing_demo_data=True)
     assert len(models.Activity.objects.all()) > 1
 
 
@@ -108,5 +112,5 @@ def import_one_activity(db, tracks_in_tmpdir):
     assert len(models.Sport.objects.all()) == 1
     assert len(models.Settings.objects.all()) == 1
 
-    run_file_importer(models, importing_demo_data=False)
+    import_activity_files(models, importing_demo_data=False)
     assert len(models.Activity.objects.all()) == 1

@@ -62,9 +62,9 @@ class Traces(models.Model):
     min_speed = models.FloatField(null=True, blank=True)
     # temperature
     temperature_list = models.CharField(max_length=10000000000, default="[]")
-    avg_temperature = models.IntegerField(null=True, blank=True)
-    max_temperature = models.IntegerField(null=True, blank=True)
-    min_temperature = models.IntegerField(null=True, blank=True)
+    avg_temperature = models.FloatField(null=True, blank=True)
+    max_temperature = models.FloatField(null=True, blank=True)
+    min_temperature = models.FloatField(null=True, blank=True)
     # training effect
     aerobic_training_effect = models.FloatField(blank=True, null=True)
     anaerobic_training_effect = models.FloatField(blank=True, null=True)

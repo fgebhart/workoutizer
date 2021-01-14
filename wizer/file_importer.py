@@ -71,7 +71,7 @@ class Handler(FileSystemEventHandler):
 
                 from wizer import models
 
-                run_file_importer(models, importing_demo_data=False)
+                import_activity_files(models, importing_demo_data=False)
 
 
 class FileImporter(AppConfig):
@@ -83,7 +83,7 @@ class FileImporter(AppConfig):
             log.info(f"using workoutizer home at {django_settings.WORKOUTIZER_DIR}")
             from wizer import models
 
-            run_file_importer(models, importing_demo_data=False)
+            import_activity_files(models, importing_demo_data=False)
             _start_watchdog(path=django_settings.TRACKS_DIR)
 
 
@@ -105,7 +105,16 @@ def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
     )
 
 
-def run_file_importer(models, importing_demo_data: bool, reimporting: bool = False):
+# interfacing functions to either reimport or import activity files
+def reimport_activity_files(models):
+    _run_file_importer(models, importing_demo_data=False, reimporting=True)
+
+
+def import_activity_files(models, importing_demo_data: bool):
+    _run_file_importer(models, importing_demo_data=importing_demo_data, reimporting=False)
+
+
+def _run_file_importer(models, importing_demo_data: bool, reimporting: bool = False):
     settings = models.get_settings()
     log.debug("triggered file importer")
     path = settings.path_to_trace_dir
@@ -153,14 +162,19 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                 )
             else:  # means file is already in db
                 if reimporting:
-                    log.debug("reimporting activity... ")
-                    _parse_and_save_to_model(
-                        models=models,
-                        md5sum=md5sum,
-                        trace_file=trace_file,
-                        update_existing=True,
-                        importing_demo_data=importing_demo_data,
-                    )
+                    trace = models.Traces.objects.get(md5sum=md5sum)
+                    activity = models.Activity.objects.get(trace_file=trace)
+                    if activity.is_demo_activity:
+                        log.debug(f"activity: '{activity.name}' (ID: {activity.pk}) is demo activity, won't update data")
+                    else:
+                        log.debug(f"reimporting activity '{activity.name}' (ID: {activity.pk}) ... ")
+                        _parse_and_save_to_model(
+                            models=models,
+                            md5sum=md5sum,
+                            trace_file=trace_file,
+                            update_existing=True,
+                            importing_demo_data=importing_demo_data,
+                        )
                 else:
                     # file is in db and not supposed to reimport -> do nothing
                     pass
@@ -178,23 +192,14 @@ def _parse_and_save_to_model(models, md5sum: str, trace_file, update_existing: b
         update_existing=update_existing,
     )
     trace_file_instance = models.Traces.objects.get(pk=trace_file_object.pk)
-    # get appropriate sport from db
-    sport = parser.sport
-    mapped_sport = _map_sport_name(sport, sport_naming_map)
-    sport_instance = models.Sport.objects.filter(slug=sanitize(mapped_sport)).first()
-    if sport_instance is None:  # needs to be adapted in GH #4
-        sport_instance = models.default_sport(return_pk=False)
     # save laps to model
     _save_laps_to_model(
         lap_model=models.Lap, laps=parser.laps, trace_instance=trace_file_instance, update_existing=update_existing
     )
-    # determine automatic name (based on location and daytime)
-    setattr(parser, "activity_name", get_automatic_name(parser, sport))
     # save activity itself to model
     activity_object = _save_activity_to_model(
-        activities_model=models.Activity,
+        models=models,
         parser=parser,
-        sport_instance=sport_instance,
         trace_instance=trace_file_instance,
         importing_demo_data=importing_demo_data,
         update_existing=update_existing,
@@ -208,10 +213,9 @@ def _parse_and_save_to_model(models, md5sum: str, trace_file, update_existing: b
         update_existing=update_existing,
     )
     if update_existing:
-        log.info(f"updated {sport_instance} activity: '{parser.activity_name}'. ID: {activity_object.pk}")
+        log.info(f"updated activity: '{activity_object.name}'. ID: {activity_object.pk}")
     else:
-        log.info(f"created new {sport_instance} activity: '{parser.activity_name}'. ID: {activity_object.pk}")
-    return trace_file_instance
+        log.info(f"created new activity: '{activity_object.name}'. ID: {activity_object.pk}")
 
 
 def _save_laps_to_model(lap_model, laps: list, trace_instance, update_existing: bool):
@@ -283,17 +287,36 @@ def _save_best_sections_to_model(best_section_model, parser, activity_instance, 
         # save also other section types to model here...
 
 
-def _save_activity_to_model(
-    activities_model, parser, sport_instance, trace_instance, importing_demo_data: bool, update_existing: bool
-):
+def _map_sport_name(sport_name, map_dict):  # will be adapted in GH #4
+    sport = None
+    for k, v in map_dict.items():
+        if sanitize(sport_name) in v:
+            sport = k
+    if sport:
+        log.debug(f"mapped activity sport: {sport_name} to {sport}")
+    else:
+        sport = "unknown"
+        log.warning(f"could not map '{sport_name}' to given sport names, use unknown instead")
+    return sport
+
+
+def _save_activity_to_model(models, parser, trace_instance, importing_demo_data: bool, update_existing: bool):
     if update_existing:
-        activity_object = activities_model.objects.get(trace_file=trace_instance)
+        # name should not be overwritten
+        activity_object = models.Activity.objects.get(trace_file=trace_instance)
         activity_object.date = parser.date
         activity_object.duration = parser.duration
         activity_object.distance = parser.distance
     else:
-        activity_object = activities_model(
-            name=parser.activity_name,
+        # get appropriate sport from db
+        sport = parser.sport
+        mapped_sport = _map_sport_name(sport, sport_naming_map)
+        sport_instance = models.Sport.objects.filter(slug=sanitize(mapped_sport)).first()
+        if sport_instance is None:  # needs to be adapted in GH #4
+            sport_instance = models.default_sport(return_pk=False)
+        # determine automatic name (based on location and daytime)
+        activity_object = models.Activity(
+            name=get_automatic_name(parser, mapped_sport),
             sport=sport_instance,
             date=parser.date,
             duration=parser.duration,
@@ -306,7 +329,6 @@ def _save_activity_to_model(
 
 
 def _save_trace_to_model(traces_model, md5sum: str, parser, trace_file, update_existing: bool):
-    log.debug(f"saving trace file {trace_file} to traces model")
     parser = _convert_list_attributes_to_json(parser)
     if update_existing:
         trace_object = traces_model.objects.get(md5sum=md5sum)
@@ -316,11 +338,12 @@ def _save_trace_to_model(traces_model, md5sum: str, parser, trace_file, update_e
             if hasattr(trace_object, attribute):
                 db_value = getattr(trace_object, attribute)
                 log.debug(
-                    f"overwriting value for {attribute} old: {limit_string(db_value, 100)} "
-                    f"to: {limit_string(value, 100)}"
+                    f"overwriting value for {attribute} old: {limit_string(db_value, 50)} "
+                    f"to: {limit_string(value, 50)}"
                 )
                 setattr(trace_object, attribute, value)
     else:
+        log.debug(f"saving trace file {trace_file} to traces model")
         trace_object = traces_model(
             path_to_file=trace_file,
             md5sum=md5sum,
@@ -332,6 +355,8 @@ def _save_trace_to_model(traces_model, md5sum: str, parser, trace_file, update_e
             distance_list=parser.distance_list,
             # altitude
             altitude_list=parser.altitude_list,
+            max_altitude=parser.max_altitude,
+            min_altitude=parser.min_altitude,
             # heart rate
             heart_rate_list=parser.heart_rate_list,
             min_heart_rate=parser.min_heart_rate,
@@ -391,19 +416,6 @@ def _parse_data(file):
     # parse best sections
     parser.get_fastest_sections()
     return parser
-
-
-def _map_sport_name(sport_name, map_dict):  # will be adapted in GH #4
-    sport = None
-    for k, v in map_dict.items():
-        if sanitize(sport_name) in v:
-            sport = k
-    if sport:
-        log.debug(f"mapped activity sport: {sport_name} to {sport}")
-    else:
-        sport = "unknown"
-        log.warning(f"could not map '{sport_name}' to given sport names, use unknown instead")
-    return sport
 
 
 def _get_all_files(path) -> List[str]:

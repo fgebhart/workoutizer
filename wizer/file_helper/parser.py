@@ -23,6 +23,8 @@ class Parser:
         self.distance_list = []
         # elevation
         self.altitude_list = []
+        self.min_altitude = None  # float()
+        self.max_altitude = None
         # heart rate
         self.heart_rate_list = []
         self.min_heart_rate = None

@@ -21,11 +21,11 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
     assert "  Add Activity" in links
     assert "  Workoutizer  " in links
-    assert "Noon Running in Mirow" in links
-    assert "Noon Running in Heidelberg" in links
-    assert "Evening Walking in Ringgenberg (BE)" in links
-    assert "Noon Walking in Kornau" in links
-    assert "Noon Walking in Bad Schandau" in links
+    assert "Noon Jogging in Mirow" in links
+    assert "Noon Jogging in Heidelberg" in links
+    assert "Evening Hiking in Ringgenberg (BE)" in links
+    assert "Noon Hiking in Kornau" in links
+    assert "Noon Hiking in Bad Schandau" in links
     assert "Noon Cycling in Hinterzarten" in links
     assert "Noon Cycling in Bad Schandau" in links
     assert "Noon Cycling in Dahn" in links
@@ -34,12 +34,12 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Cycling in Bad Schandau" in table_data
     assert "Noon Cycling in Hinterzarten" in table_data
     assert "Noon Cycling in Dahn" in table_data
-    assert "Noon Walking in Bad Schandau" in table_data
-    assert "Noon Walking in Kornau" in table_data
-    assert "Noon Walking in Bad Schandau" in table_data
-    assert "Evening Walking in Ringgenberg (BE)" in table_data
-    assert "Noon Running in Heidelberg" in table_data
-    assert "Noon Running in Mirow" in table_data
+    assert "Noon Hiking in Bad Schandau" in table_data
+    assert "Noon Hiking in Kornau" in table_data
+    assert "Noon Hiking in Bad Schandau" in table_data
+    assert "Evening Hiking in Ringgenberg (BE)" in table_data
+    assert "Noon Jogging in Heidelberg" in table_data
+    assert "Noon Jogging in Mirow" in table_data
     assert "10.2 km/h" in table_data
     assert "30 km" in table_data
 
