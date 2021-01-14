@@ -23,13 +23,13 @@ min_max_attributes = [
 
 # configuration of best sections
 
-# fastest section to parse in activities (in kilometer)
+# fastest section to parse in activities (in kilometer) (only integers allowed)
 fastest_sections = [
     1,
     2,
     3,
     5,
-    7.5,
+    7,
     10,
     20,
     30,

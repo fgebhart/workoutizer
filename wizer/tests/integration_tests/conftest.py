@@ -5,7 +5,11 @@ import pytest
 from django.core.management import call_command
 
 from workoutizer import settings as django_settings
-from wizer.file_importer import FileImporter, prepare_import_of_demo_activities, copy_demo_fit_files_to_track_dir
+from wizer.file_importer import (
+    import_activity_files,
+    prepare_import_of_demo_activities,
+    copy_demo_fit_files_to_track_dir,
+)
 from wizer import models
 
 
@@ -93,20 +97,23 @@ def import_demo_data(db, tracks_in_tmpdir):
     assert len(models.Sport.objects.all()) == 5
     assert len(models.Settings.objects.all()) == 1
 
-    FileImporter(models, importing_demo_data=True)
+    import_activity_files(models, importing_demo_data=True)
     assert len(models.Activity.objects.all()) > 1
 
 
 @pytest.fixture
 def import_one_activity(db, tracks_in_tmpdir):
     models.get_settings()
-    copy_demo_fit_files_to_track_dir(
-        source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
-        targe_dir=models.get_settings().path_to_trace_dir,
-        list_of_files_to_copy=["2020-08-29-13-04-37.fit"],
-    )
-    assert len(models.Sport.objects.all()) == 1
-    assert len(models.Settings.objects.all()) == 1
 
-    FileImporter(models, importing_demo_data=False)
-    assert len(models.Activity.objects.all()) == 1
+    def _copy_activity(file_name: str):
+        copy_demo_fit_files_to_track_dir(
+            source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
+            targe_dir=models.get_settings().path_to_trace_dir,
+            list_of_files_to_copy=[file_name],
+        )
+        assert len(models.Sport.objects.all()) == 1
+        assert len(models.Settings.objects.all()) == 1
+
+        return import_activity_files(models, importing_demo_data=False)
+
+    return _copy_activity

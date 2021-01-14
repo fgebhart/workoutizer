@@ -23,6 +23,8 @@ class Parser:
         self.distance_list = []
         # elevation
         self.altitude_list = []
+        self.min_altitude = None  # float()
+        self.max_altitude = None
         # heart rate
         self.heart_rate_list = []
         self.min_heart_rate = None
@@ -90,6 +92,6 @@ class Parser:
                         start_index=start_index,
                         end_index=end_index,
                         section_distance=section_distance,
-                        velocity=velocity,
+                        max_value=velocity,
                     )
                     self.best_sections.append(sec)

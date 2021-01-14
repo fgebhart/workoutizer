@@ -42,13 +42,13 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
 
     # check that all activity names are in the table
-    assert "Noon Running in Heidelberg" in table_data
+    assert "Noon Jogging in Heidelberg" in table_data
     assert "Swimming" in table_data
     assert "Noon Cycling in Bad Schandau" in table_data
     assert "Noon Cycling in Hinterzarten" in table_data
     assert "Noon Cycling in Dahn" in table_data
-    assert "Evening Walking in Ringgenberg (BE)" in table_data
-    assert "Noon Walking in Kornau" in table_data
+    assert "Evening Hiking in Ringgenberg (BE)" in table_data
+    assert "Noon Hiking in Kornau" in table_data
 
     # check that the trophy icons are present
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0

@@ -9,4 +9,7 @@
         "wizer",
         "workoutizer"
     ],
+    "cSpell.ignoreWords": [
+        "gvfs"
+    ],
 }

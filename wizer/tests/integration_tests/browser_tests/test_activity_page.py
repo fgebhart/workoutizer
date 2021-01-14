@@ -2,6 +2,8 @@ from wizer import models
 
 
 def test_activity_page__complete(import_one_activity, live_server, webdriver):
+    import_one_activity("2020-08-29-13-04-37.fit")
+
     pk = models.Activity.objects.get().pk
     webdriver.get(live_server.url + f"/activity/{pk}")
 

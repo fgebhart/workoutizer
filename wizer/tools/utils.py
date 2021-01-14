@@ -15,7 +15,7 @@ def sanitize(text):
     return str(text).lower().replace(" ", "-").replace("/", "-")
 
 
-def calc_md5(file):
+def calc_md5(file) -> str:
     hash_md5 = hashlib.md5()
     with open(file, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
