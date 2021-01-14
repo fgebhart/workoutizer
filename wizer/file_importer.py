@@ -254,6 +254,7 @@ def _save_laps_to_model(lap_model, laps: list, trace_instance, update_existing: 
 
 def _save_best_sections_to_model(best_section_model, parser, activity_instance, update_existing: bool):
     if update_existing:
+        log.debug(f"updating best sections for: {activity_instance.name}")
         for section in parser.best_sections:
             best_section_model.objects.update_or_create(
                 activity=activity_instance,
@@ -271,6 +272,10 @@ def _save_best_sections_to_model(best_section_model, parser, activity_instance, 
         if len(db_sections) > len(parser.best_sections):
             for section in db_sections:
                 if section.section_distance not in fastest_sections:
+                    log.debug(
+                        f"deleting section with distance of {section.section_distance}, "
+                        "because it is not configured fastest sections"
+                    )
                     section.delete()
     else:
         # save fastest sections to model

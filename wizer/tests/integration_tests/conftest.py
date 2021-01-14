@@ -104,13 +104,16 @@ def import_demo_data(db, tracks_in_tmpdir):
 @pytest.fixture
 def import_one_activity(db, tracks_in_tmpdir):
     models.get_settings()
-    copy_demo_fit_files_to_track_dir(
-        source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
-        targe_dir=models.get_settings().path_to_trace_dir,
-        list_of_files_to_copy=["2020-08-29-13-04-37.fit"],
-    )
-    assert len(models.Sport.objects.all()) == 1
-    assert len(models.Settings.objects.all()) == 1
 
-    import_activity_files(models, importing_demo_data=False)
-    assert len(models.Activity.objects.all()) == 1
+    def _copy_activity(file_name: str):
+        copy_demo_fit_files_to_track_dir(
+            source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
+            targe_dir=models.get_settings().path_to_trace_dir,
+            list_of_files_to_copy=[file_name],
+        )
+        assert len(models.Sport.objects.all()) == 1
+        assert len(models.Settings.objects.all()) == 1
+
+        return import_activity_files(models, importing_demo_data=False)
+
+    return _copy_activity
