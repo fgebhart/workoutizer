@@ -309,6 +309,7 @@ def _save_activity_to_model(models, parser, trace_instance, importing_demo_data:
     if update_existing:
         # name should not be overwritten
         activity_object = models.Activity.objects.get(trace_file=trace_instance)
+        log.debug(f"updating activity attributes for: '{activity_object.name}'")
         activity_object.date = parser.date
         activity_object.duration = parser.duration
         activity_object.distance = parser.distance
