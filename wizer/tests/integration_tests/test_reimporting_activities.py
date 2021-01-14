@@ -137,7 +137,7 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
 
 
 def test_reimporting_of_best_sections(db, tracks_in_tmpdir, import_one_activity):
-    # 1. import one cycling activity
+    # import one cycling activity
     import_one_activity("2020-08-29-13-04-37.fit")
 
     assert models.Activity.objects.count() == 1

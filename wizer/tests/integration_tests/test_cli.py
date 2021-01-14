@@ -36,3 +36,20 @@ def test_cli__check(db):
     # now initialized wkz first and then run check
     cli._init(answer="n")
     cli._check()
+
+
+def test_cli__reimport(db, tracks_in_tmpdir, import_one_activity):
+    import_one_activity("2020-08-29-13-04-37.fit")
+
+    assert models.Activity.objects.count() == 1
+    assert models.Settings.objects.count() == 1
+    activity = models.Activity.objects.get()
+    orig_distance = activity.distance
+    activity.distance = 77_777.77
+    activity.save()
+    assert activity.distance != orig_distance
+
+    cli._reimport()
+
+    activity = models.Activity.objects.get()
+    assert activity.distance == orig_distance
