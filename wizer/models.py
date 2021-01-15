@@ -142,6 +142,9 @@ class BestSection(models.Model):
     stores the start and end of each section, which is used to render the sections in the activity view.
     """
 
+    def __str__(self):
+        return f"{self.section_type} {self.section_distance}km: {self.max_value}m/s"
+
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
     section_type = models.CharField(max_length=120, blank=False)
     section_distance = models.IntegerField(blank=False)
@@ -188,7 +191,7 @@ class BestSection(models.Model):
             found_rank = looking_at_rank + 1
 
         # only save top score in case found_rank <= 3
-        if found_rank <= 3:
+        if found_rank <= 3 and not in_top_scores_already(self, relevant_top_scores):
             log.debug(
                 f"Activity scored rank {found_rank} for {self.section_type} {self.activity.sport.name} "
                 f"{self.section_distance}km!"
@@ -209,10 +212,25 @@ class BestSection(models.Model):
             top_score_section.delete()
 
 
+def in_top_scores_already(section: BestSection, top_score_sections) -> bool:
+    for ts_section in top_score_sections:
+        if (
+            section.section_distance == ts_section.section.section_distance
+            and section.section_type == ts_section.section.section_type
+            and section.activity.pk == ts_section.section.activity.pk
+        ):
+            return True
+        else:
+            return False
+
+
 class BestSectionTopScores(models.Model):
     """
     Collection of the top three best sections of each sport.
     """
+
+    def __str__(self):
+        return f"Rank: {self.rank}: {self.section}"
 
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, blank=False)
