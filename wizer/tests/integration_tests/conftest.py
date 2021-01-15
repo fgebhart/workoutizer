@@ -67,10 +67,27 @@ def activity(db, sport, trace_file):
 
 
 @pytest.fixture
-def insert_best_section(db, activity):
+def insert_activity(db, sport):
+    def _create_activity(name: str = "Evening Cycling along the River"):
+        activity = models.Activity(
+            name=name,
+            sport=sport,
+            date=datetime.datetime(2020, 7, 7, tzinfo=pytz.timezone(django_settings.TIME_ZONE)),
+            duration=datetime.timedelta(minutes=30),
+            distance=5.2,
+            description="some super activity",
+        )
+        activity.save()
+        return activity
+
+    return _create_activity
+
+
+@pytest.fixture
+def insert_best_section(db, activity, insert_activity):
     def _create_section(max_value: float):
         best_section = models.BestSection(
-            activity=activity,
+            activity=insert_activity(),  # always use a new activity
             section_type="fastest",
             section_distance=1,
             start_index=5,
