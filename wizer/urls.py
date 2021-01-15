@@ -13,7 +13,7 @@ urlpatterns = [
     path("set_number_of_days/<slug:number_of_days>", views.set_number_of_days, name="set-number-of-days"),
     # Settings
     path("settings/", views.settings_view, name="settings"),
-    path("settings/reimport", views.reimport_activity_files, name="reimport"),
+    path("settings/reimport", views.reimport_activities, name="reimport"),
     # Help
     path("help/", views.HelpView.as_view(), name="help"),
     # Activities
