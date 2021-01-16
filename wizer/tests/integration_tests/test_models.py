@@ -168,3 +168,56 @@ def test_ranks_are_unique_after_importing_demo_activities(import_demo_data):
                     )
                     # check that each rank is at maximum only present once
                     assert len(unique_rank) <= 1
+
+
+def test_top_score_sections_not_in_top_three_always_get_deleted(db, insert_best_section, activity, sport):
+    # insert one dummy section
+    sec = insert_best_section(max_value=5.0)
+
+    assert models.BestSectionTopScores.objects.count() == 1
+    top_scores = models.BestSectionTopScores.objects.filter(rank=1)
+    assert top_scores.count() == 1
+
+    # create independent top score entry with invalid rank of 5
+    models.BestSectionTopScores.objects.create(
+        activity=activity,
+        sport=sport,
+        section=sec,
+        rank=5,
+    )
+    assert models.BestSectionTopScores.objects.count() == 2
+    top_scores = models.BestSectionTopScores.objects.filter(rank__in=[1, 5])
+    assert top_scores.count() == 2
+
+    # now add a new best section to verify that invalid ranks (worse than 3) get deleted
+    insert_best_section(max_value=6.0)
+
+    assert models.BestSectionTopScores.objects.count() == 2
+    top_scores = models.BestSectionTopScores.objects.filter(rank__in=[1, 2])
+    assert top_scores.count() == 2
+
+    # But what if an invalid rank is already in the db, new sections get added but won't make it into the top three?
+    # In this case we would still want the invalid entries to be deleted. Adding another section to complete top 3:
+    insert_best_section(max_value=7.0)
+    assert models.BestSectionTopScores.objects.count() == 3
+    top_scores = models.BestSectionTopScores.objects.filter(rank__in=[1, 2, 3])
+    assert top_scores.count() == 3
+
+    # adding an invalid top score with rank 5:
+    models.BestSectionTopScores.objects.create(
+        activity=activity,
+        sport=sport,
+        section=sec,
+        rank=5,
+    )
+    assert models.BestSectionTopScores.objects.count() == 4
+    top_scores = models.BestSectionTopScores.objects.filter(rank__in=[1, 2, 3, 5])
+    assert top_scores.count() == 4
+
+    # now adding a new section with max value worse than the top three, thus it won't be added to top scores
+    insert_best_section(max_value=4.0)
+
+    # however we want the top score with rank 5 to be deleted
+    assert models.BestSectionTopScores.objects.count() == 3
+    top_scores = models.BestSectionTopScores.objects.filter(rank__in=[1, 2, 3])
+    assert top_scores.count() == 3

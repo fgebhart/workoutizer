@@ -24,6 +24,8 @@
 		"ms-python.vscode-pylance",
 		"anjali.clipboard-history",
 		"streetsidesoftware.code-spell-checker",
+		"alexcvzz.vscode-sqlite",
+		"garytyler.darcula-pycharm",
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
