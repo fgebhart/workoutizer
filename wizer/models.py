@@ -76,7 +76,6 @@ class Traces(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.file_name = self.path_to_file.split("/")[-1]
-        log.debug(f"creating file name from path {self.path_to_file} -> {self.file_name}")
         super(Traces, self).save()
 
 
@@ -197,7 +196,7 @@ class BestSection(models.Model):
                 f"{self.section_distance}km!"
             )
             self.save_section_as_new_top_score(rank=found_rank)
-            self.delete_all_ranks_worse_than_third_rank()
+        self.delete_all_ranks_worse_than_third_rank()
 
     def delete_all_ranks_worse_than_third_rank(self):
         # delete all top scores, where rank > 3
