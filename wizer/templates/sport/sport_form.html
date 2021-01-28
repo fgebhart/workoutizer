@@ -2,17 +2,25 @@
 {{ form.media }}
 {% include "lib/form_errors.html" %}
 {% include "lib/messages.html" %}
+<p>Modify the Sport configuration:</p>
 <div class="form-group row">
-    <div class="col-sm-2">{{ form.name.label }}</div>
-    <div class="col-sm-10">{{ form.name }}</div>
+    <div class="col-sm-3">{{ form.name.label }}</div>
+    <div class="col-sm-9">{{ form.name }}</div>
 </div>
 <div class="form-group row">
-    <div class="col-sm-2">{{ form.icon.label }}</div>
-    <div class="col-sm-10">{{ form.icon }}&nbsp;&nbsp;(name of <a href="https://fontawesome.com/">font
-        awesome</a> icon)
+    <div class="col-sm-3">{{ form.icon.label }}</div>
+    <div class="col-sm-9">{{ form.icon }}&nbsp;&nbsp;(name of <a href="https://fontawesome.com/">font awesome</a> icon)
     </div>
 </div>
 <div class="form-group row">
-    <div class="col-sm-2">{{ form.color.label }}</div>
-    <div class="col-sm-2">{{ form.color }}</div>
+    <div class="col-sm-3">{{ form.color.label }}</div>
+    <div class="col-sm-3">{{ form.color }}</div>
 </div>
+<div class="form-group row">
+    <div class="col-sm-3">{{ form.suitable_for_best_sections.label }}</div>
+    <div class="col-sm-9">{{ form.suitable_for_best_sections }}&nbsp;&nbsp;
+        <i class="fas fa-question" data-toggle="tooltip" data-placement="right"
+           title="When enabled all {{ sport.name }} activities will be parsed for awards in their respective sections. When disabled, awards will be disabled for all {{ sport.name }} activities. Note reimporting is required when changing this."></i>
+    </div>
+</div>
+<br>

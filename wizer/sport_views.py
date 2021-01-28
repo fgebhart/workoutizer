@@ -107,6 +107,7 @@ def add_sport_view(request):
 def edit_sport_view(request, sports_name_slug):
     sports = models.Sport.objects.all().order_by("name")
     sport = models.Sport.objects.get(slug=sports_name_slug)
+    suitable_for_best_sections__db = sport.suitable_for_best_sections
     if sport.name in protected_sports:
         messages.warning(request, f"Can't edit sport '{sport.name}'")
         return HttpResponseRedirect(f"/sport/{sport.slug}")
@@ -115,7 +116,13 @@ def edit_sport_view(request, sports_name_slug):
         if form.is_valid():
             log.debug(f"got valid form: {form.cleaned_data}")
             form.save()
-            messages.success(request, f"Successfully modified '{form.cleaned_data['name']}'")
+            messages.success(request, f"Successfully modified '{form.cleaned_data['name']}' Sport")
+            if form.cleaned_data["suitable_for_best_sections"] != suitable_for_best_sections__db:
+                messages.info(
+                    request,
+                    "You need to trigger a reimport of your activity files in order to have "
+                    "the changes of parsing award data become effective!",
+                )
             return HttpResponseRedirect(f"/sport/{sport.slug}/edit/")
         else:
             log.warning(f"form invalid: {form.errors}")
