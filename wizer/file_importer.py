@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 import json
-from typing import List
+from typing import List, Union
 
 
 from watchdog.observers import Observer
@@ -20,7 +20,8 @@ from wizer.file_helper.initial_data_handler import (
     insert_demo_sports_to_model,
     insert_custom_demo_activities,
 )
-from wizer.configuration import supported_formats, fastest_sections
+from wizer.best_sections.fastest import FastestSection
+from wizer.configuration import supported_formats
 from workoutizer import settings as django_settings
 
 
@@ -131,19 +132,20 @@ def _run_file_importer(models, importing_demo_data: bool, reimporting: bool = Fa
         change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
         insert_custom_demo_activities(count=9, every_nth_day=3, activity_model=models.Activity, sport_model=models.Sport)
         log.info("finished inserting demo data")
-        importing_demo_data = False
+        importing_demo_data = False  # TODO this line is not needed, right?
 
 
 def _run_parser(models, trace_files: list, importing_demo_data: bool, reimporting: bool = False):
     md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
     for trace_file in trace_files:
         md5sum = calc_md5(trace_file)
-        if md5sum not in md5sums_from_db:  # current file is not stored in model yet
+        if md5sum not in md5sums_from_db:  # current file is not stored in db yet
             _parse_and_save_to_model(
                 models=models,
                 md5sum=md5sum,
                 trace_file=trace_file,
                 update_existing=False,
+                get_best_sections=True,
                 importing_demo_data=importing_demo_data,
             )
         else:  # checksum is in db already
@@ -173,6 +175,7 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                             md5sum=md5sum,
                             trace_file=trace_file,
                             update_existing=True,
+                            get_best_sections=_activity_suitable_for_best_sections(activity),
                             importing_demo_data=importing_demo_data,
                         )
                 else:
@@ -180,9 +183,11 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                     pass
 
 
-def _parse_and_save_to_model(models, md5sum: str, trace_file, update_existing: bool, importing_demo_data: bool = False):
+def _parse_and_save_to_model(
+    models, md5sum: str, trace_file, update_existing: bool, get_best_sections: bool, importing_demo_data: bool = False
+):
     # run actual file parser
-    parser = _parse_data(trace_file)
+    parser = _parse_data(trace_file, get_best_sections)
     # save trace data to model
     trace_file_object = _save_trace_to_model(
         traces_model=models.Traces,
@@ -266,30 +271,27 @@ def _save_best_sections_to_model(best_section_model, parser, activity_instance, 
                     "max_value": section.max_value,
                 },
             )
-        # What if some section distances get dropped and the db contains more sections than the parser? In this case
-        # all section in the db which have distances which are not present in the configuration should be deleted.
+        # In the parser does not have some best sections but the db has -> delete them from the db
         db_sections = best_section_model.objects.filter(activity=activity_instance)
-        if len(db_sections) > len(parser.best_sections):
-            for section in db_sections:
-                if section.section_distance not in fastest_sections:
-                    log.debug(
-                        f"deleting section with distance of {section.section_distance}, "
-                        "because it is not configured fastest sections"
-                    )
-                    section.delete()
+        for section in db_sections:
+            sec = FastestSection(section.section_distance, section.start_index, section.end_index, section.max_value)
+            if sec not in parser.best_sections:
+                log.debug(f"deleting section: {section} from db, because it is not present in parser")
+                section.delete()
     else:
-        # save fastest sections to model
-        for section in parser.best_sections:
-            best_section_object = best_section_model(
-                activity=activity_instance,
-                section_type=section.section_type,
-                section_distance=section.section_distance,
-                start_index=section.start_index,
-                end_index=section.end_index,
-                max_value=section.max_value,
-            )
-            best_section_object.save()
-        # save also other section types to model here...
+        if _activity_suitable_for_best_sections(activity_instance):
+            # save best sections to model only if activity is suitable
+            for section in parser.best_sections:
+                best_section_object = best_section_model(
+                    activity=activity_instance,
+                    section_type=section.section_type,
+                    section_distance=section.section_distance,
+                    start_index=section.start_index,
+                    end_index=section.end_index,
+                    max_value=section.max_value,
+                )
+                best_section_object.save()
+            # save also other section types to model here...
 
 
 def _map_sport_name(sport_name, map_dict):  # will be adapted in GH #4
@@ -406,7 +408,7 @@ def _get_md5sums_from_model(traces_model):
     return md5sums_from_db
 
 
-def _parse_data(file):
+def _parse_data(file, get_best_sections: bool) -> Union[FITParser, GPXParser]:
     log.debug(f"importing file {file} ...")
     if file.endswith(".gpx"):
         log.debug("parsing GPX file ...")
@@ -419,8 +421,9 @@ def _parse_data(file):
     else:
         log.error(f"file type: {file} unknown")
         raise NotImplementedError(f"Cannot parse {file} files. Only {supported_formats} are supported.")
-    # parse best sections
-    parser.get_fastest_sections()
+    # only parse fastest sections if not deactivated
+    if get_best_sections:
+        parser.get_fastest_sections()
     return parser
 
 
@@ -432,3 +435,11 @@ def _get_all_files(path) -> List[str]:
         if name.endswith(tuple(supported_formats))
     ]
     return trace_files
+
+
+def _activity_suitable_for_best_sections(activity) -> bool:
+    sport = activity.sport
+    if activity.suitable_for_best_sections is False or sport.suitable_for_best_sections is False:
+        return False
+    else:
+        return True

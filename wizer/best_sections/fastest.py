@@ -32,9 +32,11 @@ def _prepare_coordinates_and_times_for_fastest_secions(parser) -> Tuple[List[flo
 
 def get_fastest_section(section_distance: int, parser) -> Tuple[float, int, int]:
     if not parser.latitude_list:
+        # in case no coordinate data is available, return False and Nulls to safeguard against failures
         return False, np.NaN, np.NaN, np.NaN
     times, coordinates = _prepare_coordinates_and_times_for_fastest_secions(parser)
 
+    # call the rust binary of sportgems here
     found_section, start_index, end_index, velocity = find_gems(section_distance, times, coordinates)
 
     return found_section, start_index, end_index, round(velocity, 2)

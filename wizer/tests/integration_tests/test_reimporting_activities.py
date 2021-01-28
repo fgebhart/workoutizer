@@ -2,7 +2,12 @@ import datetime
 
 from wizer import models
 from wizer import configuration
-from wizer.file_importer import import_activity_files, prepare_import_of_demo_activities, reimport_activity_files
+from wizer.file_importer import (
+    import_activity_files,
+    prepare_import_of_demo_activities,
+    reimport_activity_files,
+    _activity_suitable_for_best_sections,
+)
 
 
 def test_reimport_of_activities(db, tracks_in_tmpdir, client):
@@ -136,7 +141,7 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
         assert response.status_code == 200
 
 
-def test_reimporting_of_best_sections(db, tracks_in_tmpdir, import_one_activity):
+def test_reimporting_of_best_sections(import_one_activity):
     # import one cycling activity
     import_one_activity("2020-08-29-13-04-37.fit")
 
@@ -208,7 +213,7 @@ def test_reimporting_of_best_sections(db, tracks_in_tmpdir, import_one_activity)
         assert section.section_distance in configuration.fastest_sections
 
 
-def test_no_duplicates_in_top_scores(db, tracks_in_tmpdir, import_one_activity):
+def test_no_duplicates_in_top_scores(import_one_activity):
     # import one cycling activity
     import_one_activity("2020-08-29-13-04-37.fit")
     assert models.Activity.objects.count() == 1
@@ -222,3 +227,85 @@ def test_no_duplicates_in_top_scores(db, tracks_in_tmpdir, import_one_activity):
 
     updated_sections_of_top_scores = [award.section for award in models.BestSectionTopScores.objects.all()]
     assert updated_sections_of_top_scores == orig_sections_of_top_scores
+
+
+def test_reimport__not_suitable_for_best_sections__changing_sport_flag(import_one_activity):
+    import_one_activity("2020-08-29-13-04-37.fit")
+
+    # verify activity is suitable for best sections
+    assert models.Activity.objects.count() == 1
+    activity = models.Activity.objects.get()
+    assert _activity_suitable_for_best_sections(activity) is True
+    assert models.BestSection.objects.filter(activity=activity).count() > 0
+
+    # change sport flag for suitable_for_best_sections to False
+    sport = activity.sport
+    sport.suitable_for_best_sections = False
+    sport.save()
+    assert _activity_suitable_for_best_sections(activity) is False
+
+    # reimport activity
+    reimport_activity_files(models)
+
+    assert models.Activity.objects.count() == 1
+    activity = models.Activity.objects.get()
+    assert _activity_suitable_for_best_sections(activity) is False
+
+    # check that best sections got removed
+    assert models.BestSection.objects.filter(activity=activity).count() == 0
+
+    # now change everything back and verify that the best sections get saved to db again by reimporting
+    sport = activity.sport
+    sport.suitable_for_best_sections = True
+    sport.save()
+    assert _activity_suitable_for_best_sections(activity) is True
+
+    # reimport activity
+    reimport_activity_files(models)
+
+    assert models.Activity.objects.count() == 1
+    activity = models.Activity.objects.get()
+    assert _activity_suitable_for_best_sections(activity) is True
+
+    # check that best sections got removed
+    assert models.BestSection.objects.filter(activity=activity).count() > 0
+
+
+def test_reimport__not_suitable_for_best_sections__changing_activity_flag(import_one_activity):
+    import_one_activity("2020-08-29-13-04-37.fit")
+
+    # verify activity is suitable for best sections
+    assert models.Activity.objects.count() == 1
+    activity = models.Activity.objects.get()
+    assert _activity_suitable_for_best_sections(activity) is True
+    assert models.BestSection.objects.filter(activity=activity).count() > 0
+
+    # change activity flag for suitable_for_best_sections to False
+    activity.suitable_for_best_sections = False
+    activity.save()
+    assert _activity_suitable_for_best_sections(activity) is False
+
+    # reimport activity
+    reimport_activity_files(models)
+
+    assert models.Activity.objects.count() == 1
+    activity = models.Activity.objects.get()
+    assert _activity_suitable_for_best_sections(activity) is False
+
+    # check that best sections got removed
+    assert models.BestSection.objects.filter(activity=activity).count() == 0
+
+    # now change everything back and verify that the best sections get saved to db again by reimporting
+    activity.suitable_for_best_sections = True
+    activity.save()
+    assert _activity_suitable_for_best_sections(activity) is True
+
+    # reimport activity
+    reimport_activity_files(models)
+
+    assert models.Activity.objects.count() == 1
+    activity = models.Activity.objects.get()
+    assert _activity_suitable_for_best_sections(activity) is True
+
+    # check that best sections got removed
+    assert models.BestSection.objects.filter(activity=activity).count() > 0

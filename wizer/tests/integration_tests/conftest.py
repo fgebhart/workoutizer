@@ -68,7 +68,7 @@ def activity(db, sport, trace_file):
 
 @pytest.fixture
 def insert_activity(db, sport):
-    def _create_activity(name: str = "Evening Cycling along the River"):
+    def _create_activity(name: str = "Evening Cycling along the River", suitable_for_best_sections: bool = True):
         activity = models.Activity(
             name=name,
             sport=sport,
@@ -76,6 +76,7 @@ def insert_activity(db, sport):
             duration=datetime.timedelta(minutes=30),
             distance=5.2,
             description="some super activity",
+            suitable_for_best_sections=suitable_for_best_sections,
         )
         activity.save()
         return activity
@@ -111,16 +112,17 @@ def tracks_in_tmpdir(tmpdir):
 @pytest.fixture
 def import_demo_data(db, tracks_in_tmpdir):
     prepare_import_of_demo_activities(models)
-    assert len(models.Sport.objects.all()) == 5
-    assert len(models.Settings.objects.all()) == 1
+    assert models.Sport.objects.count() == 5
+    assert models.Settings.objects.count() == 1
 
     import_activity_files(models, importing_demo_data=True)
-    assert len(models.Activity.objects.all()) > 1
+    assert models.Activity.objects.count() > 1
 
 
 @pytest.fixture
 def import_one_activity(db, tracks_in_tmpdir):
     models.get_settings()
+    assert models.Settings.objects.count() == 1
 
     def _copy_activity(file_name: str):
         copy_demo_fit_files_to_track_dir(
@@ -128,9 +130,8 @@ def import_one_activity(db, tracks_in_tmpdir):
             targe_dir=models.get_settings().path_to_trace_dir,
             list_of_files_to_copy=[file_name],
         )
-        assert len(models.Sport.objects.all()) == 1
-        assert len(models.Settings.objects.all()) == 1
-
-        return import_activity_files(models, importing_demo_data=False)
+        import_activity_files(models, importing_demo_data=False)
+        assert models.Sport.objects.count() == 1
+        assert models.Activity.objects.count() == 1
 
     return _copy_activity

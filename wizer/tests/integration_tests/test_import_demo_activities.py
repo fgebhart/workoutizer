@@ -1,4 +1,5 @@
 from wizer import models
+from wizer.file_importer import _activity_suitable_for_best_sections
 
 
 def test_import_of_demo_activities(import_demo_data, client):
@@ -28,3 +29,62 @@ def test_import_of_demo_activities(import_demo_data, client):
 
     fastest_sections = models.BestSection.objects.filter(section_type="fastest")
     assert len(fastest_sections) == 61
+
+
+def test_import_of_activities__not_suitable_for_best_sections(import_one_activity):
+    # insert default sport
+    sport = models.default_sport()
+
+    assert models.Sport.objects.count() == 1
+    assert models.Settings.objects.count() == 1
+
+    # get default sport
+    sport = models.Sport.objects.get()
+    assert sport.name == "unknown"
+    assert sport.suitable_for_best_sections is True
+
+    # change flag to false
+    sport.suitable_for_best_sections = False
+    sport.save()
+    assert sport.suitable_for_best_sections is False
+
+    # now import activity and verify that no best sections got saved to the db
+    assert models.Activity.objects.count() == 0
+    import_one_activity("2020-08-29-13-04-37.fit")
+    assert models.Activity.objects.count() == 1
+
+    # get activity
+    activity = models.Activity.objects.get()
+    assert activity.sport.suitable_for_best_sections is False
+    assert activity.suitable_for_best_sections is True
+    assert _activity_suitable_for_best_sections(activity) is False
+
+    # no best sections got saved
+    assert models.BestSection.objects.filter(activity=activity).count() == 0
+
+
+def test_import_of_activities__suitable_for_best_sections(import_one_activity, tracks_in_tmpdir):
+    # insert default sport
+    sport = models.default_sport()
+
+    assert models.Sport.objects.count() == 1
+    assert models.Settings.objects.count() == 1
+
+    # get default sport
+    sport = models.Sport.objects.get()
+    assert sport.name == "unknown"
+    assert sport.suitable_for_best_sections is True
+
+    # now import activity and verify that some best sections got saved to the db
+    assert models.Activity.objects.count() == 0
+    import_one_activity("2020-08-29-13-04-37.fit")
+    assert models.Activity.objects.count() == 1
+
+    # get activity
+    activity = models.Activity.objects.get()
+    assert activity.sport.suitable_for_best_sections is True
+    assert activity.suitable_for_best_sections is True
+    assert _activity_suitable_for_best_sections(activity) is True
+
+    # some best sections got saved
+    assert models.BestSection.objects.filter(activity=activity).count() > 0
