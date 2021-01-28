@@ -65,6 +65,7 @@ def edit_activity_view(request, activity_id):
     form_field_ids = get_all_form_field_ids()
     sports = Sport.objects.all().order_by("name")
     activity = Activity.objects.get(id=activity_id)
+    suitable_for_best_sections__db = activity.suitable_for_best_sections
     activity_form = EditActivityForm(request.POST or None, instance=activity)
     laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
     has_laps = True if laps else False
@@ -81,6 +82,12 @@ def edit_activity_view(request, activity_id):
                 if formset.is_valid():
                     formset.save()
             messages.success(request, f"Successfully modified '{activity_form.cleaned_data['name']}'")
+            if activity_form.cleaned_data["suitable_for_best_sections"] != suitable_for_best_sections__db:
+                messages.info(
+                    request,
+                    "You need to trigger a reimport of your activity files in order to have "
+                    "the changes of parsing award data become effective!",
+                )
             return HttpResponseRedirect(f"/activity/{activity_id}")
         else:
             log.warning(f"form invalid: {activity_form.errors}")
