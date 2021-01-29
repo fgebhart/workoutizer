@@ -1,5 +1,7 @@
 import datetime
 
+import pytz
+
 from wizer import models
 from wizer import configuration
 from wizer.file_importer import (
@@ -15,10 +17,9 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     Test reimporter in following steps:
     1. import demo activities
     2. modify some attributes of a given activity
-    3. remove demo activity flag, because demo activity won't get updated by reimporting
-    4. trigger reimporter
-    5. check that attributes have been overwritten with the original values
-    6. check that activity page is accessible
+    3. trigger reimporter
+    4. check that attributes have been overwritten with the original values
+    5. check that activity page is accessible
     """
 
     # 1. import one cycling and one hiking activities
@@ -44,6 +45,7 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     orig_cycling_distance = cycling.distance
     orig_cycling_duration = cycling.duration
     orig_cycling_name = cycling.name
+    orig_cycling_date = cycling.date
 
     cycling_best_sections = models.BestSection.objects.filter(activity=cycling.pk)
     orig_number_of_cycling_best_sections = len(cycling_best_sections)
@@ -64,9 +66,14 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     orig_1km_velocity = hiking_best_sections.max_value
 
     # 2. modify some attributes of a given activity
+    new_date = datetime.datetime(1999, 1, 1, 19, 19, 19, tzinfo=pytz.utc)
+
     hiking.distance = 5_000.0
     hiking.duration = datetime.timedelta(hours=500)
     hiking.name = "some arbitrary hiking name"
+    # remove the demo activity flag of hiking activity
+    hiking.is_demo_activity = False
+    hiking.date = new_date
     hiking.save()
 
     hiking_best_sections.start_index = 50_000_000
@@ -76,7 +83,11 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     cycling.distance = 9_000.0
     cycling.duration = datetime.timedelta(hours=900)
     cycling.name = "some arbitrary cycling name"
+    cycling.date = new_date
     cycling.save()
+
+    # verify that cycling is a demo activity
+    assert cycling.is_demo_activity is True
 
     # get lap values to verify reimporter handles updating of lap data correctly
     lap_data = models.Lap.objects.filter(trace=cycling.trace_file)
@@ -95,24 +106,22 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
 
     assert len(models.BestSection.objects.filter(activity=cycling.pk)) == 0
 
-    # 3. remove demo activity flag (because reimporter does not modify demo activities)
-    all_activities = models.Activity.objects.all()
-    for activity in all_activities:
-        activity.is_demo_activity = False
-        activity.save()
-
-    # 4. trigger reimport to update values
+    # 3. trigger reimport to update values
     reimport_activity_files(models)
 
     all_activities = models.Activity.objects.all()
     assert len(all_activities) == 11
-    # 5. check that attributes have been overwritten with the original values
+    # 4. check that attributes have been overwritten with the original values
     updated_hiking = models.Activity.objects.get(sport__slug="hiking")
     assert updated_hiking.distance == orig_hiking_distance
     assert updated_hiking.duration == orig_hiking_duration
     # names should not be overwritten
     assert updated_hiking.name != orig_hiking_name
     assert updated_hiking.name == "some arbitrary hiking name"
+    # the date should be not stay at its new value because the hiking activity is not a demo activity it should rather
+    # be updated back to its original value, but thats hardly possible since the date of demo activities is adjusted to
+    # reflect the current time
+    assert updated_hiking.date != new_date
 
     # verify that attributes of best section got overwritten
     updated_hiking_best_sections = models.BestSection.objects.get(activity=updated_hiking.pk, section_distance=1)
@@ -125,6 +134,11 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     # names should not be overwritten
     assert updated_cycling.name != orig_cycling_name
     assert updated_cycling.name == "some arbitrary cycling name"
+    # the date of an demo activity should also not updated back to its original
+    assert updated_cycling.date != orig_cycling_date
+    assert updated_cycling.date == new_date
+    # verify that cycling is still a demo activity
+    assert updated_cycling.is_demo_activity is True
 
     # verify that all cycling best sections got reimported and created again
     assert len(models.BestSection.objects.filter(activity=cycling.pk)) == orig_number_of_cycling_best_sections
@@ -134,7 +148,7 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     updated_lap_speeds = [lap.speed for lap in updated_lap_data]
     assert updated_lap_speeds == orig_lap_speeds
 
-    # 6. verify that the activity pages are accessible after reimporting
+    # 5. verify that the activity pages are accessible after reimporting
     activities = all_activities
     for activity in activities:
         response = client.get(f"/activity/{activity.pk}")

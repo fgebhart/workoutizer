@@ -22,7 +22,7 @@ class AddActivityForm(forms.ModelForm):
 class EditActivityForm(forms.ModelForm):
     class Meta:
         model = Activity
-        exclude = ("trace_file", "created", "modified")
+        exclude = ("trace_file", "created", "modified", "is_demo_activity")
 
 
 class EditSettingsForm(forms.ModelForm):

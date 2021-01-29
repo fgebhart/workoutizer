@@ -77,6 +77,7 @@ def edit_activity_view(request, activity_id):
         formset = None
     if request.method == "POST":
         if activity_form.is_valid():
+            log.debug(f"got valid activity_form: {activity_form.cleaned_data}")
             activity_form.save()
             if has_laps:
                 if formset.is_valid():

@@ -219,7 +219,6 @@ class BestSectionsView(WKZView):
     template_name = "best_sections.html"
 
     def get(self, request):
-        self.context["version"] = __version__
         self.context["page"] = "awards"
         top_awards = {}
         for section in models.BestSectionTopScores.objects.all().order_by(

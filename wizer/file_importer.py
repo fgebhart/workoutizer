@@ -137,10 +137,11 @@ def _run_file_importer(models, importing_demo_data: bool, reimporting: bool = Fa
 
 def _run_parser(models, trace_files: list, importing_demo_data: bool, reimporting: bool = False):
     md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
-    for trace_file in trace_files:
+    n = len(trace_files)
+    for i, trace_file in enumerate(trace_files):
         md5sum = calc_md5(trace_file)
         if md5sum not in md5sums_from_db:  # current file is not stored in db yet
-            _parse_and_save_to_model(
+            activity = _parse_and_save_to_model(
                 models=models,
                 md5sum=md5sum,
                 trace_file=trace_file,
@@ -148,6 +149,7 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                 get_best_sections=True,
                 importing_demo_data=importing_demo_data,
             )
+            log.info(f"created new activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
         else:  # checksum is in db already
             file_name = trace_file.split("/")[-1]
             trace_file_path_instance = models.Traces.objects.get(md5sum=md5sum)
@@ -166,18 +168,16 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                 if reimporting:
                     trace = models.Traces.objects.get(md5sum=md5sum)
                     activity = models.Activity.objects.get(trace_file=trace)
-                    if activity.is_demo_activity:
-                        log.debug(f"activity: '{activity.name}' (ID: {activity.pk}) is demo activity, won't update data")
-                    else:
-                        log.debug(f"reimporting activity '{activity.name}' (ID: {activity.pk}) ... ")
-                        _parse_and_save_to_model(
-                            models=models,
-                            md5sum=md5sum,
-                            trace_file=trace_file,
-                            update_existing=True,
-                            get_best_sections=_activity_suitable_for_best_sections(activity),
-                            importing_demo_data=importing_demo_data,
-                        )
+                    log.debug(f"reimporting activity '{activity.name}' (ID: {activity.pk}) ... ")
+                    activity = _parse_and_save_to_model(
+                        models=models,
+                        md5sum=md5sum,
+                        trace_file=trace_file,
+                        update_existing=True,
+                        get_best_sections=_activity_suitable_for_best_sections(activity),
+                        importing_demo_data=importing_demo_data,
+                    )
+                    log.info(f"updated activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
                 else:
                     # file is in db and not supposed to reimport -> do nothing
                     pass
@@ -217,10 +217,7 @@ def _parse_and_save_to_model(
         activity_instance=activity_instace,
         update_existing=update_existing,
     )
-    if update_existing:
-        log.info(f"updated activity: '{activity_object.name}'. ID: {activity_object.pk}")
-    else:
-        log.info(f"created new activity: '{activity_object.name}'. ID: {activity_object.pk}")
+    return activity_instace
 
 
 def _save_laps_to_model(lap_model, laps: list, trace_instance, update_existing: bool):
@@ -312,9 +309,13 @@ def _save_activity_to_model(models, parser, trace_instance, importing_demo_data:
         # name should not be overwritten
         activity_object = models.Activity.objects.get(trace_file=trace_instance)
         log.debug(f"updating activity attributes for: '{activity_object.name}'")
-        activity_object.date = parser.date
         activity_object.duration = parser.duration
         activity_object.distance = parser.distance
+        if activity_object.is_demo_activity:
+            log.debug(f"won't update date of demo activity: '{activity_object.name}' (ID: {activity_object.pk})")
+        else:
+            log.debug(f"updating date of non-demo activity: '{activity_object.name}' (ID: {activity_object.pk})")
+            activity_object.date = parser.date
     else:
         # get appropriate sport from db
         sport = parser.sport
