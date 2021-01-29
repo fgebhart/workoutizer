@@ -9,11 +9,12 @@ from django.http import HttpResponse, Http404
 from django.urls import reverse
 from django.forms import modelformset_factory
 
-from wizer.views import MapView, get_all_form_field_ids
-from wizer.models import Sport, Activity, Lap, BestSection, BestSectionTopScores
+from wizer.views import MapView, get_all_form_field_ids, get_top_awards_for_one_sport
+from wizer.models import Sport, Activity, Lap, BestSection
 from wizer.forms import AddActivityForm, EditActivityForm
 from wizer.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wizer.plotting.plot_time_series import plot_time_series
+from wizer import configuration
 
 log = logging.getLogger(__name__)
 
@@ -24,12 +25,13 @@ class ActivityView(MapView):
     def get(self, request, activity_id):
         activity = Activity.objects.get(id=activity_id)
         context = super(ActivityView, self).get(request=request, list_of_activities=[activity])
+        top_awards = get_top_awards_for_one_sport(sport=activity.sport, top_score=configuration.rank_limit)
         activity_context = {
             "sports": Sport.objects.all().order_by("name"),
             "activity": activity,
             "form_field_ids": get_all_form_field_ids(),
             "fastest_sections": BestSection.objects.filter(activity=activity, section_type="fastest"),
-            "top_awards": BestSectionTopScores.objects.filter(activity=activity, section__section_type="fastest"),
+            "top_awards": top_awards,
         }
         if activity.trace_file:
             script_time_series, div_time_series = plot_time_series(activity)
@@ -65,7 +67,6 @@ def edit_activity_view(request, activity_id):
     form_field_ids = get_all_form_field_ids()
     sports = Sport.objects.all().order_by("name")
     activity = Activity.objects.get(id=activity_id)
-    suitable_for_best_sections__db = activity.suitable_for_best_sections
     activity_form = EditActivityForm(request.POST or None, instance=activity)
     laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
     has_laps = True if laps else False
@@ -83,12 +84,6 @@ def edit_activity_view(request, activity_id):
                 if formset.is_valid():
                     formset.save()
             messages.success(request, f"Successfully modified '{activity_form.cleaned_data['name']}'")
-            if activity_form.cleaned_data["suitable_for_best_sections"] != suitable_for_best_sections__db:
-                messages.info(
-                    request,
-                    "You need to trigger a reimport of your activity files in order to have "
-                    "the changes of parsing award data become effective!",
-                )
             return HttpResponseRedirect(f"/activity/{activity_id}")
         else:
             log.warning(f"form invalid: {activity_form.errors}")

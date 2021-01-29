@@ -1,6 +1,7 @@
 import logging
 import json
 import datetime
+from typing import List, Dict, Union
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
@@ -20,6 +21,7 @@ from wizer.gis.geo import GeoTrace, get_list_of_coordinates
 from wizer.tools.colors import lines_colors
 from wizer.tools.utils import cut_list_to_have_same_length
 from workoutizer import settings as django_settings
+from wizer import configuration
 from workoutizer import __version__
 
 
@@ -113,6 +115,7 @@ class DashboardView(View, PlotView):
         self.sports = models.Sport.objects.all().order_by("name")
         activities = self.get_activities()
         summary = get_summary_of_activities(activities=activities)
+        top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit)
         context = {
             "sports": self.sports,
             "activities": activities,
@@ -121,7 +124,7 @@ class DashboardView(View, PlotView):
             "summary": summary,
             "page": "dashboard",
             "form_field_ids": get_all_form_field_ids(),
-            "top_awards": [section.activity.pk for section in models.BestSectionTopScores.objects.all()],
+            "top_awards": top_awards,
         }
         if activities:
             script_history, div_history = plot_history(
@@ -220,12 +223,57 @@ class BestSectionsView(WKZView):
 
     def get(self, request):
         self.context["page"] = "awards"
-        top_awards = {}
-        for section in models.BestSectionTopScores.objects.all().order_by(
-            "sport__name", "section__section_distance", "rank"
-        ):
-            if section.sport not in top_awards.keys():
-                top_awards[section.sport] = []
-            top_awards[section.sport].append(section)
+        top_awards = get_top_awards_for_all_sports(top_score=configuration.rank_limit)
         self.context["top_awards"] = top_awards
         return render(request, template_name=self.template_name, context=self.context)
+
+
+def _get_best_sections_of_sport_and_distance(
+    sport: models.Sport, distance: int, top_score: int
+) -> List[models.BestSection]:
+    awards_per_distance = list(
+        models.BestSection.objects.filter(
+            activity__sport=sport,
+            activity__suitable_for_best_sections=True,
+            section_distance=distance,
+            section_type="fastest",
+        ).order_by("-max_value")[:top_score]
+    )
+    return awards_per_distance
+
+
+def get_top_awards_for_one_sport(sport: models.Sport, top_score: int) -> List[models.BestSection]:
+    awards = []
+    for distance in configuration.fastest_sections:
+        awards_per_distance = _get_best_sections_of_sport_and_distance(sport, distance, top_score)
+        for rank, section in enumerate(awards_per_distance):
+            setattr(section, "rank", rank + 1)
+        if awards_per_distance:
+            awards += awards_per_distance
+    return awards
+
+
+def get_top_awards_for_all_sports(top_score: int) -> Dict[models.Sport, List[models.BestSection]]:
+    top_awards = {}
+    for sport in models.Sport.objects.filter(suitable_for_best_sections=True).exclude(name="unknown").order_by("name"):
+        awards = get_top_awards_for_one_sport(sport, top_score)
+        if awards:
+            top_awards[sport] = awards
+    return top_awards
+
+
+def get_flat_list_of_pks_of_activities_in_top_awards(
+    top_score: int, filter_on_sport: Union[None, models.Sport] = None
+) -> List[int]:
+    top_awards = []
+    sports = models.Sport.objects.filter(suitable_for_best_sections=True).exclude(name="unknown").order_by("name")
+    if filter_on_sport:
+        sports = sports.filter(slug=filter_on_sport)
+    for sport in sports:
+        for distance in configuration.fastest_sections:
+            awards_per_distance = _get_best_sections_of_sport_and_distance(sport, distance, top_score)
+            # create list of primary keys of activities in which are in top scores
+            awards_per_distance = [section.activity.pk for section in awards_per_distance]
+            if awards_per_distance:
+                top_awards += awards_per_distance
+    return top_awards

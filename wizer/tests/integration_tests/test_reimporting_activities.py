@@ -227,22 +227,6 @@ def test_reimporting_of_best_sections(import_one_activity):
         assert section.section_distance in configuration.fastest_sections
 
 
-def test_no_duplicates_in_top_scores(import_one_activity):
-    # import one cycling activity
-    import_one_activity("2020-08-29-13-04-37.fit")
-    assert models.Activity.objects.count() == 1
-
-    orig_sections_of_top_scores = [award.section for award in models.BestSectionTopScores.objects.all()]
-    sections_of_best_sections = list(models.BestSection.objects.all())
-    assert orig_sections_of_top_scores == sections_of_best_sections
-
-    # now trigger reimport to verify best sections of the given activity do not get added to top scores twice
-    reimport_activity_files(models)
-
-    updated_sections_of_top_scores = [award.section for award in models.BestSectionTopScores.objects.all()]
-    assert updated_sections_of_top_scores == orig_sections_of_top_scores
-
-
 def test_reimport__not_suitable_for_best_sections__changing_sport_flag(import_one_activity):
     import_one_activity("2020-08-29-13-04-37.fit")
 
