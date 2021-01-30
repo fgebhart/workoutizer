@@ -125,7 +125,7 @@ def _run_file_importer(models, importing_demo_data: bool, reimporting: bool = Fa
         log.info(f"found {len(trace_files)} files in trace dir: {path}")
         _run_parser(models, trace_files, importing_demo_data, reimporting)
     else:
-        log.error(f"path: {path} is not a valid directory!")
+        log.warning(f"path: {path} is not a valid directory!")
         return
     if importing_demo_data:
         demo_activities = models.Activity.objects.filter(is_demo_activity=True)

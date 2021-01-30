@@ -23,14 +23,18 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
 
     assert "Your Awards" in webdriver.find_element_by_tag_name("h3").text
 
-    # note hiking activities won't show up, since they are disabled for awards in initial_data_handler
     h4 = [h4.text for h4 in webdriver.find_elements_by_tag_name("h4")]
+    # note hiking activities won't show up, since they are disabled for awards in initial_data_handler
+    assert "Hiking  " not in h4
     assert "Jogging  " in h4
     assert "Cycling  " in h4
 
     links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
     assert "  Add Activity" in links
     assert "  Workoutizer  " in links
+    assert "Evening Hiking in Ringgenberg (BE)" not in links
+    assert "Noon Hiking in Kornau" not in links
+    assert "Noon Hiking in Bad Schandau" not in links
     assert "Noon Jogging in Mirow" in links
     assert "Noon Jogging in Heidelberg" in links
     assert "Noon Cycling in Hinterzarten" in links
