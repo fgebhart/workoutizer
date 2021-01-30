@@ -174,7 +174,7 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                         md5sum=md5sum,
                         trace_file=trace_file,
                         update_existing=True,
-                        get_best_sections=_activity_suitable_for_best_sections(activity),
+                        get_best_sections=_activity_suitable_for_awards(activity),
                         importing_demo_data=importing_demo_data,
                     )
                     log.info(f"updated activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
@@ -276,7 +276,7 @@ def _save_best_sections_to_model(best_section_model, parser, activity_instance, 
                 log.debug(f"deleting section: {section} from db, because it is not present in parser")
                 section.delete()
     else:
-        if _activity_suitable_for_best_sections(activity_instance):
+        if _activity_suitable_for_awards(activity_instance):
             # save best sections to model only if activity is suitable
             for section in parser.best_sections:
                 best_section_object = best_section_model(
@@ -438,9 +438,8 @@ def _get_all_files(path) -> List[str]:
     return trace_files
 
 
-def _activity_suitable_for_best_sections(activity) -> bool:
-    sport = activity.sport
-    if activity.suitable_for_best_sections is False or sport.suitable_for_best_sections is False:
+def _activity_suitable_for_awards(activity) -> bool:
+    if activity.evaluates_for_awards is False or activity.sport.evaluates_for_awards is False:
         return False
     else:
         return True

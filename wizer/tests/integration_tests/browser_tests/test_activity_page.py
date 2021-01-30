@@ -63,7 +63,7 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver):
     assert activity.name == "Noon Cycling in Bad Schandau"
     assert activity.duration == datetime.timedelta(seconds=17970)
     assert activity.is_demo_activity is False
-    assert activity.suitable_for_best_sections is True
+    assert activity.evaluates_for_awards is True
     # make activity a demo activity to verify it won't get changed back
     activity.is_demo_activity = True
     activity.save()
@@ -73,9 +73,11 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver):
     assert webdriver.find_element_by_tag_name("button").text == "  Save"
     assert (
         webdriver.find_element_by_tag_name("form").text
-        == "Activity Name:\nSport:\nunknown\nDate:\nDuration:\n  min\nDistance:\n  km\nDescription:\nFind Awards for "
-        "this Activity:\n  \nLap Data\n\n\n  Save\nCancel\n  Delete"
+        == "Activity Name:\nSport:\nunknown\nDate:\nDuration:\n  min\nDistance:\n  km\nDescription:\nConsider this "
+        "Activity for Awards:\n  \nLap Data\n\n\n  Save\nCancel\n  Delete"
     )
+
+    # Consider this Activity for Awards:
 
     links = [link.text for link in webdriver.find_elements_by_tag_name("a")]
     assert "  Add Activity" in links
@@ -84,8 +86,8 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver):
     assert "Cancel" in links
     assert "  Delete" in links
 
-    # uncheck the box for suitable_for_best_sections
-    webdriver.find_element_by_id("id_suitable_for_best_sections").click()
+    # uncheck the box for evaluates_for_awards
+    webdriver.find_element_by_id("id_evaluates_for_awards").click()
 
     # enter a different name
     name_field = webdriver.find_element_by_css_selector("#id_name")
@@ -109,4 +111,4 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver):
     assert activity.name == "Dummy Activity Name"
     assert activity.duration == datetime.timedelta(seconds=4271)
     assert activity.is_demo_activity is True
-    assert activity.suitable_for_best_sections is False
+    assert activity.evaluates_for_awards is False

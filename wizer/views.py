@@ -234,7 +234,7 @@ def _get_best_sections_of_sport_and_distance(
     awards_per_distance = list(
         models.BestSection.objects.filter(
             activity__sport=sport,
-            activity__suitable_for_best_sections=True,
+            activity__evaluates_for_awards=True,
             section_distance=distance,
             section_type="fastest",
         ).order_by("-max_value")[:top_score]
@@ -255,7 +255,7 @@ def get_top_awards_for_one_sport(sport: models.Sport, top_score: int) -> List[mo
 
 def get_top_awards_for_all_sports(top_score: int) -> Dict[models.Sport, List[models.BestSection]]:
     top_awards = {}
-    for sport in models.Sport.objects.filter(suitable_for_best_sections=True).exclude(name="unknown").order_by("name"):
+    for sport in models.Sport.objects.filter(evaluates_for_awards=True).exclude(name="unknown").order_by("name"):
         awards = get_top_awards_for_one_sport(sport, top_score)
         if awards:
             top_awards[sport] = awards
@@ -266,7 +266,7 @@ def get_flat_list_of_pks_of_activities_in_top_awards(
     top_score: int, filter_on_sport: Union[None, models.Sport] = None
 ) -> List[int]:
     top_awards = []
-    sports = models.Sport.objects.filter(suitable_for_best_sections=True).exclude(name="unknown").order_by("name")
+    sports = models.Sport.objects.filter(evaluates_for_awards=True).exclude(name="unknown").order_by("name")
     if filter_on_sport:
         sports = sports.filter(slug=filter_on_sport)
     for sport in sports:

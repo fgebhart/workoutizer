@@ -19,7 +19,7 @@ class Sport(models.Model):
     icon = models.CharField(max_length=24, verbose_name="Icon:")
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     color = ColorField(default="#42FF71", verbose_name="Color:")
-    suitable_for_best_sections = models.BooleanField(verbose_name="Find Awards for this Sport:", default=True)
+    evaluates_for_awards = models.BooleanField(verbose_name="Consider Awards for this Sport:", default=True)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -103,7 +103,7 @@ class Activity(models.Model):
     description = models.CharField(max_length=600, blank=True, null=True, verbose_name="Description:")
     trace_file = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=True, null=True)
     is_demo_activity = models.BooleanField(verbose_name="Is this a Demo Activity:", default=False)
-    suitable_for_best_sections = models.BooleanField(verbose_name="Find Awards for this Activity:", default=True)
+    evaluates_for_awards = models.BooleanField(verbose_name="Consider this Activity for Awards:", default=True)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

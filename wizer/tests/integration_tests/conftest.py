@@ -68,7 +68,7 @@ def activity(db, sport, trace_file):
 
 @pytest.fixture
 def insert_activity(db, sport):
-    def _create_activity(name: str = "Evening Cycling along the River", suitable_for_best_sections: bool = True):
+    def _create_activity(name: str = "Evening Cycling along the River", evaluates_for_awards: bool = True):
         activity = models.Activity(
             name=name,
             sport=sport,
@@ -76,7 +76,7 @@ def insert_activity(db, sport):
             duration=datetime.timedelta(minutes=30),
             distance=5.2,
             description="some super activity",
-            suitable_for_best_sections=suitable_for_best_sections,
+            evaluates_for_awards=evaluates_for_awards,
         )
         activity.save()
         return activity

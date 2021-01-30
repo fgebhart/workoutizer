@@ -58,18 +58,20 @@ class SportsView(MapView, PlotView):
         if sports_name_slug == "undefined":
             log.warning("could not find sport - redirecting to home")
             return HttpResponseRedirect(reverse("home"))
-        sport_id = models.Sport.objects.get(slug=sports_name_slug).id
-        activities = self.get_activities(sport_id=sport_id)
-        map_context = super(SportsView, self).get(request=request, list_of_activities=activities)
+        sport = models.Sport.objects.get(slug=sports_name_slug)
+        activities = self.get_activities(sport_id=sport.id)
+        context = super(SportsView, self).get(request=request, list_of_activities=activities)
         sports = models.Sport.objects.all().order_by("name")
         summary = get_summary_of_activities(activities=activities)
-        top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit, sports_name_slug)
         if activities:
             script_history, div_history = plot_history(
                 activities=activities, sport_model=models.Sport, settings_model=models.Settings
             )
-            map_context["script_history"] = script_history
-            map_context["div_history"] = div_history
+            context["script_history"] = script_history
+            context["div_history"] = div_history
+        if sport.evaluates_for_awards:
+            top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit, sports_name_slug)
+            context["top_awards"] = top_awards
         try:
             sport = model_to_dict(models.Sport.objects.get(slug=sports_name_slug))
             sport["slug"] = sports_name_slug
@@ -80,13 +82,12 @@ class SportsView(MapView, PlotView):
             request,
             self.template_name,
             {
-                **map_context,
+                **context,
                 "activities": activities,
                 "sports": sports,
                 "summary": summary,
                 "sport": sport,
                 "form_field_ids": get_all_form_field_ids(),
-                "top_awards": top_awards,
             },
         )
 

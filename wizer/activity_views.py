@@ -14,6 +14,7 @@ from wizer.models import Sport, Activity, Lap, BestSection
 from wizer.forms import AddActivityForm, EditActivityForm
 from wizer.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wizer.plotting.plot_time_series import plot_time_series
+from wizer.file_importer import _activity_suitable_for_awards
 from wizer import configuration
 
 log = logging.getLogger(__name__)
@@ -25,13 +26,11 @@ class ActivityView(MapView):
     def get(self, request, activity_id):
         activity = Activity.objects.get(id=activity_id)
         context = super(ActivityView, self).get(request=request, list_of_activities=[activity])
-        top_awards = get_top_awards_for_one_sport(sport=activity.sport, top_score=configuration.rank_limit)
         activity_context = {
             "sports": Sport.objects.all().order_by("name"),
             "activity": activity,
             "form_field_ids": get_all_form_field_ids(),
             "fastest_sections": BestSection.objects.filter(activity=activity, section_type="fastest"),
-            "top_awards": top_awards,
         }
         if activity.trace_file:
             script_time_series, div_time_series = plot_time_series(activity)
@@ -40,6 +39,9 @@ class ActivityView(MapView):
         laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
         if laps:
             activity_context["laps"] = laps
+        if _activity_suitable_for_awards(activity):
+            top_awards = get_top_awards_for_one_sport(sport=activity.sport, top_score=configuration.rank_limit)
+            activity_context["top_awards"] = top_awards
         return render(request, self.template_name, {**context, **activity_context})
 
 

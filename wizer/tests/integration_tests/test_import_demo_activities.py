@@ -1,5 +1,5 @@
 from wizer import models
-from wizer.file_importer import _activity_suitable_for_best_sections
+from wizer.file_importer import _activity_suitable_for_awards
 
 
 def test_import_of_demo_activities(import_demo_data, client):
@@ -31,7 +31,7 @@ def test_import_of_demo_activities(import_demo_data, client):
     assert len(fastest_sections) == 61
 
 
-def test_import_of_activities__not_suitable_for_best_sections(import_one_activity):
+def test_import_of_activities__not_evaluates_for_awards(import_one_activity):
     # insert default sport
     sport = models.default_sport()
 
@@ -41,12 +41,12 @@ def test_import_of_activities__not_suitable_for_best_sections(import_one_activit
     # get default sport
     sport = models.Sport.objects.get()
     assert sport.name == "unknown"
-    assert sport.suitable_for_best_sections is True
+    assert sport.evaluates_for_awards is True
 
     # change flag to false
-    sport.suitable_for_best_sections = False
+    sport.evaluates_for_awards = False
     sport.save()
-    assert sport.suitable_for_best_sections is False
+    assert sport.evaluates_for_awards is False
 
     # now import activity and verify that no best sections got saved to the db
     assert models.Activity.objects.count() == 0
@@ -55,15 +55,15 @@ def test_import_of_activities__not_suitable_for_best_sections(import_one_activit
 
     # get activity
     activity = models.Activity.objects.get()
-    assert activity.sport.suitable_for_best_sections is False
-    assert activity.suitable_for_best_sections is True
-    assert _activity_suitable_for_best_sections(activity) is False
+    assert activity.sport.evaluates_for_awards is False
+    assert activity.evaluates_for_awards is True
+    assert _activity_suitable_for_awards(activity) is False
 
     # no best sections got saved
     assert models.BestSection.objects.filter(activity=activity).count() == 0
 
 
-def test_import_of_activities__suitable_for_best_sections(import_one_activity, tracks_in_tmpdir):
+def test_import_of_activities__evaluates_for_awards(import_one_activity, tracks_in_tmpdir):
     # insert default sport
     sport = models.default_sport()
 
@@ -73,7 +73,7 @@ def test_import_of_activities__suitable_for_best_sections(import_one_activity, t
     # get default sport
     sport = models.Sport.objects.get()
     assert sport.name == "unknown"
-    assert sport.suitable_for_best_sections is True
+    assert sport.evaluates_for_awards is True
 
     # now import activity and verify that some best sections got saved to the db
     assert models.Activity.objects.count() == 0
@@ -82,9 +82,9 @@ def test_import_of_activities__suitable_for_best_sections(import_one_activity, t
 
     # get activity
     activity = models.Activity.objects.get()
-    assert activity.sport.suitable_for_best_sections is True
-    assert activity.suitable_for_best_sections is True
-    assert _activity_suitable_for_best_sections(activity) is True
+    assert activity.sport.evaluates_for_awards is True
+    assert activity.evaluates_for_awards is True
+    assert _activity_suitable_for_awards(activity) is True
 
     # some best sections got saved
     assert models.BestSection.objects.filter(activity=activity).count() > 0
