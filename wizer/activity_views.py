@@ -14,7 +14,7 @@ from wizer.models import Sport, Activity, Lap, BestSection
 from wizer.forms import AddActivityForm, EditActivityForm
 from wizer.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wizer.plotting.plot_time_series import plot_time_series
-from wizer.file_importer import _activity_suitable_for_awards
+from wizer.best_sections.fastest import _activity_suitable_for_awards
 from wizer import configuration
 
 log = logging.getLogger(__name__)

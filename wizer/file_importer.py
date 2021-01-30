@@ -204,15 +204,15 @@ def _parse_and_save_to_model(models, md5sum: str, trace_file, update_existing: b
         importing_demo_data=importing_demo_data,
         update_existing=update_existing,
     )
-    activity_instace = models.Activity.objects.get(pk=activity_object.pk)
+    activity_instance = models.Activity.objects.get(pk=activity_object.pk)
     # save best sections to model
     _save_best_sections_to_model(
         best_section_model=models.BestSection,
         parser=parser,
-        activity_instance=activity_instace,
+        activity_instance=activity_instance,
         update_existing=update_existing,
     )
-    return activity_instace
+    return activity_instance
 
 
 def _save_laps_to_model(lap_model, laps: list, trace_instance, update_existing: bool):
@@ -429,10 +429,3 @@ def _get_all_files(path) -> List[str]:
         if name.endswith(tuple(supported_formats))
     ]
     return trace_files
-
-
-def _activity_suitable_for_awards(activity) -> bool:
-    if activity.evaluates_for_awards is False or activity.sport.evaluates_for_awards is False:
-        return False
-    else:
-        return True

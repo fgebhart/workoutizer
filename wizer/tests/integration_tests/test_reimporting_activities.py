@@ -8,8 +8,8 @@ from wizer.file_importer import (
     import_activity_files,
     prepare_import_of_demo_activities,
     reimport_activity_files,
-    _activity_suitable_for_awards,
 )
+from wizer.best_sections.fastest import _activity_suitable_for_awards
 
 
 def test_reimport_of_activities(db, tracks_in_tmpdir, client):

@@ -1,7 +1,13 @@
 import os
 import shutil
 
-from wizer.tools.utils import sanitize, cut_list_to_have_same_length, limit_string, get_local_ip_address, files_are_same
+from wizer.tools.utils import (
+    sanitize,
+    cut_list_to_have_same_length,
+    limit_string,
+    get_local_ip_address,
+    files_are_same,
+)
 
 
 def test_sanitize():

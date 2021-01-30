@@ -40,3 +40,10 @@ def get_fastest_section(section_distance: int, parser) -> Tuple[float, int, int]
     found_section, start_index, end_index, velocity = find_gems(section_distance, times, coordinates)
 
     return found_section, start_index, end_index, round(velocity, 2)
+
+
+def _activity_suitable_for_awards(activity) -> bool:
+    if activity.evaluates_for_awards is False or activity.sport.evaluates_for_awards is False:
+        return False
+    else:
+        return True
