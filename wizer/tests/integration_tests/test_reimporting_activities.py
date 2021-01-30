@@ -228,6 +228,8 @@ def test_reimporting_of_best_sections(import_one_activity):
 
 
 def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_activity):
+    # Changed behaviour of this test to check that best sections do not get removed when changing evaluates_for_awards
+
     import_one_activity("2020-08-29-13-04-37.fit")
 
     # verify activity is suitable for best sections
@@ -249,8 +251,8 @@ def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_acti
     activity = models.Activity.objects.get()
     assert _activity_suitable_for_awards(activity) is False
 
-    # check that best sections got removed
-    assert models.BestSection.objects.filter(activity=activity).count() == 0
+    # check that best sections did not get removed
+    assert models.BestSection.objects.filter(activity=activity).count() > 0
 
     # now change everything back and verify that the best sections get saved to db again by reimporting
     sport = activity.sport
@@ -270,6 +272,8 @@ def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_acti
 
 
 def test_reimport__not_evaluates_for_awards__changing_activity_flag(import_one_activity):
+    # Changed behaviour of this test to check that best sections do not get removed when changing evaluates_for_awards
+
     import_one_activity("2020-08-29-13-04-37.fit")
 
     # verify activity is suitable for best sections
@@ -290,8 +294,8 @@ def test_reimport__not_evaluates_for_awards__changing_activity_flag(import_one_a
     activity = models.Activity.objects.get()
     assert _activity_suitable_for_awards(activity) is False
 
-    # check that best sections got removed
-    assert models.BestSection.objects.filter(activity=activity).count() == 0
+    # check that best sections did not get removed
+    assert models.BestSection.objects.filter(activity=activity).count() > 0
 
     # now change everything back and verify that the best sections get saved to db again by reimporting
     activity.evaluates_for_awards = True

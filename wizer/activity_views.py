@@ -39,9 +39,11 @@ class ActivityView(MapView):
         laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
         if laps:
             activity_context["laps"] = laps
+        activity_context["evaluates_for_awards"] = False
         if _activity_suitable_for_awards(activity):
             top_awards = get_top_awards_for_one_sport(sport=activity.sport, top_score=configuration.rank_limit)
             activity_context["top_awards"] = top_awards
+            activity_context["evaluates_for_awards"] = True
         return render(request, self.template_name, {**context, **activity_context})
 
 

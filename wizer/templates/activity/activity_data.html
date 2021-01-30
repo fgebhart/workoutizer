@@ -3,7 +3,16 @@
 <div class="row">
     {% if fastest_sections %}
         <div class="col-sm-12">
-            <h5>Fastest Sections</h5>
+            <h5>
+                Fastest Sections
+                {% if evaluates_for_awards %}
+                    &nbsp;<i class="fas fa-trophy" data-toggle="tooltip" data-placement="bottom"
+                    title="Activity evaluates for Awards" style="color: grey;"></i>
+                {% else %}
+                    &nbsp;<i class="fas fa-exclamation-circle" data-toggle="tooltip" data-placement="bottom"
+                    title="Activity does not evaluate for Awards" style="color: grey;"></i>
+                {% endif %}
+            </h5>
             {% include "activity/fastest_sections_table.html" %}
         </div>
     {% endif %}

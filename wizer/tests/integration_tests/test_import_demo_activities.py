@@ -13,22 +13,42 @@ def test_import_of_demo_activities(import_demo_data, client):
 
     swimming = models.Activity.objects.filter(sport__slug="swimming")
     assert len(swimming) == 9
+    # verify that swimming activities are considered for awards
+    for s in swimming:
+        assert s.evaluates_for_awards is True
 
     jogging = models.Activity.objects.filter(sport__slug="jogging")
     assert len(jogging) == 4
+    # verify that jogging activities are considered for awards
+    for j in jogging:
+        assert j.evaluates_for_awards is True
 
     cycling = models.Activity.objects.filter(sport__slug="cycling")
     assert len(cycling) == 3
+    # verify that cycling activities are considered for awards
+    for c in cycling:
+        assert c.evaluates_for_awards is True
 
     hiking = models.Activity.objects.filter(sport__slug="hiking")
     assert len(hiking) == 3
 
-    # verify that best sections got parsed and imported
-    best_sections = models.BestSection.objects.all()
-    assert len(best_sections) == 61
+    # verify that hiking activities are not considered for awards
+    # the entire hiking sport is set to False
+    sport = models.Sport.objects.get(slug="hiking")
+    assert sport.evaluates_for_awards is False
+    for h in hiking:
+        # each individual activity is set to True
+        assert h.evaluates_for_awards is True
+        # and thus at the end the activity evaluates to False
+        assert _activity_suitable_for_awards(h) is False
 
-    fastest_sections = models.BestSection.objects.filter(section_type="fastest")
-    assert len(fastest_sections) == 61
+    # verify that best sections got parsed and imported
+    best_sections_cnt = models.BestSection.objects.count()
+    assert best_sections_cnt > 20
+
+    # currently all best sections are of type fastest
+    fastest_sections_cnt = models.BestSection.objects.filter(section_type="fastest").count()
+    assert best_sections_cnt == fastest_sections_cnt
 
 
 def test_import_of_activities__not_evaluates_for_awards(import_one_activity):
@@ -48,7 +68,7 @@ def test_import_of_activities__not_evaluates_for_awards(import_one_activity):
     sport.save()
     assert sport.evaluates_for_awards is False
 
-    # now import activity and verify that no best sections got saved to the db
+    # now import activity and verify that best sections still got saved to the db
     assert models.Activity.objects.count() == 0
     import_one_activity("2020-08-29-13-04-37.fit")
     assert models.Activity.objects.count() == 1
@@ -59,8 +79,8 @@ def test_import_of_activities__not_evaluates_for_awards(import_one_activity):
     assert activity.evaluates_for_awards is True
     assert _activity_suitable_for_awards(activity) is False
 
-    # no best sections got saved
-    assert models.BestSection.objects.filter(activity=activity).count() == 0
+    # best sections got saved
+    assert models.BestSection.objects.filter(activity=activity).count() > 0
 
 
 def test_import_of_activities__evaluates_for_awards(import_one_activity, tracks_in_tmpdir):
