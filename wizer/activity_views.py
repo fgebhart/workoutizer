@@ -9,11 +9,13 @@ from django.http import HttpResponse, Http404
 from django.urls import reverse
 from django.forms import modelformset_factory
 
-from wizer.views import MapView, get_all_form_field_ids
-from wizer.models import Sport, Activity, Lap, BestSection, BestSectionTopScores
+from wizer.views import MapView, get_all_form_field_ids, get_top_awards_for_one_sport
+from wizer.models import Sport, Activity, Lap, BestSection
 from wizer.forms import AddActivityForm, EditActivityForm
 from wizer.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wizer.plotting.plot_time_series import plot_time_series
+from wizer.best_sections.fastest import _activity_suitable_for_awards
+from wizer import configuration
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +31,6 @@ class ActivityView(MapView):
             "activity": activity,
             "form_field_ids": get_all_form_field_ids(),
             "fastest_sections": BestSection.objects.filter(activity=activity, section_type="fastest"),
-            "top_awards": BestSectionTopScores.objects.filter(activity=activity, section__section_type="fastest"),
         }
         if activity.trace_file:
             script_time_series, div_time_series = plot_time_series(activity)
@@ -38,6 +39,11 @@ class ActivityView(MapView):
         laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
         if laps:
             activity_context["laps"] = laps
+        activity_context["evaluates_for_awards"] = False
+        if _activity_suitable_for_awards(activity):
+            top_awards = get_top_awards_for_one_sport(sport=activity.sport, top_score=configuration.rank_limit)
+            activity_context["top_awards"] = top_awards
+            activity_context["evaluates_for_awards"] = True
         return render(request, self.template_name, {**context, **activity_context})
 
 
@@ -76,6 +82,7 @@ def edit_activity_view(request, activity_id):
         formset = None
     if request.method == "POST":
         if activity_form.is_valid():
+            log.debug(f"got valid activity_form: {activity_form.cleaned_data}")
             activity_form.save()
             if has_laps:
                 if formset.is_valid():

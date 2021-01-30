@@ -12,28 +12,35 @@
             {% include "lib/form_errors.html" %}
             {% include "lib/messages.html" %}
             <div class="form-group row">
-                <div class="col-sm-2">{{ activity_form.name.label }}</div>
-                <div class="col-sm-10">{{ activity_form.name }}</div>
+                <div class="col-sm-3">{{ activity_form.name.label }}</div>
+                <div class="col-sm-9">{{ activity_form.name }}</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2">{{ activity_form.sport.label }}</div>
-                <div class="col-sm-10">{{ activity_form.sport }}</div>
+                <div class="col-sm-3">{{ activity_form.sport.label }}</div>
+                <div class="col-sm-9">{{ activity_form.sport }}</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2">{{ activity_form.date.label }}</div>
-                <div class="col-sm-10">{{ activity_form.date }}</div>
+                <div class="col-sm-3">{{ activity_form.date.label }}</div>
+                <div class="col-sm-9">{{ activity_form.date }}</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2">{{ activity_form.duration.label }}</div>
-                <div class="col-sm-10">{{ activity_form.duration }}&nbsp;&nbsp;min</div>
+                <div class="col-sm-3">{{ activity_form.duration.label }}</div>
+                <div class="col-sm-9">{{ activity_form.duration }}&nbsp;&nbsp;min</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2">{{ activity_form.distance.label }}</div>
-                <div class="col-sm-10">{{ activity_form.distance }}&nbsp;&nbsp;km</div>
+                <div class="col-sm-3">{{ activity_form.distance.label }}</div>
+                <div class="col-sm-9">{{ activity_form.distance }}&nbsp;&nbsp;km</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2">{{ activity_form.description.label }}</div>
-                <div class="col-sm-10">{{ activity_form.description }}</div>
+                <div class="col-sm-3">{{ activity_form.description.label }}</div>
+                <div class="col-sm-9">{{ activity_form.description }}</div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-3">{{ activity_form.evaluates_for_awards.label }}</div>
+                <div class="col-sm-9">{{ activity_form.evaluates_for_awards }}&nbsp;&nbsp;
+                    <i class="fas fa-question" data-toggle="tooltip" data-placement="right"
+                       title="Disable to exclude this activity from awards. Note this option needs to be enabled for both this activity and its sport to consider it for awards."></i>
+                </div>
             </div>
             <br>
             {% if has_laps %}

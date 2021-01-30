@@ -16,6 +16,7 @@ sport_data = {
     "color": ["ForestGreen", "Navy", "Gold", "DarkOrange"],
     "icon": ["hiking", "swimmer", "bicycle", "running"],
     "slug": ["hiking", "swimming", "cycling", "jogging"],
+    "evaluates_for_awards": [False, True, True, True],
 }
 
 
@@ -28,6 +29,7 @@ def insert_demo_sports_to_model(models):
             color=sport_data.get("color")[i],
             icon=sport_data.get("icon")[i],
             slug=sport_data.get("slug")[i],
+            evaluates_for_awards=sport_data.get("evaluates_for_awards")[i],
         )
 
 

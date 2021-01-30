@@ -22,6 +22,7 @@ min_max_attributes = [
 ]
 
 # configuration of best sections
+rank_limit = 3
 
 # fastest section to parse in activities (in kilometer) (only integers allowed)
 fastest_sections = [

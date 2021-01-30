@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 import json
-from typing import List
+from typing import List, Union
 
 
 from watchdog.observers import Observer
@@ -20,7 +20,8 @@ from wizer.file_helper.initial_data_handler import (
     insert_demo_sports_to_model,
     insert_custom_demo_activities,
 )
-from wizer.configuration import supported_formats, fastest_sections
+from wizer.best_sections.fastest import FastestSection
+from wizer.configuration import supported_formats
 from workoutizer import settings as django_settings
 
 
@@ -96,11 +97,11 @@ def _start_watchdog(path: str):
 
 
 def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
-    models.get_settings()
+    settings = models.get_settings()
     insert_demo_sports_to_model(models)
     copy_demo_fit_files_to_track_dir(
         source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
-        targe_dir=models.get_settings().path_to_trace_dir,
+        targe_dir=settings.path_to_trace_dir,
         list_of_files_to_copy=list_of_files_to_copy,
     )
 
@@ -124,28 +125,29 @@ def _run_file_importer(models, importing_demo_data: bool, reimporting: bool = Fa
         log.info(f"found {len(trace_files)} files in trace dir: {path}")
         _run_parser(models, trace_files, importing_demo_data, reimporting)
     else:
-        log.error(f"path: {path} is not a valid directory!")
+        log.warning(f"path: {path} is not a valid directory!")
         return
     if importing_demo_data:
         demo_activities = models.Activity.objects.filter(is_demo_activity=True)
         change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
         insert_custom_demo_activities(count=9, every_nth_day=3, activity_model=models.Activity, sport_model=models.Sport)
         log.info("finished inserting demo data")
-        importing_demo_data = False
 
 
 def _run_parser(models, trace_files: list, importing_demo_data: bool, reimporting: bool = False):
     md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
-    for trace_file in trace_files:
+    n = len(trace_files)
+    for i, trace_file in enumerate(trace_files):
         md5sum = calc_md5(trace_file)
-        if md5sum not in md5sums_from_db:  # current file is not stored in model yet
-            _parse_and_save_to_model(
+        if md5sum not in md5sums_from_db:  # current file is not stored in db yet
+            activity = _parse_and_save_to_model(
                 models=models,
                 md5sum=md5sum,
                 trace_file=trace_file,
                 update_existing=False,
                 importing_demo_data=importing_demo_data,
             )
+            log.info(f"created new activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
         else:  # checksum is in db already
             file_name = trace_file.split("/")[-1]
             trace_file_path_instance = models.Traces.objects.get(md5sum=md5sum)
@@ -164,17 +166,15 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                 if reimporting:
                     trace = models.Traces.objects.get(md5sum=md5sum)
                     activity = models.Activity.objects.get(trace_file=trace)
-                    if activity.is_demo_activity:
-                        log.debug(f"activity: '{activity.name}' (ID: {activity.pk}) is demo activity, won't update data")
-                    else:
-                        log.debug(f"reimporting activity '{activity.name}' (ID: {activity.pk}) ... ")
-                        _parse_and_save_to_model(
-                            models=models,
-                            md5sum=md5sum,
-                            trace_file=trace_file,
-                            update_existing=True,
-                            importing_demo_data=importing_demo_data,
-                        )
+                    log.debug(f"reimporting activity '{activity.name}' (ID: {activity.pk}) ... ")
+                    activity = _parse_and_save_to_model(
+                        models=models,
+                        md5sum=md5sum,
+                        trace_file=trace_file,
+                        update_existing=True,
+                        importing_demo_data=importing_demo_data,
+                    )
+                    log.info(f"updated activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
                 else:
                     # file is in db and not supposed to reimport -> do nothing
                     pass
@@ -204,18 +204,15 @@ def _parse_and_save_to_model(models, md5sum: str, trace_file, update_existing: b
         importing_demo_data=importing_demo_data,
         update_existing=update_existing,
     )
-    activity_instace = models.Activity.objects.get(pk=activity_object.pk)
+    activity_instance = models.Activity.objects.get(pk=activity_object.pk)
     # save best sections to model
     _save_best_sections_to_model(
         best_section_model=models.BestSection,
         parser=parser,
-        activity_instance=activity_instace,
+        activity_instance=activity_instance,
         update_existing=update_existing,
     )
-    if update_existing:
-        log.info(f"updated activity: '{activity_object.name}'. ID: {activity_object.pk}")
-    else:
-        log.info(f"created new activity: '{activity_object.name}'. ID: {activity_object.pk}")
+    return activity_instance
 
 
 def _save_laps_to_model(lap_model, laps: list, trace_instance, update_existing: bool):
@@ -266,19 +263,15 @@ def _save_best_sections_to_model(best_section_model, parser, activity_instance, 
                     "max_value": section.max_value,
                 },
             )
-        # What if some section distances get dropped and the db contains more sections than the parser? In this case
-        # all section in the db which have distances which are not present in the configuration should be deleted.
+        # If the parser does not have some best sections but the db has -> delete them from the db
         db_sections = best_section_model.objects.filter(activity=activity_instance)
-        if len(db_sections) > len(parser.best_sections):
-            for section in db_sections:
-                if section.section_distance not in fastest_sections:
-                    log.debug(
-                        f"deleting section with distance of {section.section_distance}, "
-                        "because it is not configured fastest sections"
-                    )
-                    section.delete()
+        for section in db_sections:
+            sec = FastestSection(section.section_distance, section.start_index, section.end_index, section.max_value)
+            if sec not in parser.best_sections:
+                log.debug(f"deleting section: {section} from db, because it is not present in parser")
+                section.delete()
     else:
-        # save fastest sections to model
+        # save best sections to model
         for section in parser.best_sections:
             best_section_object = best_section_model(
                 activity=activity_instance,
@@ -310,9 +303,13 @@ def _save_activity_to_model(models, parser, trace_instance, importing_demo_data:
         # name should not be overwritten
         activity_object = models.Activity.objects.get(trace_file=trace_instance)
         log.debug(f"updating activity attributes for: '{activity_object.name}'")
-        activity_object.date = parser.date
         activity_object.duration = parser.duration
         activity_object.distance = parser.distance
+        if activity_object.is_demo_activity:
+            log.debug(f"won't update date of demo activity: '{activity_object.name}' (ID: {activity_object.pk})")
+        else:
+            log.debug(f"updating date of non-demo activity: '{activity_object.name}' (ID: {activity_object.pk})")
+            activity_object.date = parser.date
     else:
         # get appropriate sport from db
         sport = parser.sport
@@ -406,7 +403,7 @@ def _get_md5sums_from_model(traces_model):
     return md5sums_from_db
 
 
-def _parse_data(file):
+def _parse_data(file) -> Union[FITParser, GPXParser]:
     log.debug(f"importing file {file} ...")
     if file.endswith(".gpx"):
         log.debug("parsing GPX file ...")
@@ -419,7 +416,7 @@ def _parse_data(file):
     else:
         log.error(f"file type: {file} unknown")
         raise NotImplementedError(f"Cannot parse {file} files. Only {supported_formats} are supported.")
-    # parse best sections
+    # parse fastest sections
     parser.get_fastest_sections()
     return parser
 

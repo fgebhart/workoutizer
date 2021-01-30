@@ -9,11 +9,17 @@ from django.forms.models import model_to_dict
 from django.contrib import messages
 from django.urls import reverse
 
-from wizer.views import MapView, PlotView, get_summary_of_activities, get_all_form_field_ids
+from wizer.views import (
+    MapView,
+    PlotView,
+    get_summary_of_activities,
+    get_all_form_field_ids,
+    get_flat_list_of_pks_of_activities_in_top_awards,
+)
 from wizer import models
 from wizer.forms import AddSportsForm
 from wizer.plotting.plot_history import plot_history
-from wizer.configuration import protected_sports
+from wizer import configuration
 from wizer.tools.utils import remove_microseconds
 
 log = logging.getLogger(__name__)
@@ -26,7 +32,7 @@ class AllSportsView(View):
         sports = models.Sport.objects.all().order_by("name")
         sport_data = {}
         for sport in sports:
-            if sport.name not in protected_sports:
+            if sport.name not in configuration.protected_sports:
                 activities_df = pd.DataFrame(
                     list(models.Activity.objects.filter(sport=sport.id).values("duration", "distance"))
                 )
@@ -52,17 +58,20 @@ class SportsView(MapView, PlotView):
         if sports_name_slug == "undefined":
             log.warning("could not find sport - redirecting to home")
             return HttpResponseRedirect(reverse("home"))
-        sport_id = models.Sport.objects.get(slug=sports_name_slug).id
-        activities = self.get_activities(sport_id=sport_id)
-        map_context = super(SportsView, self).get(request=request, list_of_activities=activities)
+        sport = models.Sport.objects.get(slug=sports_name_slug)
+        activities = self.get_activities(sport_id=sport.id)
+        context = super(SportsView, self).get(request=request, list_of_activities=activities)
         sports = models.Sport.objects.all().order_by("name")
         summary = get_summary_of_activities(activities=activities)
         if activities:
             script_history, div_history = plot_history(
                 activities=activities, sport_model=models.Sport, settings_model=models.Settings
             )
-            map_context["script_history"] = script_history
-            map_context["div_history"] = div_history
+            context["script_history"] = script_history
+            context["div_history"] = div_history
+        if sport.evaluates_for_awards:
+            top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit, sports_name_slug)
+            context["top_awards"] = top_awards
         try:
             sport = model_to_dict(models.Sport.objects.get(slug=sports_name_slug))
             sport["slug"] = sports_name_slug
@@ -73,13 +82,12 @@ class SportsView(MapView, PlotView):
             request,
             self.template_name,
             {
-                **map_context,
+                **context,
                 "activities": activities,
                 "sports": sports,
                 "summary": summary,
                 "sport": sport,
                 "form_field_ids": get_all_form_field_ids(),
-                "top_awards": [section.activity.pk for section in models.BestSectionTopScores.objects.all()],
             },
         )
 
@@ -107,7 +115,7 @@ def add_sport_view(request):
 def edit_sport_view(request, sports_name_slug):
     sports = models.Sport.objects.all().order_by("name")
     sport = models.Sport.objects.get(slug=sports_name_slug)
-    if sport.name in protected_sports:
+    if sport.name in configuration.protected_sports:
         messages.warning(request, f"Can't edit sport '{sport.name}'")
         return HttpResponseRedirect(f"/sport/{sport.slug}")
     form = AddSportsForm(request.POST or None, instance=sport)
@@ -115,7 +123,7 @@ def edit_sport_view(request, sports_name_slug):
         if form.is_valid():
             log.debug(f"got valid form: {form.cleaned_data}")
             form.save()
-            messages.success(request, f"Successfully modified '{form.cleaned_data['name']}'")
+            messages.success(request, f"Successfully modified '{form.cleaned_data['name']}' Sport")
             return HttpResponseRedirect(f"/sport/{sport.slug}/edit/")
         else:
             log.warning(f"form invalid: {form.errors}")
@@ -135,7 +143,7 @@ class SportDeleteView(DeleteView):
     def get(self, request, *args, **kwargs):
         sports = models.Sport.objects.all().order_by("name")
         sport = models.Sport.objects.get(slug=kwargs["slug"])
-        if sport.name in protected_sports:
+        if sport.name in configuration.protected_sports:
             messages.warning(request, f"Can't delete sport '{sport.name}'")
             return HttpResponseRedirect(f"/sport/{sport.slug}")
         return render(
