@@ -1,3 +1,6 @@
+{% load filters %}
+
+
 <head>
     <!-- leaflet-ui -->
     <script src="https://unpkg.com/leaflet@1.3.2/dist/leaflet.js"></script>
@@ -35,17 +38,34 @@
         L.marker([end[1], end[0]], {icon: redIcon}).addTo(map);
     {% endfor %}
 
+
+    let trace_color = "red";
     let Style = {
-        "color": "red",
-        "weight": {{ settings.trace_width }},
-        "opacity": {{ settings.trace_opacity }}
+        "color": trace_color,
+        "weight": "{{ settings.trace_width }}",
+        "opacity": "{{ settings.trace_opacity }}",
     };
 
-    // add GoeJson trace to map
+    var fastest_sections = {{ fastest_sections | get_best_sections_list | safe }};
+    var traceGroup = L.layerGroup();
+    for (let i = 0; i < fastest_sections.length; i++) {
+        const section_start = fastest_sections[i][0];
+        const section_end = fastest_sections[i][1];
+
+        var section = coordinates.slice(section_start, section_end);
+        // add section to trace group
+        trace = L.geoJSON({
+            "type": "LineString",
+            "coordinates": section,
+        }, Style);
+        trace.addTo(traceGroup);
+    }
+    // add overall trace as last element to trace group
     trace = L.geoJSON({
-        "type": "LineString",
-        "coordinates": coordinates,
-    }, Style).addTo(map)
+            "type": "LineString",
+            "coordinates": coordinates,
+        }, Style).addTo(traceGroup)
+    traceGroup.addTo(map);
 
     map.fitBounds(trace.getBounds());
 
@@ -96,6 +116,7 @@
         iconAnchor: [7, 6]
     });
 
+    // function to be called by plot_time_series.py when hovering over time series plots to render position in track
     var icon_marker = null;
     var circle_marker = null;
     function render_position(index) {
@@ -107,16 +128,28 @@
         icon_marker = L.marker([coordinates[index][1], coordinates[index][0]], {icon: icon}).addTo(map);
     }
 
+    let markers = markerGroup.getLayers();
     // function to be called from activity_laps.html when hovering over rows of laps
     function render_lap_marker(index) {
-        let markers = markerGroup.getLayers();
-        for (var i=0; i < markers.length; i +=1) {
-            if (i == index) {
-                markers[i].openTooltip();
-            } else {
-                markers[i].closeTooltip();
-            }
-        }
+        markers[index].openTooltip();
     }
+    function hide_lap_marker(index) {
+        markers[index].closeTooltip();
+    }
+
+    let traces = traceGroup.getLayers();
+    // function to be called by fastest_sections_table.html when hovering over rows of fastest sections
+    function render_fastest_sections(index) {
+        let selected_section = traces[index];
+        selected_section.setStyle({"color": "yellow"});
+        selected_section.bringToFront();
+    }
+
+    function hide_fastest_sections(index) {
+        let selected_section = traces[index];
+        selected_section.setStyle({"color": trace_color});
+        selected_section.bringToBack();
+    }
+
 </script>
 <br>

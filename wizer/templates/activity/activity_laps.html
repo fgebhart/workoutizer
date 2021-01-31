@@ -29,8 +29,8 @@
         {% endfor %}
     </tbody>
 </table>
-<script>
 
+<script>
 var tableRows=document.getElementsByClassName('lap_row');
 for (var i=0; i < tableRows.length; i +=1) {
     tableRows[i].addEventListener('mouseover', function(e) {
@@ -38,6 +38,10 @@ for (var i=0; i < tableRows.length; i +=1) {
             render_lap_marker(row_index);
         }
     );
+    tableRows[i].addEventListener('mouseout', function(e) {
+        let row_index = $(this).index();
+            hide_lap_marker(row_index);
+        }
+    );
 }
-
 </script>
