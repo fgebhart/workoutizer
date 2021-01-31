@@ -60,7 +60,7 @@
 
     var markerGroup = L.layerGroup();
 
-    // add lap markers to map
+    // add lap markers to map as tooltip
     {% for lap in laps %}
         {% if lap.end_lat and lap.end_long %}
             var lat = {{lap.end_lat}};
@@ -105,6 +105,18 @@
         }
         circle_marker = L.circleMarker([coordinates[index][1], coordinates[index][0]], PositionMarker).addTo(map);
         icon_marker = L.marker([coordinates[index][1], coordinates[index][0]], {icon: icon}).addTo(map);
+    }
+
+    // function to be called from activity_laps.html when hovering over rows of laps
+    function render_lap_marker(index) {
+        let markers = markerGroup.getLayers();
+        for (var i=0; i < markers.length; i +=1) {
+            if (i == index) {
+                markers[i].openTooltip();
+            } else {
+                markers[i].closeTooltip();
+            }
+        }
     }
 </script>
 <br>

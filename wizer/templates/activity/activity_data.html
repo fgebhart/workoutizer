@@ -132,35 +132,7 @@
     {{ activity.description }}
 {% endif %}
 {% if laps %}
-    <br>
-    <br>
-    <h5>Laps</h5>
-    <table class="table table-hover small">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th data-toggle="tooltip" data-placement="top" title="hh:mm:ss">Time</th>
-            <th data-toggle="tooltip" data-placement="top" title="m">Distance</th>
-            <th data-toggle="tooltip" data-placement="top" title="min/km">Pace</th>
-            <th>Label</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for lap in laps %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ lap.elapsed_time|h_m_s }}</td>
-                <td>{{ lap.distance|to_int }}</td>
-                <td>{{ lap.speed|speed_to_pace }}</td>
-                {% if lap.label %}
-                    <td>{{ lap.label }}</td>
-                {% else %}
-                    <td>-</td>
-                {% endif %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+{% include "activity/activity_laps.html" %}
 {% endif %}
 <br>
 &nbsp;
