@@ -73,7 +73,7 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver):
     activity.save()
     assert activity.is_demo_activity is True
 
-    assert webdriver.find_element_by_tag_name("h3").text == "Edit 'Noon Cycling in Bad Schandau (unknown)' Activity"
+    assert webdriver.find_element_by_tag_name("h3").text == "Edit Activity: Noon Cycling in Bad Schandau (unknown)"
     assert webdriver.find_element_by_tag_name("button").text == "  Save"
     assert (
         webdriver.find_element_by_tag_name("form").text

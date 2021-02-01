@@ -59,17 +59,25 @@ def h_m_s(delta):
     return str(delta).split(".")[0]
 
 
-def strfdelta(tdelta, format):
+def strfdelta(tdelta, fmt):
     d = {"days": tdelta.days}
     d["hours"], rem = divmod(tdelta.seconds, 3600)
     d["minutes"], d["seconds"] = divmod(rem, 60)
-    return format.format(**d)
+    return fmt.format(**d)
 
 
 @register.filter
-def queryset_to_list(queryset):
+def queryset_to_list(queryset: QuerySet):
     if isinstance(queryset, QuerySet):
-        list_as_string = sorted(list(queryset.values_list("slug", flat=True)))
+        list_as_string = sorted(queryset.values_list("slug", flat=True))
         if "unknown" in list_as_string:
             list_as_string.remove("unknown")
         return list_as_string
+
+
+@register.filter
+def get_best_sections_list(queryset: QuerySet):
+    list_of_start_and_end_index = []
+    for section in queryset:
+        list_of_start_and_end_index.append([section.start_index, section.end_index])
+    return list_of_start_and_end_index
