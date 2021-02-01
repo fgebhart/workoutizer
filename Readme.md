@@ -9,14 +9,14 @@ Track your activities to get an overview of your overall training, similar to pl
 [strava](https://www.strava.com/) or [garmin connect](https://connect.garmin.com/) - but without
 uploading all your sensitive health data to some 3rd party cloud.
 
-#### Features
+### Features
 * Automatic import of Garmin `.fit` files and `.gpx` files
 * Automatic naming of activities based on daytime, sport and geo location
 * Render your activity gps data on different OSM maps
 * Plot your activity specific data e.g. heart rate, pace, temperature, cadence and altitude
 * Integrate laps into both plots and maps
 * Connected plots and map via mouse hovering
-* Find the fastest sections in your activities using [sportgems](https://github.com/fgebhart/sportgems)
+* Find the fastest sections in your activities using [sportgems](https://github.com/fgebhart/sportgems) and highlight on map
 * Keyboard navigation in browser
 * Add untracked activities manually via the GUI
 * Export activities as `.gpx` files
@@ -55,7 +55,7 @@ In case you want to run workoutizer on a Raspberry Pi in your local network, fol
 
  Activity Page 1/2             |  Activity Page 2/2
 :-------------------------:|:-------------------------:
-![](https://i.imgur.com/iuXhiab.png)  |  ![](https://i.imgur.com/7nV4Ks2.png)
+![](https://i.imgur.com/tcS6L4Y.png)  |  ![](https://i.imgur.com/7nV4Ks2.png)
 
 ## Thanks
 
@@ -76,27 +76,27 @@ Contributions are welcome! Feel free to pick an [open issue](https://github.com/
 a pull request or file a new issue.
 
 For local development I recommend to run the development docker container. First clone the repo:
-```shell script
+```
 git clone git@github.com:fgebhart/workoutizer.git
 cd workoutizer
 ```
 and then start workoutizer in docker using the convenience script:
-```shell script
+```
 ./run_docker.sh
 ```
 This might take a while to build the image, run the container and initialize workoutizer. Once up and running, run the
 tests with
-```shell script
+```
 pytest wizer/tests/
 ```
 Once this was successful you are good to go.
 
 In order to run workoutizer you could either run it using django's `manage.py` script
-```shell script
+```
 python manage.py runserver
 ```
 or using the `wkz` cli
-```shell script
+```
 wkz run
 ```
 In case you encounter any issues in the setup process, feel free to file an issue.
