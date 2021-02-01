@@ -55,7 +55,7 @@ In case you want to run workoutizer on a Raspberry Pi in your local network, fol
 
  Activity Page 1/2             |  Activity Page 2/2
 :-------------------------:|:-------------------------:
-![](https://i.imgur.com/tcS6L4Y.png)  |  ![](https://i.imgur.com/7nV4Ks2.png)
+![](https://i.imgur.com/tcS6L4Y.png)  |  ![](https://i.imgur.com/QSf3Dpo.png)
 
 ## Thanks
 
