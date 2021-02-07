@@ -7,7 +7,7 @@
         display: inline;
     }
     i {
-        width: 30px;
+        width: 20px;
     }
     .buttonStyle {
         border-width: 1px;
@@ -94,15 +94,15 @@
     {% endfor %}
     <!-- Add Sport -->
     {% if page == 'add_sport' %}
-        <a href="{% url 'add-sport' %}" class="btn text-left buttonStyle selected">
+        <a href="{% url 'add-sport' %}" id="add-sport" class="btn text-left buttonStyle selected">
     {% else %}
-        <a href="{% url 'add-sport' %}" class="btn text-left buttonStyle">
+        <a href="{% url 'add-sport' %}" id="add-sport" class="btn text-left buttonStyle">
     {% endif %}
             <h6><i class="fas fa-plus"></i></h6>
             <p>Add Sport</p>
         </a>
     <!-- Collapse Toggle -->
-    <a onClick="toggleNav(); return false;" id="sidebar_toggle" class="btn text-left toggleStyle">
+    <a onClick="toggleNav(); return false;" id="sidebar-toggle" class="btn text-left toggleStyle">
         <h6><i class="fas fa-arrows-alt-h"></i></h6>
     </a>
 </div>
@@ -117,13 +117,13 @@
     }
     function openNav() {
         document.getElementById("sidebar_left").style.width = 
-        document.getElementById("sidebar_toggle").style.width = 
+        document.getElementById("sidebar-toggle").style.width = 
         document.getElementById("main").style.marginLeft = 
         "200px";
     }
     function closeNav() {
         document.getElementById("sidebar_left").style.width = 
-        document.getElementById("sidebar_toggle").style.width = 
+        document.getElementById("sidebar-toggle").style.width = 
         document.getElementById("main").style.marginLeft = 
         "45px";
     }
