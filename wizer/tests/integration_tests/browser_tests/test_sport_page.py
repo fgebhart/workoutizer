@@ -16,11 +16,8 @@ def test_adding_new_sport(live_server, webdriver):
     sports = models.Sport.objects.all()
     assert len(sports) == 1
     assert sports[0].name == "unknown"
-    webdriver.get(live_server.url + reverse("sports"))
-
-    # ensure button to add new sport actually redirects to add sport page
-    webdriver.find_element_by_css_selector('a[href="/add-sport/"]').click()
-    assert webdriver.current_url == live_server.url + reverse("add-sport")
+    # webdriver.get(live_server.url + reverse("sports"))
+    webdriver.get(live_server.url + reverse("add-sport"))
 
     # fill out form to add new sport
     sport_name_input_field = webdriver.find_element_by_css_selector("#id_name")

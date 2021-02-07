@@ -1,68 +1,113 @@
+<style>
+    h6 {
+        display: inline;
+        margin-right: 20px;
+    }
+    p {
+        display: inline;
+    }
+    i {
+        width: 20px;
+    }
+    .buttonStyle {
+        border-width: 1px;
+        border-color: rgba(0, 0, 0, 0.1);
+        border-style: solid;
+        border-radius: 0px;
+        border-bottom: 0px;
+        border-left: 0px;
+        border-right: 0px;
+        width: 200px;
+        height: 40px;
+        outline: none;
+        display: inline-block;
+    }
+    .selected {
+        background: rgba(0, 0, 0, 0.07);
+    }
+    .buttonStyle:hover {
+        background-color: rgba(0, 0, 0, 0.07);
+    }
+    .buttonStyle:hover h6,
+    .buttonStyle:hover p {
+        color: black;
+    }
+    .toggleStyle {
+        border-width: 1px;
+        border-color: rgba(0, 0, 0, 0.1);
+        border-style: solid;
+        border-radius: 0px;
+        border-bottom: 0px;
+        cursor: pointer;
+        width: 45px;
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        background-color: whitesmoke;
+        transition: 1s;
+    }
+</style>
+
 <div id="sidebar_left" class="sidebar_left">
-    <table class="table table-hover">
-        {% if page == 'dashboard' %}
-            <tr onclick="window.location='/';" style="background: rgba(0,0,0,0.07); cursor:pointer">
-        {% else %}
-            <tr onclick="window.location='/';" style="cursor:pointer">
-        {% endif %}
-        <td height="45"><i class="fas fa-chart-line"></i></td>
-        <td height="45">Dashboard</td>
-        </tr>
-        {% if page == 'awards' %}
-            <tr onclick="window.location='{% url "awards" %}';"
-                style="background: rgba(0,0,0,0.07); cursor:pointer">
-        {% else %}
-            <tr onclick="window.location='{% url "awards" %}';" style="cursor:pointer">
-        {% endif %}
-        <td height="45"><i class="fas fa-medal"></i></td>
-        <td height="45">Awards</td>
-        </tr>
-        {% if page == 'all_sports' %}
-            <tr onclick="window.location='{% url "sports" %}';"
-                style="background: rgba(0,0,0,0.07); cursor:pointer">
-        {% else %}
-            <tr onclick="window.location='{% url "sports" %}';" style="cursor:pointer">
-        {% endif %}
-        <td height="45"><i class="fas fa-list"></i></td>
-        <td height="45">All Sports</td>
-        </tr>
-        {% for s in sports %}
-            {% if s.slug != 'unknown' %}
-                {% if activity.sport.slug == s.slug or sport.slug == s.slug %}
-                    <tr onclick="window.location='/sport/{{ s.slug }}';"
-                        style="background: rgba(0,0,0,0.07); cursor:pointer">
-                {% else %}
-                    <tr onclick="window.location='/sport/{{ s.slug }}';" style="cursor:pointer">
-                {% endif %}
-            <td height="45"><i class="fas fa-{{ s.icon }}"
-                               style="color: {{ s.color }};"></i></td>
-            <td height="45">{{ s.name }}</td>
-            </tr>
+    <!-- Dashboard -->
+    {% if page == 'dashboard' %}
+        <a href="{% url 'home' %}" class="btn text-left buttonStyle selected">
+    {% else %}
+        <a href="{% url 'home' %}" class="btn text-left buttonStyle">
+    {% endif %}
+            <h6><i class="fas fa-chart-line"></i></h6>
+            <p>Dashboard</p>
+        </a>
+    <!-- Awards -->
+    {% if page == 'awards' %}
+        <a href="{% url 'awards' %}" class="btn text-left buttonStyle selected">
+    {% else %}
+        <a href="{% url 'awards' %}" class="btn text-left buttonStyle">
+    {% endif %}
+            <h6><i class="fas fa-medal"></i></h6>
+            <p>Awards</p>
+        </a>
+    <!-- All Sports -->
+    {% if page == 'all_sports' %}
+        <a href="{% url 'sports' %}" class="btn text-left buttonStyle selected">
+    {% else %}
+        <a href="{% url 'sports' %}" class="btn text-left buttonStyle">
+    {% endif %}
+            <h6><i class="fas fa-list"></i></h6>
+            <p>All Sports</p>
+        </a>
+    <!-- Sports -->
+    {% for s in sports %}
+        {% if s.slug != 'unknown' %}
+            {% if activity.sport.slug == s.slug or sport.slug == s.slug %}
+                <a href="/sport/{{ s.slug }}" class="btn text-left buttonStyle selected">
+                    <h6><i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i></h6>
+                    <p>{{ s.name }}</p>
+                </a>
+            {% else %}
+                <a href="/sport/{{ s.slug }}" class="btn text-left buttonStyle">
+                    <h6><i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i></h6>
+                    <p>{{ s.name }}</p>
+                </a>
             {% endif %}
-        {% endfor %}
-        {% if page == 'add_sport' %}
-            <tr onclick="window.location='{% url 'add-sport' %}';"
-                style="background: rgba(0,0,0,0.07); cursor:pointer">
-        {% else %}
-            <tr onclick="window.location='{% url 'add-sport' %}';" style="cursor:pointer">
         {% endif %}
-        <td height="45"><i class="fas fa-plus"></i></td>
-        <td height="45">Add Sport</td>
-        </tr>
-        <tr style="background: whitesmoke">
-            <td id="fill_row"></td>
-            <td></td>
-        </tr>
-        <tr onclick="void(0)" id="myBtn" style="cursor:pointer;">
-            <td><i class="fas fa-arrows-alt-h"></i></td>
-            <td>Collapse</td>
-        </tr>
-    </table>
+    {% endfor %}
+    <!-- Add Sport -->
+    {% if page == 'add_sport' %}
+        <a href="{% url 'add-sport' %}" id="add-sport" class="btn text-left buttonStyle selected">
+    {% else %}
+        <a href="{% url 'add-sport' %}" id="add-sport" class="btn text-left buttonStyle">
+    {% endif %}
+            <h6><i class="fas fa-plus"></i></h6>
+            <p>Add Sport</p>
+        </a>
+    <!-- Collapse Toggle -->
+    <a onClick="toggleNav(); return false;" id="sidebar-toggle" class="btn text-left toggleStyle">
+        <h6><i class="fas fa-arrows-alt-h"></i></h6>
+    </a>
 </div>
 
 <script>
-    document.getElementById("myBtn").addEventListener("click", toggleNav);
-
     function toggleNav() {
         const navSize = document.getElementById("sidebar_left").style.width;
         if (navSize === "45px" || navSize === "") {
@@ -70,20 +115,16 @@
         }
         return closeNav();
     }
-
     function openNav() {
-        document.getElementById("sidebar_left").style.width = "200px";
-        document.getElementById("main").style.marginLeft = "200px";
+        document.getElementById("sidebar_left").style.width = 
+        document.getElementById("sidebar-toggle").style.width = 
+        document.getElementById("main").style.marginLeft = 
+        "200px";
     }
-
     function closeNav() {
-        document.getElementById("sidebar_left").style.width = "45px";
-        document.getElementById("main").style.marginLeft = "45px";
+        document.getElementById("sidebar_left").style.width = 
+        document.getElementById("sidebar-toggle").style.width = 
+        document.getElementById("main").style.marginLeft = 
+        "45px";
     }
-
-    present_height = document.getElementsByTagName("TD")[0].getAttribute("height");
-    number_of_rows = document.getElementsByTagName("TD").length / 2;
-    fill_height = $("#sidebar_left").height() - present_height * number_of_rows - 6;
-    document.getElementById("fill_row").setAttribute("height", fill_height);
-
 </script>
