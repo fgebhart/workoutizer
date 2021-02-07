@@ -82,6 +82,9 @@
         } else if (map['g'] && map['9']) {
             window.location.href = get_sport(event, sports);
             map = {};
+        } else if (map['[']) {
+            toggleNav();
+            map = {};
         }
     }
 
