@@ -1,4 +1,5 @@
 from django import forms
+from bootstrap_datepicker_plus import DateTimePickerInput
 
 from wizer.models import Sport, Activity, Settings
 
@@ -10,6 +11,8 @@ class AddSportsForm(forms.ModelForm):
 
 
 class AddActivityForm(forms.ModelForm):
+    date = forms.DateTimeField(widget=DateTimePickerInput(attrs={"max-width": "20ch"}))
+
     class Meta:
         model = Activity
         exclude = ("trace_file", "created", "modified")
@@ -20,6 +23,8 @@ class AddActivityForm(forms.ModelForm):
 
 
 class EditActivityForm(forms.ModelForm):
+    date = forms.DateTimeField(widget=DateTimePickerInput())
+
     class Meta:
         model = Activity
         exclude = ("trace_file", "created", "modified", "is_demo_activity")

@@ -1,13 +1,18 @@
 {% extends 'lib/base.html' %}
 {% load static %}
 {% block body %}
+<style>
+    #id_date {
+        max-width: 23ch;
+    }
+</style>
     <title>Add new Activity | Workoutizer</title>
     <h3>Add new Activity</h3>
     <hr>
     <br>
     <div class="container">
-
         <form action="{% url 'add-activity' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+            <br>
             {% csrf_token %}
             {% include "lib/form_errors.html" %}
             {% include "lib/messages.html" %}
@@ -35,6 +40,9 @@
                 <div class="col-sm-2">{{ form.description.label }}</div>
                 <div class="col-sm-10">{{ form.description }}</div>
             </div>
+            <br>
+            <br>
+            <br>
             <button id="button" class="btn btn-warning" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Submit
             </button>
         </form>
