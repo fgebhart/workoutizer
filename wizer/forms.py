@@ -11,7 +11,7 @@ class AddSportsForm(forms.ModelForm):
 
 
 class AddActivityForm(forms.ModelForm):
-    date = forms.DateTimeField(widget=DateTimePickerInput(attrs={"max-width": "20ch"}))
+    date = forms.DateTimeField(widget=DateTimePickerInput())
 
     class Meta:
         model = Activity

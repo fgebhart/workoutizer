@@ -204,5 +204,4 @@ def test_add_activity_page(insert_sport, webdriver, live_server):
     assert activity.distance == 2.3
     assert activity.description == "super sport"
     assert activity.sport.name == "Cycling"
-    now = timezone.now()
-    assert activity.date == (now - datetime.timedelta(minutes=59, seconds=now.second, microseconds=now.microsecond))
+    assert activity.date.date() == timezone.now().date()
