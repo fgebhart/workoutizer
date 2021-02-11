@@ -38,6 +38,16 @@ def sport(db):
 
 
 @pytest.fixture
+def insert_sport(db):
+    def _create_sport(name="Cycling"):
+        sport = models.Sport(name=name, color="red", icon="Bike")
+        sport.save()
+        return sport
+
+    return _create_sport
+
+
+@pytest.fixture
 def trace_file(db):
     trace = models.Traces(
         path_to_file="some/path/to/file.gpx",
@@ -131,7 +141,6 @@ def import_one_activity(db, tracks_in_tmpdir):
             list_of_files_to_copy=[file_name],
         )
         import_activity_files(models, importing_demo_data=False)
-        assert models.Sport.objects.count() == 1
         assert models.Activity.objects.count() == 1
 
     return _copy_activity

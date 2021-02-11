@@ -1,41 +1,50 @@
 {% extends 'lib/base.html' %}
 {% load static %}
 {% block body %}
+<style>
+    #id_date {
+        max-width: 23ch;
+    }
+</style>
     <title>Add new Activity | Workoutizer</title>
     <h3>Add new Activity</h3>
     <hr>
     <br>
     <div class="container">
-
-        <form action="{% url 'add-activity' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+        <form action="{% url 'add-activity' %}" method="post" accept-charset="utf-8"
+              enctype="multipart/form-data">
             {% csrf_token %}
             {% include "lib/form_errors.html" %}
             {% include "lib/messages.html" %}
             <div class="form-group row">
-                <div class="col-sm-2">{{ form.name.label }}</div>
-                <div class="col-sm-10">{{ form.name }}</div>
+                <div class="col-sm-3">{{ form.name.label }}</div>
+                <div class="col-sm-9">{{ form.name }}</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2">{{ form.sport.label }}</div>
-                <div class="col-sm-10">{{ form.sport }}</div>
+                <div class="col-sm-3">{{ form.sport.label }}:</div>
+                <div class="col-sm-9">{{ form.sport }}</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2">{{ form.date.label }}</div>
-                <div class="col-sm-10">{{ form.date }}</div>
+                <div class="col-sm-3">{{ form.date.label }}:</div>
+                <div class="col-sm-9">{{ form.date }}</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2">{{ form.duration.label }}</div>
-                <div class="col-sm-10">{{ form.duration }}&nbsp;&nbsp;Format: HH:MM:SS</div>
+                <div class="col-sm-3">{{ form.duration.label }}</div>
+                <div class="col-sm-9">{{ form.duration }}&nbsp;&nbsp;Format: HH:MM:SS</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2">{{ form.distance.label }}</div>
-                <div class="col-sm-10">{{ form.distance }}&nbsp;&nbsp;km</div>
+                <div class="col-sm-3">{{ form.distance.label }}</div>
+                <div class="col-sm-9">{{ form.distance }}&nbsp;&nbsp;km</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2">{{ form.description.label }}</div>
-                <div class="col-sm-10">{{ form.description }}</div>
+                <div class="col-sm-3">{{ form.description.label }}</div>
+                <div class="col-sm-9">{{ form.description }}</div>
             </div>
-            <button id="button" class="btn btn-warning" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Submit
+            <br>
+            <br>
+            <br>
+            <button id="submit-button" class="btn btn-warning" type="submit" name="action">
+                <i class="fas fa-check"></i>&nbsp;&nbsp;Submit
             </button>
         </form>
     </div>

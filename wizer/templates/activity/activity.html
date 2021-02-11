@@ -8,7 +8,7 @@
         <i class="fas fa-{{ activity.sport.icon }}"></i>
     </a></h3>
     <div class="btn-group float-right">
-        <a class="btn btn-warning" href="{{ activity.id }}/edit" data-toggle="tooltip" data-placement="bottom"
+        <a class="btn btn-warning" href="{{ activity.id }}/edit" id="edit-activity" data-toggle="tooltip" data-placement="bottom"
            title="Edit Activity"><i class="fas fa-pen"></i></a>
         {% if activity.trace_file.longitude_list != "[]" %}
             <a class="btn btn-warning" href="{{ activity.id }}/download" data-toggle="tooltip" data-placement="bottom"

@@ -97,7 +97,7 @@ def edit_activity_view(request, activity_id):
         request,
         "activity/edit_activity.html",
         {
-            "activity_form": activity_form,
+            "form": activity_form,
             "sports": sports,
             "activity": activity,
             "formset": formset,
