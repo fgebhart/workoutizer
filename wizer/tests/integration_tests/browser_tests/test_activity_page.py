@@ -1,5 +1,7 @@
 import datetime
 
+from django.urls import reverse
+from django.utils import timezone
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -58,12 +60,24 @@ def test_activity_page__complete(import_one_activity, live_server, webdriver):
     assert len(webdriver.find_elements_by_class_name("bk-canvas")) == 3
 
 
-def test_edit_activity_page(import_one_activity, live_server, webdriver):
+def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_sport):
+    # add some sports
+    insert_sport("Cycling")
+    insert_sport("MTB")
+    assert models.Sport.objects.count() == 2
+
+    # activity will be mapped to sport "Cycling"
     import_one_activity("2020-08-29-13-04-37.fit")
 
     activity = models.Activity.objects.get()
     pk = activity.pk
+    assert activity.sport.name == "Cycling"
+
+    # save initial date
+    initial_date = activity.date
+
     webdriver.get(live_server.url + f"/activity/{pk}")
+
     # verify that activity has some awards
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
 
@@ -78,11 +92,11 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver):
     activity.save()
     assert activity.is_demo_activity is True
 
-    assert webdriver.find_element_by_tag_name("h3").text == "Edit Activity: Noon Cycling in Bad Schandau (unknown)"
+    assert webdriver.find_element_by_tag_name("h3").text == "Edit Activity: Noon Cycling in Bad Schandau (Cycling)"
     assert webdriver.find_element_by_tag_name("button").text == "  Save"
     assert (
         webdriver.find_element_by_tag_name("form").text
-        == "Activity Name:\nSport:\nunknown\nDate:\nDuration:\n  min\nDistance:\n  km\nDescription:\nConsider this "
+        == "Activity Name:\nSport:\nCycling\nMTB\nDate:\nDuration:\n  min\nDistance:\n  km\nDescription:\nConsider this "
         "Activity for Awards:\n  \nLap Data\n\n\n  Save\nCancel\n  Delete"
     )
 
@@ -106,8 +120,20 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver):
     duration_field.clear()
     duration_field.send_keys("01:11:11")
 
+    # change sport to verify dropdown also works
+    dropdown = webdriver.find_element(By.ID, "id_sport")
+    dropdown.find_element(By.XPATH, "//option[. = 'MTB']").click()
+
+    # modify the date of the activity to verify the datetime picker widget works
+    webdriver.find_element(By.ID, "id_date").click()
+    webdriver.find_element(By.CSS_SELECTOR, "tr:nth-child(4) > .day:nth-child(5)").click()
+    webdriver.find_element(By.CSS_SELECTOR, "tr:nth-child(3) > .day:nth-child(3)").click()
+    webdriver.find_element(By.CSS_SELECTOR, ".glyphicon-time").click()
+    webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(3) .glyphicon-chevron-down").click()
+    webdriver.find_element(By.CSS_SELECTOR, ".glyphicon-remove").click()
+
     # submit form with modified data
-    button = webdriver.find_element_by_id("button")
+    button = webdriver.find_element_by_id("submit-button")
     button.click()
 
     # verify url got changed to activity view
@@ -122,44 +148,61 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver):
     assert activity.duration == datetime.timedelta(seconds=4271)
     assert activity.is_demo_activity is True
     assert activity.evaluates_for_awards is False
+    assert activity.sport.name == "MTB"
+    assert activity.date != initial_date
 
 
-def test_edit_activity_selenium_ide(insert_activity, webdriver, live_server):
-    insert_activity(name="test")
-    assert models.Activity.objects.count() == 1
-
-    # enlarge selected time window
-    settings = models.get_settings()
-    settings.number_of_days = 9999
-    settings.save()
+def test_add_activity_page(insert_sport, webdriver, live_server):
+    # insert some sports
+    insert_sport("Cycling")
+    insert_sport("MTB")
+    assert models.Sport.objects.count() == 2
 
     webdriver.get(live_server.url)
-    webdriver.find_element(By.LINK_TEXT, "test").click()
-    webdriver.find_element(By.ID, "edit-activity").click()
-    webdriver.find_element(By.ID, "id_name").click()
+    webdriver.find_element(By.ID, "add-activity-button").click()
+    assert webdriver.current_url == live_server.url + reverse("add-activity")
+
+    # set name
     webdriver.find_element(By.ID, "id_name").click()
     webdriver.find_element(By.ID, "id_name").clear()
-    webdriver.find_element(By.ID, "id_name").send_keys("renamed name")
+    webdriver.find_element(By.ID, "id_name").send_keys("Dummy Activity")
+    webdriver.find_element(By.CSS_SELECTOR, "form").click()
+    # set sport
     dropdown = webdriver.find_element(By.ID, "id_sport")
     dropdown.find_element(By.XPATH, "//option[. = 'Cycling']").click()
+    # set date
     webdriver.find_element(By.ID, "id_date").click()
-    webdriver.find_element(By.CSS_SELECTOR, "tr:nth-child(4) > .day:nth-child(5)").click()
-    webdriver.find_element(By.CSS_SELECTOR, "tr:nth-child(3) > .day:nth-child(3)").click()
     webdriver.find_element(By.CSS_SELECTOR, ".glyphicon-time").click()
-    webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(3) .glyphicon-chevron-down").click()
-    webdriver.find_element(By.CSS_SELECTOR, ".glyphicon-remove").click()
+    # minus one hour
+    webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(1) .glyphicon-chevron-down").click()
+    # plus one minute
+    webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(3) .glyphicon-chevron-up").click()
+    webdriver.find_element(By.ID, "id_date").click()
+    webdriver.find_element(By.CSS_SELECTOR, ".input-group").click()
+    # set duration
     webdriver.find_element(By.ID, "id_duration").click()
     webdriver.find_element(By.ID, "id_duration").clear()
     webdriver.find_element(By.ID, "id_duration").send_keys("00:31:00")
-    webdriver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(6) > .col-sm-9").click()
+    # set distance
     webdriver.find_element(By.ID, "id_distance").click()
-    webdriver.find_element(By.ID, "id_distance").send_keys("2.0")
+    webdriver.find_element(By.ID, "id_distance").send_keys("2.3")
+    # set description
     webdriver.find_element(By.ID, "id_description").click()
-    webdriver.find_element(By.ID, "id_description").send_keys("asdf")
-    webdriver.find_element(By.ID, "submit-button").submit()
-
+    webdriver.find_element(By.ID, "id_description").send_keys("super sport")
+    webdriver.find_element(By.CSS_SELECTOR, "form").click()
+    # submit and wait
+    webdriver.find_element(By.ID, "submit-button").click()
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".alert")))
-    assert webdriver.current_url == live_server.url + "/activity/1"
-    webdriver.save_screenshot(f"selenium_ide/debugging/{datetime.datetime.now()}_edit_activity.png")
 
-    assert "Successfully modified 'renamed name'" in webdriver.find_element(By.CSS_SELECTOR, ".alert").text
+    assert webdriver.current_url == live_server.url + reverse("home")
+    assert "Successfully added 'Dummy Activity'" in webdriver.find_element(By.CSS_SELECTOR, ".alert").text
+
+    assert models.Activity.objects.count() == 1
+    activity = models.Activity.objects.get()
+    assert activity.name == "Dummy Activity"
+    assert activity.duration == datetime.timedelta(minutes=31)
+    assert activity.distance == 2.3
+    assert activity.description == "super sport"
+    assert activity.sport.name == "Cycling"
+    now = timezone.now()
+    assert activity.date == (now - datetime.timedelta(minutes=59, seconds=now.second, microseconds=now.microsecond))
