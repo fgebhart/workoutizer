@@ -16,5 +16,6 @@ venv/
 .vscode/.ropeproject/objectdb
 *.log*
 spike/
+selenium_ide/
 .devcontainer/tz
 .DS_Store

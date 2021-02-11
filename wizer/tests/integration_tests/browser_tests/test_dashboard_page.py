@@ -21,11 +21,11 @@ def test_nav_bar_items(live_server, webdriver):
     webdriver.get(live_server.url + reverse("home"))
 
     # ensure nav bar link to settings page works
-    webdriver.find_element_by_css_selector('a[data-original-title="Settings"]').click()
+    webdriver.find_element_by_id("settings-link").click()
     assert webdriver.current_url == live_server.url + reverse("settings")
 
     # ensure nav bar link to help page works
-    webdriver.find_element_by_css_selector('a[data-original-title="Help"]').click()
+    webdriver.find_element_by_id("help-link").click()
     assert webdriver.current_url == live_server.url + reverse("help")
 
 

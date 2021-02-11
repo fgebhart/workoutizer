@@ -1,5 +1,9 @@
 import datetime
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 from wizer import models
 
 
@@ -118,3 +122,44 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver):
     assert activity.duration == datetime.timedelta(seconds=4271)
     assert activity.is_demo_activity is True
     assert activity.evaluates_for_awards is False
+
+
+def test_edit_activity_selenium_ide(insert_activity, webdriver, live_server):
+    insert_activity(name="test")
+    assert models.Activity.objects.count() == 1
+
+    # enlarge selected time window
+    settings = models.get_settings()
+    settings.number_of_days = 9999
+    settings.save()
+
+    webdriver.get(live_server.url)
+    webdriver.find_element(By.LINK_TEXT, "test").click()
+    webdriver.find_element(By.ID, "edit-activity").click()
+    webdriver.find_element(By.ID, "id_name").click()
+    webdriver.find_element(By.ID, "id_name").click()
+    webdriver.find_element(By.ID, "id_name").clear()
+    webdriver.find_element(By.ID, "id_name").send_keys("renamed name")
+    dropdown = webdriver.find_element(By.ID, "id_sport")
+    dropdown.find_element(By.XPATH, "//option[. = 'Cycling']").click()
+    webdriver.find_element(By.ID, "id_date").click()
+    webdriver.find_element(By.CSS_SELECTOR, "tr:nth-child(4) > .day:nth-child(5)").click()
+    webdriver.find_element(By.CSS_SELECTOR, "tr:nth-child(3) > .day:nth-child(3)").click()
+    webdriver.find_element(By.CSS_SELECTOR, ".glyphicon-time").click()
+    webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(3) .glyphicon-chevron-down").click()
+    webdriver.find_element(By.CSS_SELECTOR, ".glyphicon-remove").click()
+    webdriver.find_element(By.ID, "id_duration").click()
+    webdriver.find_element(By.ID, "id_duration").clear()
+    webdriver.find_element(By.ID, "id_duration").send_keys("00:31:00")
+    webdriver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(6) > .col-sm-9").click()
+    webdriver.find_element(By.ID, "id_distance").click()
+    webdriver.find_element(By.ID, "id_distance").send_keys("2.0")
+    webdriver.find_element(By.ID, "id_description").click()
+    webdriver.find_element(By.ID, "id_description").send_keys("asdf")
+    webdriver.find_element(By.ID, "submit-button").submit()
+
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".alert")))
+    assert webdriver.current_url == live_server.url + "/activity/1"
+    webdriver.save_screenshot(f"selenium_ide/debugging/{datetime.datetime.now()}_edit_activity.png")
+
+    assert "Successfully modified 'renamed name'" in webdriver.find_element(By.CSS_SELECTOR, ".alert").text

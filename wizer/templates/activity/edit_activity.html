@@ -25,7 +25,7 @@
                 <div class="col-sm-9">{{ form.sport }}</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-3">{{ form.date.label }}</div>
+                <div class="col-sm-3">{{ form.date.label }}:</div>
                 <div class="col-sm-9">{{ form.date }}</div>
             </div>
             <div class="form-group row">
@@ -65,10 +65,10 @@
                 <br>
                 <br>
             {% endif %}
-            <button id="button" class="float-left btn btn-warning btn-space" type="submit" name="action"><i
+            <button id="submit-button" class="float-left btn btn-warning btn-space" type="submit" name="action"><i
                     class="fas fa-check"></i>&nbsp;&nbsp;Save
             </button>
-            <a href="/activity/{{ activity.id }}" class="float-left btn btn-outline-secondary">Cancel</a>
+            <a href="/activity/{{ activity.id }}" id="cancel-button" class="float-left btn btn-outline-secondary">Cancel</a>
             <a href="/activity/{{ activity.id }}/delete/" class="float-right btn btn-danger"><i
                     class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete</a>
             <div class="clearfix"></div>

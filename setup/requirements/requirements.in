@@ -3,6 +3,7 @@ coloredlogs
 click
 django
 django-bootstrap-datepicker-plus
+django-bootstrap4
 django-colorfield
 django-leaflet<=0.26.0  # pinned since newer version require the separate installation of gdal 
 djangorestframework

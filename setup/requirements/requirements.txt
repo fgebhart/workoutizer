@@ -5,12 +5,15 @@
 #    pip-compile --no-annotate setup/requirements/requirements.in
 #
 asgiref==3.3.1
+beautifulsoup4==4.9.3
 bokeh==1.4.0
 certifi==2020.12.5
 chardet==4.0.0
 click==7.1.2
 coloredlogs==15.0
 django==3.1.5
+django-bootstrap-datepicker-plus==3.0.5
+django-bootstrap4==2.3.1
 django-colorfield==0.3.2
 django-leaflet==0.26.0
 djangorestframework==3.12.2
@@ -34,6 +37,7 @@ pytz==2020.5
 pyyaml==5.3.1
 requests==2.25.1
 six==1.15.0
+soupsieve==2.2
 sportgems==0.2.4
 sqlparse==0.4.1
 tornado==6.1
