@@ -1,1 +1,0 @@
-ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="{{ vendor_id }}", ATTRS{idProduct}=="{{ product_id }}", TAG+="systemd", ENV{SYSTEMD_WANTS}="wkz_mount"

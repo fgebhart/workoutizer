@@ -10,26 +10,42 @@ Note: The below instructions have been tested on a Raspberry Pi 4 Model B runnin
 also work on a variety of other Pis and OS combinations, but I recommend to use the latest versions of both.
 
 
-### Preparation & Installation
+## Preparation & Installation
 
 Create virtual environment and activate it:
-```shell script
+```
 virtualenv -p python3 venv && source venv/bin/activate 
 ```
 Install workoutizer
-```shell script
+```
 pip install workoutizer
 ```
 
-### Configuring your Device
+## Install Apt Packages
+
+The following packages are required and need to be installed:
+```
+apt update && install -y gvfs \
+        gvfs-fuse \
+        gvfs-bin \
+        gvfs-backends \
+        ifuse
+        libblas-dev \
+        liblapack-dev \
+        python-dev \
+        libatlas-base-dev \
+        libopenjp2-7
+```
+
+## Configuring your Device
 
 Figure out the `product_id` and `vendor_id` of your device by connecting it to your Raspberry Pi via USB and run 
-```shell script
+```
 lsusb
 ```
-Wait 1-2 minutes until the `(various models)` line next to your Garmin device disappears. You want to have a similar
-output like: 
-```shell script
+Wait 1-2 minutes until the `(various models)` line next to your Garmin device disappears and trigger the `lsusb` command
+again. You want to have a similar output like: 
+```
 pi@raspberrypi:~ $ lsusb
 Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
 Bus 001 Device 008: ID 091e:4b48 Garmin International 
@@ -39,31 +55,42 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 In this example the vendor id is `091e` and the product id is `4b48`. Keep your values for the next step.
 
 
-### Setup Workoutizer
+## Setup Workoutizer
 
-Now we'll run the `setup-rpi` workoutizer command. This will install and run [ansible](https://www.ansible.com/) to
-configure your Raspberry Pi. It will install some required `apt` packages, insert your device ids to the
-[udev](https://wiki.debian.org/udev) rule file and copy it together with the [systemd](https://wiki.debian.org/systemd)
-(both are needed for the automated mounting of Garmin devices) file to your system. Note, that ansible will issue `sudo`
-privileges to do so. See the `workoutizer/setup/ansible/setup_on_rpi.yml` ansible playbook for more details.
-   
-Pass your `vendor_id` and `product_id` as arguments to the command like:
-```shell script
-wkz setup-rpi --vendor_id 091e --product_id 4b48
-``` 
+To configure your Raspberry Pi to automatically detect and mount your garmin watch you'll need to follow these steps:
 
-Afterwards initialize workoutizer:
-```shell script
-wkz init
+### 1. Create a udev rule
+Create a file at `/etc/udev/rules.d/device_mount.rules` with the following content and replace `{{ vendor_id }}` with
+your vendor id and `{{ product_id }}` with your product id:
+
 ```
-and run workoutizer as usual:
-```shell script
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="{{ vendor_id }}", ATTRS{idProduct}=="{{ product_id }}", TAG+="systemd", ENV{SYSTEMD_WANTS}="wkz_mount"
+```
+
+### 2. Create the wkz mount systemd service
+Create a file at `/etc/systemd/system/wkz_mount.service` with the following content and replace `{{ address }}`
+with the address (and port) to your Raspberry Pi in you local network.
+For example if your Raspberry Pi has the IP address `192.168.0.55`, you would need to replace `{{ address }}`
+with `192.168.0.55:8000` and thus the url would read `http://192.168.0.55:8000/mount-device/`.
+
+```
+[Unit]
+Description=Workoutizer Device Mounting Service
+
+[Service]
+User=pi
+ExecStart=curl -X POST "Content-Type: application/json" http://{{ address }}/mount-device/
+```
+### 3. Init and run Workoutizer
+Afterwards initialize and run workoutizer:
+```
+wkz init
 wkz run
 ```
 
-### Background
+## Background
 
 Whenever you connect your Garmin device to your Raspberry Pi, workoutizer will automatically mount the device using
 `udev`. Since it is mounted as a [gvfs](https://en.wikipedia.org/wiki/GVfs) device, the file system of your device will
 be mounted at `/run/user/1000/gvfs/...`. This is the default location for Raspbian and workoutizer will look for your
-device in this location as default.   
+device in this location as default.
