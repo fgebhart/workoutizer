@@ -27,7 +27,10 @@ class FITParser(Parser):
             record = record.get_values()
             # parse laps
             if record.get("event") == "lap":
-                self.laps.append(_parse_lap_data(record))
+                lap = _parse_lap_data(record)
+                if (lap.end_lat and lap.end_long) or (lap.start_lat and lap.start_long):
+                    # only save lap if it comes with at least one coordinate
+                    self.laps.append(lap)
 
             # parse list attributes
             timestamp = record.get("timestamp")
@@ -85,7 +88,7 @@ class FITParser(Parser):
         log.debug(f"found distance: {self.distance} km")
         log.debug(f"found duration: {self.duration} min")
         log.debug(f"found avg_cadence: {self.avg_cadence} steps/min")
-        log.debug(f"found avg_temperature: {self.avg_temperature} Celcius")
+        log.debug(f"found avg_temperature: {self.avg_temperature} Celsius")
         log.debug(f"found number of laps: {len(self.laps)}")
 
     def convert_list_of_nones_to_empty_list(self):
