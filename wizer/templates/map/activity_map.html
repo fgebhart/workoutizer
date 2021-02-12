@@ -82,22 +82,25 @@
 
     // add lap markers to map as tooltip
     {% for lap in laps %}
-        {% if lap.end_lat and lap.end_long %}
-            var lat = {{lap.end_lat}};
-            var lon = {{lap.end_long}};
-        {% else %}
-            var lat = {{lap.start_lat}};
-            var lon = {{lap.start_long}};
+        {% if lap.end_lat and lap.end_long or lap.start_lat and lap.start_long %}
+            // only display lap if it has coordinates
+            {% if lap.end_lat and lap.end_long %}
+                var lat = {{lap.end_lat}};
+                var lon = {{lap.end_long}};
+            {% elif lap.start_lat and lap.start_long %}
+                var lat = {{lap.start_lat}};
+                var lon = {{lap.start_long}};
+            {% endif %}
+            var label = "{{ lap.label }}";
+            if (label === "None") {
+                var text = "Lap {{ forloop.counter }}";
+            } else {
+                var text = "Lap {{ forloop.counter }}: " + label;
+            }
+            var marker = L.circleMarker([lat, lon], LapMarker).bindTooltip(text);
+            marker.addTo(markerGroup);
+            markerGroup.addTo(map);
         {% endif %}
-        var label = "{{ lap.label }}";
-        if (label === "None") {
-            var text = "Lap {{ forloop.counter }}";
-        } else {
-            var text = "Lap {{ forloop.counter }}: " + label;
-        }
-        var marker = L.circleMarker([lat, lon], LapMarker).bindTooltip(text);
-        marker.addTo(markerGroup);
-        markerGroup.addTo(map);
     {% endfor %}
 
     // create position markers

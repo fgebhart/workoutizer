@@ -12,3 +12,5 @@ exclude =
     setup/other,
 max-complexity = 14
 max-line-length = 121
+per-file-ignores =
+    fit_parser.py: C901

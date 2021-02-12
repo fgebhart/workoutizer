@@ -5,6 +5,7 @@ from django.utils import timezone
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 
 from wizer import models
 
@@ -12,7 +13,8 @@ from wizer import models
 def test_activity_page__complete(import_one_activity, live_server, webdriver):
     import_one_activity("2020-08-29-13-04-37.fit")
 
-    pk = models.Activity.objects.get().pk
+    activity = models.Activity.objects.get()
+    pk = activity.pk
     webdriver.get(live_server.url + f"/activity/{pk}")
 
     table_header = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
@@ -205,3 +207,66 @@ def test_add_activity_page(insert_sport, webdriver, live_server):
     assert activity.description == "super sport"
     assert activity.sport.name == "Cycling"
     assert activity.date.date() == timezone.now().date()
+
+
+def test_activity_page__rendering_of_sport_icon_on_map(insert_sport, import_one_activity, live_server, webdriver):
+    # Test to fix issue GH72
+    icon_name = "running"
+    insert_sport(name="Jogging", icon=icon_name)
+
+    import_one_activity("2019-09-18-16-02-35.fit")
+    activity = models.Activity.objects.get()
+    pk = activity.pk
+
+    # check out laps of activity
+    assert models.Lap.objects.count() == 2
+    laps = models.Lap.objects.all()
+    for lap in laps:
+        # each lap has at least one coordinate
+        assert lap.end_lat is not None or lap.start_lat is not None
+        assert lap.end_long is not None or lap.start_long is not None
+        assert lap.trigger != "manual"
+
+    # insert an additional lap without any coordinate data
+    lap_obj = models.Lap(
+        start_time=activity.date,
+        end_time=activity.date + datetime.timedelta(minutes=1),
+        elapsed_time=-datetime.timedelta(minutes=100),
+        trigger="manual",
+        start_lat=None,
+        start_long=None,
+        end_lat=None,
+        end_long=None,
+        distance=1.0,
+        speed=10.0,
+        trace=activity.trace_file,
+    )
+    lap_obj.save()
+    assert models.Lap.objects.count() == 3
+    new_lap = models.Lap.objects.get(trigger="manual")
+    assert new_lap.start_lat is None
+    assert new_lap.start_long is None
+    assert new_lap.end_lat is None
+    assert new_lap.end_long is None
+
+    webdriver.get(live_server.url + f"/activity/{pk}")
+    assert webdriver.current_url == f"{live_server.url}/activity/{pk}"
+
+    initial_number_of_sport_icons = len(webdriver.find_elements_by_class_name(f"fa-{icon_name}"))
+
+    headings = [h.text for h in webdriver.find_elements_by_tag_name("h5")]
+    assert "Fastest Sections  " in headings
+    assert "Speed" in headings
+    assert "Pace" in headings
+    assert "Temperature" in headings
+    assert "Laps" in headings
+
+    # hover over ploy in order to trigger the rendering of the sport icon on the leaflet map
+    altitude_plot = webdriver.find_element(By.CSS_SELECTOR, ".bk:nth-child(1) > .bk > .bk-canvas-events")
+    altitude_plot.click()
+    hover = ActionChains(webdriver).move_to_element(altitude_plot)
+    hover.perform()
+
+    # once sport icon gets rendered we should find one more sport icons than before
+    number_of_sport_icons_when_hovering = len(webdriver.find_elements_by_class_name(f"fa-{icon_name}"))
+    assert number_of_sport_icons_when_hovering == initial_number_of_sport_icons + 1

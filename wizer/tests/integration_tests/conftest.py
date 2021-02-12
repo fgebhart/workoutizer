@@ -39,8 +39,8 @@ def sport(db):
 
 @pytest.fixture
 def insert_sport(db):
-    def _create_sport(name="Cycling"):
-        sport = models.Sport(name=name, color="red", icon="Bike")
+    def _create_sport(name="Cycling", icon="bicycle"):
+        sport = models.Sport(name=name, color="red", icon=icon)
         sport.save()
         return sport
 
