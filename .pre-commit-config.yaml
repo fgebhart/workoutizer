@@ -18,4 +18,3 @@ repos:
           - flake8-string-format
           - flake8-comprehensions
           - flake8-builtins
-      - id: requirements-txt-fixer
