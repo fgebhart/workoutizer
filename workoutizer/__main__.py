@@ -21,12 +21,13 @@ def cli():
     pass
 
 
+@click.option("--demo", help="adds demo activity data", is_flag=True)
 @click.command(
     help="Mandatory command to initialize workoutizer. This fetches the static files, creates the database, "
     "applies the required migrations and inserts the demo activities."
 )
-def init():
-    _init()
+def init(demo):
+    _init(import_demo_activities=demo)
 
 
 @click.argument("url", default="")
@@ -135,19 +136,24 @@ def _build_home(answer: str):
         _make_tracks_dir(TRACKS_DIR)
 
 
-def _init(answer: str = ""):
+def _init(answer: str = "", import_demo_activities=False):
     _build_home(answer=answer)
     execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
     execute_from_command_line(["manage.py", "migrate"])
-    execute_from_command_line(["manage.py", "check"])
 
-    # import demo activities
+    # insert settings
     from wizer import models
-    from wizer.file_importer import import_activity_files, prepare_import_of_demo_activities
 
-    prepare_import_of_demo_activities(models)
-    import_activity_files(models, importing_demo_data=True)
-    click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
+    models.get_settings()
+    _check()
+
+    if import_demo_activities:
+        # import demo activities
+        from wizer.file_importer import import_activity_files, prepare_import_of_demo_activities
+
+        prepare_import_of_demo_activities(models)
+        import_activity_files(models, importing_demo_data=True)
+        click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
 def _make_tracks_dir(path):
@@ -178,20 +184,18 @@ class NotInitializedError(Exception):
 
 
 def _check():
-    msg = "Make sure to execute 'wkz init' first"
     try:
         execute_from_command_line(["manage.py", "check"])
 
-        # second ensure that some activity data was imported
+        # ensure that some activity data was imported
         from wizer import models
 
         if len(models.Settings.objects.all()) != 1:
-            raise NotInitializedError(msg)
+            print("ERROR: Make sure to execute 'wkz init' first")
 
-        if len(models.Activity.objects.all()) == 0:
-            raise NotInitializedError(msg)
     except OperationalError:
-        raise NotInitializedError(msg)
+        print("ERROR: Make sure to execute 'wkz init' first")
+        quit()
 
 
 def _reimport():
