@@ -1,4 +1,3 @@
-ansible==2.9.10
 black
 flake8
 IPython

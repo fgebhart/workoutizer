@@ -13,12 +13,7 @@ from workoutizer import __version__
 from wizer.tools.utils import get_local_ip_address
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-SETUP_DIR = os.path.join(BASE_DIR, "setup")
 os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
-
-example_rpi_cmd = "wkz --setup_rpi vendor_id=091e product_id=4b48"
-url_help = "specify ip address and port pair, like: address:port"
 
 
 @click.group()
@@ -32,37 +27,6 @@ def cli():
 )
 def init():
     _init()
-
-
-@click.option("--ip", default="", help=url_help)
-@click.option("--product_id", help="product ip of your device", required=True)
-@click.option("--vendor_id", help="vendor ip of your device", required=True)
-@click.command(
-    help="Configure Raspberry Pi to auto mount devices. Passing vendor and product id is required. Passing "
-    f"the local ip address and port is optionally. E.g.: {example_rpi_cmd}"
-)
-def setup_rpi(ip, vendor_id, product_id):
-    if not ip:
-        ip = get_local_ip_address()
-    answer = input(
-        "Are you sure you want to setup your Raspberry Pi?\n\n"
-        "This will copy the required udev rule and systemd service file\n"
-        "to your system to enable automated mounting of your device.\n"
-        "This might take a while...\n\n"
-        "Start setup? [Y/n] "
-    )
-    if answer.lower() == "y":
-        click.echo("installing ansible...")
-        _pip_install("ansible==2.9.10")
-        click.echo("starting setup using ansible...")
-        _setup_rpi(vendor_id=vendor_id, product_id=product_id, ip_port=f"{ip}:8000")
-        _run_ansible(playbook="install_packages.yml")
-        click.echo(
-            "Successfully configured to automatically mount your device when plugged in. Note: These changes "
-            "require a system restart to take effect."
-        )
-    else:
-        click.echo("Aborted.")
 
 
 @click.argument("url", default="")
@@ -119,7 +83,6 @@ cli.add_command(upgrade)
 cli.add_command(stop)
 cli.add_command(version)
 cli.add_command(init)
-cli.add_command(setup_rpi)
 cli.add_command(run)
 cli.add_command(manage)
 cli.add_command(check)
@@ -144,25 +107,6 @@ def _upgrade():
         execute_from_command_line(["manage.py", "migrate"])
         execute_from_command_line(["manage.py", "check"])
         click.echo(f"Successfully upgraded from {current_version} to {latest_version}")
-
-
-def _setup_rpi(vendor_id: str, product_id: str, ip_port: str = None):
-    if not ip_port:
-        ip_port = f"{get_local_ip_address()}:8000"
-    result = _run_ansible(
-        playbook="setup_on_rpi.yml",
-        variables={
-            "vendor_id": vendor_id,
-            "product_id": product_id,
-            "address_plus_port": ip_port,
-        },
-    )
-    if result == 0:
-        pass
-    else:
-        click.echo("ERROR: Could not configure Raspberry Pi, see above errors.")
-        quit()
-    return result
 
 
 def _build_home(answer: str):
@@ -216,53 +160,6 @@ def _pip_install(package, upgrade: bool = False):
         subprocess.check_call([sys.executable, "-m", "pip", "install", package, "--upgrade"])
     else:
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-
-def _run_ansible(playbook: str, variables: dict = None):
-    if variables is None:
-        variables = {}
-    from ansible import context
-    from ansible.cli import CLI
-    from ansible.module_utils.common.collections import ImmutableDict
-    from ansible.executor.playbook_executor import PlaybookExecutor
-    from ansible.parsing.dataloader import DataLoader
-    from ansible.inventory.manager import InventoryManager
-    from ansible.vars.manager import VariableManager
-
-    loader = DataLoader()
-    context.CLIARGS = ImmutableDict(
-        tags={},
-        listtags=False,
-        listtasks=False,
-        listhosts=False,
-        syntax=False,
-        connection="ssh",
-        module_path=None,
-        forks=100,
-        remote_user="xxx",
-        private_key_file=None,
-        ssh_common_args=None,
-        ssh_extra_args=None,
-        sftp_extra_args=None,
-        scp_extra_args=None,
-        become=True,
-        become_method="sudo",
-        become_user="root",
-        verbosity=True,
-        check=False,
-        start_at_task=None,
-    )
-    inventory = InventoryManager(loader=loader, sources=())
-    variable_manager = VariableManager(loader=loader, inventory=inventory, version_info=CLI.version_info(gitinfo=False))
-    variable_manager._extra_vars = variables
-    pbex = PlaybookExecutor(
-        playbooks=[os.path.join(SETUP_DIR, "ansible", playbook)],
-        inventory=inventory,
-        variable_manager=variable_manager,
-        loader=loader,
-        passwords={},
-    )
-    return pbex.run()
 
 
 def _stop():
