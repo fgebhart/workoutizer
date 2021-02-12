@@ -1,6 +1,6 @@
 # Workoutizer
 [![PyPI](https://badge.fury.io/py/workoutizer.svg)](https://badge.fury.io/py/workoutizer) [![Python](https://img.shields.io/pypi/pyversions/workoutizer.svg?style=plastic)](https://badge.fury.io/py/workoutizer) [![Build Status](https://github.com/fgebhart/workoutizer/workflows/Test/badge.svg)](https://github.com/fgebhart/workoutizer/actions?query=workflow%3ATest)
-
+<img src=".github/badges/coverage.svg">
 
 The Workoutizer is a simple web application for organizing your workouts and sports activities. It is designed to work
 locally on any UNIX-like system running Python.
@@ -87,7 +87,7 @@ and then start workoutizer in docker using the convenience script:
 This might take a while to build the image, run the container and initialize workoutizer. Once up and running, run the
 tests with
 ```
-pytest wizer/tests/
+pytest wizer/tests/ -n4
 ```
 Once this was successful you are good to go.
 
