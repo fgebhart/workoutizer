@@ -7,5 +7,6 @@ pre-commit
 pytest
 pytest-django
 pytest-xdist
+pytest-cov
 rope
 selenium
