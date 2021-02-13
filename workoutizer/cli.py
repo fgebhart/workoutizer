@@ -16,8 +16,18 @@ from wizer.tools.utils import get_local_ip_address
 os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
 
 
+def print_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo(__version__)
+    ctx.exit()
+
+
+@click.option(
+    "--version", help="prints the version", is_flag=True, callback=print_version, expose_value=False, is_eager=True
+)
 @click.group()
-def cli():
+def wkz():
     pass
 
 
@@ -55,11 +65,6 @@ def manage(cmd):
     execute_from_command_line(["manage.py"] + cmd.split(" "))
 
 
-@click.command(help="Show the version of currently installed workoutizer.")
-def version():
-    click.echo(_version())
-
-
 @click.command(help="Check for a newer version and install if there is any.")
 def upgrade():
     _upgrade()
@@ -80,18 +85,13 @@ def reimport():
     _reimport()
 
 
-cli.add_command(upgrade)
-cli.add_command(stop)
-cli.add_command(version)
-cli.add_command(init)
-cli.add_command(run)
-cli.add_command(manage)
-cli.add_command(check)
-cli.add_command(reimport)
-
-
-def _version():
-    return __version__
+wkz.add_command(upgrade)
+wkz.add_command(stop)
+wkz.add_command(init)
+wkz.add_command(run)
+wkz.add_command(manage)
+wkz.add_command(check)
+wkz.add_command(reimport)
 
 
 def _upgrade():
@@ -179,10 +179,6 @@ def _stop():
         click.echo("Workoutizer is not running.")
 
 
-class NotInitializedError(Exception):
-    pass
-
-
 def _check():
     try:
         execute_from_command_line(["manage.py", "check"])
@@ -208,4 +204,4 @@ def _reimport():
 
 
 if __name__ == "__main__":
-    cli()
+    wkz()

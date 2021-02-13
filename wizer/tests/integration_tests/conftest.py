@@ -14,7 +14,7 @@ from wizer import models
 
 
 @pytest.fixture
-def flush_db():
+def flush_db(db):
     call_command("flush", verbosity=0, interactive=False)
 
 

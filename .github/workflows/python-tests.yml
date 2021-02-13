@@ -64,7 +64,7 @@ jobs:
       env:
         WKZ_LOG_LEVEL: DEBUG
       run: |
-        wkz init
+        wkz init --demo
 
     - name: Check
       if: always()
