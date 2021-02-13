@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 import click
 import requests
@@ -110,40 +111,38 @@ def _upgrade():
         click.echo(f"Successfully upgraded from {current_version} to {latest_version}")
 
 
-def _build_home(answer: str):
-    if os.path.isdir(WORKOUTIZER_DIR):
-        if os.path.isfile(WORKOUTIZER_DB_PATH):
-            click.echo(f"Found existing workoutizer database at: {WORKOUTIZER_DB_PATH}\n")
-            if not answer:
-                answer = input(
-                    "Workoutizer could try to use the existing database instead of creating a new one.\n"
-                    "Note that this could lead to faulty behaviour because of mismatching applied\n"
-                    "migrations on this database.\n\n"
-                    "Do you want to use the existing database instead of creating a new one? \n"
-                    "   - Enter 'n' to delete the found database and create a new one. \n"
-                    "   - Enter 'y' to keep and use the found database. \n"
-                    "Enter [Y/n] "
-                )
-            if answer.lower() == "n":
-                click.echo(f"removed database at {WORKOUTIZER_DB_PATH}")
-                os.remove(WORKOUTIZER_DB_PATH)
-            else:
-                click.echo(f"keeping existing database at {WORKOUTIZER_DB_PATH}")
-                return
-        _make_tracks_dir(TRACKS_DIR)
+def _build_home() -> None:
+    if Path(WORKOUTIZER_DIR).is_dir():
+        if Path(TRACKS_DIR).is_dir():
+            # both folders are already created - do nothing
+            return
+        else:
+            Path(TRACKS_DIR).mkdir(exist_ok=True)
     else:
-        os.mkdir(WORKOUTIZER_DIR)
-        _make_tracks_dir(TRACKS_DIR)
+        Path(WORKOUTIZER_DIR).mkdir(exist_ok=True)
+        Path(TRACKS_DIR).mkdir(exist_ok=True)
 
 
-def _init(answer: str = "", import_demo_activities=False):
-    _build_home(answer=answer)
+def _init(import_demo_activities=False):
+    _build_home()
+    if Path(WORKOUTIZER_DB_PATH).is_file():
+        execute_from_command_line(["manage.py", "check"])
+        from wizer import models
+
+        try:
+            if models.Settings.objects.count() == 1:
+                if models.Activity.objects.count() == 0 and import_demo_activities:
+                    click.echo("Found initialized db, but with no demo activity, importing...")
+                else:
+                    click.echo(f"Found initialized db at {WORKOUTIZER_DB_PATH} - aborting.")
+                    return
+        except OperationalError:
+            pass
     execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
     execute_from_command_line(["manage.py", "migrate"])
-
-    # insert settings
     from wizer import models
 
+    # insert settings
     models.get_settings()
     _check()
 
@@ -156,11 +155,6 @@ def _init(answer: str = "", import_demo_activities=False):
         click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
-def _make_tracks_dir(path):
-    if not os.path.isdir(path):
-        os.mkdir(path)
-
-
 def _pip_install(package, upgrade: bool = False):
     if upgrade:
         subprocess.check_call([sys.executable, "-m", "pip", "install", package, "--upgrade"])
@@ -170,7 +164,7 @@ def _pip_install(package, upgrade: bool = False):
 
 def _stop():
     host = get_local_ip_address()
-    click.echo(f"trying to stop workoutizer at {host}")
+    click.echo(f"stopping workoutizer at {host}")
     url = f"http://{host}:8000/stop/"
     try:
         requests.post(url)
@@ -180,18 +174,21 @@ def _stop():
 
 
 def _check():
+    def print_and_quit():
+        print("ERROR: Make sure to execute 'wkz init' first")
+        quit()
+
     try:
         execute_from_command_line(["manage.py", "check"])
 
-        # ensure that some activity data was imported
+        # ensure that at least settings are present
         from wizer import models
 
-        if len(models.Settings.objects.all()) != 1:
-            print("ERROR: Make sure to execute 'wkz init' first")
+        if models.Settings.objects.count() != 1:
+            print_and_quit()
 
     except OperationalError:
-        print("ERROR: Make sure to execute 'wkz init' first")
-        quit()
+        print_and_quit()
 
 
 def _reimport():
