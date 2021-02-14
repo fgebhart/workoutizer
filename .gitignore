@@ -20,3 +20,4 @@ selenium_ide/
 .devcontainer/tz
 .DS_Store
 .coverage
+profiling/

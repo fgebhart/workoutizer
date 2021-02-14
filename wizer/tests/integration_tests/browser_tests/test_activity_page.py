@@ -6,6 +6,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
+import pytest
 
 from wizer import models
 
@@ -69,7 +71,7 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     assert models.Sport.objects.count() == 2
 
     # activity will be mapped to sport "Cycling"
-    import_one_activity("2020-08-29-13-04-37.fit")
+    import_one_activity("cycling_bad_schandau.fit")
 
     activity = models.Activity.objects.get()
     pk = activity.pk
@@ -82,8 +84,15 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
 
     # verify that activity has some awards
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
+    # because it currently evaluates for awards there is no exclamation circle icn
+    assert len(webdriver.find_elements_by_class_name("fa-exclamation-circle")) == 0
 
-    webdriver.get(live_server.url + f"/activity/{pk}/edit")
+    # go to edit activity page clicking button
+    button = webdriver.find_element_by_id("edit-activity")
+    button.click()
+
+    # verify url got changed to activity view
+    assert webdriver.current_url == f"{live_server.url}/activity/{pk}/edit/"
 
     assert activity.name == "Noon Cycling in Bad Schandau"
     assert activity.duration == datetime.timedelta(seconds=17970)
@@ -105,7 +114,7 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     links = [link.text for link in webdriver.find_elements_by_tag_name("a")]
     assert "  Add Activity" in links
     assert "  Workoutizer  " in links
-    assert "Lap Data" in links
+    assert "Lap Data" in links  # means activity has some laps
     assert "Cancel" in links
     assert "  Delete" in links
 
@@ -134,6 +143,18 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(3) .glyphicon-chevron-down").click()
     webdriver.find_element(By.CSS_SELECTOR, ".glyphicon-remove").click()
 
+    # also edit lap data
+    webdriver.find_element(By.ID, "edit-lap-data").click()
+    lap_input_0 = webdriver.find_element(By.ID, "id_form-0-label")
+    lap_input_0.clear()
+    lap_input_0.send_keys("lap label 0")
+
+    # verify that there is no second element available
+    with pytest.raises(
+        NoSuchElementException, match='Message: Unable to locate element: |[id="id_form\-1-label"]'  # noqa: W605
+    ):
+        webdriver.find_element(By.ID, "id_form-1-label")
+
     # submit form with modified data
     button = webdriver.find_element_by_id("submit-button")
     button.click()
@@ -143,6 +164,7 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
 
     # check that all trophies got removed, since activity no longer evaluates for awards
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 0
+    assert len(webdriver.find_elements_by_class_name("fa-exclamation-circle")) == 1
 
     # verify attributes got changed
     activity = models.Activity.objects.get()
@@ -152,6 +174,10 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     assert activity.evaluates_for_awards is False
     assert activity.sport.name == "MTB"
     assert activity.date != initial_date
+
+    # verify that lap label got changed
+    laps = models.Lap.objects.filter(trace=activity.trace_file, trigger="manual")
+    assert laps[0].label == "lap label 0"
 
 
 def test_add_activity_page(insert_sport, webdriver, live_server):

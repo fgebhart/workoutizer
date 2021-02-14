@@ -58,9 +58,8 @@ def run(url):
 
 @click.argument("cmd", nargs=1)
 @click.command(
-    help="Pass commands to django's manage.py. Convenience function to access all django commands which are "
-    "not yet covered with the given set of workoutizer commands. Usage, e.g.: "
-    "wkz manage 'runserver 0.0.0.0:8000 --noreload'."
+    help="Pass commands to django's manage.py. Convenience function to access all django commands. Usage, e.g.: "
+    "wkz manage 'runserver 0.0.0.0:8000 --noreload'"
 )
 def manage(cmd):
     execute_from_command_line(["manage.py"] + cmd.split(" "))
@@ -134,7 +133,11 @@ def _init(import_demo_activities=False):
                 if models.Activity.objects.count() == 0 and import_demo_activities:
                     click.echo("Found initialized db, but with no demo activity, importing...")
                 else:
-                    click.echo(f"Found initialized db at {WORKOUTIZER_DB_PATH} - aborting.")
+                    click.echo(
+                        f"Found initialized db at {WORKOUTIZER_DB_PATH}, maybe you want to run wkz \n"
+                        "instead. If you really want to initialize wkz consider removing the existing db file. \n"
+                        "Aborting."
+                    )
                     return
         except OperationalError:
             pass  # means required tables are not set up - continuing with applying migrations
