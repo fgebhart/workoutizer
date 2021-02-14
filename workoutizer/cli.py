@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 import click
 import requests
@@ -16,17 +17,28 @@ from wizer.tools.utils import get_local_ip_address
 os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
 
 
+def print_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo(__version__)
+    ctx.exit()
+
+
+@click.option(
+    "--version", help="prints the version", is_flag=True, callback=print_version, expose_value=False, is_eager=True
+)
 @click.group()
-def cli():
+def wkz():
     pass
 
 
+@click.option("--demo", help="adds demo activity data", is_flag=True)
 @click.command(
     help="Mandatory command to initialize workoutizer. This fetches the static files, creates the database, "
     "applies the required migrations and inserts the demo activities."
 )
-def init():
-    _init()
+def init(demo):
+    _init(import_demo_activities=demo)
 
 
 @click.argument("url", default="")
@@ -54,11 +66,6 @@ def manage(cmd):
     execute_from_command_line(["manage.py"] + cmd.split(" "))
 
 
-@click.command(help="Show the version of currently installed workoutizer.")
-def version():
-    click.echo(_version())
-
-
 @click.command(help="Check for a newer version and install if there is any.")
 def upgrade():
     _upgrade()
@@ -79,18 +86,13 @@ def reimport():
     _reimport()
 
 
-cli.add_command(upgrade)
-cli.add_command(stop)
-cli.add_command(version)
-cli.add_command(init)
-cli.add_command(run)
-cli.add_command(manage)
-cli.add_command(check)
-cli.add_command(reimport)
-
-
-def _version():
-    return __version__
+wkz.add_command(upgrade)
+wkz.add_command(stop)
+wkz.add_command(init)
+wkz.add_command(run)
+wkz.add_command(manage)
+wkz.add_command(check)
+wkz.add_command(reimport)
 
 
 def _upgrade():
@@ -109,50 +111,48 @@ def _upgrade():
         click.echo(f"Successfully upgraded from {current_version} to {latest_version}")
 
 
-def _build_home(answer: str):
-    if os.path.isdir(WORKOUTIZER_DIR):
-        if os.path.isfile(WORKOUTIZER_DB_PATH):
-            click.echo(f"Found existing workoutizer database at: {WORKOUTIZER_DB_PATH}\n")
-            if not answer:
-                answer = input(
-                    "Workoutizer could try to use the existing database instead of creating a new one.\n"
-                    "Note that this could lead to faulty behaviour because of mismatching applied\n"
-                    "migrations on this database.\n\n"
-                    "Do you want to use the existing database instead of creating a new one? \n"
-                    "   - Enter 'n' to delete the found database and create a new one. \n"
-                    "   - Enter 'y' to keep and use the found database. \n"
-                    "Enter [Y/n] "
-                )
-            if answer.lower() == "n":
-                click.echo(f"removed database at {WORKOUTIZER_DB_PATH}")
-                os.remove(WORKOUTIZER_DB_PATH)
-            else:
-                click.echo(f"keeping existing database at {WORKOUTIZER_DB_PATH}")
-                return
-        _make_tracks_dir(TRACKS_DIR)
+def _build_home() -> None:
+    if Path(WORKOUTIZER_DIR).is_dir():
+        if Path(TRACKS_DIR).is_dir():
+            # both folders are already created - do nothing
+            return
+        else:
+            Path(TRACKS_DIR).mkdir(exist_ok=True)
     else:
-        os.mkdir(WORKOUTIZER_DIR)
-        _make_tracks_dir(TRACKS_DIR)
+        Path(WORKOUTIZER_DIR).mkdir(exist_ok=True)
+        Path(TRACKS_DIR).mkdir(exist_ok=True)
 
 
-def _init(answer: str = ""):
-    _build_home(answer=answer)
+def _init(import_demo_activities=False):
+    _build_home()
+    if Path(WORKOUTIZER_DB_PATH).is_file():
+        execute_from_command_line(["manage.py", "check"])
+        from wizer import models
+
+        try:
+            if models.Settings.objects.count() == 1:
+                if models.Activity.objects.count() == 0 and import_demo_activities:
+                    click.echo("Found initialized db, but with no demo activity, importing...")
+                else:
+                    click.echo(f"Found initialized db at {WORKOUTIZER_DB_PATH} - aborting.")
+                    return
+        except OperationalError:
+            pass  # means required tables are not set up - continuing with applying migrations
     execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
     execute_from_command_line(["manage.py", "migrate"])
-    execute_from_command_line(["manage.py", "check"])
-
-    # import demo activities
     from wizer import models
-    from wizer.file_importer import import_activity_files, prepare_import_of_demo_activities
 
-    prepare_import_of_demo_activities(models)
-    import_activity_files(models, importing_demo_data=True)
-    click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
+    # insert settings
+    models.get_settings()
+    _check()
 
+    if import_demo_activities:
+        # import demo activities
+        from wizer.file_importer import import_activity_files, prepare_import_of_demo_activities
 
-def _make_tracks_dir(path):
-    if not os.path.isdir(path):
-        os.mkdir(path)
+        prepare_import_of_demo_activities(models)
+        import_activity_files(models, importing_demo_data=True)
+        click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
 def _pip_install(package, upgrade: bool = False):
@@ -164,7 +164,7 @@ def _pip_install(package, upgrade: bool = False):
 
 def _stop():
     host = get_local_ip_address()
-    click.echo(f"trying to stop workoutizer at {host}")
+    click.echo(f"stopping workoutizer at {host}")
     url = f"http://{host}:8000/stop/"
     try:
         requests.post(url)
@@ -178,20 +178,17 @@ class NotInitializedError(Exception):
 
 
 def _check():
-    msg = "Make sure to execute 'wkz init' first"
     try:
         execute_from_command_line(["manage.py", "check"])
 
-        # second ensure that some activity data was imported
+        # ensure that at least settings are present
         from wizer import models
 
-        if len(models.Settings.objects.all()) != 1:
-            raise NotInitializedError(msg)
+        if models.Settings.objects.count() != 1:
+            raise NotInitializedError("ERROR: Make sure to execute 'wkz init' first")
 
-        if len(models.Activity.objects.all()) == 0:
-            raise NotInitializedError(msg)
     except OperationalError:
-        raise NotInitializedError(msg)
+        raise NotInitializedError("ERROR: Make sure to execute 'wkz init' first")
 
 
 def _reimport():
@@ -204,4 +201,4 @@ def _reimport():
 
 
 if __name__ == "__main__":
-    cli()
+    wkz()

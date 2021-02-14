@@ -83,7 +83,7 @@ def test_import_of_activities__not_evaluates_for_awards(import_one_activity):
     assert models.BestSection.objects.filter(activity=activity).count() > 0
 
 
-def test_import_of_activities__evaluates_for_awards(import_one_activity, tracks_in_tmpdir):
+def test_import_of_activities__evaluates_for_awards(import_one_activity):
     # insert default sport
     sport = models.default_sport()
 

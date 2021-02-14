@@ -9,7 +9,7 @@ Track your activities to get an overview of your overall training, similar to pl
 [strava](https://www.strava.com/) or [garmin connect](https://connect.garmin.com/) - but without
 uploading all your sensitive health data to some 3rd party cloud.
 
-### Features
+## Features
 * Automatic import of Garmin `.fit` files and `.gpx` files
 * Automatic naming of activities based on daytime, sport and geo location
 * Render your activity gps data on different OSM maps
@@ -31,18 +31,13 @@ Install workoutizer
 pip install workoutizer
 ```
 
-Initialize and run workoutizer
+Initialize workoutizer to provide some demo data and run it:
 ```shell script
-wkz init
+wkz init --demo
 wkz run
 ```
 
-See the help description of the CLI with `wkz --help` and even subcommands, e.g.: `wkz manage --help`. 
-
-Note: This should work for any Linux and Mac system. Please
-[report any occurring issues](https://github.com/fgebhart/workoutizer/issues) when installing workoutizer.
-
-Workoutizer comes bundled with some initial toy activity data, which can be deleted easily on the Settings page.
+See the help description of the CLI with `wkz --help` and subcommands, e.g.: `wkz manage --help`. 
 
 In case you want to run workoutizer on a Raspberry Pi in your local network, follow the 
 [Raspberry Pi setup instructions](https://github.com/fgebhart/workoutizer/tree/master/setup).
