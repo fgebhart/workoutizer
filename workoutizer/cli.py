@@ -173,11 +173,11 @@ def _stop():
         click.echo("Workoutizer is not running.")
 
 
-def _check():
-    def print_and_quit():
-        print("ERROR: Make sure to execute 'wkz init' first")
-        quit()
+class NotInitializedError(Exception):
+    pass
 
+
+def _check():
     try:
         execute_from_command_line(["manage.py", "check"])
 
@@ -185,10 +185,10 @@ def _check():
         from wizer import models
 
         if models.Settings.objects.count() != 1:
-            print_and_quit()
+            raise NotInitializedError("ERROR: Make sure to execute 'wkz init' first")
 
     except OperationalError:
-        print_and_quit()
+        raise NotInitializedError("ERROR: Make sure to execute 'wkz init' first")
 
 
 def _reimport():

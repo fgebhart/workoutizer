@@ -29,26 +29,26 @@ def test_cli__init(db, tracks_in_tmpdir):
     assert len(models.Activity.objects.all()) > 1
 
 
-def test_cli__check(db, capsys, tracks_in_tmpdir):
-    # if wkz is not initialized expect to raise error - ensure to start with no preexisting db
-    execute_from_command_line(["manage.py", "flush", "--noinput"])
-    with pytest.raises(SystemExit):
-        cli._check()
-    captured = capsys.readouterr()
-    assert captured.out == (
-        "System check identified no issues (0 silenced).\nERROR: Make sure to execute 'wkz init' first\n"
-    )
-
-    # initialized wkz without demo data and then run check
-    cli._init(import_demo_activities=False)
-    cli._check()
-
+def test_cli__check__demo_data(db, tracks_in_tmpdir):
     # initialized wkz with demo data and then run check
     cli._init(import_demo_activities=True)
     cli._check()
 
 
-def test_cli__reimport(db, tracks_in_tmpdir, import_one_activity):
+def test_cli__check__no_demo_data(db, tracks_in_tmpdir):
+    # initialized wkz without demo data and then run check
+    cli._init(import_demo_activities=False)
+    cli._check()
+
+
+def test_cli__check__not_initialized(db, tracks_in_tmpdir):
+    # if wkz is not initialized expect to raise error - ensure to start with no preexisting db
+    execute_from_command_line(["manage.py", "flush", "--noinput"])
+    with pytest.raises(cli.NotInitializedError, match="ERROR: Make sure to execute 'wkz init' first"):
+        cli._check()
+
+
+def test_cli__reimport(db, import_one_activity):
     import_one_activity("2020-08-29-13-04-37.fit")
 
     assert models.Activity.objects.count() == 1
