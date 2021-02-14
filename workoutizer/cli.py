@@ -137,7 +137,7 @@ def _init(import_demo_activities=False):
                     click.echo(f"Found initialized db at {WORKOUTIZER_DB_PATH} - aborting.")
                     return
         except OperationalError:
-            pass
+            pass  # means required tables are not set up - continuing with applying migrations
     execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
     execute_from_command_line(["manage.py", "migrate"])
     from wizer import models
