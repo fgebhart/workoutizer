@@ -13,7 +13,7 @@ from wizer import models
 
 
 def test_activity_page__complete(import_one_activity, live_server, webdriver):
-    import_one_activity("2020-08-29-13-04-37.fit")
+    import_one_activity("cycling_bad_schandau.fit")
 
     activity = models.Activity.objects.get()
     pk = activity.pk
@@ -84,10 +84,10 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
 
     # verify that activity has some awards
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
-    # because it currently evaluates for awards there is no exclamation circle icn
+    # because it currently evaluates for awards there is no exclamation circle icon
     assert len(webdriver.find_elements_by_class_name("fa-exclamation-circle")) == 0
 
-    # go to edit activity page clicking button
+    # go to edit activity page by clicking the edit button
     button = webdriver.find_element_by_id("edit-activity")
     button.click()
 

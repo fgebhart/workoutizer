@@ -49,7 +49,7 @@ def test_cli__check__not_initialized(db, tracks_in_tmpdir):
 
 
 def test_cli__reimport(db, import_one_activity):
-    import_one_activity("2020-08-29-13-04-37.fit")
+    import_one_activity("cycling_bad_schandau.fit")
 
     assert models.Activity.objects.count() == 1
     assert models.Settings.objects.count() == 1
