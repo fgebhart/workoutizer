@@ -84,10 +84,14 @@ def test_sport_page__complete(import_demo_data, live_server, webdriver):
     assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
 
     # check that map is displayed
-    assert (
-        webdriver.find_element_by_id("map").text
-        == "Streets\nTopo\nTerrain\nSatellite\n+\n−\n100 km\nLeaflet | Map data: © OpenStreetMap"
-    )
+    map_text = webdriver.find_element_by_id("map").text
+    assert "Streets" in map_text
+    assert "Leaflet | Map data: © OpenStreetMap" in map_text
+    assert "−" in map_text
+    assert "+" in map_text
+    assert "Satellite" in map_text
+    assert "Terrain" in map_text
+    assert "Topo" in map_text
 
     # check that bokeh plot is available
     assert len(webdriver.find_elements_by_class_name("bk-canvas")) == 1
