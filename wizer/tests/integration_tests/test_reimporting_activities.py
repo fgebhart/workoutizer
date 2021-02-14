@@ -27,7 +27,7 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
         models,
         list_of_files_to_copy=[
             "hike_with_coordinates.fit",
-            "2020-08-29-13-04-37.fit",
+            "cycling_bad_schandau.fit",
         ],
     )
     assert len(models.Sport.objects.all()) == 5
@@ -157,7 +157,7 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
 
 def test_reimporting_of_best_sections(import_one_activity):
     # import one cycling activity
-    import_one_activity("2020-08-29-13-04-37.fit")
+    import_one_activity("cycling_bad_schandau.fit")
 
     assert models.Activity.objects.count() == 1
     assert models.Settings.objects.count() == 1
@@ -230,7 +230,7 @@ def test_reimporting_of_best_sections(import_one_activity):
 def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_activity):
     # Changed behaviour of this test to check that best sections do not get removed when changing evaluates_for_awards
 
-    import_one_activity("2020-08-29-13-04-37.fit")
+    import_one_activity("cycling_bad_schandau.fit")
 
     # verify activity is suitable for best sections
     assert models.Activity.objects.count() == 1
@@ -274,7 +274,7 @@ def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_acti
 def test_reimport__not_evaluates_for_awards__changing_activity_flag(import_one_activity):
     # Changed behaviour of this test to check that best sections do not get removed when changing evaluates_for_awards
 
-    import_one_activity("2020-08-29-13-04-37.fit")
+    import_one_activity("cycling_bad_schandau.fit")
 
     # verify activity is suitable for best sections
     assert models.Activity.objects.count() == 1

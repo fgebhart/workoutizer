@@ -70,7 +70,7 @@ def test_import_of_activities__not_evaluates_for_awards(import_one_activity):
 
     # now import activity and verify that best sections still got saved to the db
     assert models.Activity.objects.count() == 0
-    import_one_activity("2020-08-29-13-04-37.fit")
+    import_one_activity("cycling_bad_schandau.fit")
     assert models.Activity.objects.count() == 1
 
     # get activity
@@ -97,7 +97,7 @@ def test_import_of_activities__evaluates_for_awards(import_one_activity):
 
     # now import activity and verify that some best sections got saved to the db
     assert models.Activity.objects.count() == 0
-    import_one_activity("2020-08-29-13-04-37.fit")
+    import_one_activity("cycling_bad_schandau.fit")
     assert models.Activity.objects.count() == 1
 
     # get activity
