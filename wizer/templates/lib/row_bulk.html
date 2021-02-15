@@ -1,0 +1,54 @@
+{% load filters %}
+
+
+
+{% for a in activities %}
+    {% if forloop.counter == activities|length %}
+        <tr hx-get="/activities_page/{{ current_page }}"
+            hx-trigger="revealed"
+            hx-swap="afterend">
+    {% else %}
+        <tr>
+    {% endif %}
+            <td>{{ a.date|date:"M d, Y" }}</td>
+            <td class="limit">
+                <a href="/activity/{{ a.id }}">{{ a.name }}</a>
+            </td>
+            <td>
+                {% if a.pk in top_awards %}
+                <a href="/activity/{{ a.id }}" data-toggle="tooltip" data-placement="bottom"
+                    title="Activity has an Award" style="color: black;">
+                    <i class="fas fa-trophy"></i>
+                </a>
+                {% endif %}
+            </td>
+            <td>
+                {% if a.trace_file.longitude_list|length > 2 %}
+                    <a href="/activity/{{ a.id }}" data-toggle="tooltip" data-placement="bottom"
+                        title="Show on Map" style="color: black;">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </a>
+                {% else %}
+
+                {% endif %}
+            </td>
+            <td>
+                {% if a.sport %}
+                    <a href="/sport/{{ a.sport.slug }}" data-toggle="tooltip" data-placement="bottom"
+                        title="{{ a.sport.name }}" style="color: {{ a.sport.color }};">
+                        <i class="fas fa-{{ a.sport.icon }}"></i>
+                    </a>
+                {% else %}
+                    ?
+                {% endif %}
+            </td>
+            <td>{{ a.duration|table_duration }}</td>
+            <td>
+                {% if a.distance == 0.0 %}
+
+                {% else %}
+                    {{ a.distance }}
+                {% endif %}
+            </td>
+        </tr>
+{% endfor %}

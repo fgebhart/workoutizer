@@ -94,7 +94,7 @@ class PlotView:
         self.number_of_days = self.settings.number_of_days
         self.days_choices = models.Settings.days_choices
 
-    def get_activities(self, sport_id=None):
+    def get_activity_data_for_plots(self, sport_id=None):
         self.get_days_config()
         now = timezone.now()
         start_datetime = now - datetime.timedelta(days=self.number_of_days)
@@ -112,13 +112,15 @@ class DashboardView(View, PlotView):
     sports = models.Sport.objects.all().order_by("name")
 
     def get(self, request):
+        page = 0
         self.sports = models.Sport.objects.all().order_by("name")
-        activities = self.get_activities()
+        activities = self.get_activity_data_for_plots()
         summary = get_summary_of_activities(activities=activities)
         top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit)
         context = {
             "sports": self.sports,
-            "activities": activities,
+            "activities": fetch_row_data_for_page(page_nr=page),
+            "current_page": page,
             "days": self.number_of_days,
             "choices": self.days_choices,
             "summary": summary,
@@ -277,3 +279,29 @@ def get_flat_list_of_pks_of_activities_in_top_awards(
             if awards_per_distance:
                 top_awards += awards_per_distance
     return top_awards
+
+
+def get_bulk_of_rows_for_next_page(request, page: str):
+    page = int(page) + 1
+    template_name = "lib/row_bulk.html"
+    current_url = request.META.get("HTTP_HX_CURRENT_URL")
+    sport_slug = None
+    if "sport" in current_url:
+        sport_slug = current_url.split("/")[-1]
+
+    activities = fetch_row_data_for_page(page_nr=page, sport_slug=sport_slug)
+    return render(request, template_name, {"activities": activities, "current_page": page})
+
+
+def fetch_row_data_for_page(page_nr: int, sport_slug=None):
+    number_of_rows = configuration.number_of_rows_per_page_in_table
+
+    if sport_slug:
+        activities = models.Activity.objects.filter(sport__slug=sport_slug).order_by("-date")[
+            page_nr * number_of_rows : (page_nr + 1) * number_of_rows
+        ]
+    else:
+        activities = models.Activity.objects.all().order_by("-date")[
+            page_nr * number_of_rows : (page_nr + 1) * number_of_rows
+        ]
+    return activities

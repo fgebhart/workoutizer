@@ -15,6 +15,7 @@ from wizer.views import (
     get_summary_of_activities,
     get_all_form_field_ids,
     get_flat_list_of_pks_of_activities_in_top_awards,
+    fetch_row_data_for_page,
 )
 from wizer import models
 from wizer.forms import AddSportsForm
@@ -55,11 +56,12 @@ class SportsView(MapView, PlotView):
 
     def get(self, request, sports_name_slug):
         log.debug(f"got sports name: {sports_name_slug}")
+        page = 0
         if sports_name_slug == "undefined":
             log.warning("could not find sport - redirecting to home")
             return HttpResponseRedirect(reverse("home"))
         sport = models.Sport.objects.get(slug=sports_name_slug)
-        activities = self.get_activities(sport_id=sport.id)
+        activities = self.get_activity_data_for_plots(sport_id=sport.id)
         context = super(SportsView, self).get(request=request, list_of_activities=activities)
         sports = models.Sport.objects.all().order_by("name")
         summary = get_summary_of_activities(activities=activities)
@@ -83,7 +85,8 @@ class SportsView(MapView, PlotView):
             self.template_name,
             {
                 **context,
-                "activities": activities,
+                "activities": fetch_row_data_for_page(page_nr=page, sport_slug=sports_name_slug),
+                "current_page": page,
                 "sports": sports,
                 "summary": summary,
                 "sport": sport,

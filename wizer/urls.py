@@ -11,6 +11,7 @@ urlpatterns = [
     # home Dashboard
     path("", views.DashboardView.as_view(), name="home"),
     path("set_number_of_days/<slug:number_of_days>", views.set_number_of_days, name="set-number-of-days"),
+    path("activities_page/<slug:page>", views.get_bulk_of_rows_for_next_page, name="activities-page"),
     # Settings
     path("settings/", views.settings_view, name="settings"),
     path("settings/reimport", views.reimport_activities, name="reimport"),
