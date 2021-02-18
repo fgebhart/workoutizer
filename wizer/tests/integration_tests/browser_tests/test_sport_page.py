@@ -1,3 +1,5 @@
+import datetime
+
 from django.urls import reverse
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -134,3 +136,41 @@ def test_sport_page__infinite_scroll(live_server, webdriver, insert_activity, in
     table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
     htmx_last_row = webdriver.find_elements_by_id("htmx-last-row")
     assert len(table_rows) + len(htmx_last_row) == nr_of_inserted_activities
+
+
+def test_sport_page__no_activities_selected_for_plot(live_server, webdriver, insert_activity, insert_sport):
+    sport = insert_sport(name="Bungee Jumping")
+    for i in range(5):
+        insert_activity(
+            name=f"Dummy Activity {i}", sport=sport, date=datetime.datetime(1900, 1, 1) + datetime.timedelta(days=i)
+        )
+
+    assert models.Activity.objects.filter(sport__slug="bungee-jumping").count() == 5
+    webdriver.get(live_server.url + "/sport/bungee-jumping")
+
+    # even though the activity data is far in the past, the rows will be shown in the table
+    table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
+    assert len(table_rows) == 5
+
+    paragraph = [p.text for p in webdriver.find_elements_by_tag_name("p")]
+    assert "Overview of your Bungee Jumping activities:" in paragraph
+    # because the activity was added has dates far in the past, there is no activity data available for plotting
+    assert (
+        "Either increase the selected time range, or do some sports and add it to Workoutizer.\n"
+        "The activity plot will appear here  "
+    ) in paragraph
+
+    links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
+    assert "  Add Activity" in links
+    assert "  Workoutizer  " in links
+    # verify leaflet elements are present
+    assert "+" in links
+    assert "−" in links
+    assert "Leaflet" in links
+    assert "OpenStreetMap" in links
+
+    spans = [a.text for a in webdriver.find_elements_by_tag_name("span")]
+    assert "Streets" in spans
+    assert "Topo" in spans
+    assert "Terrain" in spans
+    assert "Satellite" in spans

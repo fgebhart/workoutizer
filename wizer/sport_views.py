@@ -73,9 +73,9 @@ class SportsView(MapView, PlotView):
             )
             context["script_history"] = script_history
             context["div_history"] = div_history
-            context["activities_available_for_plot"] = True
+            context["activities_selected_for_plot"] = True
         else:
-            context["activities_available_for_plot"] = False
+            context["activities_selected_for_plot"] = False
         map_context = super(SportsView, self).get(request=request, list_of_activities=activities)
         if sport.evaluates_for_awards:
             top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit, sports_name_slug)

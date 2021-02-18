@@ -15,7 +15,7 @@ def test_dashboard_page_accessible(live_server, webdriver):
 
     # first time running workoutizer will lead to the dashboard page with no data
     h3 = webdriver.find_element_by_css_selector("h3")
-    assert h3.text == "No activity data selected for plotting."
+    assert h3.text == "No activity data selected for plotting  "
 
 
 def test_add_activity_button(live_server, webdriver):

@@ -144,12 +144,12 @@ class DashboardView(View, PlotView):
                 "div_pc": div_pc,
                 "script_trend": script_trend,
                 "div_trend": div_trend,
-                "activities_available_for_plot": True,
+                "activities_selected_for_plot": True,
             }
             return render(request, self.template_name, {**context, **plotting_context})
         else:
             log.warning("no activities found...")
-            context["activities_available_for_plot"] = False
+            context["activities_selected_for_plot"] = False
         return render(request, self.template_name, {**context})
 
 

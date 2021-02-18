@@ -15,7 +15,7 @@
     <hr>
     {% include "lib/messages.html" %}
     <div class="row">
-        {% if traces or not activities_available_for_plot %}
+        {% if traces or not activities_selected_for_plot %}
             <div class="col-sm-7">
                 {% include 'plotting/plot_history.html' %}
             </div>

@@ -29,19 +29,20 @@
         </div>
     </div>
 </div>
-{% if activities_available_for_plot %}
+{% if activities_selected_for_plot %}
     {{ script_history | safe }}
     {% if div_history %}
         {{ div_history | safe }}
     {% endif %}
 {% else %}
     <br>
-    <h3>No activity data selected for plotting.</h3>
+    <h3>No activity data selected for plotting&nbsp;&nbsp;<i class="fas fa-chart-line"></i></h3>
     <br>
-    <p>Either increase the selected time range, or do some sports and add it to Workoutizer.
-    <br>
-    Activities will appear here &nbsp;&nbsp;<i class="fas fa-running"></i></p>
-    <br>
-    <br>
+    <p>
+        Either increase the selected time range, or do some sports and add it to Workoutizer.
+        <br>
+        The activity plot will appear here &nbsp;<i class="fas fa-running"></i></p>
+        <br>
+        <br>
 {% endif %}
 <br>

@@ -78,11 +78,16 @@ def activity(db, sport, trace_file):
 
 @pytest.fixture
 def insert_activity(db, sport):
-    def _create_activity(name: str = "Evening Cycling along the River", evaluates_for_awards: bool = True, sport=sport):
+    def _create_activity(
+        name: str = "Evening Cycling along the River",
+        evaluates_for_awards: bool = True,
+        sport=sport,
+        date: datetime.datetime = datetime.datetime(2020, 7, 7, tzinfo=pytz.timezone(django_settings.TIME_ZONE)),
+    ):
         activity = models.Activity(
             name=name,
             sport=sport,
-            date=datetime.datetime(2020, 7, 7, tzinfo=pytz.timezone(django_settings.TIME_ZONE)),
+            date=date,
             duration=datetime.timedelta(minutes=30),
             distance=5.2,
             description="some super activity",
