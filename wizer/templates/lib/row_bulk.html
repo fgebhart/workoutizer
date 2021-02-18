@@ -6,9 +6,10 @@
     {% if forloop.counter == activities|length and not is_last_page %}
         <tr hx-get="/activities_page/{{ current_page }}"
             hx-trigger="revealed"
-            hx-swap="afterend">
+            hx-swap="afterend"
+            id="htmx-last-row">
     {% else %}
-        <tr>
+        <tr id="dashboard-table-row">
     {% endif %}
         <td>{{ a.date|date:"M d, Y" }}</td>
         <td class="limit">
@@ -55,7 +56,9 @@
 {% if is_last_page and current_page != 0 %}
     <tr>
         <td></td>
-        <td>no more activities...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-running"></i></td>
+        <td id="end-of-activities">
+            no more activities...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-running"></i>
+        </td>
         <td></td>
         <td></td>
         <td></td>

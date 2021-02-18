@@ -56,6 +56,7 @@ class SportsView(MapView, PlotView):
 
     def get(self, request, sports_name_slug):
         log.debug(f"got sports name: {sports_name_slug}")
+        settings = models.get_settings()
         page = 0
         if sports_name_slug == "undefined":
             log.warning("could not find sport - redirecting to home")
@@ -67,7 +68,9 @@ class SportsView(MapView, PlotView):
         summary = get_summary_of_all_activities(sport_slug=sports_name_slug)
         if activities:
             script_history, div_history = plot_history(
-                activities=activities, sport_model=models.Sport, settings_model=models.Settings
+                activities=activities,
+                sport_model=models.Sport,
+                number_of_days=settings.number_of_days,
             )
             context["script_history"] = script_history
             context["div_history"] = div_history

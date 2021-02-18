@@ -113,6 +113,7 @@ class DashboardView(View, PlotView):
 
     def get(self, request):
         page = 0
+        settings = models.get_settings()
         self.sports = models.Sport.objects.all().order_by("name")
         activities = self.get_activity_data_for_plots()
         summary = get_summary_of_all_activities()
@@ -132,7 +133,7 @@ class DashboardView(View, PlotView):
         }
         if activities:
             script_history, div_history = plot_history(
-                activities=activities, sport_model=models.Sport, settings_model=models.Settings
+                activities=activities, sport_model=models.Sport, number_of_days=settings.number_of_days
             )
             script_pc, div_pc = plot_pie_chart(activities=activities)
             script_trend, div_trend = plot_trend(activities=activities, sport_model=models.Sport)

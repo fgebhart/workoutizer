@@ -6,6 +6,7 @@
     "python.formatting.provider": "black",
     "python.formatting.blackPath": "/tmp/venv/bin/black",
     "cSpell.words": [
+        "htmx",
         "wizer",
         "workoutizer"
     ],
