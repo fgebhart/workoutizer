@@ -102,7 +102,7 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     assert len(webdriver.find_elements_by_class_name("fa-history")) == 1
 
 
-def test_dashboard__infinite_scroll(live_server, webdriver, insert_activity, take_screenshot):
+def test_dashboard__infinite_scroll(live_server, webdriver, insert_activity):
     rows_per_page = configuration.number_of_rows_per_page_in_table
     # insert more activities than the currently configured value of rows
     # per page in order to be  able to trigger the htmx ajax request
@@ -114,7 +114,7 @@ def test_dashboard__infinite_scroll(live_server, webdriver, insert_activity, tak
     webdriver.get(live_server.url + reverse("home"))
 
     # number of rows equals the number of rows per page, since only one page is loaded
-    table_rows = [cell.text for cell in webdriver.find_elements_by_id("dashboard-table-row")]
+    table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
     htmx_last_row = webdriver.find_elements_by_id("htmx-last-row")
     assert len(table_rows) + len(htmx_last_row) == rows_per_page
 
@@ -125,6 +125,6 @@ def test_dashboard__infinite_scroll(live_server, webdriver, insert_activity, tak
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "end-of-activities")))
 
     # again check number of table rows
-    table_rows = [cell.text for cell in webdriver.find_elements_by_id("dashboard-table-row")]
+    table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
     htmx_last_row = webdriver.find_elements_by_id("htmx-last-row")
     assert len(table_rows) + len(htmx_last_row) == nr_of_inserted_activities

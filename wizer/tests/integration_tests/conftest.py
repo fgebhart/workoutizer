@@ -78,7 +78,7 @@ def activity(db, sport, trace_file):
 
 @pytest.fixture
 def insert_activity(db, sport):
-    def _create_activity(name: str = "Evening Cycling along the River", evaluates_for_awards: bool = True):
+    def _create_activity(name: str = "Evening Cycling along the River", evaluates_for_awards: bool = True, sport=sport):
         activity = models.Activity(
             name=name,
             sport=sport,
