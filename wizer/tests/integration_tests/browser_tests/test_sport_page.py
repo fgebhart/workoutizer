@@ -72,12 +72,14 @@ def test_sport_page__complete(import_demo_data, live_server, webdriver):
     paragraph = [p.text for p in webdriver.find_elements_by_tag_name("p")]
     assert "Overview of your Cycling activities:" in paragraph
     assert "Map of selected Cycling activities:" in paragraph
-    assert "Sum of all selected Activities:" in paragraph
 
     table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
     assert "Noon Cycling in Bad Schandau" in table_data
     assert "Noon Cycling in Hinterzarten" in table_data
     assert "Noon Cycling in Dahn" in table_data
+
+    centered = [cell.text for cell in webdriver.find_elements_by_tag_name("center")]
+    assert "Sum of all Activities:" in centered
 
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
     assert len(webdriver.find_elements_by_class_name("fa-road")) > 0

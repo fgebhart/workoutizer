@@ -12,7 +12,7 @@ from django.urls import reverse
 from wizer.views import (
     MapView,
     PlotView,
-    get_summary_of_activities,
+    get_summary_of_all_activities,
     get_all_form_field_ids,
     get_flat_list_of_pks_of_activities_in_top_awards,
     fetch_row_data_for_page,
@@ -62,15 +62,16 @@ class SportsView(MapView, PlotView):
             return HttpResponseRedirect(reverse("home"))
         sport = models.Sport.objects.get(slug=sports_name_slug)
         activities = self.get_activity_data_for_plots(sport_id=sport.id)
-        context = super(SportsView, self).get(request=request, list_of_activities=activities)
+        context = {}
         sports = models.Sport.objects.all().order_by("name")
-        summary = get_summary_of_activities(activities=activities)
+        summary = get_summary_of_all_activities(sport_slug=sports_name_slug)
         if activities:
             script_history, div_history = plot_history(
                 activities=activities, sport_model=models.Sport, settings_model=models.Settings
             )
             context["script_history"] = script_history
             context["div_history"] = div_history
+        map_context = super(SportsView, self).get(request=request, list_of_activities=activities)
         if sport.evaluates_for_awards:
             top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit, sports_name_slug)
             context["top_awards"] = top_awards
@@ -80,13 +81,16 @@ class SportsView(MapView, PlotView):
         except ObjectDoesNotExist:
             log.critical("this sport does not exist")
             raise Http404
+        activities_for_table, is_last_page = fetch_row_data_for_page(page_nr=page, sport_slug=sports_name_slug)
         return render(
             request,
             self.template_name,
             {
+                **map_context,
                 **context,
-                "activities": fetch_row_data_for_page(page_nr=page, sport_slug=sports_name_slug),
+                "activities": activities_for_table,
                 "current_page": page,
+                "is_last_page": is_last_page,
                 "sports": sports,
                 "summary": summary,
                 "sport": sport,

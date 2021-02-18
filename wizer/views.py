@@ -10,6 +10,7 @@ from django.contrib import messages
 from multiprocessing import Process
 from django.urls import reverse
 from django.utils import timezone
+from django.db.models import Sum
 
 from wizer import models
 from wizer import forms
@@ -53,7 +54,6 @@ class MapView(View):
     settings = None
 
     def get(self, request, list_of_activities: list):
-        log.debug(f"got list_of_activity_ids: {list_of_activities}")
         self.settings = models.get_settings()
         setattr(self.settings, "trace_width", django_settings.trace_line_width)
         setattr(self.settings, "trace_opacity", django_settings.trace_line_opacity)
@@ -115,12 +115,14 @@ class DashboardView(View, PlotView):
         page = 0
         self.sports = models.Sport.objects.all().order_by("name")
         activities = self.get_activity_data_for_plots()
-        summary = get_summary_of_activities(activities=activities)
+        summary = get_summary_of_all_activities()
         top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit)
+        activities_for_table, is_last_page = fetch_row_data_for_page(page_nr=page)
         context = {
             "sports": self.sports,
-            "activities": fetch_row_data_for_page(page_nr=page),
+            "activities": activities_for_table,
             "current_page": page,
+            "is_last_page": is_last_page,
             "days": self.number_of_days,
             "choices": self.days_choices,
             "summary": summary,
@@ -193,12 +195,19 @@ def set_number_of_days(request, number_of_days):
         return HttpResponseRedirect(reverse("home"))
 
 
-def get_summary_of_activities(activities):
-    total_duration = datetime.timedelta(minutes=0)
-    for a in activities:
-        total_duration += a.duration
-    log.debug(f"total duration of selected activities: {total_duration}")
-    return {"count": len(activities), "duration": total_duration, "distance": int(sum(n.distance for n in activities))}
+def get_summary_of_all_activities(sport_slug=None):
+    if sport_slug:
+        count = models.Activity.objects.filter(sport__slug=sport_slug).count()
+        total_duration = models.Activity.objects.filter(sport__slug=sport_slug).aggregate(Sum("duration"))
+        total_distance = models.Activity.objects.filter(sport__slug=sport_slug).aggregate(Sum("distance"))
+    else:
+        count = models.Activity.objects.all().count()
+        total_duration = models.Activity.objects.all().aggregate(Sum("duration"))
+        total_distance = models.Activity.objects.all().aggregate(Sum("distance"))
+    duration = total_duration["duration__sum"] if total_duration["duration__sum"] else datetime.timedelta(minutes=0)
+    distance = int(total_distance["distance__sum"]) if total_distance["distance__sum"] else 0
+    log.debug(f"total duration: {duration}, total distance: {distance}")
+    return {"count": count, "duration": duration, "distance": distance}
 
 
 def custom_404_view(request, exception=None):
@@ -289,19 +298,27 @@ def get_bulk_of_rows_for_next_page(request, page: str):
     if "sport" in current_url:
         sport_slug = current_url.split("/")[-1]
 
-    activities = fetch_row_data_for_page(page_nr=page, sport_slug=sport_slug)
-    return render(request, template_name, {"activities": activities, "current_page": page})
+    activities, is_last_page = fetch_row_data_for_page(page_nr=page, sport_slug=sport_slug)
+    return render(request, template_name, {"activities": activities, "current_page": page, "is_last_page": is_last_page})
 
 
 def fetch_row_data_for_page(page_nr: int, sport_slug=None):
     number_of_rows = configuration.number_of_rows_per_page_in_table
-
+    start = page_nr * number_of_rows
+    end = (page_nr + 1) * number_of_rows
+    log.debug(f"fetching activity data for table page {page_nr}")
+    is_last_page = False
     if sport_slug:
-        activities = models.Activity.objects.filter(sport__slug=sport_slug).order_by("-date")[
-            page_nr * number_of_rows : (page_nr + 1) * number_of_rows
-        ]
+        activities = models.Activity.objects.filter(sport__slug=sport_slug).order_by("-date")
+        total_nr_of_activities = activities.count()
+        activities = activities[start:end]
     else:
-        activities = models.Activity.objects.all().order_by("-date")[
-            page_nr * number_of_rows : (page_nr + 1) * number_of_rows
-        ]
-    return activities
+        activities = models.Activity.objects.all().order_by("-date")
+        total_nr_of_activities = activities.count()
+        activities = activities[start:end]
+
+    # indicate whether the current page is the last one
+    if end >= total_nr_of_activities:
+        log.debug("reached the end of the table")
+        is_last_page = True
+    return activities, is_last_page

@@ -1,3 +1,4 @@
+{% load static %}
 
 <table class="table table-hover" hx-indicator=".htmx-indicator">
     <thead>
@@ -15,3 +16,6 @@
         {% include 'lib/row_bulk.html' %}
     </tbody>
 </table>
+<center>
+    <img class="htmx-indicator" src="{% static 'img/bars.svg' %}" width="60">
+</center>
