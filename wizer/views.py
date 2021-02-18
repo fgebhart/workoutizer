@@ -144,10 +144,12 @@ class DashboardView(View, PlotView):
                 "div_pc": div_pc,
                 "script_trend": script_trend,
                 "div_trend": div_trend,
+                "activities_available_for_plot": True,
             }
             return render(request, self.template_name, {**context, **plotting_context})
         else:
             log.warning("no activities found...")
+            context["activities_available_for_plot"] = False
         return render(request, self.template_name, {**context})
 
 
@@ -320,6 +322,6 @@ def fetch_row_data_for_page(page_nr: int, sport_slug=None):
 
     # indicate whether the current page is the last one
     if end >= total_nr_of_activities:
-        log.debug("reached the end of the table")
+        log.debug("reached end of the table")
         is_last_page = True
     return activities, is_last_page

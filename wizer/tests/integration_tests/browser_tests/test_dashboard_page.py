@@ -15,7 +15,7 @@ def test_dashboard_page_accessible(live_server, webdriver):
 
     # first time running workoutizer will lead to the dashboard page with no data
     h3 = webdriver.find_element_by_css_selector("h3")
-    assert h3.text == "No activity data found."
+    assert h3.text == "No activity data selected for plotting."
 
 
 def test_add_activity_button(live_server, webdriver):
@@ -43,7 +43,7 @@ def test_drop_down_visible(live_server, webdriver, settings):
     days = settings.number_of_days
 
     dropdown_button = webdriver.find_element_by_id("dropdown-btn")
-    assert dropdown_button.text == str(days)
+    assert dropdown_button.text == f"last {days} days"
 
 
 def test_dashboard_page__complete(import_demo_data, live_server, webdriver):

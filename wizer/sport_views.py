@@ -57,7 +57,6 @@ class SportsView(MapView, PlotView):
     def get(self, request, sports_name_slug):
         log.debug(f"got sports name: {sports_name_slug}")
         settings = models.get_settings()
-        page = 0
         if sports_name_slug == "undefined":
             log.warning("could not find sport - redirecting to home")
             return HttpResponseRedirect(reverse("home"))
@@ -74,6 +73,9 @@ class SportsView(MapView, PlotView):
             )
             context["script_history"] = script_history
             context["div_history"] = div_history
+            context["activities_available_for_plot"] = True
+        else:
+            context["activities_available_for_plot"] = False
         map_context = super(SportsView, self).get(request=request, list_of_activities=activities)
         if sport.evaluates_for_awards:
             top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit, sports_name_slug)
@@ -84,6 +86,7 @@ class SportsView(MapView, PlotView):
         except ObjectDoesNotExist:
             log.critical("this sport does not exist")
             raise Http404
+        page = 0
         activities_for_table, is_last_page = fetch_row_data_for_page(page_nr=page, sport_slug=sports_name_slug)
         return render(
             request,

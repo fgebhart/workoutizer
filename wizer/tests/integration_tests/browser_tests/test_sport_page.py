@@ -77,7 +77,6 @@ def test_sport_page__complete(import_demo_data, live_server, webdriver):
 
     paragraph = [p.text for p in webdriver.find_elements_by_tag_name("p")]
     assert "Overview of your Cycling activities:" in paragraph
-    assert "Map of selected Cycling activities:" in paragraph
 
     table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
     assert "Noon Cycling in Bad Schandau" in table_data
