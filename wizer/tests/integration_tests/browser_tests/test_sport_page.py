@@ -69,7 +69,6 @@ def test_sport_page__complete(import_demo_data, live_server, webdriver):
 
     # the sport name should be unknown
     assert "Cycling" in webdriver.find_element_by_tag_name("h3").text
-
     assert "Summary" in webdriver.find_element_by_tag_name("h5").text
 
     links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
@@ -123,8 +122,7 @@ def test_sport_page__infinite_scroll(live_server, webdriver, insert_activity, in
 
     # number of rows equals the number of rows per page, since only one page is loaded
     table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
-    htmx_last_row = webdriver.find_elements_by_id("htmx-last-row")
-    assert len(table_rows) + len(htmx_last_row) == rows_per_page
+    assert len(table_rows) + 1 == rows_per_page
 
     webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     # wait until loading image is present
@@ -134,8 +132,7 @@ def test_sport_page__infinite_scroll(live_server, webdriver, insert_activity, in
 
     # again check number of table rows
     table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
-    htmx_last_row = webdriver.find_elements_by_id("htmx-last-row")
-    assert len(table_rows) + len(htmx_last_row) == nr_of_inserted_activities
+    assert len(table_rows) + 1 == nr_of_inserted_activities
 
 
 def test_sport_page__no_activities_selected_for_plot(live_server, webdriver, insert_activity, insert_sport):

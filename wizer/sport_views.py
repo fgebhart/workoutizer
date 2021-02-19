@@ -15,7 +15,6 @@ from wizer.views import (
     get_summary_of_all_activities,
     get_all_form_field_ids,
     get_flat_list_of_pks_of_activities_in_top_awards,
-    fetch_row_data_for_page,
 )
 from wizer import models
 from wizer.forms import AddSportsForm
@@ -87,16 +86,14 @@ class SportsView(MapView, PlotView):
             log.critical("this sport does not exist")
             raise Http404
         page = 0
-        activities_for_table, is_last_page = fetch_row_data_for_page(page_nr=page, sport_slug=sports_name_slug)
         return render(
             request,
             self.template_name,
             {
                 **map_context,
                 **context,
-                "activities": activities_for_table,
                 "current_page": page,
-                "is_last_page": is_last_page,
+                "is_last_page": False,
                 "sports": sports,
                 "summary": summary,
                 "sport": sport,

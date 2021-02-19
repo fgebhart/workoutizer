@@ -5,7 +5,7 @@
         <tr hx-get="/activities_page/{{ current_page }}"
             hx-trigger="revealed"
             hx-swap="afterend"
-            id="htmx-last-row">
+            id="htmx-trigger-row">
     {% else %}
         <tr id="activities-table-row">
     {% endif %}
@@ -51,7 +51,7 @@
         </td>
     </tr>
 {% endfor %}
-{% if is_last_page and current_page != 0 %}
+{% if is_last_page and current_page > 1 %}
     <tr>
         <td></td>
         <td id="end-of-activities">
