@@ -9,19 +9,17 @@
     <div class="clearfix"></div>
     <style type="text/css" media="screen">
         .leaflet-container {
-            height: 280px;
+            height: 320px;
         }
     </style>
     <hr>
     {% include "lib/messages.html" %}
     <div class="row">
-        {% if traces %}
+        {% if traces or not activities_selected_for_plot %}
             <div class="col-sm-7">
                 {% include 'plotting/plot_history.html' %}
             </div>
             <div class="col-sm-5">
-                <p>Map of selected {{ sport.name }} activities:
-                </p>
                 {% include 'map/sport_map.html' %}
             </div>
         {% else %}

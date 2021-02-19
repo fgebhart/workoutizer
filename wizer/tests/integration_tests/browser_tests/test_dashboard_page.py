@@ -1,7 +1,13 @@
 from django.urls import reverse
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import ElementNotInteractableException
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 import pytest
+
+from wizer import configuration
+from wizer import models
 
 
 def test_dashboard_page_accessible(live_server, webdriver):
@@ -9,7 +15,7 @@ def test_dashboard_page_accessible(live_server, webdriver):
 
     # first time running workoutizer will lead to the dashboard page with no data
     h3 = webdriver.find_element_by_css_selector("h3")
-    assert h3.text == "No activity data found."
+    assert h3.text == "No activity data selected for plotting  "
 
 
 def test_add_activity_button(live_server, webdriver):
@@ -37,7 +43,7 @@ def test_drop_down_visible(live_server, webdriver, settings):
     days = settings.number_of_days
 
     dropdown_button = webdriver.find_element_by_id("dropdown-btn")
-    assert dropdown_button.text == str(days)
+    assert dropdown_button.text == f"last {days} days"
 
 
 def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
@@ -94,3 +100,31 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     assert len(webdriver.find_elements_by_class_name("fa-hashtag")) == 1
     assert len(webdriver.find_elements_by_class_name("fa-road")) == 1
     assert len(webdriver.find_elements_by_class_name("fa-history")) == 1
+
+
+def test_dashboard__infinite_scroll(live_server, webdriver, insert_activity):
+    rows_per_page = configuration.number_of_rows_per_page_in_table
+    # insert more activities than the currently configured value of rows
+    # per page in order to be  able to trigger the htmx ajax request
+    nr_of_inserted_activities = rows_per_page + 5
+    for i in range(nr_of_inserted_activities):
+        insert_activity(name=f"Dummy Activity {i}")
+
+    assert models.Activity.objects.count() == nr_of_inserted_activities
+    webdriver.get(live_server.url + reverse("home"))
+
+    # number of rows equals the number of rows per page, since only one page is loaded
+    table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
+    htmx_last_row = webdriver.find_elements_by_id("htmx-last-row")
+    assert len(table_rows) + len(htmx_last_row) == rows_per_page
+
+    webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # wait until loading image is present
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "loading-bar")))
+    # wait until final row indicating that no more activities are available is present
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "end-of-activities")))
+
+    # again check number of table rows
+    table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
+    htmx_last_row = webdriver.find_elements_by_id("htmx-last-row")
+    assert len(table_rows) + len(htmx_last_row) == nr_of_inserted_activities

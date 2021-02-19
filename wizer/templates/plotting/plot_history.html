@@ -7,7 +7,7 @@
     <div class="col-sm-4">
         <div class="float-right">
             <div class="dropdown">
-                display last
+                display
                 <button type="button" id='dropdown-btn' class="btn btn-warning btn-sm dropdown-toggle"
                     data-toggle="dropdown">
                     {% for k, v in choices %}
@@ -25,25 +25,24 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-                days
             </div>
         </div>
     </div>
 </div>
-{% if activities %}
+{% if activities_selected_for_plot %}
     {{ script_history | safe }}
     {% if div_history %}
         {{ div_history | safe }}
     {% endif %}
 {% else %}
-    <h3>No activity data found.</h3>
     <br>
-    <p>Either increase the selected time range, or do some sports and add it to Workoutizer.
+    <h3>No activity data selected for plotting&nbsp;&nbsp;<i class="fas fa-chart-line"></i></h3>
     <br>
-    <br>
-    Activities will appear here. <i
-            class="fas fa-running"></i></p>
-    <br>
-    <br>
+    <p>
+        Either increase the selected time range, or do some sports and add it to Workoutizer.
+        <br>
+        The activity plot will appear here &nbsp;<i class="fas fa-running"></i></p>
+        <br>
+        <br>
 {% endif %}
 <br>

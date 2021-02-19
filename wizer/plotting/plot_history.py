@@ -12,7 +12,7 @@ from django.conf import settings
 log = logging.getLogger(__name__)
 
 
-def _plot_activities(activities, sport_model, settings_model):
+def _plot_activities(activities, sport_model, number_of_days):
     df = pd.DataFrame(list(activities.values("name", "sport", "date", "duration")))
     sports = sport_model.objects.filter(id__in=df["sport"].unique())
     colors = []
@@ -21,10 +21,9 @@ def _plot_activities(activities, sport_model, settings_model):
         colors.append(sport.color)
 
     df.drop(columns=["sport", "duration", "name"], inplace=True)
-    n_days = settings_model.objects.get(pk=1).number_of_days
     today = timezone.now().replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
-    if n_days < 9999:
-        start = today - datetime.timedelta(days=n_days)
+    if number_of_days < 9999:
+        start = today - datetime.timedelta(days=number_of_days)
     else:
         start = df["date"].min().replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
     date_range = pd.DataFrame({"date": pd.date_range(start=start, end=today, tz=settings.TIME_ZONE)})
@@ -61,10 +60,10 @@ def _plot_activities(activities, sport_model, settings_model):
     return p
 
 
-def plot_history(activities, sport_model, settings_model):
+def plot_history(activities, sport_model, number_of_days):
     try:
         script, div = components(
-            _plot_activities(activities=activities, sport_model=sport_model, settings_model=settings_model)
+            _plot_activities(activities=activities, sport_model=sport_model, number_of_days=number_of_days)
         )
     except AttributeError and TypeError and ValueError as e:
         log.warning(f"Could not render plot. Check if activity data is correct: {e}", exc_info=True)

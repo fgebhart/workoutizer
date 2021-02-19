@@ -158,7 +158,16 @@ class BestSection(models.Model):
 
 
 class Settings(models.Model):
-    days_choices = [(9999, "all"), (365, 365), (180, 180), (90, 90), (30, 30), (10, 10)]
+    days_choices = [
+        (9999, "all"),
+        (1095, "last 3 years"),
+        (730, "last 2 years"),
+        (365, "last year"),
+        (180, "last 180 days"),
+        (90, "last 90 days"),
+        (30, "last 30 days"),
+        (10, "last 10 days"),
+    ]
 
     path_to_trace_dir = models.CharField(
         max_length=120, default=django_settings.TRACKS_DIR, verbose_name="Path to Traces Directory:"

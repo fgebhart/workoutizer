@@ -44,8 +44,15 @@ def test_activity_page__complete(import_one_activity, live_server, webdriver):
     assert "−" in links
     assert "Leaflet" in links
     assert "OpenStreetMap" in links
+
     ps = [p.text for p in webdriver.find_elements_by_tag_name("p")]
     assert "Aug 29, 2020, 17:12" in ps
+
+    spans = [a.text for a in webdriver.find_elements_by_tag_name("span")]
+    assert "Streets" in spans
+    assert "Topo" in spans
+    assert "Terrain" in spans
+    assert "Satellite" in spans
 
     # check that icons are present
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
