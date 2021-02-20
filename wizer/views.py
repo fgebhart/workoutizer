@@ -117,19 +117,15 @@ class DashboardView(View, PlotView):
         self.sports = models.Sport.objects.all().order_by("name")
         activities = self.get_activity_data_for_plots()
         summary = get_summary_of_all_activities()
-        top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit)
-        activities_for_table, is_last_page = fetch_row_data_for_page(page_nr=page)
         context = {
             "sports": self.sports,
-            "activities": activities_for_table,
             "current_page": page,
-            "is_last_page": is_last_page,
+            "is_last_page": False,
             "days": self.number_of_days,
             "choices": self.days_choices,
             "summary": summary,
             "page": "dashboard",
             "form_field_ids": get_all_form_field_ids(),
-            "top_awards": top_awards,
         }
         if activities:
             script_history, div_history = plot_history(
@@ -294,7 +290,7 @@ def get_flat_list_of_pks_of_activities_in_top_awards(
 
 
 def get_bulk_of_rows_for_next_page(request, page: str):
-    page = int(page) + 1
+    page = int(page)
     template_name = "lib/row_bulk.html"
     current_url = request.META.get("HTTP_HX_CURRENT_URL")
     sport_slug = None
@@ -302,7 +298,13 @@ def get_bulk_of_rows_for_next_page(request, page: str):
         sport_slug = current_url.split("/")[-1]
 
     activities, is_last_page = fetch_row_data_for_page(page_nr=page, sport_slug=sport_slug)
-    return render(request, template_name, {"activities": activities, "current_page": page, "is_last_page": is_last_page})
+    top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit)
+
+    return render(
+        request,
+        template_name,
+        {"activities": activities, "current_page": page + 1, "is_last_page": is_last_page, "top_awards": top_awards},
+    )
 
 
 def fetch_row_data_for_page(page_nr: int, sport_slug=None):

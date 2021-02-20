@@ -13,6 +13,7 @@
     "cSpell.ignoreWords": [
         "capsys",
         "gvfs",
-        "raspbian"
+        "raspbian",
+        "referer"
     ],
 }

@@ -13,7 +13,11 @@
     </tr>
     </thead>
     <tbody>
-        {% include 'lib/row_bulk.html' %}
+        <tr hx-get="/activities_page/{{ current_page }}"
+            hx-trigger="revealed"
+            hx-swap="afterend"
+            id="htmx-trigger-row">
+        </tr>
     </tbody>
 </table>
 <center>

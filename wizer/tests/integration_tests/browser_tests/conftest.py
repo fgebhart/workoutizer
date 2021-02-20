@@ -8,11 +8,12 @@ from selenium.webdriver.firefox.options import Options
 from workoutizer import settings as django_settings
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def webdriver():
     options = Options()
     options.headless = True
     driver = Firefox(options=options)
+    driver.set_window_size(1280, 1024)
     yield driver
     driver.quit()
 

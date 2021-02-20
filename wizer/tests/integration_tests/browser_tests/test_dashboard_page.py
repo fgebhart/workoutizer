@@ -115,8 +115,7 @@ def test_dashboard__infinite_scroll(live_server, webdriver, insert_activity):
 
     # number of rows equals the number of rows per page, since only one page is loaded
     table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
-    htmx_last_row = webdriver.find_elements_by_id("htmx-last-row")
-    assert len(table_rows) + len(htmx_last_row) == rows_per_page
+    assert len(table_rows) + 1 == rows_per_page
 
     webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     # wait until loading image is present
@@ -126,5 +125,4 @@ def test_dashboard__infinite_scroll(live_server, webdriver, insert_activity):
 
     # again check number of table rows
     table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
-    htmx_last_row = webdriver.find_elements_by_id("htmx-last-row")
-    assert len(table_rows) + len(htmx_last_row) == nr_of_inserted_activities
+    assert len(table_rows) + 1 == nr_of_inserted_activities
