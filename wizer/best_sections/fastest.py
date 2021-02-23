@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
-from sportgems import find_gems
+from sportgems import find_fastest_section
 
 
 @dataclass
@@ -37,9 +37,9 @@ def get_fastest_section(section_distance: int, parser) -> Tuple[float, int, int]
     times, coordinates = _prepare_coordinates_and_times_for_fastest_secions(parser)
 
     # call the rust binary of sportgems here
-    found_section, start_index, end_index, velocity = find_gems(section_distance, times, coordinates)
+    sec = find_fastest_section(section_distance, times, coordinates)
 
-    return found_section, start_index, end_index, round(velocity, 2)
+    return sec.valid_section, sec.start_index, sec.end_index, round(sec.velocity, 2)
 
 
 def _activity_suitable_for_awards(activity) -> bool:

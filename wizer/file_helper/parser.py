@@ -86,8 +86,8 @@ class Parser:
     def get_fastest_sections(self):
         for section_distance in fastest_sections:
             if self.distance > section_distance:
-                found_section, start_index, end_index, velocity = get_fastest_section(int(section_distance * 1000), self)
-                if found_section:
+                valid_section, start_index, end_index, velocity = get_fastest_section(int(section_distance * 1000), self)
+                if valid_section:
                     sec = FastestSection(
                         start_index=start_index,
                         end_index=end_index,
