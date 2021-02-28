@@ -31,8 +31,9 @@ def mount_device_endpoint(request):
             # no need to trigger file importer here anymore since watchdog
             # will automatically realize new files and trigger the file importer
 
-            # 4. once collecting and importing was successful unmount device
+            # 3. once collecting and importing was successful unmount device
             unmount_device_using_gio(settings.path_to_garmin_device)
+            log.info(f"unmounted device at: {settings.path_to_garmin_device}")
 
             return Response("mounted and checked for files", status=status.HTTP_200_OK)
         else:

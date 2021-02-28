@@ -32,19 +32,22 @@ class FitCollector:
                     for name in files
                     if name.endswith(".fit")
                 ]
-                for fit in fits:
-                    file_name = str(fit.split("/")[-1])
-                    target_file = os.path.join(self.target_location, file_name)
-                    if not os.path.isfile(target_file):
-                        shutil.copy(fit, target_file)
-                        log.debug(f"copied file: {file_name}")
-                        if files_are_same(fit, target_file):
-                            log.debug(f"files {fit} and {target_file} are equal")
-                            if self.delete_files_after_import:
-                                log.debug(f"deleting fit file from device: {fit}")
-                                os.remove(fit)
-                        else:
-                            log.warning(f"files {fit} and {target_file} are NOT equal after copying.")
+                if fits:
+                    for fit in fits:
+                        file_name = str(fit.split("/")[-1])
+                        target_file = os.path.join(self.target_location, file_name)
+                        if not os.path.isfile(target_file):
+                            shutil.copy(fit, target_file)
+                            log.info(f"copied file: {file_name}")
+                            if files_are_same(fit, target_file):
+                                log.debug(f"files {fit} and {target_file} are equal")
+                                if self.delete_files_after_import:
+                                    log.debug(f"deleting fit file from device: {fit}")
+                                    os.remove(fit)
+                            else:
+                                log.warning(f"files {fit} and {target_file} are NOT equal after copying.")
+                else:
+                    log.info(f"did not find any new activity files at {garmin_watch}")
 
 
 def _find_complete_garmin_device_path(begin_of_path_to_device: str) -> Union[str, None]:
