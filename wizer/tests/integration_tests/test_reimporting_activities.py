@@ -26,7 +26,7 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     prepare_import_of_demo_activities(
         models,
         list_of_files_to_copy=[
-            "hike_with_coordinates.fit",
+            "hike_with_coodrinates_muggenbrunn.fit",
             "cycling_bad_schandau.fit",
         ],
     )

@@ -71,7 +71,7 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Cycling in Bad Schandau" in table_data
     assert "Noon Cycling in Hinterzarten" in table_data
     assert "Noon Cycling in Dahn" in table_data
-    assert "Evening Hiking in Ringgenberg (BE)" in table_data
+    assert "Noon Hiking in Aftersteg" in table_data
     assert "Noon Hiking in Kornau" in table_data
 
     # check that the trophy icons are present

@@ -32,7 +32,7 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
     assert "  Add Activity" in links
     assert "  Workoutizer  " in links
-    assert "Evening Hiking in Ringgenberg (BE)" not in links
+    assert "Noon Hiking in Aftersteg" not in links
     assert "Noon Hiking in Kornau" not in links
     assert "Noon Hiking in Bad Schandau" not in links
     assert "Noon Jogging in Mirow" in links
@@ -48,7 +48,7 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Jogging in Heidelberg" in table_data
     assert "Noon Jogging in Mirow" in table_data
     assert "10.2 km/h" in table_data
-    assert "30 km" in table_data
+    assert "1 km" in table_data
 
     first_num_trophies = len(webdriver.find_elements_by_class_name("fa-trophy"))
     assert first_num_trophies > 0
