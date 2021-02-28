@@ -5,6 +5,7 @@ import datetime
 import pytz
 import pandas as pd
 from fitparse import FitFile
+from fitparse.utils import FitEOFError
 from django.conf import settings
 
 from wizer.file_helper.parser import Parser
@@ -20,7 +21,10 @@ class FITParser(Parser):
 
     def _parse_metadata(self):
         self.file_name = self.get_file_name_from_path(self.path_to_file)
-        self.fit = FitFile(self.path_to_file)
+        try:
+            self.fit = FitFile(self.path_to_file)
+        except FitEOFError as e:
+            log.error(f"Error reading fit file {self.path_to_file}: {e}", exc_info=True)
 
     def _parse_records(self):
         for record in self.fit.get_messages():
