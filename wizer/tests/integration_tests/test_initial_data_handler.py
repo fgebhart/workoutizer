@@ -26,7 +26,7 @@ def test_copy_demo_fit_files_to_track_dir__all(tmpdir, demo_data_dir):
     # copy demo data to tested data dir
     src = demo_data_dir
     copy_demo_fit_files_to_track_dir(src, tmpdir, list_of_files_to_copy=[])
-    assert os.path.isfile(os.path.join(tmpdir, "hike_with_coordinates.fit"))
+    assert os.path.isfile(os.path.join(tmpdir, "hike_with_coodrinates_muggenbrunn.fit"))
     number_of_files_in_dir = len([name for name in os.listdir(tmpdir) if os.path.isfile(os.path.join(tmpdir, name))])
     assert number_of_files_in_dir == 10
 
@@ -38,11 +38,11 @@ def test_copy_demo_fit_files_to_track_dir__not_all(tmpdir, demo_data_dir):
         src,
         tmpdir,
         list_of_files_to_copy=[
-            "hike_with_coordinates.fit",
+            "hike_with_coodrinates_muggenbrunn.fit",
             "2020-08-20-09-34-33.fit",
         ],
     )
-    assert os.path.isfile(os.path.join(tmpdir, "hike_with_coordinates.fit"))
+    assert os.path.isfile(os.path.join(tmpdir, "hike_with_coodrinates_muggenbrunn.fit"))
     assert os.path.isfile(os.path.join(tmpdir, "2020-08-20-09-34-33.fit"))
     number_of_files_in_dir = len([name for name in os.listdir(tmpdir) if os.path.isfile(os.path.join(tmpdir, name))])
     assert number_of_files_in_dir == 2
