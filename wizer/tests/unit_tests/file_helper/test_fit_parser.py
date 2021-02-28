@@ -1,9 +1,9 @@
-import os
 import datetime
 
 import pytz
 import pytest
 from django.conf import settings
+import pandas as pd
 
 from wizer.file_helper.fit_parser import LapData
 from wizer.best_sections.fastest import FastestSection
@@ -32,15 +32,15 @@ def test__parse_records(fit_parser):
     assert p.aerobic_training_effect == 2.7
     assert p.anaerobic_training_effect == 0.3
     # check lengths of list attributes
-    assert len(p.heart_rate_list) == 4442
-    assert len(p.altitude_list) == 4442
-    assert len(p.latitude_list) == 4442
-    assert len(p.longitude_list) == 4442
-    assert len(p.distance_list) == 4442
-    assert len(p.cadence_list) == 4442
-    assert len(p.temperature_list) == 4442
-    assert len(p.speed_list) == 4442
-    assert len(p.timestamps_list) == 4442
+    assert len(p.heart_rate_list) == 1224
+    assert len(p.altitude_list) == 1224
+    assert len(p.latitude_list) == 1224
+    assert len(p.longitude_list) == 1224
+    assert len(p.distance_list) == 1224
+    assert len(p.cadence_list) == 1224
+    assert len(p.temperature_list) == 1224
+    assert len(p.speed_list) == 1224
+    assert len(p.timestamps_list) == 1224
     # sanity check to see if element in list attributes
     assert 1.605 in p.speed_list
     assert 8.697221484035255 in p.longitude_list
@@ -66,7 +66,7 @@ def test__parse_records(fit_parser):
     )
 
 
-def test_get_min_max_values(fit_parser):
+def test_set_min_max_values(fit_parser):
     p = fit_parser()
     # sanity checks
     assert 61 in p.cadence_list
@@ -94,9 +94,17 @@ def test_get_min_max_values(fit_parser):
         assert p.max_coordinates == 0.0
 
 
-def test_convert_list_of_nones_to_empty_list(fit_parser, test_data_dir):
-    p = fit_parser(path=os.path.join(test_data_dir, "with_nones.fit"))
+def test_drop_rows_where_all_records_are_null(fit_parser):
+    p = fit_parser()
+    # null rows should already be dropped, can only verify that
+    # there are no more rows will all null records present
+    pd.testing.assert_frame_equal(p.dataframe, p.dataframe.dropna(how="all"))
+
+
+def test_convert_list_of_nones_to_empty_list(fit_parser):
+    p = fit_parser("with_nones.fit")
     assert p.altitude_list[:3] == [None, None, None]
+    assert p.dataframe.altitude_list.isna().all()
     p.convert_list_of_nones_to_empty_list()
     assert p.altitude_list == []
 

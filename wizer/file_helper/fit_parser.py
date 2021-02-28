@@ -90,27 +90,51 @@ class FITParser(Parser):
         log.debug(f"found avg_cadence: {self.avg_cadence} steps/min")
         log.debug(f"found avg_temperature: {self.avg_temperature} Celsius")
         log.debug(f"found number of laps: {len(self.laps)}")
+        self._save_data_to_dataframe()
+        self._drop_rows_where_all_records_are_null()
+
+    def _save_data_to_dataframe(self):
+        df = pd.DataFrame(
+            {
+                "latitude_list": self.latitude_list,
+                "longitude_list": self.longitude_list,
+                "timestamps_list": self.timestamps_list,
+                "distance_list": self.distance_list,
+                "altitude_list": self.altitude_list,
+                "heart_rate_list": self.heart_rate_list,
+                "cadence_list": self.cadence_list,
+                "speed_list": self.speed_list,
+                "temperature_list": self.temperature_list,
+            }
+        )
+        self.dataframe = df
+
+    def _drop_rows_where_all_records_are_null(self):
+        # drop rows where all values are null
+        self.dataframe.dropna(how="all", inplace=True)
+
+        # overwrite self attributes with content of columns again
+        self.latitude_list = self.dataframe.latitude_list.to_list()
+        self.longitude_list = self.dataframe.longitude_list.to_list()
+        self.timestamps_list = self.dataframe.timestamps_list.to_list()
+        self.distance_list = self.dataframe.distance_list.to_list()
+        self.altitude_list = self.dataframe.altitude_list.to_list()
+        self.heart_rate_list = self.dataframe.heart_rate_list.to_list()
+        self.cadence_list = self.dataframe.cadence_list.to_list()
+        self.speed_list = self.dataframe.speed_list.to_list()
+        self.temperature_list = self.dataframe.temperature_list.to_list()
 
     def convert_list_of_nones_to_empty_list(self):
-        for attribute, values in self.__dict__.items():
-            if attribute.endswith("_list"):
-                got_value = False
-                for item in getattr(self, attribute):
-                    if item:
-                        got_value = True
-                        break
-                if not got_value:
-                    setattr(self, attribute, [])
+        for attribute in configuration.time_series_attributes:
+            if self.dataframe[attribute].isna().all():
+                setattr(self, attribute, [])
 
     def set_min_max_values(self):
-        attributes = self.__dict__.copy()
-        for attribute, values in attributes.items():
-            if attribute in configuration.min_max_attributes:
-                name = attribute.replace("_list", "")
-                values = pd.Series(values, dtype="float")
-                if values.any():
-                    setattr(self, f"max_{name}", round(float(values.max()), 2))
-                    setattr(self, f"min_{name}", round(float(values.min()), 2))
+        for attribute in configuration.min_max_attributes:
+            name = attribute.replace("_list", "")
+            if self.dataframe[attribute].any():
+                setattr(self, f"max_{name}", round(float(self.dataframe[attribute].max()), 2))
+                setattr(self, f"min_{name}", round(float(self.dataframe[attribute].min()), 2))
 
 
 def _parse_lap_data(record):
