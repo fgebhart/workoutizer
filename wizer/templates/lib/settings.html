@@ -14,8 +14,8 @@
                 <h5><b>Demo</b></h5>
                 <hr>
                 <div class="form-group row">
-                    <div class="col-sm-3">Delete Demo Data:</div>
-                    <div class="col-sm-9">
+                    <div class="col-sm-4">Delete Demo Data:</div>
+                    <div class="col-sm-8">
                         <a href="{% url 'delete-demo-data' %}" id="delete-demo-data" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip"
                            data-placement="right"
                            title="Click here if you want to delete the initial demo activity data. You will be prompted
@@ -28,19 +28,26 @@
             <h5><b>File Importer</b></h5>
             <hr>
             <div class="form-group row">
-                <div class="col-sm-3">{{ form.path_to_trace_dir.label }}</div>
-                <div class="col-sm-9">{{ form.path_to_trace_dir }}</div>
+                <div class="col-sm-4">{{ form.path_to_trace_dir.label }}</div>
+                <div class="col-sm-8">{{ form.path_to_trace_dir }}</div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-3">{{ form.path_to_garmin_device.label }}</div>
-                <div class="col-sm-9">{{ form.path_to_garmin_device }}&nbsp;
+                <div class="col-sm-4">{{ form.path_to_garmin_device.label }}</div>
+                <div class="col-sm-8">{{ form.path_to_garmin_device }}&nbsp;
                     <i class="fas fa-question" data-toggle="tooltip" data-placement="right"
                        title="Enter the path where your connected device shows up. Your connected device should start with 'mtp:host' and contain the folders Primary/GARMIN/Activity/ where your .fit files are located in."></i>
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-3">{{ form.delete_files_after_import.label }}</div>
-                <div class="col-sm-9">{{ form.delete_files_after_import }}&nbsp;
+                <div class="col-sm-4">{{ form.path_to_activities_on_device.label }}</div>
+                <div class="col-sm-8">{{ form.path_to_activities_on_device }}&nbsp;
+                    <i class="fas fa-question" data-toggle="tooltip" data-placement="right"
+                       title="Specify the path to the folder containing your activities as .fit files on your Garmin device."></i>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-4">{{ form.delete_files_after_import.label }}</div>
+                <div class="col-sm-8">{{ form.delete_files_after_import }}&nbsp;
                     <i class="fas fa-question" data-toggle="tooltip" data-placement="right"
                        title="Enable this setting to delete fit files from your Garmin device after a successful import. The imported copy in the 'Traces Directory' will stay untouched."></i>
                 </div>
@@ -49,8 +56,8 @@
             <h5><b>Reimporter</b></h5>
             <hr>
             <div class="form-group row">
-                <div class="col-sm-3">Reimport all Files:</div>
-                <div class="col-sm-9">
+                <div class="col-sm-4">Reimport all Files:</div>
+                <div class="col-sm-8">
                     <a href="{% url 'reimport' %}" id="reimport-activities" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip"
                        data-placement="right"
                        title="In case of a new version which supports parsing more activity data from your files,

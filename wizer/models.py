@@ -175,6 +175,9 @@ class Settings(models.Model):
     path_to_garmin_device = models.CharField(
         max_length=120, default="/run/user/1000/gvfs/", verbose_name="Path to Garmin Device:"
     )
+    path_to_activities_on_device = models.CharField(
+        max_length=120, default="/Primary/GARMIN/Activity/", verbose_name="Path to Activities Folder on Garmin Device:"
+    )
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying: ", default=False)
 

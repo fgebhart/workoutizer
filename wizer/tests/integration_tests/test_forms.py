@@ -7,11 +7,8 @@ def test_edit_settings_form():
     form_data = {
         "path_to_trace_dir": "/home/pi/traces/",
         "path_to_garmin_device": "/home/pi/traces/",
+        "path_to_activities_on_device": "/Primary/GARMIN/Activity/",
         "number_of_days": 30,
-        "trace_width": 1.0,
-        "trace_opacity": 0.7,
-        "plotting_style": "bar",
-        "reimporter_updates_all": False,
         "delete_files_after_import": False,
     }
     form = EditSettingsForm(data=form_data)

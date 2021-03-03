@@ -17,6 +17,21 @@ def test_settings_page__no_demo_activity(live_server, webdriver):
     assert "File Importer" in headings
     assert "Reimporter" in headings
 
+    # verify the text of the input field labels
+    input_labels = [link.text for link in webdriver.find_elements_by_class_name("col-sm-4")]
+    assert "Path to Traces Directory:" in input_labels
+    input_labels.remove("Path to Traces Directory:")
+    assert "Path to Garmin Device:" in input_labels
+    input_labels.remove("Path to Garmin Device:")
+    assert "Path to Activities Folder on Garmin Device:" in input_labels
+    input_labels.remove("Path to Activities Folder on Garmin Device:")
+    assert "Delete fit Files after Copying:" in input_labels
+    input_labels.remove("Delete fit Files after Copying:")
+    assert "Reimport all Files:" in input_labels
+    input_labels.remove("Reimport all Files:")
+    # verify that the list is empty after remove all given input labels
+    assert len(input_labels) == 0
+
     # verify no demo activity is present
     assert len(models.Activity.objects.filter(is_demo_activity=True)) == 0
     # no Demo heading present
@@ -75,6 +90,10 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     garmin_device_input_field = webdriver.find_element_by_css_selector("#id_path_to_garmin_device")
     garmin_device_input_field.clear()
     garmin_device_input_field.send_keys("garmin/dummy/path")
+
+    activity_path_input_field = webdriver.find_element_by_css_selector("#id_path_to_activities_on_device")
+    activity_path_input_field.clear()
+    activity_path_input_field.send_keys("/Path/to/Activity/")
 
     # got removed, should not be accessible
     with pytest.raises(NoSuchElementException):
