@@ -12,10 +12,16 @@ log = logging.getLogger("wizer.fit_collector")
 
 
 class FitCollector:
-    def __init__(self, path_to_garmin_device: str, target_location: str, delete_files_after_import: bool = False):
+    def __init__(
+        self,
+        path_to_garmin_device: str,
+        target_location: str,
+        path_to_activities_on_device: str,
+        delete_files_after_import: bool = False,
+    ):
         self.path_to_garmin_device = path_to_garmin_device
         self.delete_files_after_import = delete_files_after_import
-        self.activity_path = "/Primary/GARMIN/Activity/"
+        self.activity_path = path_to_activities_on_device
         self.target_location = os.path.join(target_location, "garmin")
         if not os.path.isdir(self.target_location):
             os.makedirs(self.target_location)

@@ -25,6 +25,7 @@ def mount_device_endpoint(request):
             fit_collector = FitCollector(
                 path_to_garmin_device=settings.path_to_garmin_device,
                 target_location=settings.path_to_trace_dir,
+                path_to_activities_on_device=settings.path_to_activities_on_device,
                 delete_files_after_import=settings.delete_files_after_import,
             )
             fit_collector.copy_fit_files()
