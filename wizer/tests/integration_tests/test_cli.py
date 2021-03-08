@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 
 from django.core.management import execute_from_command_line
 import pytest
@@ -8,6 +9,7 @@ from wizer import models
 from workoutizer import cli
 from workoutizer import __version__
 from workoutizer import settings as django_settings
+from wizer import configuration
 
 
 def test_cli_version():
@@ -63,3 +65,20 @@ def test_cli__reimport(db, import_one_activity):
 
     activity = models.Activity.objects.get()
     assert activity.distance == orig_distance
+
+
+def test__watch_for_auto_mounted_device(db, tmpdir, tracks_in_tmpdir, client, monkeypatch):
+    settings = models.get_settings()
+    garmin_dir = "GARMIN"
+    settings.path_to_garmin_device = tmpdir.mkdir("path_to_device") + "/" + garmin_dir
+    settings.save()
+
+    print(f"device path: {settings.path_to_garmin_device}")
+    print(f"tracks path: {settings.path_to_trace_dir}")
+    from IPython import embed
+
+    embed()
+    thread = cli._watch_for_auto_mounted_device(wkz_url="asdf", copy_files_endpoint="copy_files_from_device/")
+    time.sleep(configuration.device_watcher_sleep + 2)
+    thread.join()
+    # res = client.post("/mount-device/")

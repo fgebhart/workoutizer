@@ -48,3 +48,6 @@ fastest_sections = {
 
 # with respect to the table listing activities used both on dashboard and sport page
 number_of_rows_per_page_in_table = 40
+
+# seconds of sleep for device watchers threading loop
+device_watcher_sleep = 2

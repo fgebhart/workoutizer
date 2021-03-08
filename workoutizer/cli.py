@@ -2,6 +2,8 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+import threading
+import time
 
 import click
 import requests
@@ -12,6 +14,7 @@ from django.db.utils import OperationalError
 from workoutizer.settings import WORKOUTIZER_DIR, WORKOUTIZER_DB_PATH, TRACKS_DIR
 from workoutizer import __version__
 from wizer.tools.utils import get_local_ip_address
+from wizer import configuration
 
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
@@ -41,18 +44,22 @@ def init(demo):
     _init(import_demo_activities=demo)
 
 
+@click.option("--watch-device", help="Watches for a device being plugged in to auto import activities.", is_flag=True)
 @click.argument("url", default="")
 @click.command(
     help="Run workoutizer. Passing the local ip address and port is optionally. In case of no ip address "
     "being passed, it will be determined automatically. Usage, e.g.: 'wkz run 0.0.0.0:8000'."
 )
-def run(url):
-    _check()
+def run(url, watch_device):
     if not url:
         if os.getenv("WKZ_ENV") == "devel":
             url = "127.0.0.1:8000"
         else:
             url = f"{get_local_ip_address()}:8000"
+    if not os.environ.get("RUN_MAIN", None) == "true":  # ensure to run only once, i.e. in main loop
+        _check()
+        if watch_device:
+            _watch_for_auto_mounted_device(url, "copy_files_from_device/")
     execute_from_command_line(["manage.py", "runserver", url])
 
 
@@ -201,6 +208,26 @@ def _reimport():
     from wizer.file_importer import reimport_activity_files
 
     reimport_activity_files(models)
+
+
+def _watch_for_auto_mounted_device(wkz_url: str, copy_files_endpoint: str):
+    from wizer import models
+
+    settings = models.get_settings()
+    path_to_device = settings.path_to_garmin_device
+    route = f"http://{wkz_url}/{copy_files_endpoint}"
+    print(f"watching for device at {path_to_device} to be mounted and post to {route} if device was found")
+    t = threading.Thread(target=_device_watcher, args=(path_to_device, route))
+    t.start()
+    return t
+
+
+def _device_watcher(device_path: str, trigger_route: str):
+    while True:
+        time.sleep(configuration.device_watcher_sleep)
+        if Path(device_path).is_dir():
+            requests.post(trigger_route)
+        print("watcher sleeps...")
 
 
 if __name__ == "__main__":

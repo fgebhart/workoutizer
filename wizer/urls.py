@@ -35,4 +35,5 @@ urlpatterns = [
     # Rest API endpoints
     path("mount-device/", api.mount_device_endpoint),
     path("stop/", api.stop_django_server),
+    path("copy_files_from_device/", api.copy_files_from_device),
 ]

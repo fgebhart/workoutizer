@@ -56,3 +56,19 @@ def stop_django_server(request):
     # lastely kill the parent process
     os.kill(pid, signal.SIGINT)
     return Response("stopped", status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+def copy_files_from_device(request):
+    log.debug("copy_files_from_device triggered")
+    settings = models.get_settings()
+
+    fit_collector = FitCollector(
+        path_to_garmin_device=settings.path_to_garmin_device,
+        target_location=settings.path_to_trace_dir,
+        path_to_activities_on_device=settings.path_to_activities_on_device,
+        delete_files_after_import=settings.delete_files_after_import,
+    )
+    fit_collector.copy_fit_files()
+
+    return Response("triggered", status=status.HTTP_200_OK)
