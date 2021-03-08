@@ -13,6 +13,6 @@ gpxpy
 pandas
 psutil
 requests
-sportgems==0.3.0        # pinned to avoid unexpected issues because of interface not being stable yet
+sportgems==0.4.0        # pinned to avoid unexpected issues because of interface not being stable yet
 watchdog
 luddite
