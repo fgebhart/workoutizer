@@ -8,7 +8,7 @@ from typing import Union
 from wizer.tools.utils import files_are_same
 
 
-log = logging.getLogger("wizer.fit_collector")
+log = logging.getLogger(__name__)
 
 
 class FitCollector:

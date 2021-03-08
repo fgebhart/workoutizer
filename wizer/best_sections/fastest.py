@@ -39,7 +39,7 @@ def get_fastest_section(section_distance: int, parser) -> Tuple[float, int, int]
     # call the rust binary of sportgems here
     sec = find_fastest_section(section_distance, times, coordinates)
 
-    return sec.valid_section, sec.start_index, sec.end_index, round(sec.velocity, 2)
+    return sec.start, sec.end, round(sec.velocity, 2)
 
 
 def _activity_suitable_for_awards(activity) -> bool:

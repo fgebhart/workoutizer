@@ -1,8 +1,14 @@
 import os
 import datetime
+import logging
 
 from wizer.best_sections.fastest import get_fastest_section, FastestSection
 from wizer.configuration import fastest_sections
+
+from sportgems import DistanceTooSmallException, TooFewDataPointsException, NoSectionFoundException
+
+
+log = logging.getLogger(__name__)
 
 
 class Parser:
@@ -86,12 +92,14 @@ class Parser:
     def get_fastest_sections(self):
         for section_distance in fastest_sections:
             if self.distance > section_distance:
-                valid_section, start_index, end_index, velocity = get_fastest_section(int(section_distance * 1000), self)
-                if valid_section:
+                try:
+                    start, end, velocity = get_fastest_section(int(section_distance * 1000), self)
                     sec = FastestSection(
-                        start_index=start_index,
-                        end_index=end_index,
+                        start_index=start,
+                        end_index=end,
                         section_distance=section_distance,
                         max_value=velocity,
                     )
                     self.best_sections.append(sec)
+                except (DistanceTooSmallException, TooFewDataPointsException, NoSectionFoundException) as e:
+                    log.warning(f"Could not find fastest section. Sportgems error: {e}")
