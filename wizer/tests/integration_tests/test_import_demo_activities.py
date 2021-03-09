@@ -1,5 +1,9 @@
+import time
+
+from workoutizer import settings as django_settings
 from wizer import models
 from wizer.best_sections.fastest import _activity_suitable_for_awards
+from wizer.file_importer import _start_watchdog, copy_demo_fit_files_to_track_dir
 
 
 def test_import_of_demo_activities(import_demo_data, client):
@@ -140,3 +144,29 @@ def test__activity_evaluates_for_awards(insert_activity):
     sport.save()
     assert activity.sport.evaluates_for_awards is False
     assert _activity_suitable_for_awards(activity=activity) is False
+
+
+def test_start_file_importer_watchdog(transactional_db, tmpdir):
+    assert models.Activity.objects.count() == 0
+    assert models.BestSection.objects.count() == 0
+
+    trace_dir = tmpdir.mkdir("trace_dir")
+
+    # update path_to_trace_dir in db accordingly, since file_importer will read it from the db
+    settings = models.get_settings()
+    settings.path_to_trace_dir = trace_dir
+    settings.save()
+
+    _start_watchdog(trace_dir, models=models)
+
+    # put an activity file into the watched dir
+    copy_demo_fit_files_to_track_dir(
+        source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
+        targe_dir=trace_dir,
+        list_of_files_to_copy=["cycling_bad_schandau.fit"],
+    )
+
+    # wait for activity to be imported
+    time.sleep(3)
+    assert models.Activity.objects.count() == 1
+    assert models.BestSection.objects.count() > 0

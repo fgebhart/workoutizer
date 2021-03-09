@@ -64,15 +64,16 @@ def _was_runserver_triggered(args: list):
 
 
 class Handler(FileSystemEventHandler):
-    @staticmethod
-    def on_any_event(event):
+    def __init__(self, models):
+        self.models = models
+        super().__init__()
+
+    def on_any_event(self, event):
         if event.event_type == "created":
             if str(event.src_path).endswith(".fit") or str(event.src_path).endswith(".gpx"):
                 log.debug("activity file was added, triggering file importer...")
 
-                from wizer import models
-
-                import_activity_files(models, importing_demo_data=False)
+                import_activity_files(self.models, importing_demo_data=False)
 
 
 class FileImporter(AppConfig):
@@ -85,11 +86,11 @@ class FileImporter(AppConfig):
             from wizer import models
 
             import_activity_files(models, importing_demo_data=False)
-            _start_watchdog(path=django_settings.TRACKS_DIR)
+            _start_watchdog(path=django_settings.TRACKS_DIR, models=models)
 
 
-def _start_watchdog(path: str):
-    event_handler = Handler()
+def _start_watchdog(path: str, models):
+    event_handler = Handler(models)
     watchdog = Observer()
     watchdog.schedule(event_handler, path=path, recursive=True)
     watchdog.start()
