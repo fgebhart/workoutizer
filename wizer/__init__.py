@@ -1,1 +1,1 @@
-default_app_config = "wizer.file_importer.FileImporter"
+default_app_config = "wizer.watchdogs.ActivityFilesWatchdog"

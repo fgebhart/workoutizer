@@ -1,7 +1,10 @@
 import datetime
+import shutil
+from py._path.local import LocalPath
+from typing import List
 
-import pytz
 import pytest
+import pytz
 from django.core.management import call_command
 
 from workoutizer import settings as django_settings
@@ -149,3 +152,32 @@ def import_one_activity(db, tracks_in_tmpdir):
         assert models.Activity.objects.count() == 1
 
     return _copy_activity
+
+
+class FakeDevice:
+    def __init__(self, mount_path: LocalPath, activity_path_on_device: str):
+        self.mount_path = mount_path
+        self.device_path = self.mount_path / "MY_DEVICE"
+        self.activity_path_on_device = self.device_path / activity_path_on_device
+
+    def mount(self, activity_files: List[str] = []):
+        # create directories for activities
+        self.activity_path_on_device.mkdir(parents=True)
+        if activity_files:
+            # copy activity files into activity dir
+            copy_demo_fit_files_to_track_dir(
+                source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
+                targe_dir=self.activity_path_on_device,
+                list_of_files_to_copy=activity_files,
+            )
+
+    def unmount(self):
+        shutil.rmtree(self.device_path)
+
+
+@pytest.fixture
+def fake_device(tmpdir):
+    def _get_device(mount_path: LocalPath, activity_path_on_device: str = "Primary/GARMIN/Activity"):
+        return FakeDevice(mount_path=mount_path, activity_path_on_device=activity_path_on_device)
+
+    return _get_device

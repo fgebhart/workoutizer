@@ -1,14 +1,7 @@
 import os
-import sys
 import logging
 import json
 from typing import List, Union
-
-
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-
-from django.apps import AppConfig
 
 from wizer.file_helper.gpx_parser import GPXParser
 from wizer.file_helper.fit_parser import FITParser
@@ -21,7 +14,7 @@ from wizer.file_helper.initial_data_handler import (
     insert_custom_demo_activities,
 )
 from wizer.best_sections.fastest import FastestSection
-from wizer.configuration import supported_formats
+from wizer import configuration
 from workoutizer import settings as django_settings
 
 
@@ -47,54 +40,6 @@ sport_naming_map = {
     "Yoga": ["yoga", "yogi"],
     "Workout": ["training"],
 }
-
-
-def _was_runserver_triggered(args: list):
-    triggered = False
-    if "run" in args:
-        triggered = True
-    if "runserver" in args:
-        triggered = True
-    if "help" in args:
-        triggered = False
-    if "--help" in args:
-        triggered = False
-
-    return triggered
-
-
-class Handler(FileSystemEventHandler):
-    def __init__(self, models):
-        self.models = models
-        super().__init__()
-
-    def on_any_event(self, event):
-        if event.event_type == "created":
-            if str(event.src_path).endswith(".fit") or str(event.src_path).endswith(".gpx"):
-                log.debug("activity file was added, triggering file importer...")
-
-                import_activity_files(self.models, importing_demo_data=False)
-
-
-class FileImporter(AppConfig):
-    name = "wizer"
-
-    def ready(self):
-        # ensure to only run with 'manage.py runserver' and not in auto reload thread
-        if _was_runserver_triggered(sys.argv) and os.environ.get("RUN_MAIN", None) != "true":
-            log.info(f"using workoutizer home at {django_settings.WORKOUTIZER_DIR}")
-            from wizer import models
-
-            import_activity_files(models, importing_demo_data=False)
-            _start_watchdog(path=django_settings.TRACKS_DIR, models=models)
-
-
-def _start_watchdog(path: str, models):
-    event_handler = Handler(models)
-    watchdog = Observer()
-    watchdog.schedule(event_handler, path=path, recursive=True)
-    watchdog.start()
-    log.debug(f"started watchdog to watch for incoming files in {path}")
 
 
 def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
@@ -414,7 +359,9 @@ def _parse_data(file) -> Union[FITParser, GPXParser]:
         parser = FITParser(path_to_file=file)
     else:
         log.error(f"file type: {file} unknown")
-        raise NotImplementedError(f"Cannot parse {file} files. Only {supported_formats} are supported.")
+        raise NotImplementedError(
+            f"Cannot parse {file} files. The only supported file formats are: {configuration.supported_formats}."
+        )
     # parse fastest sections
     parser.get_fastest_sections()
     return parser
@@ -425,6 +372,6 @@ def _get_all_files(path) -> List[str]:
         os.path.join(root, name)
         for root, dirs, files in os.walk(path)
         for name in files
-        if name.endswith(tuple(supported_formats))
+        if name.endswith(tuple(configuration.supported_formats))
     ]
     return trace_files

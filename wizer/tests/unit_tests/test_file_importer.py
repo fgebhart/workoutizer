@@ -1,7 +1,6 @@
 from wizer.file_importer import (
     _map_sport_name,
     sport_naming_map,
-    _was_runserver_triggered,
     _convert_list_attributes_to_json,
     _get_all_files,
 )
@@ -12,17 +11,6 @@ def test_map_sport_name():
     assert _map_sport_name("Running", sport_naming_map) == "Jogging"
     assert _map_sport_name("swim", sport_naming_map) == "Swimming"
     assert _map_sport_name("SUP", sport_naming_map) == "unknown"
-
-
-def test__was_runserver_triggered():
-    args = ["runserver"]
-    assert _was_runserver_triggered(args) is True
-    args = ["runserver", "help"]
-    assert _was_runserver_triggered(args) is False
-    args = ["runserver", "--help"]
-    assert _was_runserver_triggered(args) is False
-    args = ["manage", "runserver", "0.0.0.0:8000", "--noreload"]
-    assert _was_runserver_triggered(args) is True
 
 
 def test_convert_list_attributes_to_json(fit_parser):
