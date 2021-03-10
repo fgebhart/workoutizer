@@ -25,9 +25,9 @@ def test_sportgems_fastest_interface__real_activity_data__fit(fit_parser):
     times, coordinates = _prepare_coordinates_and_times_for_fastest_secions(parser)
     result = find_fastest_section(1000, times, coordinates)
 
-    assert result.start == 577
-    assert result.end == 666
-    assert math.isclose(result.velocity, 2.9142410749856014, abs_tol=0.01)
+    assert result.start == 629
+    assert result.end == 719
+    assert math.isclose(result.velocity, 2.914, abs_tol=0.01)
 
 
 def test_sportgems_fastest_interface__real_activity_data__gpx(gpx_parser):
@@ -57,9 +57,9 @@ def test__prepare_coordinates_and_times_for_fastest_secions__fit(fit_parser):
     assert pd.Series(lon).notna().all()
     assert pd.Series(lat).notna().all()
 
-    # check that length was decreased
-    assert len(parser.longitude_list) > len(lon)
-    assert len(parser.latitude_list) > len(lat)
+    # check that length is the same
+    assert len(parser.longitude_list) == len(lon)
+    assert len(parser.latitude_list) == len(lat)
 
 
 def test__prepare_coordinates_and_times_for_fastest_secions__gpx(gpx_parser):
@@ -110,20 +110,20 @@ def test_get_fastest_section__fit(fit_parser):
 
     # test fastest 1km
     start, end, velocity = get_fastest_section(1000, parser)
-    assert start == 577
-    assert end == 666
+    assert start == 629
+    assert end == 719
     assert velocity == 2.91
 
     # test fastest 2km
     start, end, velocity = get_fastest_section(2000, parser)
-    assert start == 485
-    assert end == 760
+    assert start == 537
+    assert end == 814
     assert velocity == 2.33
 
     # test fastest 5km
     start, end, velocity = get_fastest_section(5000, parser)
-    assert start == 27
-    assert end == 1109
+    assert start == 76
+    assert end == 1166
     assert velocity == 1.84
 
     # test fastest 10km, in this case the activity data is shorter

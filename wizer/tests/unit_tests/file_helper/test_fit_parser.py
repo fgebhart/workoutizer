@@ -119,9 +119,9 @@ def test_get_fastest_sections(fit_parser):
 
     assert p.best_sections != []
 
-    sec1 = FastestSection(1, 577, 666, 2.91)
-    sec2 = FastestSection(2, 485, 760, 2.33)
-    sec3 = FastestSection(3, 380, 885, 2.13)
-    sec5 = FastestSection(5, 27, 1109, 1.84)
+    sec1 = FastestSection(1, 629, 719, 2.91)
+    sec2 = FastestSection(2, 537, 814, 2.33)
+    sec3 = FastestSection(3, 431, 939, 2.13)
+    sec5 = FastestSection(5, 76, 1166, 1.84)
 
     assert p.best_sections == [sec1, sec2, sec3, sec5]

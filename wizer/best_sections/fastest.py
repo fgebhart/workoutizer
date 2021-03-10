@@ -16,13 +16,17 @@ class FastestSection:
 
 
 def _prepare_coordinates_and_times_for_fastest_secions(parser) -> Tuple[List[float], List[Tuple[float]]]:
-    lat_lon_times_df = pd.DataFrame(
-        {
-            "times": parser.timestamps_list,
-            "lon": parser.longitude_list,
-            "lat": parser.latitude_list,
-        }
-    ).dropna()
+    lat_lon_times_df = (
+        pd.DataFrame(
+            {
+                "times": parser.timestamps_list,
+                "lon": parser.longitude_list,
+                "lat": parser.latitude_list,
+            }
+        )
+        .ffill()
+        .bfill()
+    )
 
     times = lat_lon_times_df["times"].tolist()
     coordinates = list(zip(lat_lon_times_df["lat"].tolist(), lat_lon_times_df["lon"].tolist()))
