@@ -2,7 +2,6 @@ from typing import List, Tuple
 from dataclasses import dataclass
 
 import numpy as np
-import pandas as pd
 from sportgems import find_fastest_section
 
 
@@ -16,20 +15,8 @@ class FastestSection:
 
 
 def _prepare_coordinates_and_times_for_fastest_secions(parser) -> Tuple[List[float], List[Tuple[float]]]:
-    lat_lon_times_df = (
-        pd.DataFrame(
-            {
-                "times": parser.timestamps_list,
-                "lon": parser.longitude_list,
-                "lat": parser.latitude_list,
-            }
-        )
-        .ffill()
-        .bfill()
-    )
-
-    times = lat_lon_times_df["times"].tolist()
-    coordinates = list(zip(lat_lon_times_df["lat"].tolist(), lat_lon_times_df["lon"].tolist()))
+    times = parser.timestamps_list
+    coordinates = list(zip(parser.latitude_list, parser.longitude_list))
     assert len(times) == len(coordinates)
     return times, coordinates
 
