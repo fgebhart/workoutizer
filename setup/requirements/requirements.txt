@@ -85,7 +85,7 @@ six==1.15.0
     #   python-dateutil
 soupsieve==2.2
     # via beautifulsoup4
-sportgems==0.4.0
+sportgems==0.4.1
     # via -r setup/requirements/requirements.in
 sqlparse==0.4.1
     # via django

@@ -1,7 +1,7 @@
 import math
 
 from sportgems import find_fastest_section, DistanceTooSmallException
-import pandas as pd
+import numpy as np
 import pytest
 
 from wizer.best_sections.fastest import _prepare_coordinates_and_times_for_fastest_secions, get_fastest_section
@@ -40,68 +40,19 @@ def test_sportgems_fastest_interface__real_activity_data__gpx(gpx_parser):
     assert math.isclose(result.velocity, 3.098, abs_tol=0.01)
 
 
-def test__prepare_coordinates_and_times_for_fastest_secions__fit(fit_parser):
+def test__prepare_coordinates_and_times_for_fastest_secions(fit_parser):
     parser = fit_parser()
 
     times, coordinates = _prepare_coordinates_and_times_for_fastest_secions(parser)
 
-    # check that no null values are present anymore
-    assert len(times) == len(coordinates)
-    assert pd.Series(times).notna().all()
-    # unzip list of tuples to two lists
-    lon = []
-    lat = []
-    for coordinate in coordinates:
-        lon.append(coordinate[0])
-        lat.append(coordinate[1])
-    assert pd.Series(lon).notna().all()
-    assert pd.Series(lat).notna().all()
-
-    # check that length is the same
-    assert len(parser.longitude_list) == len(lon)
-    assert len(parser.latitude_list) == len(lat)
-
-
-def test__prepare_coordinates_and_times_for_fastest_secions__gpx(gpx_parser):
-    parser = gpx_parser()
-
-    times, coordinates = _prepare_coordinates_and_times_for_fastest_secions(parser)
-
-    # sanity checks that nothing got corrupted
-    assert times == parser.timestamps_list
-    assert len(times) == len(coordinates)
-    assert len(parser.latitude_list) == len(coordinates)
-    assert len(parser.longitude_list) == len(coordinates)
-
-    # check that no null values are present anymore
-    assert len(times) == len(coordinates)
-    assert pd.Series(times).notna().all()
-    # unzip list of tuples to two lists
-    lon = []
-    lat = []
-    for coordinate in coordinates:
-        lat.append(coordinate[0])
-        lon.append(coordinate[1])
-    assert pd.Series(lon).notna().all()
-    assert pd.Series(lat).notna().all()
-
-    # quantitative checks
-    before_df = pd.DataFrame(
-        {
-            "times": parser.timestamps_list,
-            "lon": parser.longitude_list,
-            "lat": parser.latitude_list,
-        }
-    )
-    after_df = pd.DataFrame(
-        {
-            "times": times,
-            "lon": lon,
-            "lat": lat,
-        }
-    )
-
-    pd.testing.assert_frame_equal(before_df, after_df)
+    # check that lat and lon got zipped together
+    for coo, lat, lon in zip(coordinates, parser.latitude_list, parser.longitude_list):
+        if np.isnan(coo[0]) or np.isnan(coo[1]):
+            assert coo[0] is lat
+            assert coo[1] is lon
+        else:
+            assert coo[0] == lat
+            assert coo[1] == lon
 
 
 def test_get_fastest_section__fit(fit_parser):
