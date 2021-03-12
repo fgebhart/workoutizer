@@ -1,7 +1,6 @@
 import os
 import sys
 import logging
-import time
 from types import ModuleType
 
 from watchdog.observers import Observer
@@ -10,6 +9,7 @@ from django.apps import AppConfig
 
 from wizer import configuration
 from wizer.file_importer import import_activity_files
+from wizer.file_helper.fit_collector import FitCollector
 from workoutizer import settings as django_settings
 
 
@@ -38,6 +38,8 @@ class ActivityFilesWatchdog(AppConfig):
             _start_file_importer_watchdog(path=django_settings.TRACKS_DIR, models=models)
 
             # start watchdog to monitor whether a new device was mounted
+            settings = models.get_settings()
+            _start_device_watchdog(path=settings.path_to_garmin_device, models=models)
 
 
 def _was_runserver_triggered(args: list):
@@ -97,10 +99,16 @@ class DeviceHandler(FileSystemEventHandler):
         super().__init__()
 
     def on_created(self, event):
-        time.sleep(1)
-        log.debug("device mounted at")
+        if event.event_type == "created":
+            log.info("detected mounted device, will look for fit files...")
 
-        # TODO trigger fit collector here?!
+            settings = self.models.get_settings()
+            fit_collector = FitCollector(
+                settings.path_to_garmin_device,
+                settings.path_to_trace_dir,
+                settings.delete_files_after_import,
+            )
+            fit_collector.copy_fit_files()
 
 
 def _start_device_watchdog(path: str, models: ModuleType):
