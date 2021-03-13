@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "wizer",
-    "leaflet",
     "bootstrap4",
     "bootstrap_datepicker_plus",
     "colorfield",

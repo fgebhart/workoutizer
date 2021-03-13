@@ -1,8 +1,5 @@
 <html lang="en">
 {% load static %}
-{% load leaflet_tags %}
-{% leaflet_js %}
-{% leaflet_css %}
 {% load filters %}
 <head>
     <meta charset="utf-8">
@@ -16,7 +13,15 @@
     <script src="https://unpkg.com/htmx.org@1.2.0"
         integrity="sha384-DK9cslo5RE1LAnW8sCw7cSHU2nlzkXfo2NmCQD+4disC90ClC1ywgMbijNPxFVki"
         crossorigin="anonymous"></script>
-
+    
+    <!-- leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    
     <!-- custom static files -->
     <link rel="shortcut icon" type="image/ico" href="{% static 'img/favicon.ico' %}"/>
     <link type="text/css" rel="stylesheet" href="{% static 'css/style.css' %}"/>
