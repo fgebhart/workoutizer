@@ -19,9 +19,9 @@ def test__find_activity_sub_dir_in_path(tmp_path):
     assert _find_activity_sub_dir_in_path(name_of_dir="first", path=tmp_path, depth=1) == str(d)
 
     # desired sub dir is in first level and algorithm should not be case sensitive
-    d = tmp_path / "FIRST"
+    d = tmp_path / "UPPER"
     d.mkdir()
-    assert _find_activity_sub_dir_in_path(name_of_dir="first", path=tmp_path, depth=1) == str(d).lower()
+    assert _find_activity_sub_dir_in_path(name_of_dir="upper", path=tmp_path, depth=1).lower() == str(d).lower()
 
     # desired sub dir is in second level
     d = tmp_path / "first" / "second"

@@ -108,7 +108,7 @@ def try_to_mount_device():
             try:
                 mount_output = _mount_device_using_gio(bus, dev)
             except subprocess.CalledProcessError as e:
-                log.warning(f"could not mount device: {e}")
+                log.warning(f"could not mount device: {e}", exc_info=True)
                 return None
         else:
             log.debug(f"no Garmin device found in 'lsusb' line: {line}")

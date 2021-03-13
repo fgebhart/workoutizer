@@ -40,7 +40,7 @@ def mount_device_endpoint(request):
             log.error(f"could not mount device, no valid mount path available - got: {mount_path}")
             return Response("failed", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:
-        log.error(f"could not mount device: {e}")
+        log.error(f"could not mount device: {e}", exc_info=True)
         return Response("failed", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

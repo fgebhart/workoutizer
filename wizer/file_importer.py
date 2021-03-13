@@ -93,7 +93,7 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                 update_existing=False,
                 importing_demo_data=importing_demo_data,
             )
-            log.info(f"created new activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
+            log.info(f"created new activity: {activity.name} ({activity.date}) ID: {activity.pk}")
         else:  # checksum is in db already
             file_name = trace_file.split("/")[-1]
             trace_file_path_instance = models.Traces.objects.get(md5sum=md5sum)
