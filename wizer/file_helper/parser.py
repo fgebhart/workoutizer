@@ -76,11 +76,15 @@ class Parser:
         # run parser
         self._parse_metadata()
         self._parse_records()
+        self._post_process_data()
 
     def _parse_metadata(self):
         raise NotImplementedError
 
     def _parse_records(self):
+        raise NotImplementedError
+
+    def _post_process_data(self):
         raise NotImplementedError
 
     def get_file_created_datetime(self):

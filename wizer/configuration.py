@@ -34,6 +34,13 @@ min_max_attributes = {
     "temperature_list",
 }
 
+avg_attributes = {
+    "heart_rate_list",
+    "cadence_list",
+    "speed_list",
+    "temperature_list",
+}
+
 # configuration of best sections
 rank_limit = 3
 

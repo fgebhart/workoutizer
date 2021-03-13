@@ -17,7 +17,7 @@
         </div>
     {% endif %}
 
-    {% if activity.trace_file.cadence_list != "[]" %}
+    {% if activity.trace_file.avg_cadence and activity.trace_file.max_cadence %}
         <div class="col-sm-6">
             <h5>Cadence</h5>
             <table class="table table-hover table-borderless text-muted table-sm">
@@ -35,7 +35,7 @@
             </table>
         </div>
     {% endif %}
-    {% if activity.trace_file.speed_list != "[]" %}
+    {% if activity.trace_file.avg_speed and activity.trace_file.max_speed %}
         <div class="col-sm-6">
             <h5>Speed</h5>
             <table class="table table-hover table-borderless text-muted table-sm">
@@ -52,7 +52,7 @@
             </table>
         </div>
     {% endif %}
-    {% if activity.trace_file.speed_list != "[]" %}
+    {% if activity.trace_file.avg_speed and activity.trace_file.max_speed %}
         <div class="col-sm-6">
             <h5>Pace</h5>
             <table class="table table-hover table-borderless text-muted table-sm">
@@ -83,7 +83,7 @@
             </table>
         </div>
     {% endif %}
-    {% if activity.trace_file.heart_rate_list != "[]" %}
+    {% if activity.trace_file.avg_heart_rate and activity.trace_file.max_heart_rate %}
         <div class="col-sm-6">
             <h5>Heart Rate</h5>
             <table class="table table-hover table-borderless text-muted table-sm">
@@ -102,7 +102,7 @@
             </table>
         </div>
     {% endif %}
-    {% if activity.trace_file.temperature_list != "[]" %}
+    {% if activity.trace_file.min_temperature and activity.trace_file.avg_temperature and activity.trace_file.max_temperature %}
         <div class="col-sm-6">
             <h5>Temperature</h5>
             <table class="table table-hover table-borderless text-muted table-sm">
