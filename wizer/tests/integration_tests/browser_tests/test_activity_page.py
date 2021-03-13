@@ -303,3 +303,65 @@ def test_activity_page__rendering_of_sport_icon_on_map(insert_sport, import_one_
     # once sport icon gets rendered we should find one more sport icons than before
     number_of_sport_icons_when_hovering = len(webdriver.find_elements_by_class_name(f"fa-{icon_name}"))
     assert number_of_sport_icons_when_hovering == initial_number_of_sport_icons + 1
+
+
+def test_activity_page__missing_attributes(import_one_activity, live_server, webdriver):
+    import_one_activity("cycling_bad_schandau.fit")
+
+    activity = models.Activity.objects.get()
+
+    # set some attributes to None
+    activity.trace_file.avg_speed = None
+    activity.trace_file.max_speed = None
+    activity.trace_file.max_avg_cadence = None
+    activity.trace_file.aerobic_training_effect = None
+    activity.trace_file.avg_heart_rate = None
+    activity.trace_file.min_temperature = None
+    activity.trace_file.save()
+
+    pk = activity.pk
+    webdriver.get(live_server.url + f"/activity/{pk}")
+
+    # verify that page load does not fail (without safety measures in place this would fail with TypeError, see GH95)
+    assert webdriver.find_element_by_tag_name("h3").text == "Noon Cycling in Bad Schandau  "
+
+    # also verify that the sections with missing data are not displayed
+    headings = [h.text for h in webdriver.find_elements_by_tag_name("h5")]
+    assert "Trainings Effect" not in headings
+    assert "Heart Rate" not in headings
+    assert "Speed" not in headings
+    assert "Cadence" not in headings
+    assert "Pace" not in headings
+    assert "Temperature" not in headings
+
+    # these should still be there
+    assert "Fastest Sections  " in headings
+    assert "Laps" in headings
+
+    # again add values for missing attributes
+    activity = models.Activity.objects.get()
+    activity.trace_file.avg_speed = 1.1
+    activity.trace_file.max_speed = 2.2
+    activity.trace_file.max_cadence = 3.3
+    activity.trace_file.avg_cadence = 3.3
+    activity.trace_file.aerobic_training_effect = 4.4
+    activity.trace_file.anaerobic_training_effect = 4.4
+    activity.trace_file.avg_heart_rate = 5.5
+    activity.trace_file.min_heart_rate = 5.5
+    activity.trace_file.max_heart_rate = 5.5
+    activity.trace_file.min_temperature = 6.6
+    activity.trace_file.save()
+
+    # again open activity page
+    webdriver.refresh()
+
+    # and verify all headings are back
+    headings = [h.text for h in webdriver.find_elements_by_tag_name("h5")]
+    assert "Fastest Sections  " in headings
+    assert "Laps" in headings
+    assert "Speed" in headings
+    assert "Pace" in headings
+    assert "Temperature" in headings
+    assert "Trainings Effect" in headings
+    assert "Heart Rate" in headings
+    assert "Cadence" in headings

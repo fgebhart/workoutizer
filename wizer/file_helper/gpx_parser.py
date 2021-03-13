@@ -66,6 +66,8 @@ class GPXParser(Parser):
         log.debug(f"found number of coordinates: {len(self.longitude_list)}")
         log.debug(f"found number of timestamps: {len(self.timestamps_list)}")
         log.debug(f"found number of elevation points: {len(self.altitude_list)}")
+
+    def _post_process_data(self):
         self.distance = get_total_distance_of_trace(
             longitude_list=self.longitude_list,
             latitude_list=self.latitude_list,

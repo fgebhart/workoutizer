@@ -411,8 +411,6 @@ def _parse_data(file) -> Union[FITParser, GPXParser]:
     elif file.endswith(".fit"):
         log.debug("parsing FIT file ...")
         parser = FITParser(path_to_file=file)
-        parser.convert_list_of_nones_to_empty_list()
-        parser.set_min_max_values()
     else:
         log.error(f"file type: {file} unknown")
         raise NotImplementedError(f"Cannot parse {file} files. Only {supported_formats} are supported.")

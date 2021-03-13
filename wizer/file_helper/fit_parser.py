@@ -94,8 +94,6 @@ class FITParser(Parser):
         log.debug(f"found avg_cadence: {self.avg_cadence} steps/min")
         log.debug(f"found avg_temperature: {self.avg_temperature} Celsius")
         log.debug(f"found number of laps: {len(self.laps)}")
-        self._save_data_to_dataframe()
-        self._drop_rows_where_all_records_are_null()
 
     def _save_data_to_dataframe(self):
         df = pd.DataFrame(
@@ -128,17 +126,31 @@ class FITParser(Parser):
         self.speed_list = self.dataframe.speed_list.to_list()
         self.temperature_list = self.dataframe.temperature_list.to_list()
 
-    def convert_list_of_nones_to_empty_list(self):
+    def _convert_list_of_nones_to_empty_list(self):
         for attribute in configuration.time_series_attributes:
             if self.dataframe[attribute].isna().all():
                 setattr(self, attribute, [])
 
-    def set_min_max_values(self):
+    def _set_min_max_values(self):
         for attribute in configuration.min_max_attributes:
-            name = attribute.replace("_list", "")
             if self.dataframe[attribute].any():
+                name = attribute.replace("_list", "")
                 setattr(self, f"max_{name}", round(float(self.dataframe[attribute].max()), 2))
                 setattr(self, f"min_{name}", round(float(self.dataframe[attribute].min()), 2))
+
+    def _set_avg_values(self):
+        for attribute in configuration.avg_attributes:
+            name = f'avg_{attribute.replace("_list", "")}'
+            # only data is available in df and avg value is not None
+            if self.dataframe[attribute].any() and not getattr(self, name, None):
+                setattr(self, name, round(float(self.dataframe[attribute].mean()), 2))
+
+    def _post_process_data(self):
+        self._save_data_to_dataframe()
+        self._drop_rows_where_all_records_are_null()
+        self._set_avg_values()
+        self._convert_list_of_nones_to_empty_list()
+        self._set_min_max_values()
 
 
 def _parse_lap_data(record):

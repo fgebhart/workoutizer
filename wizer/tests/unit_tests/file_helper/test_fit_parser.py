@@ -5,7 +5,7 @@ import pytest
 from django.conf import settings
 import pandas as pd
 
-from wizer.file_helper.fit_parser import LapData
+from wizer.file_helper.fit_parser import LapData, FITParser
 from wizer.best_sections.fastest import FastestSection
 
 
@@ -66,7 +66,13 @@ def test__parse_records(fit_parser):
     )
 
 
-def test_set_min_max_values(fit_parser):
+def test_set_min_max_values(fit_parser, monkeypatch):
+    # mock away post processing in order to test before and after state
+    def post_process(baz):
+        return "foo"
+
+    monkeypatch.setattr(FITParser, "_post_process_data", post_process)
+
     p = fit_parser()
     # sanity checks
     assert 61 in p.cadence_list
@@ -75,7 +81,8 @@ def test_set_min_max_values(fit_parser):
     assert p.min_cadence is None
 
     # check min max values
-    p.set_min_max_values()
+    p._save_data_to_dataframe()
+    p._set_min_max_values()
     assert p.max_cadence == 116.0
     assert p.min_cadence == 0.0
     assert p.max_speed == 3.57
@@ -101,11 +108,18 @@ def test_drop_rows_where_all_records_are_null(fit_parser):
     pd.testing.assert_frame_equal(p.dataframe, p.dataframe.dropna(how="all"))
 
 
-def test_convert_list_of_nones_to_empty_list(fit_parser):
+def test_convert_list_of_nones_to_empty_list(fit_parser, monkeypatch):
+    # mock away post processing in order to test before and after state
+    def post_process(baz):
+        return "foo"
+
+    monkeypatch.setattr(FITParser, "_post_process_data", post_process)
+
     p = fit_parser("with_nones.fit")
     assert p.altitude_list[:3] == [None, None, None]
+    p._save_data_to_dataframe()
     assert p.dataframe.altitude_list.isna().all()
-    p.convert_list_of_nones_to_empty_list()
+    p._convert_list_of_nones_to_empty_list()
     assert p.altitude_list == []
 
 
@@ -125,3 +139,43 @@ def test_get_fastest_sections(fit_parser):
     sec5 = FastestSection(5, 76, 1166, 1.84)
 
     assert p.best_sections == [sec1, sec2, sec3, sec5]
+
+
+def test__set_avg_values(fit_parser, monkeypatch):
+    # mock away post processing in order to test before and after state
+    def post_process(baz):
+        return "foo"
+
+    monkeypatch.setattr(FITParser, "_post_process_data", post_process)
+
+    p = fit_parser()
+
+    # in test fit file average speed is present
+    assert p.avg_speed == 1.845
+    assert p.avg_heart_rate == 130
+    assert p.avg_cadence == 64
+    assert p.avg_temperature == 27
+
+    # however, remove avg attributes to test it will be set during post processing
+    p.avg_speed = None
+    p.avg_heart_rate = None
+    p.avg_cadence = None
+    p.avg_temperature = None
+
+    assert p.avg_speed is None
+    assert p.avg_heart_rate is None
+    assert p.avg_cadence is None
+    assert p.avg_temperature is None
+
+    assert not hasattr(p, "dataframe")
+
+    p._save_data_to_dataframe()
+    assert hasattr(p, "dataframe")
+
+    p._set_avg_values()
+
+    # now avg and min max values should be present
+    assert p.avg_speed == 1.71
+    assert p.avg_heart_rate == 129.72
+    assert p.avg_cadence == 63.96
+    assert p.avg_temperature == 26.91
