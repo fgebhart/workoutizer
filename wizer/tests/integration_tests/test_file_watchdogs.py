@@ -16,7 +16,7 @@ def condition(func, operator, right, timeout: int = TIMEOUT) -> bool:
     """
     for i in range(timeout):
         print(f"index: {i}")
-        print(f"activity count: {models.Activity.objects.count()}")
+        print(f"count: {func()}")
         if operator(func(), right):
             return True
         time.sleep(1)
@@ -43,6 +43,7 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmpdir, test_data
         targe_dir=trace_dir,
         list_of_files_to_copy=["cycling_bad_schandau.fit"],
     )
+    assert (Path(trace_dir) / "cycling_bad_schandau.fit").is_file()
 
     # watchdog should now have triggered the file imported and activity should be in db
     print(f"num of activities: {models.Activity.objects.count()}")
