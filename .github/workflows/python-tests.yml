@@ -49,24 +49,24 @@ jobs:
         pip install -r setup/requirements/dev-requirements.txt
         pip install -e .
 
-    - name: Run Unit Tests
-      if: always()
-      run: |
-        pytest wizer/tests/unit_tests -v -n2
+    # - name: Run Unit Tests
+    #   if: always()
+    #   run: |
+    #     pytest wizer/tests/unit_tests -v -n2
 
     - name: Run Integration Tests
       if: always()
       run: |
-        pytest wizer/tests/integration_tests -v -n2
+        pytest wizer/tests/integration_tests/test_file_watchdogs.py -vvvs
 
-    - name: Init
-      if: always()
-      env:
-        WKZ_LOG_LEVEL: DEBUG
-      run: |
-        wkz init --demo
+    # - name: Init
+    #   if: always()
+    #   env:
+    #     WKZ_LOG_LEVEL: DEBUG
+    #   run: |
+    #     wkz init --demo
 
-    - name: Check
-      if: always()
-      run: |
-        wkz check
+    # - name: Check
+    #   if: always()
+    #   run: |
+    #     wkz check
