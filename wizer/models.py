@@ -160,13 +160,13 @@ class BestSection(models.Model):
 class Settings(models.Model):
     days_choices = [
         (9999, "all"),
-        (1095, "last 3 years"),
-        (730, "last 2 years"),
-        (365, "last year"),
-        (180, "last 180 days"),
-        (90, "last 90 days"),
-        (30, "last 30 days"),
-        (10, "last 10 days"),
+        (1095, "3 years"),
+        (730, "2 years"),
+        (365, "1 year"),
+        (180, "180 days"),
+        (90, "90 days"),
+        (30, "30 days"),
+        (10, "10 days"),
     ]
 
     path_to_trace_dir = models.CharField(
@@ -174,9 +174,6 @@ class Settings(models.Model):
     )
     path_to_garmin_device = models.CharField(
         max_length=120, default="/run/user/1000/gvfs/", verbose_name="Path to Garmin Device:"
-    )
-    path_to_activities_on_device = models.CharField(
-        max_length=120, default="/Primary/GARMIN/Activity/", verbose_name="Path to Activities Folder on Garmin Device:"
     )
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying: ", default=False)

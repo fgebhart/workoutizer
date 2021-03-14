@@ -65,19 +65,6 @@ class FitCollector:
             log.warning(f"No directory named {self.activity_dir_name} found in path {self.path_to_garmin_device}")
 
 
-def _find_complete_garmin_device_path(begin_of_path_to_device: str) -> Union[str, None]:
-    complete_paths = [
-        os.path.join(root, name)
-        for root, dirs, files in os.walk(begin_of_path_to_device)
-        for name in dirs
-        if name.startswith("mtp:host")
-    ]
-    if complete_paths:
-        return complete_paths[0]
-    else:
-        return None
-
-
 def _find_activity_sub_dir_in_path(name_of_dir: str, path: str, depth: int = 3) -> Union[str, bool]:
     def _get_all_subfolders(paths: List[str]) -> List[str]:
         sub_dirs = []
@@ -130,10 +117,3 @@ def try_to_mount_device():
 
 def _mount_device_using_gio(bus: str, dev: str) -> str:
     return subprocess.check_output(["gio", "mount", "-d", f"/dev/bus/usb/{bus}/{dev}"]).decode("utf-8")
-
-
-def unmount_device_using_gio(path_to_device):
-    complete_device_path = _find_complete_garmin_device_path(path_to_device)
-    log.debug(f"unmounting device at: {complete_device_path}")
-    time.sleep(1)
-    return subprocess.check_output(["gio", "mount", "-u", complete_device_path])
