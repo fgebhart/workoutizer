@@ -14,7 +14,8 @@ def condition(func, operator, right, timeout: int = TIMEOUT) -> bool:
     Helper function to check if a condition evaluates to True in a given
     time range until the timeout.
     """
-    for _ in range(timeout):
+    for i in range(timeout):
+        print(f"index: {i}")
         if operator(func(), right):
             return True
         time.sleep(1)
@@ -41,6 +42,8 @@ def test__start_file_importer_watchdog(transactional_db, tmpdir, test_data_dir, 
         list_of_files_to_copy=["cycling_bad_schandau.fit"],
     )
 
+    # watchdog should now have triggered the file imported and activity should be in db
+    print(f"num of activities: {models.Activity.objects.count()}")
     assert condition(models.Activity.objects.count, operator.eq, 1)
     assert condition(models.BestSection.objects.count, operator.gt, 0)
     bs1 = models.BestSection.objects.count()
