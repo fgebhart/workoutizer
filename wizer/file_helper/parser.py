@@ -97,12 +97,12 @@ class Parser:
         for section_distance in fastest_sections:
             if self.distance > section_distance:
                 try:
-                    start, end, velocity = get_fastest_section(int(section_distance * 1000), self)
+                    fastest_section = get_fastest_section(int(section_distance * 1000), self)
                     sec = FastestSection(
-                        start_index=start,
-                        end_index=end,
+                        start_index=fastest_section.start,
+                        end_index=fastest_section.end,
                         section_distance=section_distance,
-                        max_value=velocity,
+                        max_value=round(fastest_section.velocity, 2),
                     )
                     self.best_sections.append(sec)
                 except (DistanceTooSmallException, TooFewDataPointsException, NoSectionFoundException) as e:

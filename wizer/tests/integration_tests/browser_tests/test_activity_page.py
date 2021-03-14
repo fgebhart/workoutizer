@@ -157,9 +157,7 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     lap_input_0.send_keys("lap label 0")
 
     # verify that there is no second element available
-    with pytest.raises(
-        NoSuchElementException, match='Message: Unable to locate element: |[id="id_form\-1-label"]'  # noqa: W605
-    ):
+    with pytest.raises(NoSuchElementException, match=r'Message: Unable to locate element: |[id="id_form\-1-label"]'):
         webdriver.find_element(By.ID, "id_form-1-label")
 
     # submit form with modified data

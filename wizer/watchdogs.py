@@ -64,12 +64,11 @@ class FileImporterHandler(FileSystemEventHandler):
         self.models = models
         super().__init__()
 
-    def on_any_event(self, event):
-        if event.event_type == "created":
-            if event.src_path.split(".")[-1] in configuration.supported_formats:
-                log.debug("activity file was added, triggering file importer...")
+    def on_created(self, event):
+        if event.src_path.split(".")[-1] in configuration.supported_formats:
+            log.debug("activity file was added, triggering file importer...")
 
-                import_activity_files(self.models, importing_demo_data=False)
+            import_activity_files(self.models, importing_demo_data=False)
 
 
 def _start_file_importer_watchdog(path: str, models: ModuleType):
@@ -84,12 +83,14 @@ def _start_file_importer_watchdog(path: str, models: ModuleType):
     models : ModuleType
         the workoutizer models
     """
-
-    event_handler = FileImporterHandler(models)
-    watchdog = Observer()
-    watchdog.schedule(event_handler, path=path, recursive=True)
-    watchdog.start()
-    log.debug(f"started watchdog for incoming activity files in {path}")
+    if Path(path).is_dir():
+        event_handler = FileImporterHandler(models)
+        watchdog = Observer()
+        watchdog.schedule(event_handler, path=path, recursive=True)
+        watchdog.start()
+        log.debug(f"started watchdog for incoming activity files in {path}")
+    else:
+        log.warning(f"Path to trace dir {path} does not exist. File Importer watchdog is disabled.")
 
 
 def _watch_for_device(path_to_garmin_device: str, path_to_trace_dir: str, delete_files_after_import: bool):
@@ -110,14 +111,19 @@ def _watch_for_device(path_to_garmin_device: str, path_to_trace_dir: str, delete
         time.sleep(1)
 
 
-def _start_device_watchdog(path_to_garmin_device, path_to_trace_dir, delete_files_after_import):
+def _start_device_watchdog(path_to_garmin_device: str, path_to_trace_dir: str, delete_files_after_import: bool):
     """
     Watchdog to watch for garmin devices being mounted. The activity directory is
     determined and all new fit files are copied to the wkz trace dir.
 
     Parameters
     ----------
-    TODO
+    path_to_garmin_device : str
+        path to dir in which garmin device gets mounted in
+    path_to_trace_dir : str
+        path to trace dir, to which new activity files should copied to
+    delete_files_after_import: bool
+        whether copied activity files should be deleted from garmin device
     """
 
     if Path(path_to_garmin_device).is_dir():

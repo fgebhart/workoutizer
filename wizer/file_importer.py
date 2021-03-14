@@ -65,14 +65,12 @@ def _run_file_importer(models, importing_demo_data: bool, reimporting: bool = Fa
     settings = models.get_settings()
     log.debug("triggered file importer")
     path = settings.path_to_trace_dir
+
     # find activity files in directory
     trace_files = _get_all_files(path)
-    if os.path.isdir(path):
-        log.info(f"found {len(trace_files)} files in trace dir: {path}")
-        _run_parser(models, trace_files, importing_demo_data, reimporting)
-    else:
-        log.warning(f"path: {path} is not a valid directory!")
-        return
+    log.debug(f"found {len(trace_files)} files in trace dir: {path}")
+
+    _run_parser(models, trace_files, importing_demo_data, reimporting)
     if importing_demo_data:
         demo_activities = models.Activity.objects.filter(is_demo_activity=True)
         change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)

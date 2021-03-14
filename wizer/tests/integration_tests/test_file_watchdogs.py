@@ -104,15 +104,25 @@ def test_fake_device(db, fake_device, device_dir, activity_dir, fit_file):
 
 
 def test__start_device_watchdog__missing_dir(db, caplog):
+    invalid_dir = "/some/random/non_existent/path/"
 
     settings = models.get_settings()
-    settings.path_to_garmin_device = "/some/random/non_existent/path/"
+    settings.path_to_garmin_device = invalid_dir
     settings.save()
 
-    _start_device_watchdog(
-        settings.path_to_garmin_device, settings.path_to_trace_dir, settings.delete_files_after_import
-    )
-    assert "Device watchdog is disabled" in caplog.text
+    _start_device_watchdog(invalid_dir, settings.path_to_trace_dir, settings.delete_files_after_import)
+    assert f"Device mount path {invalid_dir} does not exist. Device watchdog is disabled." in caplog.text
+
+
+def test__start_file_importer_watchdog__missing_dir(db, caplog):
+    invalid_dir = "/some/random/non_existent/path/"
+
+    settings = models.get_settings()
+    settings.path_to_trace_dir = invalid_dir
+    settings.save()
+
+    _start_file_importer_watchdog(invalid_dir, models=models)
+    assert f"Path to trace dir {invalid_dir} does not exist. File Importer watchdog is disabled." in caplog.text
 
 
 def test__start_device_watchdog(transactional_db, fake_device, device_dir, activity_dir, fit_file_a, fit_file_b):
@@ -165,7 +175,7 @@ def test_device_and_file_importer_watchdog(
     assert not (trace_dir / fit_file_b).is_file()
 
     # start watchdogs
-    _start_device_watchdog(mount_path, models=models)
+    _start_device_watchdog(mount_path, trace_dir, settings.delete_files_after_import)
     _start_file_importer_watchdog(trace_dir, models=models)
 
     # mounting the device will:
