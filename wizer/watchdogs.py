@@ -83,14 +83,15 @@ def _start_file_importer_watchdog(path: str, models: ModuleType):
     models : ModuleType
         the workoutizer models
     """
+    print(f"starting watchdog for incoming activity files in {path}")
     if Path(path).is_dir():
         event_handler = FileImporterHandler(models)
         watchdog = Observer()
         watchdog.schedule(event_handler, path=path, recursive=True)
         watchdog.start()
-        log.debug(f"started watchdog for incoming activity files in {path}")
+        print(f"started watchdog for incoming activity files in {path}")
     else:
-        log.warning(f"Path to trace dir {path} does not exist. File Importer watchdog is disabled.")
+        print(f"Path to trace dir {path} does not exist. File Importer watchdog is disabled.")
 
 
 def _watch_for_device(path_to_garmin_device: str, path_to_trace_dir: str, delete_files_after_import: bool):

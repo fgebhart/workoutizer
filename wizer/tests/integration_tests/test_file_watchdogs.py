@@ -23,7 +23,7 @@ def condition(func, operator, right, timeout: int = TIMEOUT) -> bool:
     return False
 
 
-def test__start_file_importer_watchdog(transactional_db, tmpdir, test_data_dir, demo_data_dir):
+def test__start_file_importer_watchdog_basic(transactional_db, tmpdir, test_data_dir, demo_data_dir):
     assert models.Activity.objects.count() == 0
     assert models.BestSection.objects.count() == 0
 
@@ -34,6 +34,7 @@ def test__start_file_importer_watchdog(transactional_db, tmpdir, test_data_dir, 
     settings.path_to_trace_dir = trace_dir
     settings.save()
 
+    print(f"before call, path is: {settings.path_to_trace_dir}")
     _start_file_importer_watchdog(trace_dir, models=models)
 
     # put an activity fit file into the watched dir

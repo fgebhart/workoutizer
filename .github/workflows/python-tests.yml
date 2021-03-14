@@ -57,7 +57,7 @@ jobs:
     - name: Run Integration Tests
       if: always()
       run: |
-        pytest wizer/tests/integration_tests/test_file_watchdogs.py -vvvsk test__start_file_importer_watchdog
+        pytest wizer/tests/integration_tests/test_file_watchdogs.py -vvvsk test__start_file_importer_watchdog_basic
 
     # - name: Init
     #   if: always()
