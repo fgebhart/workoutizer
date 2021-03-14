@@ -103,6 +103,18 @@ def test_fake_device(db, fake_device, device_dir, activity_dir, fit_file):
     assert (mount_path / device_dir / activity_dir / fit_file).is_file()
 
 
+def test__start_device_watchdog__missing_dir(db, caplog):
+
+    settings = models.get_settings()
+    settings.path_to_garmin_device = "/some/random/non_existent/path/"
+    settings.save()
+
+    _start_device_watchdog(
+        settings.path_to_garmin_device, settings.path_to_trace_dir, settings.delete_files_after_import
+    )
+    assert "Device watchdog is disabled" in caplog.text
+
+
 def test__start_device_watchdog(transactional_db, fake_device, device_dir, activity_dir, fit_file_a, fit_file_b):
     # initialize fake device with two fit files
     device = fake_device(activity_files=[fit_file_a, fit_file_b])
@@ -119,7 +131,7 @@ def test__start_device_watchdog(transactional_db, fake_device, device_dir, activ
     assert not (trace_dir / fit_file_b).is_file()
 
     # start device watch dog
-    _start_device_watchdog(mount_path, models=models)
+    _start_device_watchdog(mount_path, trace_dir, settings.delete_files_after_import)
 
     # now mount device which contains fit files
     device.mount()

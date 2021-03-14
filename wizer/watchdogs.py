@@ -2,6 +2,9 @@ import os
 import sys
 import logging
 from types import ModuleType
+from pathlib import Path
+import threading
+import time
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -31,15 +34,13 @@ class ActivityFilesWatchdog(AppConfig):
             log.info(f"using workoutizer home at {django_settings.WORKOUTIZER_DIR}")
             from wizer import models
 
-            # initially always trigger importing of files in case new files have been added
-            import_activity_files(models, importing_demo_data=False)
+            # start watchdog to monitor whether a new device was mounted
+            settings = models.get_settings()
+            path_to_garmin_device = settings.path_to_garmin_device
+            _start_device_watchdog(path_to_garmin_device, settings.path_to_trace_dir, settings.delete_files_after_import)
 
             # start watchdog for new files being placed into the tracks directory
             _start_file_importer_watchdog(path=django_settings.TRACKS_DIR, models=models)
-
-            # start watchdog to monitor whether a new device was mounted
-            settings = models.get_settings()
-            _start_device_watchdog(path=settings.path_to_garmin_device, models=models)
 
 
 def _was_runserver_triggered(args: list):
@@ -88,44 +89,48 @@ def _start_file_importer_watchdog(path: str, models: ModuleType):
     watchdog = Observer()
     watchdog.schedule(event_handler, path=path, recursive=True)
     watchdog.start()
-    log.debug(f"started watchdog to watch for incoming activity files in {path}")
+    log.debug(f"started watchdog for incoming activity files in {path}")
 
 
-class DeviceHandler(FileSystemEventHandler):
-    """Watchdog to trigger copying activity files from mounted devices"""
-
-    def __init__(self, models):
-        self.models = models
-        super().__init__()
-
-    def on_created(self, event):
-        if event.event_type == "created":
-            log.info("detected mounted device, will look for fit files...")
-
-            settings = self.models.get_settings()
+def _watch_for_device(path_to_garmin_device: str, path_to_trace_dir: str, delete_files_after_import: bool):
+    device_mounted = False
+    while True:
+        sub_dirs = [f for f in os.scandir(path_to_garmin_device) if f.is_dir()]
+        if len(sub_dirs) == 1 and not device_mounted:
+            device_mounted = True
+            log.info(f"New device got mounted at {path_to_garmin_device}, triggering fit collector...")
             fit_collector = FitCollector(
-                settings.path_to_garmin_device,
-                settings.path_to_trace_dir,
-                settings.delete_files_after_import,
+                path_to_garmin_device=path_to_garmin_device,
+                target_location=path_to_trace_dir,
+                delete_files_after_import=delete_files_after_import,
             )
             fit_collector.copy_fit_files()
+        elif len(sub_dirs) == 0:
+            device_mounted = False
+        time.sleep(1)
 
 
-def _start_device_watchdog(path: str, models: ModuleType):
+def _start_device_watchdog(path_to_garmin_device, path_to_trace_dir, delete_files_after_import):
     """
     Watchdog to watch for garmin devices being mounted. The activity directory is
     determined and all new fit files are copied to the wkz trace dir.
 
     Parameters
     ----------
-    path : str
-        path to the trace dir, which should be watched
-    models : ModuleType
-        the workoutizer models
+    TODO
     """
 
-    event_handler = DeviceHandler(models)
-    watchdog = Observer()
-    watchdog.schedule(event_handler, path=path, recursive=True)
-    watchdog.start()
-    log.debug(f"started watchdog to watch for device being mounted at {path}")
+    if Path(path_to_garmin_device).is_dir():
+        t = threading.Thread(
+            target=_watch_for_device,
+            args=(
+                path_to_garmin_device,
+                path_to_trace_dir,
+                delete_files_after_import,
+            ),
+            daemon=True,
+        )
+        t.start()
+        log.debug(f"started watchdog for device being mounted at {path_to_garmin_device}")
+    else:
+        log.warning(f"Device mount path {path_to_garmin_device} does not exist. Device watchdog is disabled.")

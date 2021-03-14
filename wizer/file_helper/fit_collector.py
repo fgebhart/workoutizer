@@ -27,7 +27,7 @@ class FitCollector:
             os.makedirs(self.target_location)
 
     def copy_fit_files(self):
-        log.debug(f"looking for garmin device at: {self.path_to_garmin_device}")
+        log.debug("looking for new activity files in garmin device")
         activity_path = _find_activity_sub_dir_in_path(
             name_of_dir=self.activity_dir_name,
             path=self.path_to_garmin_device,
@@ -42,12 +42,14 @@ class FitCollector:
                 if name.endswith(".fit")
             ]
             if fits:
+                no_file_was_copied = True
                 for fit in fits:
                     file_name = str(fit.split("/")[-1])
                     target_file = os.path.join(self.target_location, file_name)
                     if not os.path.isfile(target_file):
                         shutil.copy(fit, target_file)
                         log.info(f"copied file: {target_file}")
+                        no_file_was_copied = False
                         if files_are_same(fit, target_file):
                             log.debug(f"files {fit} and {target_file} are equal")
                             if self.delete_files_after_import:
@@ -55,6 +57,8 @@ class FitCollector:
                                 os.remove(fit)
                         else:
                             log.warning(f"files {fit} and {target_file} are NOT equal after copying.")
+                if no_file_was_copied:
+                    log.info("No new file found.")
             else:
                 log.warning(f"Could not find any activity fit files at {activity_path}")
         else:
