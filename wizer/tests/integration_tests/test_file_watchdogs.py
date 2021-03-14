@@ -6,7 +6,7 @@ from wizer.watchdogs import _start_file_importer_watchdog, _start_device_watchdo
 from wizer.file_importer import copy_demo_fit_files_to_track_dir
 from wizer import models
 
-TIMEOUT = 10
+TIMEOUT = 20
 
 
 def condition(func, operator, right, timeout: int = TIMEOUT) -> bool:
@@ -17,6 +17,7 @@ def condition(func, operator, right, timeout: int = TIMEOUT) -> bool:
     for i in range(timeout):
         print(f"index: {i}")
         if operator(func(), right):
+            print(f"activity count: {models.Activity.objects.count()}")
             return True
         time.sleep(1)
     return False
