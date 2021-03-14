@@ -16,8 +16,8 @@ def condition(func, operator, right, timeout: int = TIMEOUT) -> bool:
     """
     for i in range(timeout):
         print(f"index: {i}")
+        print(f"activity count: {models.Activity.objects.count()}")
         if operator(func(), right):
-            print(f"activity count: {models.Activity.objects.count()}")
             return True
         time.sleep(1)
     return False
