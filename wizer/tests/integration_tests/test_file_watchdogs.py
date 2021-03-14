@@ -6,7 +6,7 @@ from wizer.watchdogs import _start_file_importer_watchdog, _start_device_watchdo
 from wizer.file_importer import copy_demo_fit_files_to_track_dir
 from wizer import models
 
-TIMEOUT = 20
+TIMEOUT = 10
 
 
 def condition(func, operator, right, timeout: int = TIMEOUT) -> bool:

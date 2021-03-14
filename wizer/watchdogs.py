@@ -61,10 +61,16 @@ class FileImporterHandler(FileSystemEventHandler):
     """Watchdog to trigger the import of newly added activity files"""
 
     def __init__(self, models):
+        print("initialized file importer handler")
         self.models = models
         super().__init__()
 
+    def on_any_event(self, event):
+        print(f"triggered by event: {event.event_type} from file {event.src_path}")
+        return super().on_any_event(event)
+
     def on_created(self, event):
+        print(f"on created was triggered by event: {event.event_type} from file {event.src_path}")
         if event.src_path.split(".")[-1] in configuration.supported_formats:
             log.debug("activity file was added, triggering file importer...")
 
