@@ -2,7 +2,7 @@ import os
 import datetime
 
 from gpxpy.gpxfield import SimpleTZ
-from wizer.best_sections.fastest import FastestSection
+from wizer.best_sections.generic import GenericBestSection
 
 
 def test__parse_metadata(gpx_parser):
@@ -45,15 +45,20 @@ def test_parse_timestamps(gpx_parser):
 def test_get_fastest_sections(gpx_parser):
     p = gpx_parser()
 
-    # check that fastest sections dict is empty
+    # check that fastest sections list is empty
     assert p.best_sections == []
 
-    p.get_fastest_sections()
+    p.get_best_sections()
 
     assert p.best_sections != []
 
-    sec1 = FastestSection(1, 58, 118, 3.1)
-    sec2 = FastestSection(2, 54, 169, 3.06)
-    sec3 = FastestSection(3, 1, 161, 2.98)
+    sec1 = GenericBestSection(1000, 58, 118, 3.1, "fastest")
+    sec2 = GenericBestSection(2000, 54, 169, 3.06, "fastest")
+    sec3 = GenericBestSection(3000, 1, 161, 2.98, "fastest")
+    sec4 = GenericBestSection(100, 116, 121, 21.58, "climb")
+    sec5 = GenericBestSection(200, 62, 75, 13.77, "climb")
+    sec6 = GenericBestSection(500, 0, 29, 13.77, "climb")
+    sec7 = GenericBestSection(1_000, 181, 244, 10.47, "climb")
+    sec8 = GenericBestSection(2_000, 111, 239, 9.66, "climb")
 
-    assert p.best_sections == [sec1, sec2, sec3]
+    assert p.best_sections == [sec1, sec2, sec3, sec4, sec5, sec6, sec7, sec8]

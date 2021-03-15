@@ -1,5 +1,5 @@
 from wizer import models
-from wizer.best_sections.fastest import _activity_suitable_for_awards
+from wizer.best_sections.generic import _activity_suitable_for_awards
 
 
 def test_import_of_demo_activities(import_demo_data, client):
@@ -46,9 +46,10 @@ def test_import_of_demo_activities(import_demo_data, client):
     best_sections_cnt = models.BestSection.objects.count()
     assert best_sections_cnt > 20
 
-    # currently all best sections are of type fastest
+    # number of best sections is the sum of fastest and climb sections
     fastest_sections_cnt = models.BestSection.objects.filter(section_type="fastest").count()
-    assert best_sections_cnt == fastest_sections_cnt
+    climb_sections_cnt = models.BestSection.objects.filter(section_type="climb").count()
+    assert best_sections_cnt == fastest_sections_cnt + climb_sections_cnt
 
 
 def test_import_of_activities__not_evaluates_for_awards(import_one_activity):

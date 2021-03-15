@@ -81,3 +81,11 @@ def get_best_sections_list(queryset: QuerySet):
     for section in queryset:
         list_of_start_and_end_index.append([section.start_index, section.end_index])
     return list_of_start_and_end_index
+
+
+@register.filter
+def best_section_distance(distance: int) -> str:
+    if distance < 1000:
+        return f"{distance}m"
+    else:
+        return f"{int(distance/1000)}km"

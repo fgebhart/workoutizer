@@ -13,7 +13,7 @@ from wizer.file_helper.initial_data_handler import (
     insert_demo_sports_to_model,
     insert_custom_demo_activities,
 )
-from wizer.best_sections.fastest import FastestSection
+from wizer.best_sections.generic import GenericBestSection
 from wizer import configuration
 from workoutizer import settings as django_settings
 
@@ -91,7 +91,7 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                 update_existing=False,
                 importing_demo_data=importing_demo_data,
             )
-            log.info(f"created new activity: {activity.name} ({activity.date}) ID: {activity.pk}")
+            log.info(f"created new activity: {activity.name} ({activity.date.date()}) ID: {activity.pk}")
         else:  # checksum is in db already
             file_name = trace_file.split("/")[-1]
             trace_file_path_instance = models.Traces.objects.get(md5sum=md5sum)
@@ -199,18 +199,20 @@ def _save_best_sections_to_model(best_section_model, parser, activity_instance, 
         for section in parser.best_sections:
             best_section_model.objects.update_or_create(
                 activity=activity_instance,
-                section_type=section.section_type,
-                section_distance=section.section_distance,
+                section_type=section.kind,
+                section_distance=section.distance,
                 defaults={
-                    "start_index": section.start_index,
-                    "end_index": section.end_index,
+                    "start_index": section.start,
+                    "end_index": section.end,
                     "max_value": section.max_value,
                 },
             )
         # If the parser does not have some best sections but the db has -> delete them from the db
         db_sections = best_section_model.objects.filter(activity=activity_instance)
         for section in db_sections:
-            sec = FastestSection(section.section_distance, section.start_index, section.end_index, section.max_value)
+            sec = GenericBestSection(
+                section.section_distance, section.start_index, section.end_index, section.max_value, section.section_type
+            )
             if sec not in parser.best_sections:
                 log.debug(f"deleting section: {section} from db, because it is not present in parser")
                 section.delete()
@@ -219,14 +221,13 @@ def _save_best_sections_to_model(best_section_model, parser, activity_instance, 
         for section in parser.best_sections:
             best_section_object = best_section_model(
                 activity=activity_instance,
-                section_type=section.section_type,
-                section_distance=section.section_distance,
-                start_index=section.start_index,
-                end_index=section.end_index,
+                section_type=section.kind,
+                section_distance=section.distance,
+                start_index=section.start,
+                end_index=section.end,
                 max_value=section.max_value,
             )
             best_section_object.save()
-        # save also other section types to model here...
 
 
 def _map_sport_name(sport_name, map_dict):  # will be adapted in GH #4
@@ -360,8 +361,8 @@ def _parse_data(file) -> Union[FITParser, GPXParser]:
         raise NotImplementedError(
             f"Cannot parse {file} files. The only supported file formats are: {configuration.supported_formats}."
         )
-    # parse fastest sections
-    parser.get_fastest_sections()
+    # parse best sections
+    parser.get_best_sections()
     return parser
 
 

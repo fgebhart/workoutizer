@@ -4,6 +4,7 @@ from django.urls import re_path
 from wizer import views
 from wizer import activity_views
 from wizer import sport_views
+from wizer import awards_views
 from wizer import api
 
 
@@ -31,7 +32,7 @@ urlpatterns = [
     path("sport/<slug:sports_name_slug>/edit/", sport_views.edit_sport_view, name="edit-sport"),
     re_path(r"^sport/(?P<slug>[a-zA-Z0-9-]+)/delete/$", sport_views.SportDeleteView.as_view(), name="delete-sport"),
     # Best Sections
-    path("awards/", views.BestSectionsView.as_view(), name="awards"),
+    path("awards/", awards_views.AwardsViews.as_view(), name="awards"),
     # Rest API endpoints
     path("mount-device/", api.mount_device_endpoint),
     path("stop/", api.stop_django_server),

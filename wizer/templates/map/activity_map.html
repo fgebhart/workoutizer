@@ -45,26 +45,46 @@
         "weight": "{{ settings.trace_width }}",
         "opacity": "{{ settings.trace_opacity }}",
     };
+    var traceGroup = L.layerGroup();
 
     var fastest_sections = {{ fastest_sections | get_best_sections_list | safe }};
-    var traceGroup = L.layerGroup();
+    var fastestSectionGroup = L.layerGroup();
     for (let i = 0; i < fastest_sections.length; i++) {
         const section_start = fastest_sections[i][0];
         const section_end = fastest_sections[i][1];
 
         var section = coordinates.slice(section_start, section_end);
         // add section to trace group
-        trace = L.geoJSON({
+        sec = L.geoJSON({
             "type": "LineString",
             "coordinates": section,
         }, Style);
-        trace.addTo(traceGroup);
+        sec.addTo(fastestSectionGroup);
     }
+    fastestSectionGroup.addTo(map);
+
+    var climb_sections = {{ climb_sections | get_best_sections_list | safe }};
+    var climbSectionGroup = L.layerGroup();
+    for (let i = 0; i < climb_sections.length; i++) {
+        const section_start = climb_sections[i][0];
+        const section_end = climb_sections[i][1];
+
+        var section = coordinates.slice(section_start, section_end);
+        // add section to trace group
+        sec = L.geoJSON({
+            "type": "LineString",
+            "coordinates": section,
+        }, Style);
+        sec.addTo(climbSectionGroup);
+    }
+    climbSectionGroup.addTo(map);
+
     // add overall trace as last element to trace group
     trace = L.geoJSON({
             "type": "LineString",
             "coordinates": coordinates,
         }, Style).addTo(traceGroup)
+
     traceGroup.addTo(map);
 
     map.fitBounds(trace.getBounds());
@@ -140,16 +160,28 @@
         markers[index].closeTooltip();
     }
 
-    let traces = traceGroup.getLayers();
+    let fastest_layers = fastestSectionGroup.getLayers();
     // function to be called by fastest_sections_table.html when hovering over rows of fastest sections
     function render_fastest_sections(index) {
-        let selected_section = traces[index];
+        let selected_section = fastest_layers[index];
         selected_section.setStyle({"color": "yellow"});
         selected_section.bringToFront();
     }
-
     function hide_fastest_sections(index) {
-        let selected_section = traces[index];
+        let selected_section = fastest_layers[index];
+        selected_section.setStyle({"color": trace_color});
+        selected_section.bringToBack();
+    }
+
+    let climb_layers = climbSectionGroup.getLayers();
+    // function to be called by best_sections_table.html when hovering over rows of fastest sections
+    function render_climb_sections(index) {
+        let selected_section = climb_layers[index];
+        selected_section.setStyle({"color": "blue"});
+        selected_section.bringToFront();
+    }
+    function hide_climb_sections(index) {
+        let selected_section = climb_layers[index];
         selected_section.setStyle({"color": trace_color});
         selected_section.bringToBack();
     }

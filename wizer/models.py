@@ -144,7 +144,7 @@ class BestSection(models.Model):
     """
 
     def __str__(self):
-        return f"{self.section_type} {self.section_distance}km: {self.max_value}m/s"
+        return f"{self.section_type} {self.section_distance}m: {self.max_value}"
 
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
     section_type = models.CharField(max_length=120, blank=False)

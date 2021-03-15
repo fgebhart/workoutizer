@@ -1,7 +1,7 @@
 import logging
 import json
+from typing import List, Union
 import datetime
-from typing import List, Dict, Union
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
@@ -228,64 +228,23 @@ def reimport_activities(request):
         return HttpResponseRedirect(reverse("settings"))
 
 
-class BestSectionsView(WKZView):
-    template_name = "best_sections.html"
-
-    def get(self, request):
-        self.context["page"] = "awards"
-        top_awards = get_top_awards_for_all_sports(top_score=configuration.rank_limit)
-        self.context["top_awards"] = top_awards
-        return render(request, template_name=self.template_name, context=self.context)
-
-
-def _get_best_sections_of_sport_and_distance(
-    sport: models.Sport, distance: int, top_score: int
-) -> List[models.BestSection]:
-    awards_per_distance = list(
-        models.BestSection.objects.filter(
-            activity__sport=sport,
-            activity__evaluates_for_awards=True,
-            section_distance=distance,
-            section_type="fastest",
-        ).order_by("-max_value")[:top_score]
-    )
-    return awards_per_distance
-
-
-def get_top_awards_for_one_sport(sport: models.Sport, top_score: int) -> List[models.BestSection]:
-    awards = []
-    for distance in configuration.fastest_sections:
-        awards_per_distance = _get_best_sections_of_sport_and_distance(sport, distance, top_score)
-        for rank, section in enumerate(awards_per_distance):
-            setattr(section, "rank", rank + 1)
-        if awards_per_distance:
-            awards += awards_per_distance
-    return awards
-
-
-def get_top_awards_for_all_sports(top_score: int) -> Dict[models.Sport, List[models.BestSection]]:
-    top_awards = {}
-    for sport in models.Sport.objects.filter(evaluates_for_awards=True).exclude(name="unknown").order_by("name"):
-        awards = get_top_awards_for_one_sport(sport, top_score)
-        if awards:
-            top_awards[sport] = awards
-    return top_awards
-
-
 def get_flat_list_of_pks_of_activities_in_top_awards(
-    top_score: int, filter_on_sport: Union[None, models.Sport] = None
+    top_score: int, filter_on_sport: Union[None, str] = None
 ) -> List[int]:
     top_awards = []
     sports = models.Sport.objects.filter(evaluates_for_awards=True).exclude(name="unknown").order_by("name")
     if filter_on_sport:
         sports = sports.filter(slug=filter_on_sport)
     for sport in sports:
-        for distance in configuration.fastest_sections:
-            awards_per_distance = _get_best_sections_of_sport_and_distance(sport, distance, top_score)
-            # create list of primary keys of activities in which are in top scores
-            awards_per_distance = [section.activity.pk for section in awards_per_distance]
-            if awards_per_distance:
-                top_awards += awards_per_distance
+        awards_per_distance = models.BestSection.objects.filter(
+            activity__sport=sport,
+            activity__evaluates_for_awards=True,
+            section_type__in=configuration.available_best_section,
+        ).order_by("-max_value")[:top_score]
+        # create list of primary keys of activities in which are in top scores
+        awards_per_distance = [section.activity.pk for section in awards_per_distance]
+        if awards_per_distance:
+            top_awards += awards_per_distance
     return top_awards
 
 

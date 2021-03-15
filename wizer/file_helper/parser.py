@@ -1,9 +1,9 @@
 import os
 import datetime
 import logging
+from typing import List
 
-from wizer.best_sections.fastest import get_fastest_section, FastestSection
-from wizer.configuration import fastest_sections
+from wizer import configuration
 
 from sportgems import DistanceTooSmallException, TooFewDataPointsException, NoSectionFoundException
 
@@ -70,7 +70,7 @@ class Parser:
         # lap info
         self.laps = []
 
-        # fastest sections
+        # best sections
         self.best_sections = []
 
         # run parser
@@ -93,17 +93,22 @@ class Parser:
     def get_file_name_from_path(self, path):
         return path.split("/")[-1]
 
-    def get_fastest_sections(self):
-        for section_distance in fastest_sections:
-            if self.distance > section_distance:
-                try:
-                    fastest_section = get_fastest_section(int(section_distance * 1000), self)
-                    sec = FastestSection(
-                        start_index=fastest_section.start,
-                        end_index=fastest_section.end,
-                        section_distance=section_distance,
-                        max_value=round(fastest_section.velocity, 2),
-                    )
-                    self.best_sections.append(sec)
-                except (DistanceTooSmallException, TooFewDataPointsException, NoSectionFoundException) as e:
-                    log.warning(f"Could not find fastest section. Sportgems error: {e}")
+    def get_best_sections(self):
+        log.debug("parsing best sections using sportgems...")
+        # helper func to be called for each available section kind parser
+
+        def _get_best_sections_for_section_kind(section_parser, section_distances: List[int]):
+            for section_distance in section_distances:
+                if self.distance * 1000 > section_distance and self.latitude_list:
+                    try:
+                        result = section_parser(section_distance, self)
+                        if result:
+                            self.best_sections.append(result)
+                    except (DistanceTooSmallException, TooFewDataPointsException, NoSectionFoundException) as e:
+                        # catching some of the sportgems customs exceptions and logging it
+                        log.warning(f"Could not find fastest section. Sportgems error: {e}")
+                        # however some are not caught and should actually be raised, e.g. InconsistentLengthException,
+                        # NoSectionFoundException and InvalidDesiredDistanceException
+
+        for bs in configuration.best_sections:
+            _get_best_sections_for_section_kind(bs["parser"], bs["distances"])

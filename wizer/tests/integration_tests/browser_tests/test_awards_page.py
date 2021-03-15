@@ -16,7 +16,7 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     # 1. assert existence of different html tags,...
     table_header = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
     assert "Rank" in table_header
-    assert "Fastest" in table_header
+    assert "Distance" in table_header
     assert "Date" in table_header
     assert "Activity" in table_header
     assert "Speed" in table_header
@@ -47,8 +47,17 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Cycling in Dahn" in table_data
     assert "Noon Jogging in Heidelberg" in table_data
     assert "Noon Jogging in Mirow" in table_data
-    assert "10.2 km/h" in table_data
-    assert "1 km" in table_data
+    assert "42.7 km/h" in table_data
+
+    # fastest sections distances
+    assert "1km" in table_data
+    assert "2km" in table_data
+    assert "3km" in table_data
+    assert "5km" in table_data
+    assert "10km" in table_data
+
+    assert len(webdriver.find_elements_by_class_name("fa-mountain")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-tachometer-alt")) > 0
 
     first_num_trophies = len(webdriver.find_elements_by_class_name("fa-trophy"))
     assert first_num_trophies > 0

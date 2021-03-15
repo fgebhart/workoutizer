@@ -13,7 +13,23 @@
                     title="Activity does not evaluate for Awards" style="color: grey;"></i>
                 {% endif %}
             </h5>
-            {% include "activity/fastest_sections_table.html" %}
+            {% include "activity/velocity_sections_table.html" %}
+        </div>
+    {% endif %}
+
+    {% if climb_sections %}
+        <div class="col-sm-12">
+            <h5>
+                Best Climb Sections
+                {% if evaluates_for_awards %}
+                    &nbsp;<i class="fas fa-trophy" data-toggle="tooltip" data-placement="bottom"
+                    title="Activity evaluates for Awards" style="color: grey;"></i>
+                {% else %}
+                    &nbsp;<i class="fas fa-exclamation-circle" data-toggle="tooltip" data-placement="bottom"
+                    title="Activity does not evaluate for Awards" style="color: grey;"></i>
+                {% endif %}
+            </h5>
+            {% include "activity/climb_sections_table.html" %}
         </div>
     {% endif %}
 
@@ -35,6 +51,7 @@
             </table>
         </div>
     {% endif %}
+
     {% if activity.trace_file.avg_speed and activity.trace_file.max_speed %}
         <div class="col-sm-6">
             <h5>Speed</h5>
@@ -52,6 +69,7 @@
             </table>
         </div>
     {% endif %}
+
     {% if activity.trace_file.avg_speed and activity.trace_file.max_speed %}
         <div class="col-sm-6">
             <h5>Pace</h5>
@@ -68,6 +86,7 @@
             </table>
         </div>
     {% endif %}
+
     {% if activity.trace_file.aerobic_training_effect and activity.trace_file.anaerobic_training_effect %}
         <div class="col-sm-6">
             <h5>Trainings Effect</h5>
@@ -83,6 +102,7 @@
             </table>
         </div>
     {% endif %}
+
     {% if activity.trace_file.avg_heart_rate and activity.trace_file.max_heart_rate %}
         <div class="col-sm-6">
             <h5>Heart Rate</h5>
@@ -102,6 +122,7 @@
             </table>
         </div>
     {% endif %}
+
     {% if activity.trace_file.min_temperature and activity.trace_file.avg_temperature and activity.trace_file.max_temperature %}
         <div class="col-sm-6">
             <h5>Temperature</h5>
