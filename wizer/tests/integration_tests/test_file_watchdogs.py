@@ -23,7 +23,9 @@ def condition(func, operator, right, timeout: int = TIMEOUT) -> bool:
     return False
 
 
-def test__start_file_importer_watchdog_basic(transactional_db, tmpdir, test_data_dir, demo_data_dir, fit_file_a):
+def test__start_file_importer_watchdog_basic(
+    transactional_db, tmpdir, tmp_path, test_data_dir, demo_data_dir, fit_file_a
+):
     assert models.Activity.objects.count() == 0
     assert models.BestSection.objects.count() == 0
 
@@ -31,7 +33,14 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmpdir, test_data
 
     # update path_to_trace_dir in db accordingly, since import_activity_files will read it from the db
     settings = models.get_settings()
+    # settings.path_to_trace_dir = trace_dir
+    # settings.save()
+
+    trace_dir = tmp_path / "trace_dir"
+    trace_dir.mkdir()
+    assert trace_dir.is_dir()
     settings.path_to_trace_dir = trace_dir
+
     settings.save()
 
     print(f"before call, path is: {settings.path_to_trace_dir}")
