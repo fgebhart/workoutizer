@@ -37,6 +37,9 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmpdir, test_data
     print(f"before call, path is: {settings.path_to_trace_dir}")
     _start_file_importer_watchdog(trace_dir, models=models)
 
+    # wait for watchdog to be active
+    time.sleep(3)
+
     # put an activity fit file into the watched dir
     copy_demo_fit_files_to_track_dir(
         source_dir=demo_data_dir,
@@ -46,7 +49,6 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmpdir, test_data
     assert (Path(trace_dir) / "cycling_bad_schandau.fit").is_file()
 
     # watchdog should now have triggered the file imported and activity should be in db
-    print(f"num of activities: {models.Activity.objects.count()}")
     assert condition(models.Activity.objects.count, operator.eq, 1)
     assert condition(models.BestSection.objects.count, operator.gt, 0)
     bs1 = models.BestSection.objects.count()
