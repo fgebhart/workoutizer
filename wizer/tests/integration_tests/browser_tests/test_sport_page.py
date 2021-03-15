@@ -4,7 +4,7 @@ from django.urls import reverse
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-
+import pytz
 
 from wizer import models
 from wizer import configuration
@@ -143,9 +143,8 @@ def test_sport_page__infinite_scroll(live_server, webdriver, insert_activity, in
 def test_sport_page__no_activities_selected_for_plot(live_server, webdriver, insert_activity, insert_sport):
     sport = insert_sport(name="Bungee Jumping")
     for i in range(5):
-        insert_activity(
-            name=f"Dummy Activity {i}", sport=sport, date=datetime.datetime(1900, 1, 1) + datetime.timedelta(days=i)
-        )
+        date = datetime.datetime(1900, 1, 1, tzinfo=pytz.UTC) + datetime.timedelta(days=i)
+        insert_activity(name=f"Dummy Activity {i}", sport=sport, date=date)
 
     assert models.Activity.objects.filter(sport__slug="bungee-jumping").count() == 5
     webdriver.get(live_server.url + "/sport/bungee-jumping")

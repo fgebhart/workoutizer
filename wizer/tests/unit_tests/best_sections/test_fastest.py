@@ -54,28 +54,31 @@ def test__prepare_coordinates_and_times_for_fastest_secions(fit_parser):
             assert coo[0] == lat
             assert coo[1] == lon
 
+    # times should not be modified
+    assert parser.timestamps_list == times
+
 
 def test_get_fastest_section__fit(fit_parser):
     parser = fit_parser()
     assert parser.distance == 5.84
 
     # test fastest 1km
-    start, end, velocity = get_fastest_section(1000, parser)
-    assert start == 629
-    assert end == 719
-    assert velocity == 2.91
+    res = get_fastest_section(1000, parser)
+    assert res.start == 629
+    assert res.end == 719
+    assert round(res.velocity, 2) == 2.91
 
     # test fastest 2km
-    start, end, velocity = get_fastest_section(2000, parser)
-    assert start == 537
-    assert end == 814
-    assert velocity == 2.33
+    res = get_fastest_section(2000, parser)
+    assert res.start == 537
+    assert res.end == 814
+    assert round(res.velocity, 2) == 2.33
 
     # test fastest 5km
-    start, end, velocity = get_fastest_section(5000, parser)
-    assert start == 76
-    assert end == 1166
-    assert velocity == 1.84
+    res = get_fastest_section(5000, parser)
+    assert res.start == 76
+    assert res.end == 1166
+    assert round(res.velocity, 2) == 1.84
 
     # test fastest 10km, in this case the activity data is shorter
     # than 10km and thus we expect that no suitable section was found
@@ -90,16 +93,16 @@ def test_get_fastest_section__gpx(gpx_parser):
     assert parser.distance == 4.3
 
     # test fastest 1km
-    start, end, velocity = get_fastest_section(1000, parser)
-    assert start == 58
-    assert end == 118
-    assert velocity == 3.1
+    res = get_fastest_section(1000, parser)
+    assert res.start == 58
+    assert res.end == 118
+    assert round(res.velocity, 2) == 3.1
 
     # test fastest 2km
-    start, end, velocity = get_fastest_section(2000, parser)
-    assert start == 54
-    assert end == 169
-    assert velocity == 3.06
+    res = get_fastest_section(2000, parser)
+    assert res.start == 54
+    assert res.end == 169
+    assert round(res.velocity, 2) == 3.06
 
     # test fastest 5km
     with pytest.raises(

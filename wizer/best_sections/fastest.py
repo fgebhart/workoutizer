@@ -28,9 +28,7 @@ def get_fastest_section(section_distance: int, parser) -> Tuple[float, int, int]
     times, coordinates = _prepare_coordinates_and_times_for_fastest_secions(parser)
 
     # call the rust binary of sportgems here
-    sec = find_fastest_section(section_distance, times, coordinates)
-
-    return sec.start, sec.end, round(sec.velocity, 2)
+    return find_fastest_section(section_distance, times, coordinates)
 
 
 def _activity_suitable_for_awards(activity) -> bool:

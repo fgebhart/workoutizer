@@ -5,11 +5,11 @@
 
 ## useful commands
 display usb devices `lsusb`
-show attaching of new devices `dmesg`  
-get attributes of usb device `udevadm info --attribute-walk --name=/dev/bus/usb/001/010`  
-monitor changes when plugging devices `udevadm monitor --environment --udev`  
+show attaching of new devices `dmesg`
+get attributes of usb device `udevadm info --attribute-walk --name=/dev/bus/usb/001/010`
+monitor changes when plugging devices `udevadm monitor --environment --udev`
 
-mount device via gio `gio mount -d /dev/bus/usb/001/004`  
+mount device via gio `gio mount -d /dev/bus/usb/001/004`
 unmount device `gio mount -u /run/user/1000/gvfs/mtp:host=091e_4b48_0000c4fa0516`
 
 ## my device

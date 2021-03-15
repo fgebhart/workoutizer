@@ -11,7 +11,6 @@ import wizer.models
 class Migration(migrations.Migration):
 
     replaces = [
-        ("wizer", "0001_squashed_0036_auto_20200629_1422"),
         ("wizer", "0002_auto_20200704_1728"),
         ("wizer", "0003_auto_20200709_0742"),
         ("wizer", "0004_traces_distance_list"),

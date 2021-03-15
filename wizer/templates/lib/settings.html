@@ -35,14 +35,7 @@
                 <div class="col-sm-4">{{ form.path_to_garmin_device.label }}</div>
                 <div class="col-sm-8">{{ form.path_to_garmin_device }}&nbsp;
                     <i class="fas fa-question" data-toggle="tooltip" data-placement="right"
-                       title="Enter the path where your connected device shows up. Your connected device should start with 'mtp:host' and contain the folders Primary/GARMIN/Activity/ where your .fit files are located in."></i>
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-4">{{ form.path_to_activities_on_device.label }}</div>
-                <div class="col-sm-8">{{ form.path_to_activities_on_device }}&nbsp;
-                    <i class="fas fa-question" data-toggle="tooltip" data-placement="right"
-                       title="Specify the path to the folder containing your activities as .fit files on your Garmin device."></i>
+                       title="Enter the path to a directory in which your connected device shows up after mounting. Workoutizer will search for a folder called 'Activity' containing .fit files."></i>
                 </div>
             </div>
             <div class="form-group row">

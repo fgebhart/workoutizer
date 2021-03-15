@@ -43,7 +43,7 @@ def test_drop_down_visible(live_server, webdriver, settings):
     days = settings.number_of_days
 
     dropdown_button = webdriver.find_element_by_id("dropdown-btn")
-    assert dropdown_button.text == f"last {days} days"
+    assert dropdown_button.text == f"{days} days"
 
 
 def test_dashboard_page__complete(import_demo_data, live_server, webdriver):

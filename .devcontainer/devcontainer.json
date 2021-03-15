@@ -27,6 +27,7 @@
 		"alexcvzz.vscode-sqlite",
 		"garytyler.darcula-pycharm",
 		"batisteo.vscode-django",
+		"akamud.vscode-theme-onedark",
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

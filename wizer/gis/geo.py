@@ -67,7 +67,7 @@ def get_location_name(coordinate: Tuple[float, float]) -> str:
     app = Nominatim(user_agent="workoutizer")
     try:
         p = Point(coordinate[0], coordinate[1])
-        address = app.reverse(query=p, language="en", timeout=5).raw["address"]
+        address = app.reverse(query=p, language="en", timeout=10).raw["address"]
         # use name of location from village, town or city (in this order)
         if "village" in address.keys():
             return address["village"]
