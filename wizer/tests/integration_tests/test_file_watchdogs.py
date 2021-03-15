@@ -23,11 +23,11 @@ def condition(func, operator, right, timeout: int = TIMEOUT) -> bool:
     return False
 
 
-def test__start_file_importer_watchdog_basic(transactional_db, tmpdir, test_data_dir, demo_data_dir):
+def test__start_file_importer_watchdog_basic(transactional_db, tmpdir, test_data_dir, demo_data_dir, fit_file_a):
     assert models.Activity.objects.count() == 0
     assert models.BestSection.objects.count() == 0
 
-    trace_dir = tmpdir.mkdir("trace_dir")
+    trace_dir = tmpdir.mkdir("asdf_dummy_dir")
 
     # update path_to_trace_dir in db accordingly, since import_activity_files will read it from the db
     settings = models.get_settings()
@@ -44,9 +44,9 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmpdir, test_data
     copy_demo_fit_files_to_track_dir(
         source_dir=demo_data_dir,
         targe_dir=trace_dir,
-        list_of_files_to_copy=["cycling_bad_schandau.fit"],
+        list_of_files_to_copy=[fit_file_a],
     )
-    assert (Path(trace_dir) / "cycling_bad_schandau.fit").is_file()
+    assert (Path(trace_dir) / fit_file_a).is_file()
 
     # watchdog should now have triggered the file imported and activity should be in db
     assert condition(models.Activity.objects.count, operator.eq, 1)

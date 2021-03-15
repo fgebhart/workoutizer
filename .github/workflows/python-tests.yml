@@ -58,6 +58,7 @@ jobs:
       if: always()
       run: |
         pytest wizer/tests/integration_tests/test_file_watchdogs.py -vvvsk test__start_file_importer_watchdog_basic
+        pytest wizer/tests/integration_tests/test_file_watchdogs.py -vvvsk test_device_and_file_importer_watchdog
 
     # - name: Init
     #   if: always()
