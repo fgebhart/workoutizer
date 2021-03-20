@@ -52,12 +52,12 @@ jobs:
     - name: Run Unit Tests
       if: always()
       run: |
-        pytest wizer/tests/unit_tests -v -n2
+        pytest wizer/tests/unit_tests -vv -n2
 
     - name: Run Integration Tests
       if: always()
       run: |
-        pytest wizer/tests/integration_tests -v -n2
+        pytest wizer/tests/integration_tests -vv -n2
 
     - name: Init
       if: always()

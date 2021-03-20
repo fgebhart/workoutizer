@@ -103,7 +103,10 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
 
 
 def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_server, webdriver):
-    # TODO check that correct activities are actually listed in awards page
+    # check that correct activities are actually listed in awards page
+    from IPython import embed
+
+    embed()
     pass
 
 

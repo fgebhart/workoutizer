@@ -13,10 +13,10 @@ awards_info_texts = {
         "activities and entire sports can be disabled for awards."
     ),
     "fastest": (
-        "The fastest sections are determined by measuring the average velocity over the given section distance."
+        "The fastest sections are determined by computing the average velocity over the given section distance."
     ),
     "climb": (
-        "The best climb sections are determined by measuring the accumulated evelation gain per minute over the "
+        "The best climb sections are determined by computing the accumulated evelation gain per minute over the "
         "given section distance."
     ),
 }
