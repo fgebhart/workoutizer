@@ -1,6 +1,15 @@
 {% extends 'lib/base.html' %}
 {% load static %}
 {% block body %}
+
+<style>
+    .tab_text{
+        background-color: none;
+        color: grey;
+        font-size: 20px;
+    }
+</style>
+
 <title>Awards | Workoutizer</title>
 <h3>Your Awards</h3>
 <hr>
@@ -9,35 +18,47 @@
 <div class="container">
     <ul class="nav nav-tabs nav-justified">
         <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#fastest" style="color: black; font-size: 20px">
+            <a class="nav-link active tab_text" data-toggle="tab" href="#fastest">
                 <i class="fas fa-tachometer-alt"></i>&nbsp;&nbsp;Fastest Sections
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#climb" style="color: black; font-size: 20px">
+            <a class="nav-link tab_text" data-toggle="tab" href="#climb">
                 <i class="fas fa-mountain"></i>&nbsp;&nbsp;Best Climb Sections
             </a>
         </li>
     </ul>
     <div class="tab-content">
         <div id="fastest" class="container tab-pane active"><br>
+            <br>
+            <p>
+                {{ info_text.fastest }}
+            </p>
+            <br><br><br>
             {% for sport, top_award in top_fastest_awards.items %}
                 <h4>{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
                 <br>
                 {% include "lib/velocity_section_table.html" %}
-                <br>
-                <br>
+                <br><br>
             {% endfor %}
         </div>
         <div id="climb" class="container tab-pane fade"><br>
+            <br>
+            <p>
+                {{ info_text.climb }}
+            </p>
+            <br><br><br>
             {% for sport, top_award in top_climb_awards.items %}
                 <h4>{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
                 <br>
                 {% include "lib/climb_section_table.html" %}
-                <br>
-                <br>
+                <br><br>
             {% endfor %}
         </div>
     </div>
+    <br>
+    <p>
+        {{ info_text.general }}
+    </p>
 </div>
 {% endblock %}

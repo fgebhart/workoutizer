@@ -7,6 +7,21 @@ from wizer import configuration
 from wizer.views import WKZView
 
 
+awards_info_texts = {
+    "general": (
+        f"This page lists the top {configuration.rank_limit} activities in the respective sections. Both individual "
+        "activities and entire sports can be disabled for awards."
+    ),
+    "fastest": (
+        "The fastest sections are determined by measuring the average velocity over the given section distance."
+    ),
+    "climb": (
+        "The best climb sections are determined by measuring the accumulated evelation gain per minute over the "
+        "given section distance."
+    ),
+}
+
+
 class AwardsViews(WKZView):
     template_name = "awards.html"
 
@@ -16,6 +31,7 @@ class AwardsViews(WKZView):
         self.context["top_fastest_awards"] = top_fastest_awards
         top_climb_awards = get_top_awards_for_all_sports(top_score=configuration.rank_limit, kinds=["climb"])
         self.context["top_climb_awards"] = top_climb_awards
+        self.context["info_text"] = awards_info_texts
         return render(request, template_name=self.template_name, context=self.context)
 
 
