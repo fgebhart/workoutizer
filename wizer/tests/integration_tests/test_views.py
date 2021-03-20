@@ -25,7 +25,7 @@ def test_settings_view(db, client):
 def test_best_sections_view(db, client):
     response = client.get(reverse("awards"))
     assert response.status_code == 200
-    assert "Your Awards" in response.content.decode("UTF-8")
+    assert "awards" in response.content.decode("UTF-8")
 
 
 def test_activity_view__activity_present(db, client, settings, sport, activity):

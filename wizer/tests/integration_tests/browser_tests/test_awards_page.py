@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from wizer import models
 from wizer.awards_views import awards_info_texts
 
+# from wizer import configuration
+
 
 def test_awards_page__complete(import_demo_data, live_server, webdriver):
     """
@@ -23,8 +25,6 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Date" in table_header
     assert "Activity" in table_header
     assert "Speed" in table_header
-
-    assert "Your Awards" in webdriver.find_element_by_tag_name("h3").text
 
     h4 = [h4.text for h4 in webdriver.find_elements_by_tag_name("h4")]
     # note hiking activities won't show up, since they are disabled for awards in initial_data_handler
@@ -104,13 +104,14 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
 
 def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_server, webdriver):
     # check that correct activities are actually listed in awards page
-    from IPython import embed
-
-    embed()
+    # top_awards = models.BestSection.objects.filter(
+    #     activity__evaluates_for_awards=True,
+    #     section_type="fastest",
+    # ).order_by("-max_value")[:configuration.rank_limit]
     pass
 
 
-def test_awards_kind_tabs(live_server, webdriver, take_screenshot):
+def test_awards_kind_tabs(live_server, webdriver):
     webdriver.get(live_server.url + reverse("awards"))
     p1 = [p.text for p in webdriver.find_elements_by_tag_name("p")]
 
@@ -124,7 +125,7 @@ def test_awards_kind_tabs(live_server, webdriver, take_screenshot):
     assert awards_info_texts["climb"] not in p1
 
     # click on climb sections tab
-    webdriver.find_element(By.LINK_TEXT, "Best Climb Sections").click()
+    webdriver.find_element(By.LINK_TEXT, "Climb Awards").click()
     p2 = [p.text for p in webdriver.find_elements_by_tag_name("p")]
 
     # climb section text should now be present

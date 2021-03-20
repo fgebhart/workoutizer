@@ -23,7 +23,7 @@ awards_info_texts = {
 
 
 class AwardsViews(WKZView):
-    template_name = "awards.html"
+    template_name = "awards/awards.html"
 
     def get(self, request):
         self.context["page"] = "awards"
