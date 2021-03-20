@@ -54,9 +54,7 @@ def get_top_awards_for_one_sport(sport: models.Sport, top_score: int, kinds: Lis
     for bs in configuration.best_sections:
         if bs["kind"] in kinds:
             for distance in bs["distances"]:
-                awards_per_distance = _get_best_sections_of_sport_and_distance(
-                    sport, distance, top_score, configuration.available_best_sections
-                )
+                awards_per_distance = _get_best_sections_of_sport_and_distance(sport, distance, top_score, kinds)
                 for rank, section in enumerate(awards_per_distance):
                     setattr(section, "rank", rank + 1)
                 if awards_per_distance:
