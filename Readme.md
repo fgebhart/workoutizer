@@ -15,23 +15,21 @@ uploading all your sensitive health data to some 3rd party cloud.
 * Plot your activity specific data e.g. heart rate, pace, temperature, cadence and altitude
 * Integrate laps into both plots and maps
 * Connected plots and map via mouse hovering
-* Find the fastest sections in your activities using [sportgems](https://github.com/fgebhart/sportgems) and highlight on map
-* Keyboard navigation in browser
+* Find sections with highest speed and max altitude gain using [sportgems](https://github.com/fgebhart/sportgems) and highlight on map
 * Add untracked activities manually via the GUI
 * Export activities as `.gpx` files
 * Add as many different sports as you want
-* Convenience CLI for installing, running, stopping, updating, ...
 
 
 ## Getting Started
 
-Install workoutizer
-```shell script
+Install workoutizer using pip
+```
 pip install workoutizer
 ```
 
 Initialize workoutizer to provide some demo data and run it:
-```shell script
+```
 wkz init --demo
 wkz run
 ```
@@ -51,18 +49,9 @@ In case you want to run workoutizer on a Raspberry Pi in your local network, fol
 :-------------------------:|:-------------------------:
 ![](https://i.imgur.com/tcS6L4Y.png)  |  ![](https://i.imgur.com/QSf3Dpo.png)
 
-## Thanks
-
-Thanks to the authors of projects I integrated into workoutizer:
-* [leaflet-ui](https://github.com/Raruto/leaflet-ui) by [Raruto](https://github.com/Raruto)
-* [django-colorfield](https://github.com/fabiocaccamo/django-colorfield) by [Fabio Caccamo](https://github.com/fabiocaccamo)
-* [python-fitparse](https://github.com/dtcooper/python-fitparse) by [dtcooper](https://github.com/dtcooper)
-* [leaflet-color-markers](https://github.com/pointhi/leaflet-color-markers) by [pointhi](https://github.com/pointhi)
-* [Font Awesome Icons](https://fontawesome.com/)
-
 ## Changelog
 
-See the [releases section](https://github.com/fgebhart/workoutizer/releases).
+See the [Changelog](https://github.com/fgebhart/workoutizer/blob/main/CHANGELOG.md).
 
 ## Contributing
 
@@ -78,7 +67,7 @@ and then start workoutizer in docker using the convenience script:
 ```
 ./run_docker.sh
 ```
-This might take a while to build the image, run the container and initialize workoutizer. Once up and running, run the
+It might take a while to build the image, run the container and initialize workoutizer. Once up and running, run the
 tests with
 ```
 pytest wizer/tests/ -n4
@@ -93,7 +82,16 @@ or using the `wkz` cli
 ```
 wkz run
 ```
-In case you encounter any issues in the setup process, feel free to file an issue.
+In case you encounter any issues in the setup process, please open an issue.
 
-Note: If you are using VS-Code you might want to open the folder of this repo in a docker container directly using the
+Note: If you are using VS-Code you might want to open the folder of this repo in a remote container directly using the
 Remote - Containers extension.
+
+## Thanks
+
+Thanks to the authors of projects I integrated into workoutizer:
+* [leaflet-ui](https://github.com/Raruto/leaflet-ui) by [Raruto](https://github.com/Raruto)
+* [django-colorfield](https://github.com/fabiocaccamo/django-colorfield) by [Fabio Caccamo](https://github.com/fabiocaccamo)
+* [python-fitparse](https://github.com/dtcooper/python-fitparse) by [dtcooper](https://github.com/dtcooper)
+* [leaflet-color-markers](https://github.com/pointhi/leaflet-color-markers) by [pointhi](https://github.com/pointhi)
+* [Font Awesome Icons](https://fontawesome.com/)

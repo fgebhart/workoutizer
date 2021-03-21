@@ -34,6 +34,9 @@ class ActivityFilesWatchdog(AppConfig):
             log.info(f"using workoutizer home at {django_settings.WORKOUTIZER_DIR}")
             from wizer import models
 
+            # initially run importing once to ensure all files are imported
+            import_activity_files(models, importing_demo_data=False)
+
             # start watchdog to monitor whether a new device was mounted
             settings = models.get_settings()
             path_to_garmin_device = settings.path_to_garmin_device
