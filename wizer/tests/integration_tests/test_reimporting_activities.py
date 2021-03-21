@@ -190,19 +190,19 @@ def test_reimporting_of_best_sections(import_one_activity, kind):
     assert models.Activity.objects.count() == 1
 
     activity = models.Activity.objects.get()
-    fastest_bs = models.BestSection.objects.filter(activity=activity, kind=kind)
+    bs = models.BestSection.objects.filter(activity=activity, kind=kind)
 
     # there should never be more best sections of kind 'fastest' than configured possible fastest sections
-    assert len(fastest_bs) <= len(configuration.fastest_distances)
+    assert len(bs) <= len(configuration.fastest_distances)
 
     # store original values
-    orig_start = [section.start for section in fastest_bs]
-    orig_end = [section.end for section in fastest_bs]
-    orig_max_values = [section.max_value for section in fastest_bs]
-    orig_number_of_best_sections = len(fastest_bs)
+    orig_start = [section.start for section in bs]
+    orig_end = [section.end for section in bs]
+    orig_max_values = [section.max_value for section in bs]
+    orig_number_of_best_sections = len(bs)
 
     # modify values
-    for section in fastest_bs:
+    for section in bs:
         section.start = 10_000
         section.end = 20_000
         section.max_value = 33_333.3
