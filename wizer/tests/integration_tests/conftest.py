@@ -107,10 +107,10 @@ def insert_best_section(db, activity, insert_activity):
     def _create_section(max_value: float):
         best_section = models.BestSection(
             activity=insert_activity(),  # always use a new activity
-            section_type="fastest",
-            section_distance=1,
-            start_index=5,
-            end_index=517,
+            kind="fastest",
+            distance=1,
+            start=5,
+            end=517,
             max_value=max_value,
         )
         best_section.save()

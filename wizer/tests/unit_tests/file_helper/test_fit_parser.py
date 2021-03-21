@@ -6,7 +6,7 @@ from django.conf import settings
 import pandas as pd
 
 from wizer.file_helper.fit_parser import LapData, FITParser
-from wizer.best_sections.fastest import FastestSection
+from wizer.best_sections.generic import GenericBestSection
 
 
 tz = pytz.timezone(settings.TIME_ZONE)
@@ -129,16 +129,21 @@ def test_get_fastest_sections(fit_parser):
     # check that fastest sections dict is empty
     assert p.best_sections == []
 
-    p.get_fastest_sections()
+    p.get_best_sections()
 
     assert p.best_sections != []
 
-    sec1 = FastestSection(1, 629, 719, 2.91)
-    sec2 = FastestSection(2, 537, 814, 2.33)
-    sec3 = FastestSection(3, 431, 939, 2.13)
-    sec5 = FastestSection(5, 76, 1166, 1.84)
+    sec1 = GenericBestSection(1000, 629, 719, 2.91, "fastest")
+    sec2 = GenericBestSection(2000, 537, 814, 2.33, "fastest")
+    sec3 = GenericBestSection(3000, 431, 939, 2.13, "fastest")
+    sec4 = GenericBestSection(5000, 76, 1166, 1.84, "fastest")
+    sec5 = GenericBestSection(100, 554, 578, 13.18, "climb")
+    sec6 = GenericBestSection(200, 537, 579, 9.84, "climb")
+    sec7 = GenericBestSection(500, 471, 581, 6.8, "climb")
+    sec8 = GenericBestSection(1_000, 340, 580, 5.79, "climb")
+    sec9 = GenericBestSection(2_000, 51, 584, 5.0, "climb")
 
-    assert p.best_sections == [sec1, sec2, sec3, sec5]
+    assert p.best_sections == [sec1, sec2, sec3, sec4, sec5, sec6, sec7, sec8, sec9]
 
 
 def test__set_avg_values(fit_parser, monkeypatch):

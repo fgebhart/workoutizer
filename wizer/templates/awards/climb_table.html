@@ -1,0 +1,36 @@
+{% load filters %}
+<style>
+    .table-scroll {
+        height: 300px;
+        overflow: scroll;
+    }
+
+    thead tr:nth-child(1) th {
+        background: white;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+</style>
+
+<div class="table-scroll">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Distance</th>
+                <th>Date</th>
+                <th>Activity</th>
+                <th>Climb&nbsp;&nbsp;<i class="fas fa-question-circle" data-toggle="tooltip" data-placement="top" title="{{ info_text.climb }}"></i></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for award in top_award %}
+            <tr>
+                {% include "awards/table_data.html" %}
+                <td>{{ award.max_value }} m/min</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

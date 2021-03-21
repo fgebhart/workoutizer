@@ -196,4 +196,4 @@ def test_device_and_file_importer_watchdog(
 
     # check that the activities got imported
     assert condition(models.Activity.objects.count, operator.eq, 2)
-    assert condition(models.BestSection.objects.count, operator.eq, 8)
+    assert condition(models.BestSection.objects.count, operator.gt, 2)

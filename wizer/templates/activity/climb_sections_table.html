@@ -1,0 +1,42 @@
+<style>
+    .table-scroll {
+        height: 140px;
+        overflow: scroll;
+    }
+</style>
+
+
+{% load filters %}
+<div class="table-scroll">
+    <table class="table table-hover table-borderless text-muted table-sm">
+        {% for section in climb_sections %}
+        <tr class="climb_section_row">
+            <td><i class="fas fa-medal"></i>&nbsp; {{ section.distance | best_section_distance }}</td>
+            <td>{{ section.max_value }} m/min</td>
+            <td>
+                {% for top_award in top_climb_awards %}
+                    {% include "activity/best_sections_row_icons.html" %}
+                {% endfor %}
+            </td>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<br>
+
+<script>
+var tableRows=document.getElementsByClassName('climb_section_row');
+for (var i=0; i < tableRows.length; i +=1) {
+    tableRows[i].addEventListener('mouseover', function(e) {
+        let row_index = $(this).index();
+            render_climb_sections(row_index);
+        }
+    );
+    tableRows[i].addEventListener('mouseout', function(e) {
+        let row_index = $(this).index();
+            hide_climb_sections(row_index);
+        }
+    );
+}
+</script>

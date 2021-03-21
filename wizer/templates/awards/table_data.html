@@ -1,0 +1,19 @@
+{% load filters %}
+
+{% if award.rank == 1 %}
+    <td><i class="fas fa-trophy" style="color: gold;" data-toggle="tooltip" data-placement="bottom"
+            title="1st Place"></i></td>
+{% elif award.rank == 2 %}
+    <td><i class="fas fa-trophy" style="color: silver;" data-toggle="tooltip" data-placement="bottom"
+            title="2nd Place"></i></td>
+{% elif award.rank == 3 %}
+    <td><i class="fas fa-trophy" style="color: burlywood;" data-toggle="tooltip" data-placement="bottom"
+            title="3rd Place"></i></td>
+{% else %}
+    <td>{{ award.rank }}</td>
+{% endif %}
+<td>{{ award.distance | best_section_distance }}</td>
+<td>{{ award.activity.date|date:"M d, Y" }}</td>
+<td class="limit">
+    <a href="/activity/{{ award.activity.pk }}">{{ award.activity.name }}</a>
+</td>

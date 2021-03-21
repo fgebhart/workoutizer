@@ -101,6 +101,39 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     assert len(webdriver.find_elements_by_class_name("fa-road")) == 1
     assert len(webdriver.find_elements_by_class_name("fa-history")) == 1
 
+    # verify that each activity which is in top score has an award and also is displayed with a trophy
+    href = [a.get_attribute("href") for a in webdriver.find_elements_by_tag_name("a")]
+    pks = []
+    for url in href:
+        if url is not None:
+            if "/activity/" in url:
+                pks.append(url.split("/")[-1])
+    pks = set(pks)
+
+    top_award_pks = []
+    sport_slugs = [
+        sport.slug for sport in models.Sport.objects.filter(evaluates_for_awards=True).exclude(name="unknown")
+    ]
+
+    for sport in sport_slugs:
+        for bs in configuration.best_sections:
+            for distance in bs["distances"]:
+                top_awards = models.BestSection.objects.filter(
+                    activity__sport__slug=sport,
+                    activity__evaluates_for_awards=True,
+                    kind=bs["kind"],
+                    distance=distance,
+                ).order_by("-max_value")[: configuration.rank_limit]
+                top_award_pks += [str(award.activity.pk) for award in top_awards]
+    top_award_pks = list(set(top_award_pks))
+
+    expected_num_of_trophies = 0
+    for pk in pks:
+        if pk in top_award_pks:
+            expected_num_of_trophies += 1
+
+    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == expected_num_of_trophies
+
 
 def test_dashboard__infinite_scroll(live_server, webdriver, insert_activity):
     rows_per_page = configuration.number_of_rows_per_page_in_table

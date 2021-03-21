@@ -9,12 +9,13 @@ from django.http import HttpResponse, Http404
 from django.urls import reverse
 from django.forms import modelformset_factory
 
-from wizer.views import MapView, get_all_form_field_ids, get_top_awards_for_one_sport
+from wizer.views import MapView, get_all_form_field_ids
+from wizer.awards_views import get_top_awards_for_one_sport
 from wizer.models import Sport, Activity, Lap, BestSection
 from wizer.forms import AddActivityForm, EditActivityForm
 from wizer.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wizer.plotting.plot_time_series import plot_time_series
-from wizer.best_sections.fastest import _activity_suitable_for_awards
+from wizer.best_sections.generic import _activity_suitable_for_awards
 from wizer import configuration
 
 log = logging.getLogger(__name__)
@@ -30,7 +31,8 @@ class ActivityView(MapView):
             "sports": Sport.objects.all().order_by("name"),
             "activity": activity,
             "form_field_ids": get_all_form_field_ids(),
-            "fastest_sections": BestSection.objects.filter(activity=activity, section_type="fastest"),
+            "fastest_sections": BestSection.objects.filter(activity=activity, kind="fastest"),
+            "climb_sections": BestSection.objects.filter(activity=activity, kind="climb"),
         }
         if activity.trace_file:
             script_time_series, div_time_series = plot_time_series(activity)
@@ -41,8 +43,12 @@ class ActivityView(MapView):
             activity_context["laps"] = laps
         activity_context["evaluates_for_awards"] = False
         if _activity_suitable_for_awards(activity):
-            top_awards = get_top_awards_for_one_sport(sport=activity.sport, top_score=configuration.rank_limit)
-            activity_context["top_awards"] = top_awards
+            activity_context["top_fastest_awards"] = get_top_awards_for_one_sport(
+                sport=activity.sport, top_score=configuration.rank_limit, kinds=["fastest"]
+            )
+            activity_context["top_climb_awards"] = get_top_awards_for_one_sport(
+                sport=activity.sport, top_score=configuration.rank_limit, kinds=["climb"]
+            )
             activity_context["evaluates_for_awards"] = True
         return render(request, self.template_name, {**context, **activity_context})
 

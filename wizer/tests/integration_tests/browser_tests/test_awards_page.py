@@ -1,6 +1,9 @@
 from django.urls import reverse
 
+from selenium.webdriver.common.by import By
+
 from wizer import models
+from wizer import configuration
 
 
 def test_awards_page__complete(import_demo_data, live_server, webdriver):
@@ -16,12 +19,10 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     # 1. assert existence of different html tags,...
     table_header = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
     assert "Rank" in table_header
-    assert "Fastest" in table_header
+    assert "Distance" in table_header
     assert "Date" in table_header
     assert "Activity" in table_header
-    assert "Speed" in table_header
-
-    assert "Your Awards" in webdriver.find_element_by_tag_name("h3").text
+    assert "Speed  " in table_header
 
     h4 = [h4.text for h4 in webdriver.find_elements_by_tag_name("h4")]
     # note hiking activities won't show up, since they are disabled for awards in initial_data_handler
@@ -47,8 +48,17 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Cycling in Dahn" in table_data
     assert "Noon Jogging in Heidelberg" in table_data
     assert "Noon Jogging in Mirow" in table_data
-    assert "10.2 km/h" in table_data
-    assert "1 km" in table_data
+    assert "42.7 km/h" in table_data
+
+    # fastest sections distances
+    assert "1km" in table_data
+    assert "2km" in table_data
+    assert "3km" in table_data
+    assert "5km" in table_data
+    assert "10km" in table_data
+
+    assert len(webdriver.find_elements_by_class_name("fa-mountain")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-tachometer-alt")) > 0
 
     first_num_trophies = len(webdriver.find_elements_by_class_name("fa-trophy"))
     assert first_num_trophies > 0
@@ -88,3 +98,75 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert third_num_trophies > 0
     # verify that we now have less awards
     assert first_num_trophies > second_num_trophies > third_num_trophies
+
+
+def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_server, webdriver):
+    # first check activities listed in fastest awards
+    webdriver.get(live_server.url + reverse("awards"))
+
+    th = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
+    assert "Rank" in th
+    assert "Distance" in th
+    assert "Date" in th
+    assert "Activity" in th
+    assert "Speed  " in th
+
+    fastest_top_awards = []
+    for distance in configuration.fastest_distances:
+        awards = models.BestSection.objects.filter(
+            distance=distance,
+            activity__evaluates_for_awards=True,
+            kind="fastest",
+        ).order_by("-max_value")[: configuration.rank_limit]
+        fastest_top_awards += list(awards)
+
+    # get table content
+    td = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+
+    # verify that these activities are present in the table content
+    activity_names = [award.activity.name for award in fastest_top_awards]
+    for name in activity_names:
+        assert name in td
+
+    max_value = [f"{round(award.max_value * 3.6, 1)} km/h" for award in fastest_top_awards]
+    for value in max_value:
+        assert value in td
+
+    activity_dates = [award.activity.date.date().strftime("%b %d, %Y") for award in fastest_top_awards]
+    for date in activity_dates:
+        assert date in td
+
+    # now check the same for the climb awards, first go to climb tab
+    webdriver.find_element(By.LINK_TEXT, "Climb Awards").click()
+
+    th = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
+    assert "Rank" in th
+    assert "Distance" in th
+    assert "Date" in th
+    assert "Activity" in th
+    assert "Climb  " in th
+
+    climb_top_awards = []
+    for distance in configuration.climb_distances:
+        awards = models.BestSection.objects.filter(
+            distance=distance,
+            activity__evaluates_for_awards=True,
+            kind="climb",
+        ).order_by("-max_value")[: configuration.rank_limit]
+        climb_top_awards += list(awards)
+
+    # get table content
+    td = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+
+    # verify that these activities are present in the table content
+    activity_names = [award.activity.name for award in climb_top_awards]
+    for name in activity_names:
+        assert name in td
+
+    activity_dates = [award.activity.date.date().strftime("%b %d, %Y") for award in climb_top_awards]
+    for date in activity_dates:
+        assert date in td
+
+    max_value = [f"{round(award.max_value, 2)} m/min" for award in climb_top_awards]
+    for value in max_value:
+        assert value in td

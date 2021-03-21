@@ -7,11 +7,18 @@ from wizer.file_helper.gpx_parser import GPXParser
 
 
 @pytest.fixture
-def fit_parser(test_data_dir):
+def fit_parser(test_data_dir, demo_data_dir):
     test_file_path = "example.fit"
 
     def _pass_path(path=test_file_path):
-        return FITParser(path_to_file=os.path.join(test_data_dir, path))
+        file_in_test_data_dir = os.path.join(test_data_dir, path)
+        file_in_demo_data_dir = os.path.join(demo_data_dir, path)
+        if os.path.isfile(file_in_test_data_dir):
+            return FITParser(path_to_file=file_in_test_data_dir)
+        elif os.path.isfile(file_in_demo_data_dir):
+            return FITParser(path_to_file=file_in_demo_data_dir)
+        else:
+            raise FileNotFoundError(f"file {path} neither found in {test_data_dir} nor in {demo_data_dir}")
 
     return _pass_path
 

@@ -1,0 +1,52 @@
+{% extends 'lib/base.html' %}
+{% load static %}
+{% block body %}
+
+<style>
+    .tab_text{
+        background-color: none;
+        color: grey;
+        font-size: 20px;
+    }
+</style>
+<title>Awards | Workoutizer</title>
+
+<br>
+{% include "lib/messages.html" %}
+<div class="container">
+    <ul class="nav nav-tabs nav-justified">
+        <li class="nav-item">
+            <a class="nav-link active tab_text" data-toggle="tab" href="#fastest">
+                <i class="fas fa-tachometer-alt"></i>&nbsp;&nbsp;Fastest Awards
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link tab_text" data-toggle="tab" href="#climb">
+                <i class="fas fa-mountain"></i>&nbsp;&nbsp;Climb Awards
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="fastest" class="container tab-pane active"><br>
+            <br>
+            {% for sport, top_award in top_fastest_awards.items %}
+                <h4>{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
+                <br>
+                {% include "awards/velocity_table.html" %}
+                <br><br>
+            {% endfor %}
+        </div>
+        <div id="climb" class="container tab-pane fade"><br>
+            <br>
+            {% for sport, top_award in top_climb_awards.items %}
+                <h4>{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
+                <br>
+                {% include "awards/climb_table.html" %}
+                <br><br>
+            {% endfor %}
+        </div>
+    </div>
+    <br>
+    <p>{{ info_text.general }}</p>
+</div>
+{% endblock %}

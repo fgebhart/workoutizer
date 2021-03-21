@@ -1,4 +1,3 @@
-import logging
 import json
 from itertools import combinations
 from typing import List
@@ -14,8 +13,6 @@ from django.conf import settings
 from wizer.configuration import attributes_to_create_time_series_plot_for
 from wizer import models
 
-
-log = logging.getLogger(__name__)
 
 plot_matrix = {
     "temperature": {
@@ -149,7 +146,6 @@ def plot_time_series(activity: models.Activity):
 
     if lap_data:
         # include button to toggle rendering of laps
-        log.debug(f"found some Lap data for {activity}: {lap_data}")
         checkbox = CheckboxButtonGroup(labels=["Show Laps"], active=[0], width=100)
 
         js = """
