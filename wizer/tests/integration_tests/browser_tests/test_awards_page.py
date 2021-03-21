@@ -3,8 +3,6 @@ from django.urls import reverse
 from selenium.webdriver.common.by import By
 
 from wizer import models
-from wizer.awards_views import awards_info_texts
-
 from wizer import configuration
 
 
@@ -24,7 +22,7 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Distance" in table_header
     assert "Date" in table_header
     assert "Activity" in table_header
-    assert "Speed" in table_header
+    assert "Speed  " in table_header
 
     h4 = [h4.text for h4 in webdriver.find_elements_by_tag_name("h4")]
     # note hiking activities won't show up, since they are disabled for awards in initial_data_handler
@@ -106,6 +104,13 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     # first check activities listed in fastest awards
     webdriver.get(live_server.url + reverse("awards"))
 
+    th = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
+    assert "Rank" in th
+    assert "Distance" in th
+    assert "Date" in th
+    assert "Activity" in th
+    assert "Speed  " in th
+
     fastest_top_awards = []
     for distance in configuration.fastest_distances:
         awards = models.BestSection.objects.filter(
@@ -134,6 +139,13 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     # now check the same for the climb awards, first go to climb tab
     webdriver.find_element(By.LINK_TEXT, "Climb Awards").click()
 
+    th = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
+    assert "Rank" in th
+    assert "Distance" in th
+    assert "Date" in th
+    assert "Activity" in th
+    assert "Climb  " in th
+
     climb_top_awards = []
     for distance in configuration.climb_distances:
         awards = models.BestSection.objects.filter(
@@ -158,27 +170,3 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     max_value = [f"{round(award.max_value, 2)} m/min" for award in climb_top_awards]
     for value in max_value:
         assert value in td
-
-
-def test_awards_kind_tabs(live_server, webdriver):
-    webdriver.get(live_server.url + reverse("awards"))
-    p1 = [p.text for p in webdriver.find_elements_by_tag_name("p")]
-
-    # general text on best sections should be present
-    assert awards_info_texts["general"] in p1
-
-    # fastest sections text should be present, since fastest sections tab is the active one
-    assert awards_info_texts["fastest"] in p1
-
-    # climb section text should not be present by now
-    assert awards_info_texts["climb"] not in p1
-
-    # click on climb sections tab
-    webdriver.find_element(By.LINK_TEXT, "Climb Awards").click()
-    p2 = [p.text for p in webdriver.find_elements_by_tag_name("p")]
-
-    # climb section text should now be present
-    assert awards_info_texts["climb"] in p2
-
-    # and velocity text should now be gone
-    assert awards_info_texts["fastest"] not in p2
