@@ -2,6 +2,8 @@ from django.urls import reverse
 import pytest
 
 from wizer import models
+from wizer import configuration
+from wizer.views import get_flat_list_of_pks_of_activities_in_top_awards
 
 
 def test_help_view(db, client):
@@ -37,3 +39,9 @@ def test_activity_view__activity_present(db, client, settings, sport, activity):
 def test_activity_view__no_activity(db, client):
     with pytest.raises(models.Activity.DoesNotExist):
         client.get("/activity/1")
+
+
+def test_get_flat_list_of_pks_of_activities_in_top_awards(db, import_demo_data):
+    expected_pks = [1, 2, 3, 6, 7, 8, 9]
+    result_pks = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit)
+    assert expected_pks == result_pks

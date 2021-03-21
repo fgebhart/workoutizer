@@ -49,7 +49,6 @@ avg_attributes = {
 rank_limit = 3
 
 # best sections config
-available_best_sections = ["fastest", "climb"]
 best_sections = [
     {
         "kind": "fastest",

@@ -231,21 +231,24 @@ def reimport_activities(request):
 def get_flat_list_of_pks_of_activities_in_top_awards(
     top_score: int, filter_on_sport: Union[None, str] = None
 ) -> List[int]:
-    top_awards = []
-    sports = models.Sport.objects.filter(evaluates_for_awards=True).exclude(name="unknown").order_by("name")
+    top_award_pks = []
     if filter_on_sport:
-        sports = sports.filter(slug=filter_on_sport)
-    for sport in sports:
-        awards_per_distance = models.BestSection.objects.filter(
-            activity__sport=sport,
-            activity__evaluates_for_awards=True,
-            section_type__in=configuration.available_best_section,
-        ).order_by("-max_value")[:top_score]
-        # create list of primary keys of activities in which are in top scores
-        awards_per_distance = [section.activity.pk for section in awards_per_distance]
-        if awards_per_distance:
-            top_awards += awards_per_distance
-    return top_awards
+        sport_slugs = [filter_on_sport]
+    else:
+        sport_slugs = [
+            sport.slug for sport in models.Sport.objects.filter(evaluates_for_awards=True).exclude(name="unknown")
+        ]
+    for sport in sport_slugs:
+        for bs in configuration.best_sections:
+            for distance in bs["distances"]:
+                top_awards = models.BestSection.objects.filter(
+                    activity__sport__slug=sport,
+                    activity__evaluates_for_awards=True,
+                    section_type=bs["kind"],
+                    section_distance=distance,
+                ).order_by("-max_value")[:top_score]
+                top_award_pks += [award.activity.pk for award in top_awards]
+    return list(set(top_award_pks))
 
 
 def get_bulk_of_rows_for_next_page(request, page: str):
