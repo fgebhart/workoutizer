@@ -121,8 +121,8 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
                 top_awards = models.BestSection.objects.filter(
                     activity__sport__slug=sport,
                     activity__evaluates_for_awards=True,
-                    section_type=bs["kind"],
-                    section_distance=distance,
+                    kind=bs["kind"],
+                    distance=distance,
                 ).order_by("-max_value")[: configuration.rank_limit]
                 top_award_pks += [str(award.activity.pk) for award in top_awards]
     top_award_pks = list(set(top_award_pks))

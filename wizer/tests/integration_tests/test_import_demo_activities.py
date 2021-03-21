@@ -47,8 +47,8 @@ def test_import_of_demo_activities(import_demo_data, client):
     assert best_sections_cnt > 20
 
     # number of best sections is the sum of fastest and climb sections
-    fastest_sections_cnt = models.BestSection.objects.filter(section_type="fastest").count()
-    climb_sections_cnt = models.BestSection.objects.filter(section_type="climb").count()
+    fastest_sections_cnt = models.BestSection.objects.filter(kind="fastest").count()
+    climb_sections_cnt = models.BestSection.objects.filter(kind="climb").count()
     assert best_sections_cnt == fastest_sections_cnt + climb_sections_cnt
 
 

@@ -31,8 +31,8 @@ class ActivityView(MapView):
             "sports": Sport.objects.all().order_by("name"),
             "activity": activity,
             "form_field_ids": get_all_form_field_ids(),
-            "fastest_sections": BestSection.objects.filter(activity=activity, section_type="fastest"),
-            "climb_sections": BestSection.objects.filter(activity=activity, section_type="climb"),
+            "fastest_sections": BestSection.objects.filter(activity=activity, kind="fastest"),
+            "climb_sections": BestSection.objects.filter(activity=activity, kind="climb"),
         }
         if activity.trace_file:
             script_time_series, div_time_series = plot_time_series(activity)

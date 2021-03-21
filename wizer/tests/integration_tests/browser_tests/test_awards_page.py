@@ -114,9 +114,9 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     fastest_top_awards = []
     for distance in configuration.fastest_distances:
         awards = models.BestSection.objects.filter(
-            section_distance=distance,
+            distance=distance,
             activity__evaluates_for_awards=True,
-            section_type="fastest",
+            kind="fastest",
         ).order_by("-max_value")[: configuration.rank_limit]
         fastest_top_awards += list(awards)
 
@@ -149,9 +149,9 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     climb_top_awards = []
     for distance in configuration.climb_distances:
         awards = models.BestSection.objects.filter(
-            section_distance=distance,
+            distance=distance,
             activity__evaluates_for_awards=True,
-            section_type="climb",
+            kind="climb",
         ).order_by("-max_value")[: configuration.rank_limit]
         climb_top_awards += list(awards)
 

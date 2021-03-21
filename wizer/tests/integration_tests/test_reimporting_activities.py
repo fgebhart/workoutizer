@@ -1,6 +1,7 @@
 import datetime
 
 import pytz
+import pytest
 
 from wizer import models
 from wizer import configuration
@@ -61,16 +62,12 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     assert hiking.trace_file.max_altitude is not None
     assert hiking.trace_file.min_altitude is not None
 
-    hiking_fastest_sections = models.BestSection.objects.get(
-        activity=hiking.pk, section_distance=1000, section_type="fastest"
-    )
-    orig_1km_fastest_start_index = hiking_fastest_sections.start_index
+    hiking_fastest_sections = models.BestSection.objects.get(activity=hiking.pk, distance=1000, kind="fastest")
+    orig_1km_fastest_start = hiking_fastest_sections.start
     orig_1km_velocity = hiking_fastest_sections.max_value
 
-    hiking_climb_sections = models.BestSection.objects.get(
-        activity=hiking.pk, section_distance=200, section_type="climb"
-    )
-    orig_1km_climb_start_index = hiking_climb_sections.start_index
+    hiking_climb_sections = models.BestSection.objects.get(activity=hiking.pk, distance=200, kind="climb")
+    orig_1km_climb_start = hiking_climb_sections.start
     orig_1km_climb = hiking_climb_sections.max_value
 
     # 2. modify some attributes of a given activity
@@ -84,19 +81,17 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     hiking.date = new_date
     hiking.save()
 
-    hiking_fastest_sections.start_index = 50_000_000
+    hiking_fastest_sections.start = 50_000_000
     hiking_fastest_sections.max_value = 999.999
     hiking_fastest_sections.save()
 
-    hiking_climb_sections.start_index = 70_000_000
+    hiking_climb_sections.start = 70_000_000
     hiking_climb_sections.max_value = 12345.6789
     hiking_climb_sections.save()
 
     # verify values got changed
-    hiking_climb_sections_modified = models.BestSection.objects.get(
-        activity=hiking.pk, section_distance=200, section_type="climb"
-    )
-    assert hiking_climb_sections_modified.start_index == 70_000_000
+    hiking_climb_sections_modified = models.BestSection.objects.get(activity=hiking.pk, distance=200, kind="climb")
+    assert hiking_climb_sections_modified.start == 70_000_000
     assert hiking_climb_sections_modified.max_value == 12345.6789
 
     cycling.distance = 9_000.0
@@ -145,15 +140,15 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
 
     # verify that attributes of best section got overwritten
     updated_hiking_fastest_sections = models.BestSection.objects.get(
-        activity=updated_hiking.pk, section_distance=1000, section_type="fastest"
+        activity=updated_hiking.pk, distance=1000, kind="fastest"
     )
-    assert updated_hiking_fastest_sections.start_index == orig_1km_fastest_start_index
+    assert updated_hiking_fastest_sections.start == orig_1km_fastest_start
     assert updated_hiking_fastest_sections.max_value == orig_1km_velocity
 
     updated_hiking_climb_sections = models.BestSection.objects.get(
-        activity=updated_hiking.pk, section_distance=200, section_type="climb"
+        activity=updated_hiking.pk, distance=200, kind="climb"
     )
-    assert updated_hiking_climb_sections.start_index == orig_1km_climb_start_index
+    assert updated_hiking_climb_sections.start == orig_1km_climb_start
     assert updated_hiking_climb_sections.max_value == orig_1km_climb
 
     updated_cycling = models.Activity.objects.get(sport__slug="cycling")
@@ -183,7 +178,8 @@ def test_reimport_of_activities(db, tracks_in_tmpdir, client):
         assert response.status_code == 200
 
 
-def test_reimporting_of_best_sections(import_one_activity):
+@pytest.mark.parametrize("kind", ["fastest", "climb"])
+def test_reimporting_of_best_sections(import_one_activity, kind):
     # import one cycling activity
     import_one_activity("cycling_bad_schandau.fit")
 
@@ -191,70 +187,66 @@ def test_reimporting_of_best_sections(import_one_activity):
     assert models.Settings.objects.count() == 1
 
     import_activity_files(models, importing_demo_data=False)
-    all_activities = models.Activity.objects.all()
-    assert len(all_activities) == 1
+    assert models.Activity.objects.count() == 1
 
     activity = models.Activity.objects.get()
-    bs = models.BestSection.objects.filter(
-        activity=activity, section_type="fastest"
-    )  # TODO Add tests for climb sections as well
+    fastest_bs = models.BestSection.objects.filter(activity=activity, kind=kind)
 
-    # there should never be more best sections of type 'fastest' than configured possible fastest sections
-    assert len(bs) <= len(configuration.fastest_distances)
+    # there should never be more best sections of kind 'fastest' than configured possible fastest sections
+    assert len(fastest_bs) <= len(configuration.fastest_distances)
 
     # store original values
-    orig_start_indexes = [section.start_index for section in bs]
-    orig_end_indexes = [section.end_index for section in bs]
-    orig_max_values = [section.max_value for section in bs]
-    orig_number_of_best_sections = len(bs)
+    orig_start = [section.start for section in fastest_bs]
+    orig_end = [section.end for section in fastest_bs]
+    orig_max_values = [section.max_value for section in fastest_bs]
+    orig_number_of_best_sections = len(fastest_bs)
 
     # modify values
-    for section in bs:
-        section.start_index = 10_000
-        section.end_index = 20_000
+    for section in fastest_bs:
+        section.start = 10_000
+        section.end = 20_000
         section.max_value = 33_333.3
         section.save()
 
     # verify that the data got changed
-    changed_bs = models.BestSection.objects.filter(activity=activity, section_type="fastest")
-    assert [section.start_index for section in changed_bs] != orig_start_indexes
-    assert [section.end_index for section in changed_bs] != orig_end_indexes
+    changed_bs = models.BestSection.objects.filter(activity=activity, kind=kind)
+    assert [section.start for section in changed_bs] != orig_start
+    assert [section.end for section in changed_bs] != orig_end
     assert [section.max_value for section in changed_bs] != orig_max_values
 
     # also add another dummy best section which should be removed again by the reimport
     dummy_section = models.BestSection(
         activity=activity,
-        section_type="fastest",
-        section_distance=12345,
-        start_index=42,
-        end_index=84,
+        kind=kind,
+        distance=12345,
+        start=42,
+        end=84,
         max_value=999.999,
     )
     dummy_section.save()
 
     # verify number of sections has increased
-    assert (
-        len(models.BestSection.objects.filter(activity=activity, section_type="fastest"))
-        == orig_number_of_best_sections + 1
-    )
+    assert len(models.BestSection.objects.filter(activity=activity, kind=kind)) == orig_number_of_best_sections + 1
 
     # now trigger reimport to update modified values
     reimport_activity_files(models)
 
     # check that dummy section was deleted because it is not present in the configured fastest sections
-    assert (
-        len(models.BestSection.objects.filter(activity=activity, section_type="fastest")) == orig_number_of_best_sections
-    )
+    assert len(models.BestSection.objects.filter(activity=activity, kind=kind)) == orig_number_of_best_sections
 
     # verify that the modified values are back to their original values
     # verify that the data got changed
-    updated_bs = models.BestSection.objects.filter(activity=activity, section_type="fastest")
-    assert [section.start_index for section in updated_bs] == orig_start_indexes
-    assert [section.end_index for section in updated_bs] == orig_end_indexes
+    updated_bs = models.BestSection.objects.filter(activity=activity, kind=kind)
+    assert [section.start for section in updated_bs] == orig_start
+    assert [section.end for section in updated_bs] == orig_end
     assert [section.max_value for section in updated_bs] == orig_max_values
 
-    for section in updated_bs:
-        assert section.section_distance in configuration.fastest_distances
+    if kind == "fastest":
+        for section in updated_bs:
+            assert section.distance in configuration.fastest_distances
+    elif kind == "climb":
+        for section in updated_bs:
+            assert section.distance in configuration.climb_distances
 
 
 def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_activity):

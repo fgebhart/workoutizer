@@ -1,5 +1,11 @@
 # Workoutizer Changelog
 
+## Workoutizer 0.15.0 (2021-03-21)
+
+### Features
+* Parse best climb sections from fit files using [sportgems](https://github.com/fgebhart/sportgems) and integrate it
+  into awards and activity page.
+
 
 ## Workoutizer 0.14.0 (2021-03-15)
 

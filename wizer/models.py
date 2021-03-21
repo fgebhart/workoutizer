@@ -144,13 +144,13 @@ class BestSection(models.Model):
     """
 
     def __str__(self):
-        return f"{self.section_type} {self.section_distance}m: {self.max_value}"
+        return f"{self.kind} {self.distance}m: {self.max_value}"
 
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=False)
-    section_type = models.CharField(max_length=120, blank=False)
-    section_distance = models.IntegerField(blank=False)
-    start_index = models.IntegerField(blank=False)
-    end_index = models.IntegerField(blank=False)
+    kind = models.CharField(max_length=120, blank=False)
+    distance = models.IntegerField(blank=False)
+    start = models.IntegerField(blank=False)
+    end = models.IntegerField(blank=False)
     max_value = models.FloatField(blank=False)
 
     created = models.DateTimeField(auto_now_add=True)

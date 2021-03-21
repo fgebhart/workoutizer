@@ -244,8 +244,8 @@ def get_flat_list_of_pks_of_activities_in_top_awards(
                 top_awards = models.BestSection.objects.filter(
                     activity__sport__slug=sport,
                     activity__evaluates_for_awards=True,
-                    section_type=bs["kind"],
-                    section_distance=distance,
+                    kind=bs["kind"],
+                    distance=distance,
                 ).order_by("-max_value")[:top_score]
                 top_award_pks += [award.activity.pk for award in top_awards]
     return list(set(top_award_pks))

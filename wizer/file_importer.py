@@ -199,20 +199,18 @@ def _save_best_sections_to_model(best_section_model, parser, activity_instance, 
         for section in parser.best_sections:
             best_section_model.objects.update_or_create(
                 activity=activity_instance,
-                section_type=section.kind,
-                section_distance=section.distance,
+                kind=section.kind,
+                distance=section.distance,
                 defaults={
-                    "start_index": section.start,
-                    "end_index": section.end,
+                    "start": section.start,
+                    "end": section.end,
                     "max_value": section.max_value,
                 },
             )
         # If the parser does not have some best sections but the db has -> delete them from the db
         db_sections = best_section_model.objects.filter(activity=activity_instance)
         for section in db_sections:
-            sec = GenericBestSection(
-                section.section_distance, section.start_index, section.end_index, section.max_value, section.section_type
-            )
+            sec = GenericBestSection(section.distance, section.start, section.end, section.max_value, section.kind)
             if sec not in parser.best_sections:
                 log.debug(f"deleting section: {section} from db, because it is not present in parser")
                 section.delete()
@@ -221,10 +219,10 @@ def _save_best_sections_to_model(best_section_model, parser, activity_instance, 
         for section in parser.best_sections:
             best_section_object = best_section_model(
                 activity=activity_instance,
-                section_type=section.kind,
-                section_distance=section.distance,
-                start_index=section.start,
-                end_index=section.end,
+                kind=section.kind,
+                distance=section.distance,
+                start=section.start,
+                end=section.end,
                 max_value=section.max_value,
             )
             best_section_object.save()

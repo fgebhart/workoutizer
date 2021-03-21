@@ -98,10 +98,10 @@ class Parser:
         # helper func to be called for each available section kind parser
 
         def _get_best_sections_for_section_kind(section_parser, section_distances: List[int]):
-            for section_distance in section_distances:
-                if self.distance * 1000 > section_distance and self.latitude_list:
+            for distance in section_distances:
+                if self.distance * 1000 > distance and self.latitude_list:
                     try:
-                        result = section_parser(section_distance, self)
+                        result = section_parser(distance, self)
                         if result:
                             self.best_sections.append(result)
                     except (DistanceTooSmallException, TooFewDataPointsException, NoSectionFoundException) as e:

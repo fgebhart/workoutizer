@@ -42,8 +42,8 @@ def _get_best_sections_of_sport_and_distance(
         models.BestSection.objects.filter(
             activity__sport=sport,
             activity__evaluates_for_awards=True,
-            section_distance=distance,
-            section_type__in=kinds,
+            distance=distance,
+            kind__in=kinds,
         ).order_by("-max_value")[:top_score]
     )
     return awards_per_distance

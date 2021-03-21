@@ -12,7 +12,7 @@
 {% else %}
     <td>{{ award.rank }}</td>
 {% endif %}
-<td>{{ award.section_distance | best_section_distance }}</td>
+<td>{{ award.distance | best_section_distance }}</td>
 <td>{{ award.activity.date|date:"M d, Y" }}</td>
 <td class="limit">
     <a href="/activity/{{ award.activity.pk }}">{{ award.activity.name }}</a>
