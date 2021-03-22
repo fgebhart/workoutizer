@@ -5,7 +5,12 @@ from typing import List
 
 from wizer import configuration
 
-from sportgems import DistanceTooSmallException, TooFewDataPointsException, NoSectionFoundException
+from sportgems import (
+    DistanceTooSmallException,
+    TooFewDataPointsException,
+    NoSectionFoundException,
+    InconsistentLengthException,
+)
 
 
 log = logging.getLogger(__name__)
@@ -104,11 +109,16 @@ class Parser:
                         result = section_parser(distance, self)
                         if result:
                             self.best_sections.append(result)
-                    except (DistanceTooSmallException, TooFewDataPointsException, NoSectionFoundException) as e:
+                    except (
+                        DistanceTooSmallException,
+                        TooFewDataPointsException,
+                        NoSectionFoundException,
+                        InconsistentLengthException,
+                    ) as e:
                         # catching some of the sportgems customs exceptions and logging it
                         log.warning(f"Could not find fastest section. Sportgems error: {e}")
-                        # however some are not caught and should actually be raised, e.g. InconsistentLengthException,
-                        # NoSectionFoundException and InvalidDesiredDistanceException
+                        # however some are not caught and should actually be raised,
+                        # e.g NoSectionFoundException and InvalidDesiredDistanceException
 
         for bs in configuration.best_sections:
             _get_best_sections_for_section_kind(bs["parser"], bs["distances"])
