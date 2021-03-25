@@ -1,5 +1,14 @@
 # Workoutizer Changelog
 
+## Workoutizer 0.15.1 (2021-03-25)
+
+### Changes
+* Also catch `InconsistentLengthException` when parsing best sections with `sportgems` since some `gpx` activities might
+  come with different data array lengths.
+* Always run initial activity import when triggering `wkz run` to ensure all activities get imported in case of any files
+  have been added since the last run.
+
+
 ## Workoutizer 0.15.0 (2021-03-21)
 
 ### Features
