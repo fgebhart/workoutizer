@@ -1,7 +1,7 @@
 black
 flake8
 IPython
-lxml
+lxml>=4.6.3
 pip-tools
 pre-commit
 pytest
