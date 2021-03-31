@@ -205,7 +205,6 @@ def get_summary_of_all_activities(sport_slug=None):
         total_distance = models.Activity.objects.all().aggregate(Sum("distance"))
     duration = total_duration["duration__sum"] if total_duration["duration__sum"] else datetime.timedelta(minutes=0)
     distance = int(total_distance["distance__sum"]) if total_distance["distance__sum"] else 0
-    log.debug(f"total duration: {duration}, total distance: {distance}")
     return {"count": count, "duration": duration, "distance": distance}
 
 

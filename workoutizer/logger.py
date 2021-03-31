@@ -27,7 +27,7 @@ def _get_formatter_and_handler(path_to_log_dir: str, use_minimal_format: bool = 
                 "formatter": "colored",
             },
             "file": {
-                "level": "DEBUG",
+                "level": "WARNING",
                 "class": "logging.handlers.RotatingFileHandler",
                 "formatter": "format_for_file",
                 "filename": os.path.join(path_to_log_dir, "wkz.log"),
