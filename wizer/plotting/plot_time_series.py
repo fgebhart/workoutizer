@@ -1,12 +1,12 @@
 import json
 from itertools import combinations
-from typing import List
+from typing import List, Tuple
 
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import CheckboxButtonGroup, CustomJS, HoverTool, CrosshairTool, BoxZoomTool
 from bokeh.models.formatters import DatetimeTickFormatter
-from bokeh.layouts import column
+from bokeh.layouts import column, gridplot
 import pandas as pd
 
 from django.conf import settings
@@ -44,7 +44,7 @@ plot_matrix = {
 }
 
 
-def plot_time_series(activity: models.Activity):
+def plot_time_series(activity: models.Activity) -> Tuple[str, str]:
     """
     Plotting function to create the time series plots shown in tha activity page. Depending
     on what data is available this creates the following plots:
@@ -126,12 +126,11 @@ def plot_time_series(activity: models.Activity):
                 hover = HoverTool(
                     tooltips=[(plot_matrix[attribute]["title"], f"@y {plot_matrix[attribute]['axis']}"), x_hover],
                     mode="vline",
+                    toggleable=False,
                 )
                 p.add_tools(hover)
                 p.add_tools(box_zoom_tool)
 
-                p.toolbar.logo = None
-                # p.toolbar_location = "left"
                 p.xgrid.grid_line_color = None
                 p.legend.location = "top_left"
                 p.legend.label_text_font = "ubuntu"
@@ -149,8 +148,9 @@ def plot_time_series(activity: models.Activity):
 
     _link_plot_tools(all_plots=plots, x_values=x_axis)
 
-    layout = column(*plots)
-    layout.sizing_mode = "stretch_width"
+    layout = gridplot(
+        plots, sizing_mode="stretch_width", toolbar_location="right", ncols=1, toolbar_options={"logo": None}
+    )
 
     if lap_data:
         layout = _add_button_to_toggle_laps(lap_lines, layout)
@@ -200,7 +200,7 @@ def _add_laps_to_plot(laps: list, plot, y_values: list) -> List:
 
 
 def _link_crosshair_and_render_icon_on_map_on_hover(fig1, fig2, x_values):
-    cross1 = CrosshairTool(dimensions="height")
+    cross1 = CrosshairTool(dimensions="height", toggleable=False)
     fig1.add_tools(cross1)
     fig2.add_tools(cross1)
 
