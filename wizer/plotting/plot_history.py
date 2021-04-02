@@ -3,6 +3,7 @@ import datetime
 
 import pandas as pd
 from bokeh.plotting import figure
+from bokeh.models import BoxZoomTool
 from bokeh.embed import components
 import pytz
 
@@ -39,8 +40,9 @@ def _plot_activities(activities, sport_model, number_of_days):
         y_axis_type="datetime",
         plot_height=settings.PLOT_HEIGHT,
         sizing_mode="stretch_width",
-        tools="hover,wheel_zoom,box_zoom,reset,save",
-        tooltips="$name @date_name: @$name",
+        tools="hover,reset",
+        tooltips="$name @date_name",
+        # tooltips="$name @date_name: @$name",
     )
 
     sports_list = [sport.name for sport in sports]
@@ -56,6 +58,9 @@ def _plot_activities(activities, sport_model, number_of_days):
 
     # render zero hours properly
     p.yaxis.major_label_overrides = {0: "0h"}
+    p.toolbar.logo = None
+
+    p.add_tools(BoxZoomTool(dimensions="width"))
 
     return p
 
