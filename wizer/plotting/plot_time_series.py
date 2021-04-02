@@ -4,7 +4,7 @@ from typing import List
 
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.models import CheckboxButtonGroup, CustomJS, HoverTool, CrosshairTool
+from bokeh.models import CheckboxButtonGroup, CustomJS, HoverTool, CrosshairTool, BoxZoomTool
 from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.layouts import column
 import pandas as pd
@@ -75,6 +75,7 @@ def plot_time_series(activity: models.Activity):
     x_axis = pd.to_datetime(timestamps).dt.tz_localize("utc").dt.tz_convert(settings.TIME_ZONE)
     x_axis = x_axis - x_axis.min()
 
+    box_zoom_tool = BoxZoomTool(dimensions="width")
     for attribute, values in attributes.items():
         if attribute in attributes_to_create_time_series_plot_for:
             values = pd.Series(json.loads(values), dtype=float)
@@ -86,6 +87,7 @@ def plot_time_series(activity: models.Activity):
                     plot_height=int(settings.PLOT_HEIGHT / 2.5),
                     sizing_mode="stretch_width",
                     y_axis_label=plot_matrix[attribute]["axis"],
+                    tools="reset",
                 )
 
                 if attribute == "speed":
@@ -119,16 +121,17 @@ def plot_time_series(activity: models.Activity):
                 lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
                 lap_lines += lap
 
+                # add tools to plot
                 x_hover = ("Time", "@x")
                 hover = HoverTool(
                     tooltips=[(plot_matrix[attribute]["title"], f"@y {plot_matrix[attribute]['axis']}"), x_hover],
                     mode="vline",
                 )
                 p.add_tools(hover)
-                cross = CrosshairTool(dimensions="height")
-                p.add_tools(cross)
+                p.add_tools(box_zoom_tool)
+
                 p.toolbar.logo = None
-                p.toolbar_location = None
+                # p.toolbar_location = "left"
                 p.xgrid.grid_line_color = None
                 p.legend.location = "top_left"
                 p.legend.label_text_font = "ubuntu"
@@ -138,47 +141,51 @@ def plot_time_series(activity: models.Activity):
                 p.xaxis.formatter = dtf
                 p.xaxis.major_label_overrides = {0: "0:00"}
                 plots.append(p)
+
                 values.ffill(inplace=True)
                 values.bfill(inplace=True)
                 x_axis.ffill(inplace=True)
                 x_axis.bfill(inplace=True)
 
-    _link_all_plots_with_each_other(all_plots=plots, x_values=x_axis)
+    _link_plot_tools(all_plots=plots, x_values=x_axis)
 
-    all_plots = column(*plots)
-    all_plots.sizing_mode = "stretch_width"
+    layout = column(*plots)
+    layout.sizing_mode = "stretch_width"
 
     if lap_data:
-        # include button to toggle rendering of laps
-        checkbox = CheckboxButtonGroup(labels=["Show Laps"], active=[0], width=100)
+        layout = _add_button_to_toggle_laps(lap_lines, layout)
 
-        js = """
-            for (line in laps) {
-                laps[line].visible = false;
-                if (typeof markerGroup != "undefined") {
-                    markerGroup.removeFrom(map);
-                    }
-            }
-            for (i in cb_obj.active) {
-                if (cb_obj.active[i] == 0) {
-                    for (line in laps) {
-                        laps[line].visible = true;
-                        if (typeof markerGroup != "undefined") {
-                            markerGroup.addTo(map);
-                            }
-                    }
+    script, div = components(layout)
+    return script, div
+
+
+def _add_button_to_toggle_laps(lap_lines, layout):
+    # include button to toggle rendering of laps
+    btn = CheckboxButtonGroup(labels=["Show Laps"], active=[0], width=100)
+
+    js = """
+        for (line in laps) {
+            laps[line].visible = false;
+            if (typeof markerGroup != "undefined") {
+                markerGroup.removeFrom(map);
+                }
+        }
+        for (i in cb_obj.active) {
+            if (cb_obj.active[i] == 0) {
+                for (line in laps) {
+                    laps[line].visible = true;
+                    if (typeof markerGroup != "undefined") {
+                        markerGroup.addTo(map);
+                        }
                 }
             }
+        }
         """
-        callback = CustomJS(args={"laps": lap_lines, "checkbox": checkbox}, code=js)
-        checkbox.js_on_change("active", callback)
-        layout = column(all_plots, checkbox)
-        layout.sizing_mode = "stretch_width"
-        script, div = components(layout)
-    else:
-        script, div = components(all_plots)
-
-    return script, div
+    callback = CustomJS(args={"laps": lap_lines, "checkbox": btn}, code=js)
+    btn.js_on_change("active", callback)
+    layout = column(layout, btn)
+    layout.sizing_mode = "stretch_width"
+    return layout
 
 
 def _add_laps_to_plot(laps: list, plot, y_values: list) -> List:
@@ -192,11 +199,10 @@ def _add_laps_to_plot(laps: list, plot, y_values: list) -> List:
     return lap_lines
 
 
-def _add_vlinked_crosshairs(fig1, fig2, x_values):
+def _link_crosshair_and_render_icon_on_map_on_hover(fig1, fig2, x_values):
     cross1 = CrosshairTool(dimensions="height")
-    cross2 = CrosshairTool(dimensions="height")
     fig1.add_tools(cross1)
-    fig2.add_tools(cross2)
+    fig2.add_tools(cross1)
 
     # js for rendering the sport icon on leaflet map when hovering over bokeh time series plots
     js_move = """
@@ -221,7 +227,7 @@ def _add_vlinked_crosshairs(fig1, fig2, x_values):
         }
     """
     js_leave = "cross.spans.height.computed_location = null"
-    args = {"cross": cross2, "fig": fig1, "x_values": x_values}
+    args = {"cross": cross1, "fig": fig1, "x_values": x_values}
     fig1.js_on_event("mousemove", CustomJS(args=args, code=js_move))
     fig1.js_on_event("mouseleave", CustomJS(args=args, code=js_leave))
     args = {"cross": cross1, "fig": fig2, "x_values": x_values}
@@ -229,9 +235,11 @@ def _add_vlinked_crosshairs(fig1, fig2, x_values):
     fig2.js_on_event("mouseleave", CustomJS(args=args, code=js_leave))
 
 
-def _link_all_plots_with_each_other(all_plots: list, x_values: list):
+def _link_plot_tools(all_plots: list, x_values: list):
     if len(all_plots) == 1:
-        _add_vlinked_crosshairs(all_plots[0], all_plots[0], x_values=x_values)
+        _link_crosshair_and_render_icon_on_map_on_hover(all_plots[0], all_plots[0], x_values=x_values)
     else:
         for combi in combinations(all_plots, 2):
-            _add_vlinked_crosshairs(combi[0], combi[1], x_values=x_values)
+            _link_crosshair_and_render_icon_on_map_on_hover(combi[0], combi[1], x_values=x_values)
+            # add x axis range for linking effect of box zoom tool
+            combi[0].x_range = combi[1].x_range
