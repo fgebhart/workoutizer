@@ -1,13 +1,4 @@
-<style>
-    .table-scroll {
-        height: 140px;
-        overflow: scroll;
-    }
-</style>
-
-
 {% load filters %}
-<div class="table-scroll">
     <table class="table table-hover table-borderless text-muted table-sm">
         {% for section in climb_sections %}
         <tr class="climb_section_row">
@@ -22,7 +13,6 @@
         </tr>
         {% endfor %}
     </table>
-</div>
 <br>
 
 <script>
