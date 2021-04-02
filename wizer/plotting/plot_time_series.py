@@ -87,8 +87,7 @@ def plot_time_series(activity: models.Activity):
                     sizing_mode="stretch_width",
                     y_axis_label=plot_matrix[attribute]["axis"],
                 )
-                lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
-                lap_lines += lap
+
                 if attribute == "speed":
                     # turn speed values from m/s into km/h to be consistent with other speed values
                     values = values.mul(3.6)
@@ -115,6 +114,11 @@ def plot_time_series(activity: models.Activity):
                         color=plot_matrix[attribute]["color"],
                         legend_label=plot_matrix[attribute]["title"],
                     )
+
+                # render vertical lap lines
+                lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
+                lap_lines += lap
+
                 x_hover = ("Time", "@x")
                 hover = HoverTool(
                     tooltips=[(plot_matrix[attribute]["title"], f"@y {plot_matrix[attribute]['axis']}"), x_hover],
