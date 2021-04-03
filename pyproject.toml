@@ -10,7 +10,7 @@ exclude = '''
     | \.git          # root of the project
     | \.tox
     | \.venv
-    | wizer/migrations
+    | wkz/migrations
     | setup/other
     | _build
     | buck-out

@@ -11,7 +11,7 @@ from django.db.utils import OperationalError
 
 from workoutizer.settings import WORKOUTIZER_DIR, WORKOUTIZER_DB_PATH, TRACKS_DIR
 from workoutizer import __version__
-from wizer.tools.utils import get_local_ip_address
+from wkz.tools.utils import get_local_ip_address
 
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
@@ -126,7 +126,7 @@ def _init(import_demo_activities=False):
     _build_home()
     if Path(WORKOUTIZER_DB_PATH).is_file():
         execute_from_command_line(["manage.py", "check"])
-        from wizer import models
+        from wkz import models
 
         try:
             if models.Settings.objects.count() == 1:
@@ -143,7 +143,7 @@ def _init(import_demo_activities=False):
             pass  # means required tables are not set up - continuing with applying migrations
     execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
     execute_from_command_line(["manage.py", "migrate"])
-    from wizer import models
+    from wkz import models
 
     # insert settings
     models.get_settings()
@@ -151,7 +151,7 @@ def _init(import_demo_activities=False):
 
     if import_demo_activities:
         # import demo activities
-        from wizer.file_importer import import_activity_files, prepare_import_of_demo_activities
+        from wkz.file_importer import import_activity_files, prepare_import_of_demo_activities
 
         prepare_import_of_demo_activities(models)
         import_activity_files(models, importing_demo_data=True)
@@ -185,7 +185,7 @@ def _check():
         execute_from_command_line(["manage.py", "check"])
 
         # ensure that at least settings are present
-        from wizer import models
+        from wkz import models
 
         if models.Settings.objects.count() != 1:
             raise NotInitializedError("ERROR: Make sure to execute 'wkz init' first")
@@ -197,8 +197,8 @@ def _check():
 def _reimport():
     _check()
 
-    from wizer import models
-    from wizer.file_importer import reimport_activity_files
+    from wkz import models
+    from wkz.file_importer import reimport_activity_files
 
     reimport_activity_files(models)
 

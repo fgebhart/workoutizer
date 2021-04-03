@@ -1,13 +1,13 @@
 __pycache__/
 static/
-!wizer/static/
+!wkz/static/
 media/*.gpx
 tracks/*.gpx
 tracks/*.fit
 .pytest_cache/
 *.sqlite3
-wizer/tests/data/tested_data/*.gpx
-wizer/tests/data/tested_data/*.fit
+wkz/tests/data/tested_data/*.gpx
+wkz/tests/data/tested_data/*.fit
 dist/
 build/
 *.egg-info

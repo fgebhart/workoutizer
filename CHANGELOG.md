@@ -1,4 +1,10 @@
 # Workoutizer Changelog
+
+## Workoutizer 0.XX.Y (2021-MM-DD)
+### Clean-ups
+* restructure test directories
+* rename django app `wizer` to `wkz`
+
 ## Workoutizer 0.16.0 (2021-04-03)
 ### Changes
 * upgrade `sportgems` to avoid spikes in speed in situation with poor gps signal. Requires `reimport`.

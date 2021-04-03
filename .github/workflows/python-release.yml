@@ -22,7 +22,7 @@ jobs:
         pip install -e . --no-deps
     - name: Run Tests
       run: |
-        pytest wizer/tests -v -n2
+        pytest wkz/tests -v -n2
 
   build:
     name: Build, Check & Release
