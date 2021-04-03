@@ -52,17 +52,17 @@ jobs:
     - name: Run Unit Tests
       if: always()
       run: |
-        pytest wizer/tests/unit_tests -vv -n2
+        pytest wkz/tests/unit_tests -vv -n2
 
     - name: Run DB Tests
       if: always()
       run: |
-        pytest wizer/tests/db_tests -vv -n2
+        pytest wkz/tests/db_tests -vv -n2
 
     - name: Run Browser Tests
       if: always()
       run: |
-        pytest wizer/tests/browser_tests -vv -n2
+        pytest wkz/tests/browser_tests -vv -n2
 
     - name: Init
       if: always()

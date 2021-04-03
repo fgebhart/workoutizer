@@ -52,7 +52,7 @@ def get_logging_config(django_log_level: str, wkz_log_level: str, path_to_log_di
             "handlers": ["console", "file"],
             "level": django_log_level,
         },
-        "wizer": {
+        "wkz": {
             "handlers": ["console", "file"],
             "level": wkz_log_level,
         },

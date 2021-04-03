@@ -36,6 +36,6 @@ COPY . /workspaces/workoutizer
 WORKDIR /workspaces/workoutizer
 
 # set convenience alias
-RUN echo 'alias run_all_tests="pytest wizer/tests -v -n4"' >> ~/.zshrc
+RUN echo 'alias run_all_tests="pytest wkz/tests -v -n4"' >> ~/.zshrc
 
 RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -e . --no-deps --disable-pip-version-check'

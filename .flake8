@@ -7,7 +7,7 @@ exclude =
     old,
     build,
     dist,
-    wizer/migrations,
+    wkz/migrations,
     .eggs,
     setup/other,
 max-complexity = 14
