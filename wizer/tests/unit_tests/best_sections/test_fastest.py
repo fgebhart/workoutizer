@@ -15,8 +15,8 @@ def test_sportgems_fastest_interface__dummy_data():
     result = find_fastest_section(1000, times, coordinates, tolerance=1000)
 
     assert result.start == 0
-    assert result.end == 1
-    assert math.isclose(result.velocity, 743.0908195788583, abs_tol=0.01)
+    assert result.end == 3
+    assert math.isclose(result.velocity, 495.393, abs_tol=0.01)
 
 
 def test_sportgems_fastest_interface__real_activity_data__fit(fit_parser):
@@ -25,9 +25,9 @@ def test_sportgems_fastest_interface__real_activity_data__fit(fit_parser):
 
     result = find_fastest_section(1000, parser.timestamps_list, coordinates)
 
-    assert result.start == 629
-    assert result.end == 719
-    assert math.isclose(result.velocity, 2.914, abs_tol=0.01)
+    assert result.start == 622
+    assert result.end == 712
+    assert math.isclose(result.velocity, 2.888, abs_tol=0.01)
 
 
 def test_sportgems_fastest_interface__real_activity_data__gpx(gpx_parser):
@@ -36,9 +36,9 @@ def test_sportgems_fastest_interface__real_activity_data__gpx(gpx_parser):
 
     result = find_fastest_section(1000, parser.timestamps_list, coordinates)
 
-    assert result.start == 58
+    assert result.start == 57
     assert result.end == 118
-    assert math.isclose(result.velocity, 3.098, abs_tol=0.01)
+    assert math.isclose(result.velocity, 3.051, abs_tol=0.01)
 
 
 def test_get_fastest_section__fit(fit_parser):
@@ -47,20 +47,20 @@ def test_get_fastest_section__fit(fit_parser):
 
     # test fastest 1km
     res = get_fastest_section(1000, parser)
-    assert res.start == 629
-    assert res.end == 719
-    assert round(res.max_value, 2) == 2.91
+    assert res.start == 622
+    assert res.end == 712
+    assert round(res.max_value, 2) == 2.89
 
     # test fastest 2km
     res = get_fastest_section(2000, parser)
     assert res.start == 537
     assert res.end == 814
-    assert round(res.max_value, 2) == 2.33
+    assert round(res.max_value, 2) == 2.32
 
     # test fastest 5km
     res = get_fastest_section(5000, parser)
     assert res.start == 76
-    assert res.end == 1166
+    assert res.end == 1167
     assert round(res.max_value, 2) == 1.84
 
     # test fastest 10km, in this case the activity data is shorter
@@ -77,15 +77,15 @@ def test_get_fastest_section__gpx(gpx_parser):
 
     # test fastest 1km
     res = get_fastest_section(1000, parser)
-    assert res.start == 58
+    assert res.start == 57
     assert res.end == 118
-    assert round(res.max_value, 2) == 3.1
+    assert round(res.max_value, 2) == 3.05
 
     # test fastest 2km
     res = get_fastest_section(2000, parser)
     assert res.start == 54
-    assert res.end == 169
-    assert round(res.max_value, 2) == 3.06
+    assert res.end == 171
+    assert round(res.max_value, 2) == 3.04
 
     # test fastest 5km
     with pytest.raises(

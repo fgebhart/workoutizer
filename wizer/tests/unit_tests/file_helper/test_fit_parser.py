@@ -133,15 +133,15 @@ def test_get_fastest_sections(fit_parser):
 
     assert p.best_sections != []
 
-    sec1 = GenericBestSection(1000, 629, 719, 2.91, "fastest")
-    sec2 = GenericBestSection(2000, 537, 814, 2.33, "fastest")
-    sec3 = GenericBestSection(3000, 431, 939, 2.13, "fastest")
-    sec4 = GenericBestSection(5000, 76, 1166, 1.84, "fastest")
-    sec5 = GenericBestSection(100, 554, 578, 13.18, "climb")
-    sec6 = GenericBestSection(200, 537, 579, 9.84, "climb")
-    sec7 = GenericBestSection(500, 471, 581, 6.8, "climb")
-    sec8 = GenericBestSection(1_000, 340, 580, 5.79, "climb")
-    sec9 = GenericBestSection(2_000, 51, 584, 5.0, "climb")
+    sec1 = GenericBestSection(1000, 622, 712, 2.89, "fastest")
+    sec2 = GenericBestSection(2000, 537, 814, 2.32, "fastest")
+    sec3 = GenericBestSection(3000, 428, 937, 2.13, "fastest")
+    sec4 = GenericBestSection(5000, 76, 1167, 1.84, "fastest")
+    sec5 = GenericBestSection(100, 555, 580, 13.05, "climb")
+    sec6 = GenericBestSection(200, 535, 578, 9.73, "climb")
+    sec7 = GenericBestSection(500, 469, 578, 6.75, "climb")
+    sec8 = GenericBestSection(1_000, 339, 580, 5.78, "climb")
+    sec9 = GenericBestSection(2_000, 50, 584, 5.0, "climb")
 
     assert p.best_sections == [sec1, sec2, sec3, sec4, sec5, sec6, sec7, sec8, sec9]
 
