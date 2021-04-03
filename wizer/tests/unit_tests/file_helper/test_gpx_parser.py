@@ -52,13 +52,13 @@ def test_get_fastest_sections(gpx_parser):
 
     assert p.best_sections != []
 
-    sec1 = GenericBestSection(1000, 58, 118, 3.1, "fastest")
-    sec2 = GenericBestSection(2000, 54, 169, 3.06, "fastest")
-    sec3 = GenericBestSection(3000, 1, 161, 2.98, "fastest")
-    sec4 = GenericBestSection(100, 116, 121, 21.58, "climb")
-    sec5 = GenericBestSection(200, 62, 75, 13.77, "climb")
-    sec6 = GenericBestSection(500, 0, 29, 13.77, "climb")
-    sec7 = GenericBestSection(1_000, 181, 244, 10.47, "climb")
-    sec8 = GenericBestSection(2_000, 111, 239, 9.66, "climb")
+    sec1 = GenericBestSection(1000, 57, 118, 3.05, "fastest")
+    sec2 = GenericBestSection(2000, 54, 171, 3.04, "fastest")
+    sec3 = GenericBestSection(3000, 10, 173, 2.96, "fastest")
+    sec4 = GenericBestSection(100, 115, 121, 17.98, "climb")
+    sec5 = GenericBestSection(200, 8, 22, 13.55, "climb")
+    sec6 = GenericBestSection(500, 62, 92, 11.95, "climb")
+    sec7 = GenericBestSection(1_000, 175, 239, 10.62, "climb")
+    sec8 = GenericBestSection(2_000, 111, 240, 9.64, "climb")
 
     assert p.best_sections == [sec1, sec2, sec3, sec4, sec5, sec6, sec7, sec8]

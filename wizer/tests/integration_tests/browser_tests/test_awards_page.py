@@ -48,7 +48,7 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Cycling in Dahn" in table_data
     assert "Noon Jogging in Heidelberg" in table_data
     assert "Noon Jogging in Mirow" in table_data
-    assert "42.7 km/h" in table_data
+    assert "42.2 km/h" in table_data
 
     # fastest sections distances
     assert "1km" in table_data

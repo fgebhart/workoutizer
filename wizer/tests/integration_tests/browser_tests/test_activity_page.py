@@ -35,11 +35,8 @@ def test_activity_page__complete(import_one_activity, live_server, webdriver):
     assert "  3km" in table_data
     assert "  5km" in table_data
     assert "  10km" in table_data
-    assert "30.2 km/h" in table_data
-    assert "25.1 km/h" in table_data
-    assert "23.6 km/h" in table_data
-    # assert "22.3 km/h" in table_data      # fails on mac?!
-    assert "17.9 km/h" in table_data
+    assert "29.7 km/h" in table_data
+    assert "25.0 km/h" in table_data
 
     # avg + min + max values
     assert "max" in table_data

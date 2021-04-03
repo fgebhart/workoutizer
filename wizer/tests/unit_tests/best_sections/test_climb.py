@@ -15,9 +15,9 @@ def test_sportgems_climb_interface__dummy_data():
 
     result = find_best_climb_section(1000, times, coordinates, altitudes, tolerance=1000)
 
-    assert result.start == 1
+    assert result.start == 0
     assert result.end == 3
-    assert math.isclose(result.climb, 3333.0, abs_tol=0.01)
+    assert math.isclose(result.climb, 4444.0, abs_tol=0.01)
 
 
 def test_sportgems_climb_interface__real_activity_data__fit(fit_parser):
@@ -26,7 +26,7 @@ def test_sportgems_climb_interface__real_activity_data__fit(fit_parser):
 
     result = find_best_climb_section(1000, parser.timestamps_list, coordinates, parser.altitude_list)
 
-    assert result.start == 340
+    assert result.start == 339
     assert result.end == 580
     assert math.isclose(result.climb, 5.786, abs_tol=0.01)
 
@@ -37,9 +37,9 @@ def test_sportgems_climb_interface__real_activity_data__gpx(gpx_parser):
 
     result = find_best_climb_section(1000, parser.timestamps_list, coordinates, parser.altitude_list)
 
-    assert result.start == 181
-    assert result.end == 244
-    assert math.isclose(result.climb, 10.472, abs_tol=0.01)
+    assert result.start == 175
+    assert result.end == 239
+    assert math.isclose(result.climb, 10.617, abs_tol=0.01)
 
 
 def test_get_best_climb_section__fit(fit_parser):
@@ -48,21 +48,21 @@ def test_get_best_climb_section__fit(fit_parser):
 
     # test fastest 1km
     res = get_best_climb_section(1000, parser)
-    assert res.start == 340
+    assert res.start == 339
     assert res.end == 580
-    assert round(res.max_value, 2) == 5.79
+    assert round(res.max_value, 2) == 5.78
 
     # test fastest 2km
     res = get_best_climb_section(2000, parser)
-    assert res.start == 51
+    assert res.start == 50
     assert res.end == 584
     assert round(res.max_value, 2) == 5.0
 
     # test fastest 5km
     res = get_best_climb_section(5000, parser)
     assert res.start == 52
-    assert res.end == 1150
-    assert round(res.max_value, 2) == 2.37
+    assert res.end == 1151
+    assert round(res.max_value, 2) == 2.36
 
     # test fastest 10km, in this case the activity data is shorter
     # than 10km and thus we expect that no suitable section was found
@@ -78,15 +78,15 @@ def test_get_best_climb_section__gpx(gpx_parser):
 
     # test fastest 1km
     res = get_best_climb_section(1000, parser)
-    assert res.start == 181
-    assert res.end == 244
-    assert round(res.max_value, 2) == 10.47
+    assert res.start == 175
+    assert res.end == 239
+    assert round(res.max_value, 2) == 10.62
 
     # test fastest 2km
     res = get_best_climb_section(2000, parser)
     assert res.start == 111
-    assert res.end == 239
-    assert round(res.max_value, 2) == 9.66
+    assert res.end == 240
+    assert round(res.max_value, 2) == 9.64
 
     # test fastest 5km
     with pytest.raises(
