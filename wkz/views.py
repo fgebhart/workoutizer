@@ -175,6 +175,10 @@ def settings_view(request):
     )
 
 
+def new_frontend(request):
+    return render(request, "dashboard_new.html")
+
+
 class HelpView(WKZView):
     template_name = "lib/help.html"
 
