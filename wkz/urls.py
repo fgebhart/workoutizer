@@ -36,4 +36,6 @@ urlpatterns = [
     # Rest API endpoints
     path("mount-device/", api.mount_device_endpoint),
     path("stop/", api.stop_django_server),
+    # test page for playground of new frontend
+    path("new-frontend/", views.new_frontend, name="new_frontend"),
 ]
