@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 
 class AllSportsView(View):
-    template_name = "sport/all_sports.html"
+    template_name = "sport/all_sports_new.html"
 
     def get(self, request):
         sports = models.Sport.objects.all().order_by("name")
@@ -46,7 +46,7 @@ class AllSportsView(View):
         return render(
             request,
             self.template_name,
-            {"sports": sports, "page": "all_sports", "form_field_ids": get_all_form_field_ids(), **sport_data},
+            {"sports": sports, "page": "Sports", "form_field_ids": get_all_form_field_ids(), **sport_data},
         )
 
 
