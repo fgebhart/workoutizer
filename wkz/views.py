@@ -185,6 +185,7 @@ class HelpView(WKZView):
 
     def get(self, request):
         self.context["version"] = __version__
+        self.context["page_name"] = "Help"
         return render(request, template_name=self.template_name, context=self.context)
 
 

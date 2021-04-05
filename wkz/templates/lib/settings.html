@@ -6,9 +6,6 @@
     <div class="row">
         <div class="col-md-12">
         <div class="card">
-            {% comment %} <div class="card-header">
-                <h4 class="card-title">{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
-            </div> {% endcomment %}
             <div class="card-body">
                 <form action="{% url 'settings' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
                     {% csrf_token %}
