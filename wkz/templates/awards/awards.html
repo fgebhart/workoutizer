@@ -45,14 +45,14 @@
                     <div id="climb" class="container tab-pane fade"><br>
                         {% for sport, top_award in top_climb_awards.items %}
                             <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    {% include "awards/climb_table.html" %}
+                                <div class="card-header">
+                                    <h4 class="card-title">{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
                                 </div>
-                            </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        {% include "awards/climb_table.html" %}
+                                    </div>
+                                </div>
                             </div>
                         {% endfor %}
                     </div>

@@ -167,6 +167,7 @@ def settings_view(request):
         "lib/settings.html",
         {
             "sports": sports,
+            "page_name": "Settings",
             "form": form,
             "settings": settings,
             "form_field_ids": get_all_form_field_ids(),
