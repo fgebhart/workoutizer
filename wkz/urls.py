@@ -26,8 +26,8 @@ urlpatterns = [
     re_path(r"^activity/(?P<pk>\d+)/delete/$", activity_views.ActivityDeleteView.as_view(), name="delete-activity"),
     path("delete-demo-data/", activity_views.DemoActivityDeleteView.as_view(), name="delete-demo-data"),
     # Sports
-    path("sport/<slug:sports_name_slug>", sport_views.SportsView.as_view(), name="sport"),
-    path("sports/", sport_views.AllSportsView.as_view(), name="sports"),
+    path("sport/<slug:sports_name_slug>", sport_views.SportView.as_view(), name="sport"),
+    path("sports/", sport_views.SportsView.as_view(), name="sports"),
     path("add-sport/", sport_views.add_sport_view, name="add-sport"),
     path("sport/<slug:sports_name_slug>/edit/", sport_views.edit_sport_view, name="edit-sport"),
     re_path(r"^sport/(?P<slug>[a-zA-Z0-9-]+)/delete/$", sport_views.SportDeleteView.as_view(), name="delete-sport"),

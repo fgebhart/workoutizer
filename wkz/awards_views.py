@@ -26,7 +26,7 @@ class AwardsViews(WKZView):
     template_name = "awards/awards.html"
 
     def get(self, request):
-        self.context["page"] = "awards"
+        self.context["page_name"] = "Awards"
         top_fastest_awards = get_top_awards_for_all_sports(top_score=configuration.rank_limit, kinds=["fastest"])
         self.context["top_fastest_awards"] = top_fastest_awards
         top_climb_awards = get_top_awards_for_all_sports(top_score=configuration.rank_limit, kinds=["climb"])

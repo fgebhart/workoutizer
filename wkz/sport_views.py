@@ -25,8 +25,8 @@ from wkz.tools.utils import remove_microseconds
 log = logging.getLogger(__name__)
 
 
-class AllSportsView(View):
-    template_name = "sport/all_sports_new.html"
+class SportsView(View):
+    template_name = "sport/sports.html"
 
     def get(self, request):
         sports = models.Sport.objects.all().order_by("name")
@@ -46,11 +46,11 @@ class AllSportsView(View):
         return render(
             request,
             self.template_name,
-            {"sports": sports, "page": "Sports", "form_field_ids": get_all_form_field_ids(), **sport_data},
+            {"sports": sports, "page_name": "Sports", "form_field_ids": get_all_form_field_ids(), **sport_data},
         )
 
 
-class SportsView(MapView, PlotView):
+class SportView(MapView, PlotView):
     template_name = "sport/sport.html"
 
     def get(self, request, sports_name_slug):

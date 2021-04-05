@@ -124,7 +124,7 @@ class DashboardView(View, PlotView):
             "days": self.number_of_days,
             "choices": self.days_choices,
             "summary": summary,
-            "page": "dashboard",
+            "page_name": "Dashboard",
             "form_field_ids": get_all_form_field_ids(),
         }
         if activities:
