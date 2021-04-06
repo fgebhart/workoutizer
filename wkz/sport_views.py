@@ -118,7 +118,7 @@ def add_sport_view(request):
     return render(
         request,
         "sport/add_sport.html",
-        {"sports": sports, "form": form, "page": "add_sport", "form_field_ids": get_all_form_field_ids()},
+        {"sports": sports, "form": form, "page_name": "Add Sport", "form_field_ids": get_all_form_field_ids()},
     )
 
 

@@ -1,20 +1,16 @@
-{% extends 'lib/base.html' %}
+{% extends 'lib/base_new.html' %}
 {% load static %}
 {% block body %}
-    <title>Add new Sports | Workoutizer</title>
-    <h3>Add new Sports</h3>
-    <hr>
-    <br>
-    <div class="container">
-        <p>Use the following form to add a new Sport:</p>
-        <br>
-        <br>
-
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Create a new Sport</h4>
+    </div>
+    <div class="card-body">
         <form action="{% url 'add-sport' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
             {% include "sport/sport_form.html" %}
             <button id="button" class="btn btn-warning" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Submit
             </button>
         </form>
     </div>
-
+</div>
 {% endblock %}

@@ -11,55 +11,53 @@
 </style>
 <br>
 {% include "lib/messages.html" %}
-<div class="content">
-    <div class="row">
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs nav-justified">
+            <li class="nav-item">
+                <a class="nav-link active tab_text" data-toggle="tab" href="#fastest">
+                    <i class="fas fa-tachometer-alt"></i>&nbsp;&nbsp;Fastest Awards
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link tab_text" data-toggle="tab" href="#climb">
+                    <i class="fas fa-mountain"></i>&nbsp;&nbsp;Climb Awards
+                </a>
+            </li>
+        </ul>
         <div class="col-md-12">
-            <ul class="nav nav-tabs nav-justified">
-                <li class="nav-item">
-                    <a class="nav-link active tab_text" data-toggle="tab" href="#fastest">
-                        <i class="fas fa-tachometer-alt"></i>&nbsp;&nbsp;Fastest Awards
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link tab_text" data-toggle="tab" href="#climb">
-                        <i class="fas fa-mountain"></i>&nbsp;&nbsp;Climb Awards
-                    </a>
-                </li>
-            </ul>
-            <div class="col-md-12">
-                <div class="tab-content">
-                    <div id="fastest" class="container tab-pane active"><br>
-                        {% for sport, top_award in top_fastest_awards.items %}
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title">{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        {% include "awards/velocity_table.html" %}
-                                    </div>
+            <div class="tab-content">
+                <div id="fastest" class="container tab-pane active"><br>
+                    {% for sport, top_award in top_fastest_awards.items %}
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    {% include "awards/velocity_table.html" %}
                                 </div>
                             </div>
-                        {% endfor %}
-                    </div>
-                    <div id="climb" class="container tab-pane fade"><br>
-                        {% for sport, top_award in top_climb_awards.items %}
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title">{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        {% include "awards/climb_table.html" %}
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
+                        </div>
+                    {% endfor %}
                 </div>
-                <br>
-                <p>{{ info_text.general }}</p>
+                <div id="climb" class="container tab-pane fade"><br>
+                    {% for sport, top_award in top_climb_awards.items %}
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    {% include "awards/climb_table.html" %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
+            <br>
+            <p>{{ info_text.general }}</p>
         </div>
     </div>
 </div>

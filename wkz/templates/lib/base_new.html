@@ -50,6 +50,7 @@ Coded by www.creative-tim.com
       </div>
       <div class="sidebar-wrapper">
         <ul class="nav">
+
           {% if page_name == "Dashboard" %}
             <li class="active ">
           {% else %}
@@ -60,6 +61,18 @@ Coded by www.creative-tim.com
               <p>Dashboard</p>
             </a>
           </li>
+
+          {% if page_name == "Add Sport" %}
+            <li class="active ">
+          {% else %}
+            <li>
+          {% endif %}
+            <a href="/add-sport">
+              <i class="fas fa-plus"></i>
+              <p>Add Sport</p>
+            </a>
+          </li>
+
           {% if page_name == "Awards" %}
             <li class="active ">
           {% else %}
@@ -70,6 +83,7 @@ Coded by www.creative-tim.com
               <p>Awards</p>
             </a>
           </li>
+
           {% if page_name == "Sports" %}
             <li class="active ">
           {% else %}
@@ -80,6 +94,7 @@ Coded by www.creative-tim.com
               <p>Sports</p>
             </a>
           </li>
+
           <li>
             <a href="./map.html">
               <i class="nc-icon nc-pin-3"></i>
@@ -93,17 +108,12 @@ Coded by www.creative-tim.com
             </a>
           </li>
           <li>
-            <a href="./user.html">
-              <i class="nc-icon nc-single-02"></i>
-              <p>User Profile</p>
-            </a>
-          </li>
-          <li>
             <a href="./typography.html">
               <i class="nc-icon nc-caps-small"></i>
               <p>Typography</p>
             </a>
           </li>
+
         </ul>
       </div>
     </div>
@@ -160,9 +170,11 @@ Coded by www.creative-tim.com
       </nav>
       <!-- End Navbar -->
       
-      {% block body %}
-        // content will be here
-      {% endblock %}
+      <div class="content">
+        {% block body %}
+            // content will be here
+        {% endblock %}
+      </div>
       
       <footer class="footer footer-black  footer-white ">
         <div class="container-fluid">
