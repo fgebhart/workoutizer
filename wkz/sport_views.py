@@ -75,7 +75,7 @@ class SportView(MapView, PlotView):
             context["activities_selected_for_plot"] = True
         else:
             context["activities_selected_for_plot"] = False
-        map_context = super(SportsView, self).get(request=request, list_of_activities=activities)
+        map_context = super(SportView, self).get(request=request, list_of_activities=activities)
         if sport.evaluates_for_awards:
             top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit, sports_name_slug)
             context["top_awards"] = top_awards
@@ -92,6 +92,7 @@ class SportView(MapView, PlotView):
             {
                 **map_context,
                 **context,
+                "page_name": sport["name"],
                 "current_page": page,
                 "is_last_page": False,
                 "sports": sports,

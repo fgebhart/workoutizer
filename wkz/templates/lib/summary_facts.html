@@ -1,15 +1,6 @@
 {% load filters %}
 
-{% if sport.icon %}
-    <h5 class="text-center">
-        <i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i>&nbsp;&nbsp;Summary&nbsp;&nbsp;
-    </h5>
-    <br>
-{% endif %}
-<center>
-    Sum of all Activities:
-</center>
-<br>
+
 <table class="table">
     <tr>
         <th scope="row"><i class="fas fa-hashtag" data-toggle="tooltip" data-placement="bottom"
@@ -27,4 +18,3 @@
         <td>{{ summary.duration|duration }}</td>
     </tr>
 </table>
-<br>
