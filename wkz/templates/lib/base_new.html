@@ -74,17 +74,6 @@ Coded by www.creative-tim.com
             </a>
           </li>
 
-          {% if page_name == "Add Sport" %}
-            <li class="active ">
-          {% else %}
-            <li>
-          {% endif %}
-            <a href="/add-sport">
-              <i class="fas fa-plus"></i>
-              <p>Add Sport</p>
-            </a>
-          </li>
-
           {% if page_name == "Awards" %}
             <li class="active ">
           {% else %}
@@ -107,25 +96,37 @@ Coded by www.creative-tim.com
             </a>
           </li>
 
-          <li>
-            <a href="./map.html">
-              <i class="nc-icon nc-pin-3"></i>
-              <p>Maps</p>
-            </a>
-          </li>
-          <li>
-            <a href="./notifications.html">
-              <i class="nc-icon nc-bell-55"></i>
-              <p>Notifications</p>
-            </a>
-          </li>
-          <li>
-            <a href="./typography.html">
-              <i class="nc-icon nc-caps-small"></i>
-              <p>Typography</p>
-            </a>
-          </li>
+          {% for s in sports %}
+            {% if s.slug != 'unknown' %}
+                {% if activity.sport.slug == s.slug or sport.slug == s.slug %}
+                <li class="active">
+                    <a href="/sport/{{ s.slug }}">
+                        <h6><i class="fas fa-{{ s.icon }}"></i></h6>
+                        <p>{{ s.name }}</p>
+                    </a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="/sport/{{ s.slug }}">
+                        <h6><i class="fas fa-{{ s.icon }}"></i></h6>
+                        <p>{{ s.name }}</p>
+                    </a>
+                </li>
+                {% endif %}
+            {% endif %}
+          {% endfor %}
 
+          {% if page_name == "Add Sport" %}
+            <li class="active ">
+          {% else %}
+            <li>
+          {% endif %}
+            <a href="/add-sport">
+              <i class="fas fa-plus"></i>
+              <p>Add Sport</p>
+            </a>
+          </li>
+        
         </ul>
       </div>
     </div>
