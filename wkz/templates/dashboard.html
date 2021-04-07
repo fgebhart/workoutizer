@@ -1,22 +1,56 @@
 <title>Dashboard | Workoutizer</title>
-{% extends 'lib/base.html' %}
-{% load static %}
+{% extends 'lib/base_new.html' %}
 {% block body %}
-    <div class="container-fluid" style="margin-left: -20px">
-        <div class="row">
-            <div class="col-sm-9 content_left">
-                {% include "lib/messages.html" %}
-                {% include 'plotting/plot_history.html' %}
-                {% include 'lib/table.html' %}
-            </div>
-            <div id="sidebar" class="col-sm-3 sidebar_right">
-                {% include 'plotting/plot_pie_chart.html' %}
+{% include "lib/messages.html" %}
+<div class="row">
+<div class="col-sm-4">
+        <div class="card">
+            <div class="card-body">
                 {% include 'lib/summary_facts.html' %}
-                {% include 'plotting/plot_trend.html' %}
-            </div>
-            <div id="open-sidebar">
-                <i class="fas fa-chart-pie fa-2x"></i>
             </div>
         </div>
     </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        {% include 'plotting/plot_history.html' %}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Sport Distribution</h4>
+            </div>
+            <div class="card-body">
+                {% include 'plotting/plot_pie_chart.html' %}
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                    <i class="fas fa-history"></i>
+                    Over the last {{ days }} days
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Sport Trend</h4>
+            </div>
+            <div class="card-body">
+                {% include 'plotting/plot_trend.html' %}
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                    <i class="fas fa-history"></i>
+                    Over the last {{ days }} days
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'lib/table.html' %}
 {% endblock %}
