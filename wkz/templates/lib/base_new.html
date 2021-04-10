@@ -1,9 +1,9 @@
 <!--
 =========================================================
-* Paper Dashboard 2 - v2.0.1
+* Paper Dashboard 2 PRO - v2.1.1
 =========================================================
 
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-2
+* Product Page: https://www.creative-tim.com/product/paper-dashboard-2-pro
 * Copyright 2020 Creative Tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
@@ -19,14 +19,17 @@ Coded by www.creative-tim.com
 <head>
   <meta charset="utf-8" />
   <link rel="apple-touch-icon" sizes="76x76" href="{% static 'img/apple-icon.png' %}">
-  <link rel="shortcut icon" type="image/ico" href="{% static 'img/favicon.ico' %}"/>
+  <link rel="icon" type="image/ico" href="{% static 'img/favicon.ico' %}">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  
   <title>
     {{ page_name }} | Workoutizer
   </title>
+  
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
         integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
         crossorigin="anonymous">
@@ -49,14 +52,17 @@ Coded by www.creative-tim.com
 
 <body class="">
   <div class="wrapper ">
-    <div class="sidebar" data-color="white" data-active-color="danger">
+    <div class="sidebar" data-color="default" data-active-color="danger">
+      <!--
+        Tip 1: You can change the color of the sidebar using: data-color=" default | primary | info | success | warning | danger |"
+    -->
       <div class="logo">
-        <a href="/" class="simple-text logo-mini">
+        <a href="{% url 'home' %}" class="simple-text logo-mini">
           <div class="logo-image-small">
-            <img src="{% static 'img/logo-small.png' %}">
+            <img src="{% static 'img/favicon.ico' %}">
           </div>
         </a>
-        <a href="/" class="simple-text logo-normal">
+        <a href="{% url 'home' %}" class="simple-text logo-normal">
           Workoutizer
         </a>
       </div>
@@ -101,14 +107,14 @@ Coded by www.creative-tim.com
                 {% if activity.sport.slug == s.slug or sport.slug == s.slug %}
                 <li class="active">
                     <a href="/sport/{{ s.slug }}">
-                        <h6><i class="fas fa-{{ s.icon }}"></i></h6>
+                        <i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i>
                         <p>{{ s.name }}</p>
                     </a>
                 </li>
                 {% else %}
                 <li>
                     <a href="/sport/{{ s.slug }}">
-                        <h6><i class="fas fa-{{ s.icon }}"></i></h6>
+                        <i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i>
                         <p>{{ s.name }}</p>
                     </a>
                 </li>
@@ -126,7 +132,6 @@ Coded by www.creative-tim.com
               <p>Add Sport</p>
             </a>
           </li>
-        
         </ul>
       </div>
     </div>
@@ -135,6 +140,12 @@ Coded by www.creative-tim.com
       <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
         <div class="container-fluid">
           <div class="navbar-wrapper">
+            <div class="navbar-minimize">
+              <button id="minimizeSidebar" class="btn btn-icon btn-round">
+                <i class="nc-icon nc-minimal-right text-center visible-on-sidebar-mini"></i>
+                <i class="nc-icon nc-minimal-left text-center visible-on-sidebar-regular"></i>
+              </button>
+            </div>
             <div class="navbar-toggle">
               <button type="button" class="navbar-toggler">
                 <span class="navbar-toggler-bar bar1"></span>
@@ -162,15 +173,20 @@ Coded by www.creative-tim.com
             </form> {% endcomment %}
             <ul class="navbar-nav">
               <li class="nav-item">
-                <a class="nav-link btn-rotate" href="/help">
-                  <i class="fas fa-question-circle"></i>
-                  <p>
-                    <span class="d-lg-none d-md-block">Help</span>
-                  </p>
+                <a href="{% url 'add-activity' %}" class="nav-link btn-rotate" id="add-activity-button">
+                  <i class="fas fa-plus"></i>&nbsp;&nbsp;Activity
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link btn-rotate" href="/settings">
+                  <a class="nav-link btn-rotate" href="{% url 'help' %}">
+                    <i class="fas fa-question-circle"></i>
+                    <p>
+                      <span class="d-lg-none d-md-block">Help</span>
+                    </p>
+                  </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link btn-rotate" href="{% url 'settings' %}">
                   <i class="nc-icon nc-settings-gear-65"></i>
                   <p>
                     <span class="d-lg-none d-md-block">Settings</span>
@@ -182,31 +198,79 @@ Coded by www.creative-tim.com
         </div>
       </nav>
       <!-- End Navbar -->
-      
       <div class="content">
         {% block body %}
             // content will be here
         {% endblock %}
       </div>
+      <footer class="footer footer-black  footer-white ">
+        <div class="container-fluid">
+          <div class="row">
+            <nav class="footer-nav">
+              <ul>
+                <li><a href="https://github.com/fgebhart/workoutizer" target="_blank">Project</a></li>
+                <li><a href="https://github.com/fgebhart/workoutizer/issues" target="_blank">Report an Issue</a></li>
+                <li><a href="https://github.com/fgebhart/workoutizer/blob/main/LICENSE" target="_blank">License</a></li>
+              </ul>
+            </nav>
+            <div class="credits ml-auto">
+              <span class="copyright">
+                © <script>
+                  document.write(new Date().getFullYear())
+                </script>, made with <i class="fa fa-heart heart"></i> by <a class="simple-text" href="https://github.com/fgebhart">Fabian Gebhart</a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   </div>
+  <!-- htmx -->
+  <script src="https://unpkg.com/htmx.org@1.2.0"
+        integrity="sha384-DK9cslo5RE1LAnW8sCw7cSHU2nlzkXfo2NmCQD+4disC90ClC1ywgMbijNPxFVki"
+        crossorigin="anonymous"></script>
   <!--   Core JS Files   -->
   <script src="{% static 'js/core/jquery.min.js' %}"></script>
   <script src="{% static 'js/core/popper.min.js' %}"></script>
   <script src="{% static 'js/core/bootstrap.min.js' %}"></script>
   <script src="{% static 'js/plugins/perfect-scrollbar.jquery.min.js' %}"></script>
+  <script src="{% static 'js/plugins/moment.min.js' %}"></script>
+  <!--  Plugin for Switches, full documentation here: http://www.jque.re/plugins/version3/bootstrap.switch/ -->
+  <script src="{% static 'js/plugins/bootstrap-switch.js' %}"></script>
+  <!--  Plugin for Sweet Alert -->
+  <script src="{% static 'js/plugins/sweetalert2.min.js' %}"></script>
+  <!-- Forms Validations Plugin -->
+  <script src="{% static 'js/plugins/jquery.validate.min.js' %}"></script>
+  <!--  Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
+  <script src="{% static 'js/plugins/jquery.bootstrap-wizard.js' %}"></script>
+  <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+  <script src="{% static 'js/plugins/bootstrap-selectpicker.js' %}"></script>
+  <!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
+  <script src="{% static 'js/plugins/bootstrap-datetimepicker.js' %}"></script>
+  <!--  DataTables.net Plugin, full documentation here: https://datatables.net/    -->
+  <script src="{% static 'js/plugins/jquery.dataTables.min.js' %}"></script>
+  <!--	Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
+  <script src="{% static 'js/plugins/bootstrap-tagsinput.js' %}"></script>
+  <!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
+  <script src="{% static 'js/plugins/jasny-bootstrap.min.js' %}"></script>
+  <!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
+  <script src="{% static 'js/plugins/fullcalendar/fullcalendar.min.js' %}"></script>
+  <script src="{% static 'js/plugins/fullcalendar/daygrid.min.js' %}"></script>
+  <script src="{% static 'js/plugins/fullcalendar/timegrid.min.js' %}"></script>
+  <script src="{% static 'js/plugins/fullcalendar/interaction.min.js' %}"></script>
+  <!-- Vector Map plugin, full documentation here: http://jvectormap.com/documentation/ -->
+  <script src="{% static 'js/plugins/jquery-jvectormap.js' %}"></script>
+  <!--  Plugin for the Bootstrap Table -->
+  <script src="{% static 'js/plugins/nouislider.min.js' %}"></script>
+  <!--  Google Maps Plugin    -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
   <!-- Chart JS -->
   <script src="{% static 'js/plugins/chartjs.min.js' %}"></script>
   <!--  Notifications Plugin    -->
   <script src="{% static 'js/plugins/bootstrap-notify.js' %}"></script>
   <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
-  <script src="{% static 'js/paper-dashboard.min.js' %}" type="text/javascript"></script>
-  <!-- htmx -->
-  <script src="https://unpkg.com/htmx.org@1.2.0"
-        integrity="sha384-DK9cslo5RE1LAnW8sCw7cSHU2nlzkXfo2NmCQD+4disC90ClC1ywgMbijNPxFVki"
-        crossorigin="anonymous"></script>
-  
-  <script src="{% static 'js/script.js' %}"></script>
+  <script src="{% static 'js/paper-dashboard.min.js' %}" type="text/javascript"></script><!-- Paper Dashboard DEMO methods, don't include it in your project! -->
+  <script src="{% static 'demo/demo.js' %}"></script>
 </body>
 
 </html>

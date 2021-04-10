@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 sport_data = {
     "name": ["Hiking", "Swimming", "Cycling", "Jogging"],
-    "color": ["ForestGreen", "Navy", "Gold", "DarkOrange"],
+    "color": ["#6BD098", "#51CBCE", "#FCC468", "#F17E5D"],
     "icon": ["hiking", "swimmer", "bicycle", "running"],
     "slug": ["hiking", "swimming", "cycling", "jogging"],
     "evaluates_for_awards": [False, True, True, True],
@@ -52,7 +52,7 @@ def change_date_of_demo_activities(every_nth_day: int, activities: QuerySet):
 
 def insert_custom_demo_activities(count: int, every_nth_day: int, activity_model, sport_model):
     today = datetime.datetime.now(pytz.timezone(django_settings.TIME_ZONE))
-    sport = sport_model.objects.get_or_create(name="Swimming", slug="swimming", icon="swimmer", color="Navy")
+    sport = sport_model.objects.get_or_create(name="Swimming", slug="swimming", icon="swimmer", color="#51CBCE")
     for i in range(count):
         activity = activity_model(
             name="Swimming",

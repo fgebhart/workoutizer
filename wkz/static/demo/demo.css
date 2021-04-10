@@ -49,20 +49,12 @@
   z-index: 1;
 }
 
-@media all and (min-width: 992px) {
-  .sidebar .nav>li.active-pro {
-    position: absolute;
-    width: 100%;
-    bottom: 10px;
-  }
+#map {
+  position: relative;
+  width: 100%;
+  height: 100vh;
 }
 
-.card.card-upgrade .card-category {
-  max-width: 530px;
-  margin: 0 auto;
-}
-
-/* Nucleo Style */
 
 .demo-iconshtml {
   font-size: 62.5%;

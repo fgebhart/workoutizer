@@ -1,3 +1,5 @@
+type = ['primary', 'info', 'success', 'warning', 'danger'];
+
 demo = {
   initPickColor: function() {
     $('.pick-class-label').click(function() {
@@ -13,276 +15,617 @@ demo = {
     });
   },
 
-  initDocChart: function() {
-    chartColor = "#FFFFFF";
+  checkFullPageBackgroundImage: function() {
+    $page = $('.full-page');
+    image_src = $page.data('image');
 
-    ctx = document.getElementById('chartHours').getContext("2d");
-
-    myChart = new Chart(ctx, {
-      type: 'line',
-
-      data: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"],
-        datasets: [{
-            borderColor: "#6bd098",
-            backgroundColor: "#6bd098",
-            pointRadius: 0,
-            pointHoverRadius: 0,
-            borderWidth: 3,
-            data: [300, 310, 316, 322, 330, 326, 333, 345, 338, 354]
-          },
-          {
-            borderColor: "#f17e5d",
-            backgroundColor: "#f17e5d",
-            pointRadius: 0,
-            pointHoverRadius: 0,
-            borderWidth: 3,
-            data: [320, 340, 365, 360, 370, 385, 390, 384, 408, 420]
-          },
-          {
-            borderColor: "#fcc468",
-            backgroundColor: "#fcc468",
-            pointRadius: 0,
-            pointHoverRadius: 0,
-            borderWidth: 3,
-            data: [370, 394, 415, 409, 425, 445, 460, 450, 478, 484]
-          }
-        ]
-      },
-      options: {
-        legend: {
-          display: false
-        },
-
-        tooltips: {
-          enabled: false
-        },
-
-        scales: {
-          yAxes: [{
-
-            ticks: {
-              fontColor: "#9f9f9f",
-              beginAtZero: false,
-              maxTicksLimit: 5,
-              //padding: 20
-            },
-            gridLines: {
-              drawBorder: false,
-              zeroLineColor: "#ccc",
-              color: 'rgba(255,255,255,0.05)'
-            }
-
-          }],
-
-          xAxes: [{
-            barPercentage: 1.6,
-            gridLines: {
-              drawBorder: false,
-              color: 'rgba(255,255,255,0.1)',
-              zeroLineColor: "transparent",
-              display: false,
-            },
-            ticks: {
-              padding: 20,
-              fontColor: "#9f9f9f"
-            }
-          }]
-        },
-      }
-    });
-
+    if (image_src !== undefined) {
+      image_container = '<div class="full-page-background" style="background-image: url(' + image_src + ') "/>';
+      $page.append(image_container);
+    }
   },
 
-  initChartsPages: function() {
-    chartColor = "#FFFFFF";
+  initDateTimePicker: function() {
+    if ($(".datetimepicker").length != 0) {
+      $('.datetimepicker').datetimepicker({
+        icons: {
+          time: "fa fa-clock-o",
+          date: "fa fa-calendar",
+          up: "fa fa-chevron-up",
+          down: "fa fa-chevron-down",
+          previous: 'fa fa-chevron-left',
+          next: 'fa fa-chevron-right',
+          today: 'fa fa-screenshot',
+          clear: 'fa fa-trash',
+          close: 'fa fa-remove'
+        }
+      });
+    }
 
-    ctx = document.getElementById('chartHours').getContext("2d");
+    if ($(".datepicker").length != 0) {
+      $('.datepicker').datetimepicker({
+        format: 'MM/DD/YYYY',
+        icons: {
+          time: "fa fa-clock-o",
+          date: "fa fa-calendar",
+          up: "fa fa-chevron-up",
+          down: "fa fa-chevron-down",
+          previous: 'fa fa-chevron-left',
+          next: 'fa fa-chevron-right',
+          today: 'fa fa-screenshot',
+          clear: 'fa fa-trash',
+          close: 'fa fa-remove'
+        }
+      });
+    }
 
-    myChart = new Chart(ctx, {
-      type: 'line',
+    if ($(".timepicker").length != 0) {
+      $('.timepicker').datetimepicker({
+        //          format: 'H:mm',    // use this format if you want the 24hours timepicker
+        format: 'h:mm A', //use this format if you want the 12hours timpiecker with AM/PM toggle
+        icons: {
+          time: "fa fa-clock-o",
+          date: "fa fa-calendar",
+          up: "fa fa-chevron-up",
+          down: "fa fa-chevron-down",
+          previous: 'fa fa-chevron-left',
+          next: 'fa fa-chevron-right',
+          today: 'fa fa-screenshot',
+          clear: 'fa fa-trash',
+          close: 'fa fa-remove'
+        }
+      });
+    }
+  },
 
-      data: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"],
-        datasets: [{
-            borderColor: "#6bd098",
-            backgroundColor: "#6bd098",
-            pointRadius: 0,
-            pointHoverRadius: 0,
-            borderWidth: 3,
-            data: [300, 310, 316, 322, 330, 326, 333, 345, 338, 354]
-          },
-          {
-            borderColor: "#f17e5d",
-            backgroundColor: "#f17e5d",
-            pointRadius: 0,
-            pointHoverRadius: 0,
-            borderWidth: 3,
-            data: [320, 340, 365, 360, 370, 385, 390, 384, 408, 420]
-          },
-          {
-            borderColor: "#fcc468",
-            backgroundColor: "#fcc468",
-            pointRadius: 0,
-            pointHoverRadius: 0,
-            borderWidth: 3,
-            data: [370, 394, 415, 409, 425, 445, 460, 450, 478, 484]
-          }
-        ]
+  initFullCalendar: function() {
+    var calendarEl = document.getElementById('fullCalendar');
+    $calendar = $('#fullCalendar');
+
+    var today = new Date();
+    var y = today.getFullYear();
+    var m = today.getMonth();
+    var d = today.getDate();
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      plugins: ['interaction', 'dayGrid', 'timeGridPlugin'],
+      editable: true,
+      header: {
+        left: 'title',
+        center: 'dayGridMonth,dayGridWeek,dayGridDay',
+        right: 'prev,next,today'
       },
-      options: {
-        legend: {
-          display: false
+
+      selectable: true,
+      droppable: true,
+      rendering: 'background',
+
+
+      defaultDate: today,
+      selectable: true,
+      selectHelper: true,
+
+      select: function(info) {
+        // on select we show the Sweet Alert modal with an input
+        Swal.fire({
+          title: 'Create an Event',
+          html: '<div class="form-group">' +
+            '<input class="form-control text-default" placeholder="Event Title" id="input-field">' +
+            '</div>',
+          showCancelButton: true,
+          customClass: {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-danger'
+          },
+          buttonsStyling: false
+        }).then(function(result) {
+
+          var eventData;
+          event_title = $('#input-field').val();
+
+          if (event_title) {
+            eventData = {
+              title: event_title,
+              start: info.startStr,
+              end: info.endStr
+            };
+            calendar.addEvent(eventData);
+          }
+        });
+      },
+      editable: true,
+      eventLimit: true, // allow "more" link when too many events
+      events: [{
+          title: 'All Day Event',
+          start: new Date(y, m, 1),
+          className: 'event-default'
         },
-
-        tooltips: {
-          enabled: false
+        {
+          title: 'Meeting',
+          start: new Date(y, m, d - 1, 10, 30),
+          allDay: false,
+          className: 'event-green'
         },
-
-        scales: {
-          yAxes: [{
-
-            ticks: {
-              fontColor: "#9f9f9f",
-              beginAtZero: false,
-              maxTicksLimit: 5,
-              //padding: 20
-            },
-            gridLines: {
-              drawBorder: false,
-              zeroLineColor: "#ccc",
-              color: 'rgba(255,255,255,0.05)'
-            }
-
-          }],
-
-          xAxes: [{
-            barPercentage: 1.6,
-            gridLines: {
-              drawBorder: false,
-              color: 'rgba(255,255,255,0.1)',
-              zeroLineColor: "transparent",
-              display: false,
-            },
-            ticks: {
-              padding: 20,
-              fontColor: "#9f9f9f"
-            }
-          }]
+        {
+          title: 'Lunch',
+          start: new Date(y, m, d + 7, 12, 0),
+          end: new Date(y, m, d + 7, 14, 0),
+          allDay: false,
+          className: 'event-red'
         },
+        {
+          title: 'BD-pro Launch',
+          start: new Date(y, m, d - 2, 12, 0),
+          allDay: true,
+          className: 'event-azure'
+        },
+        {
+          title: 'Birthday Party',
+          start: new Date(y, m, d + 1, 19, 0),
+          end: new Date(y, m, d + 1, 22, 30),
+          allDay: false,
+          className: 'event-azure'
+        },
+        {
+          title: 'Click for Creative Tim',
+          start: new Date(y, m, 21),
+          end: new Date(y, m, 22),
+          url: 'http://www.creative-tim.com/',
+          className: 'event-orange'
+        },
+        {
+          title: 'Click for Google',
+          start: new Date(y, m, 21),
+          end: new Date(y, m, 22),
+          url: 'http://www.creative-tim.com/',
+          className: 'event-orange'
+        }
+      ]
+    });
+
+    calendar.render();
+  },
+
+  showSwal: function(type) {
+    if (type == 'basic') {
+      Swal.fire({
+        title: 'Here is a message!',
+        customClass: {
+          confirmButton: 'btn btn-success'
+        },
+        buttonsStyling: false
+
+      })
+
+    } else if (type == 'title-and-text') {
+
+      Swal.fire({
+        title: 'The Internet?',
+        text: 'That thing is still around?',
+        type: 'question',
+        customClass: {
+          confirmButton: 'btn btn-info'
+        },
+        buttonsStyling: false,
+      })
+
+    } else if (type == 'success-message') {
+
+      Swal.fire({
+        position: 'center',
+        type: 'success',
+        title: 'Good job!',
+        showConfirmButton: false,
+        timer: 1500
+      })
+
+    } else if (type == 'warning-message-and-confirmation') {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+      })
+
+      swalWithBootstrapButtons.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.value) {
+          swalWithBootstrapButtons.fire(
+            'Deleted!',
+            'Your file has been deleted.',
+            'success'
+          )
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          swalWithBootstrapButtons.fire(
+            'Cancelled',
+            'Your imaginary file is safe :)',
+            'error'
+          )
+        }
+      })
+    } else if (type == 'warning-message-and-cancel') {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        type: 'warning',
+        showCancelButton: true,
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false,
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire(
+            'Deleted!',
+            'Your file has been deleted.',
+            'success'
+          )
+        }
+      })
+    } else if (type == 'custom-html') {
+      Swal.fire({
+        title: '<strong>HTML <u>example</u></strong>',
+        type: 'info',
+        html: 'You can use <b>bold text</b>, ' +
+          '<a href="//sweetalert2.github.io">links</a> ' +
+          'and other HTML tags',
+        showCloseButton: true,
+        showCancelButton: true,
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false,
+        focusConfirm: false,
+        confirmButtonText: '<i class="fa fa-thumbs-up"></i> Great!',
+        confirmButtonAriaLabel: 'Thumbs up, great!',
+        cancelButtonText: '<i class="fa fa-thumbs-down"></i>',
+        cancelButtonAriaLabel: 'Thumbs down'
+      })
+    } else if (type == 'auto-close') {
+      let timerInterval
+      Swal.fire({
+        title: 'Auto close alert!',
+        html: 'I will close in <strong></strong> milliseconds.',
+        timer: 2000,
+        onBeforeOpen: () => {
+          Swal.showLoading()
+          timerInterval = setInterval(() => {
+            Swal.getContent().querySelector('strong')
+              .textContent = Swal.getTimerLeft()
+          }, 100)
+        },
+        onClose: () => {
+          clearInterval(timerInterval)
+        }
+      }).then((result) => {
+        if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.timer
+        ) {
+          console.log('I was closed by the timer')
+        }
+      })
+    } else if (type == 'input-field') {
+      Swal.fire({
+        title: 'Submit your Github username',
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Look up',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-default'
+        },
+        buttonsStyling: false,
+        showLoaderOnConfirm: true,
+        preConfirm: (login) => {
+          return fetch(`//api.github.com/users/${login}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(response.statusText)
+              }
+              return response.json()
+            })
+            .catch(error => {
+              Swal.showValidationMessage(
+                `Request failed: ${error}`
+              )
+            })
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire({
+            title: `${result.value.login}'s avatar`,
+            imageUrl: result.value.avatar_url
+          })
+        }
+      })
+    }
+  },
+
+  initWizard: function() {
+    // Code for the Validator
+    var $validator = $('.card-wizard form').validate({
+      rules: {
+        firstname: {
+          required: true,
+          minlength: 3
+        },
+        lastname: {
+          required: true,
+          minlength: 3
+        },
+        email: {
+          required: true,
+          minlength: 3,
+        }
+      },
+      highlight: function(element) {
+        $(element).closest('.input-group').removeClass('has-success').addClass('has-danger');
+      },
+      success: function(element) {
+        $(element).closest('.input-group').removeClass('has-danger').addClass('has-success');
+      }
+    });
+
+    // Wizard Initialization
+    $('.card-wizard').bootstrapWizard({
+      'tabClass': 'nav nav-pills',
+      'nextSelector': '.btn-next',
+      'previousSelector': '.btn-previous',
+
+      onNext: function(tab, navigation, index) {
+        var $valid = $('.card-wizard form').valid();
+        if (!$valid) {
+          $validator.focusInvalid();
+          return false;
+        }
+      },
+
+      onInit: function(tab, navigation, index) {
+        //check number of tabs and fill the entire row
+        var $total = navigation.find('li').length;
+        var $wizard = navigation.closest('.card-wizard');
+
+        first_li = navigation.find('li:first-child a').html();
+        $moving_div = $("<div class='moving-tab'></div>");
+        $moving_div.append(first_li);
+        $('.card-wizard .wizard-navigation').append($moving_div);
+
+
+
+        refreshAnimation($wizard, index);
+
+        $('.moving-tab').css('transition', 'transform 0s');
+      },
+
+      onTabClick: function(tab, navigation, index) {
+        var $valid = $('.card-wizard form').valid();
+
+        if (!$valid) {
+          return false;
+        } else {
+          return true;
+        }
+      },
+
+      onTabShow: function(tab, navigation, index) {
+        var $total = navigation.find('li').length;
+        var $current = index + 1;
+
+        var $wizard = navigation.closest('.card-wizard');
+
+        // If it's the last tab then hide the last button and show the finish instead
+        if ($current >= $total) {
+          $($wizard).find('.btn-next').hide();
+          $($wizard).find('.btn-finish').show();
+        } else {
+          $($wizard).find('.btn-next').show();
+          $($wizard).find('.btn-finish').hide();
+        }
+
+        button_text = navigation.find('li:nth-child(' + $current + ') a').html();
+
+        setTimeout(function() {
+          $('.moving-tab').html(button_text);
+        }, 150);
+
+        var checkbox = $('.footer-checkbox');
+
+        if (!index == 0) {
+          $(checkbox).css({
+            'opacity': '0',
+            'visibility': 'hidden',
+            'position': 'absolute'
+          });
+        } else {
+          $(checkbox).css({
+            'opacity': '1',
+            'visibility': 'visible'
+          });
+        }
+
+        refreshAnimation($wizard, index);
       }
     });
 
 
-    ctx = document.getElementById('chartEmail').getContext("2d");
+    // Prepare the preview for profile picture
+    $("#wizard-picture").change(function() {
+      readURL(this);
+    });
 
-    myChart = new Chart(ctx, {
-      type: 'pie',
-      data: {
-        labels: [1, 2, 3],
-        datasets: [{
-          label: "Emails",
-          pointRadius: 0,
-          pointHoverRadius: 0,
-          backgroundColor: [
-            '#e3e3e3',
-            '#4acccd',
-            '#fcc468',
-            '#ef8157'
-          ],
-          borderWidth: 0,
-          data: [342, 480, 530, 120]
+    $('[data-toggle="wizard-radio"]').click(function() {
+      wizard = $(this).closest('.card-wizard');
+      wizard.find('[data-toggle="wizard-radio"]').removeClass('active');
+      $(this).addClass('active');
+      $(wizard).find('[type="radio"]').removeAttr('checked');
+      $(this).find('[type="radio"]').attr('checked', 'true');
+    });
+
+    $('[data-toggle="wizard-checkbox"]').click(function() {
+      if ($(this).hasClass('active')) {
+        $(this).removeClass('active');
+        $(this).find('[type="checkbox"]').removeAttr('checked');
+      } else {
+        $(this).addClass('active');
+        $(this).find('[type="checkbox"]').attr('checked', 'true');
+      }
+    });
+
+    $('.set-full-height').css('height', 'auto');
+
+    //Function to show image before upload
+
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+          $('#wizardPicturePreview').attr('src', e.target.result).fadeIn('slow');
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    $(window).resize(function() {
+      $('.card-wizard').each(function() {
+        $wizard = $(this);
+
+        index = $wizard.bootstrapWizard('currentIndex');
+        refreshAnimation($wizard, index);
+
+        $('.moving-tab').css({
+          'transition': 'transform 0s'
+        });
+      });
+    });
+
+    function refreshAnimation($wizard, index) {
+      $total = $wizard.find('.nav li').length;
+      $li_width = 100 / $total;
+
+      total_steps = $wizard.find('.nav li').length;
+      move_distance = $wizard.width() / total_steps;
+      index_temp = index;
+      vertical_level = 0;
+
+      mobile_device = $(document).width() < 600 && $total > 3;
+
+      if (mobile_device) {
+        move_distance = $wizard.width() / 2;
+        index_temp = index % 2;
+        $li_width = 50;
+      }
+
+      $wizard.find('.nav li').css('width', $li_width + '%');
+
+      step_width = move_distance;
+      move_distance = move_distance * index_temp;
+
+      $current = index + 1;
+
+      // if($current == 1 || (mobile_device == true && (index % 2 == 0) )){
+      //     move_distance -= 8;
+      // } else if($current == total_steps || (mobile_device == true && (index % 2 == 1))){
+      //     move_distance += 8;
+      // }
+
+      if (mobile_device) {
+        vertical_level = parseInt(index / 2);
+        vertical_level = vertical_level * 38;
+      }
+
+      $wizard.find('.moving-tab').css('width', step_width);
+      $('.moving-tab').css({
+        'transform': 'translate3d(' + move_distance + 'px, ' + vertical_level + 'px, 0)',
+        'transition': 'all 0.5s cubic-bezier(0.29, 1.42, 0.79, 1)'
+
+      });
+    }
+  },
+
+  initSliders: function() {
+    // Sliders for demo purpose in refine cards section
+    var slider = document.getElementById('sliderRegular');
+
+    noUiSlider.create(slider, {
+      start: 40,
+      connect: [true, false],
+      range: {
+        min: 0,
+        max: 100
+      }
+    });
+
+    var slider2 = document.getElementById('sliderDouble');
+
+    noUiSlider.create(slider2, {
+      start: [20, 60],
+      connect: true,
+      range: {
+        min: 0,
+        max: 100
+      }
+    });
+  },
+
+  initVectorMap: function() {
+    var mapData = {
+      "AU": 760,
+      "BR": 550,
+      "CA": 120,
+      "DE": 1300,
+      "FR": 540,
+      "GB": 690,
+      "GE": 200,
+      "IN": 200,
+      "RO": 600,
+      "RU": 300,
+      "US": 2920,
+    };
+
+    $('#worldMap').vectorMap({
+      map: 'world_merc',
+      backgroundColor: "transparent",
+      zoomOnScroll: false,
+      regionStyle: {
+        initial: {
+          fill: '#e4e4e4',
+          "fill-opacity": 0.9,
+          stroke: 'none',
+          "stroke-width": 0,
+          "stroke-opacity": 0
+        }
+      },
+
+      series: {
+        regions: [{
+          values: mapData,
+          scale: ["#AAAAAA", "#444444"],
+          normalizeFunction: 'polynomial'
         }]
       },
-
-      options: {
-
-        legend: {
-          display: false
-        },
-
-        pieceLabel: {
-          render: 'percentage',
-          fontColor: ['white'],
-          precision: 2
-        },
-
-        tooltips: {
-          enabled: false
-        },
-
-        scales: {
-          yAxes: [{
-
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              drawBorder: false,
-              zeroLineColor: "transparent",
-              color: 'rgba(255,255,255,0.05)'
-            }
-
-          }],
-
-          xAxes: [{
-            barPercentage: 1.6,
-            gridLines: {
-              drawBorder: false,
-              color: 'rgba(255,255,255,0.1)',
-              zeroLineColor: "transparent"
-            },
-            ticks: {
-              display: false,
-            }
-          }]
-        },
-      }
-    });
-
-    var speedCanvas = document.getElementById("speedChart");
-
-    var dataFirst = {
-      data: [0, 19, 15, 20, 30, 40, 40, 50, 25, 30, 50, 70],
-      fill: false,
-      borderColor: '#fbc658',
-      backgroundColor: 'transparent',
-      pointBorderColor: '#fbc658',
-      pointRadius: 4,
-      pointHoverRadius: 4,
-      pointBorderWidth: 8,
-    };
-
-    var dataSecond = {
-      data: [0, 5, 10, 12, 20, 27, 30, 34, 42, 45, 55, 63],
-      fill: false,
-      borderColor: '#51CACF',
-      backgroundColor: 'transparent',
-      pointBorderColor: '#51CACF',
-      pointRadius: 4,
-      pointHoverRadius: 4,
-      pointBorderWidth: 8
-    };
-
-    var speedData = {
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-      datasets: [dataFirst, dataSecond]
-    };
-
-    var chartOptions = {
-      legend: {
-        display: false,
-        position: 'top'
-      }
-    };
-
-    var lineChart = new Chart(speedCanvas, {
-      type: 'line',
-      hover: false,
-      data: speedData,
-      options: chartOptions
     });
   },
+
 
   initGoogleMaps: function() {
     var myLatlng = new google.maps.LatLng(40.748817, -73.985428);
@@ -388,21 +731,1450 @@ demo = {
     marker.setMap(map);
   },
 
+  initSmallGoogleMaps: function() {
+
+    // Regular Map
+    var myLatlng = new google.maps.LatLng(40.748817, -73.985428);
+    var mapOptions = {
+      zoom: 8,
+      center: myLatlng,
+      scrollwheel: false, //we disable de scroll over the map, it is a really annoing when you scroll through page
+    }
+
+    var map = new google.maps.Map(document.getElementById("regularMap"), mapOptions);
+
+    var marker = new google.maps.Marker({
+      position: myLatlng,
+      title: "Regular Map!"
+    });
+
+    marker.setMap(map);
+
+
+    // Custom Skin & Settings Map
+    var myLatlng = new google.maps.LatLng(40.748817, -73.985428);
+    var mapOptions = {
+      zoom: 13,
+      center: myLatlng,
+      scrollwheel: false, //we disable de scroll over the map, it is a really annoing when you scroll through page
+      disableDefaultUI: true, // a way to quickly hide all controls
+      zoomControl: true,
+      styles: [{
+        "featureType": "water",
+        "stylers": [{
+          "saturation": 43
+        }, {
+          "lightness": -11
+        }, {
+          "hue": "#0088ff"
+        }]
+      }, {
+        "featureType": "road",
+        "elementType": "geometry.fill",
+        "stylers": [{
+          "hue": "#ff0000"
+        }, {
+          "saturation": -100
+        }, {
+          "lightness": 99
+        }]
+      }, {
+        "featureType": "road",
+        "elementType": "geometry.stroke",
+        "stylers": [{
+          "color": "#808080"
+        }, {
+          "lightness": 54
+        }]
+      }, {
+        "featureType": "landscape.man_made",
+        "elementType": "geometry.fill",
+        "stylers": [{
+          "color": "#ece2d9"
+        }]
+      }, {
+        "featureType": "poi.park",
+        "elementType": "geometry.fill",
+        "stylers": [{
+          "color": "#ccdca1"
+        }]
+      }, {
+        "featureType": "road",
+        "elementType": "labels.text.fill",
+        "stylers": [{
+          "color": "#767676"
+        }]
+      }, {
+        "featureType": "road",
+        "elementType": "labels.text.stroke",
+        "stylers": [{
+          "color": "#ffffff"
+        }]
+      }, {
+        "featureType": "poi",
+        "stylers": [{
+          "visibility": "off"
+        }]
+      }, {
+        "featureType": "landscape.natural",
+        "elementType": "geometry.fill",
+        "stylers": [{
+          "visibility": "on"
+        }, {
+          "color": "#b8cb93"
+        }]
+      }, {
+        "featureType": "poi.park",
+        "stylers": [{
+          "visibility": "on"
+        }]
+      }, {
+        "featureType": "poi.sports_complex",
+        "stylers": [{
+          "visibility": "on"
+        }]
+      }, {
+        "featureType": "poi.medical",
+        "stylers": [{
+          "visibility": "on"
+        }]
+      }, {
+        "featureType": "poi.business",
+        "stylers": [{
+          "visibility": "simplified"
+        }]
+      }]
+
+    }
+
+    var map = new google.maps.Map(document.getElementById("customSkinMap"), mapOptions);
+
+    var marker = new google.maps.Marker({
+      position: myLatlng,
+      title: "Custom Skin & Settings Map!"
+    });
+
+    marker.setMap(map);
+
+
+
+    // Satellite Map
+    var myLatlng = new google.maps.LatLng(40.748817, -73.985428);
+    var mapOptions = {
+      zoom: 3,
+      scrollwheel: false, //we disable de scroll over the map, it is a really annoing when you scroll through page
+      center: myLatlng,
+      mapTypeId: google.maps.MapTypeId.SATELLITE
+    }
+
+    var map = new google.maps.Map(document.getElementById("satelliteMap"), mapOptions);
+
+    var marker = new google.maps.Marker({
+      position: myLatlng,
+      title: "Satellite Map!"
+    });
+
+    marker.setMap(map);
+
+
+  },
+
   showNotification: function(from, align) {
-    color = 'primary';
+    color = Math.floor((Math.random() * 4) + 1);
 
     $.notify({
       icon: "nc-icon nc-bell-55",
-      message: "Welcome to <b>Paper Dashboard</b> - a beautiful bootstrap dashboard for every web developer."
+      message: "Welcome to <b>Paper Dashboard Pro</b> - a beautiful bootstrap dashboard for every web developer."
 
     }, {
-      type: color,
+      type: type[color],
       timer: 8000,
       placement: {
         from: from,
         align: align
       }
     });
+  },
+
+  // CHARTS
+
+  initChartPageCharts: function() {
+    chartColor = "#FFFFFF";
+
+    ctx = document.getElementById('chartHours').getContext("2d");
+
+    myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"],
+        datasets: [{
+            borderColor: "#6bd098",
+            backgroundColor: "#6bd098",
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            borderWidth: 3,
+            data: [300, 310, 316, 322, 330, 326, 333, 345, 338, 354]
+          },
+          {
+            borderColor: "#f17e5d",
+            backgroundColor: "#f17e5d",
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            borderWidth: 3,
+            data: [320, 340, 365, 360, 370, 385, 390, 384, 408, 420]
+          },
+          {
+            borderColor: "#fcc468",
+            backgroundColor: "#fcc468",
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            borderWidth: 3,
+            data: [370, 394, 415, 409, 425, 445, 460, 450, 478, 484]
+          }
+        ]
+      },
+      options: {
+
+        legend: {
+
+          display: false
+        },
+
+        tooltips: {
+          enabled: false
+        },
+
+        scales: {
+          yAxes: [{
+
+            ticks: {
+              fontColor: "#9f9f9f",
+              beginAtZero: false,
+              maxTicksLimit: 5,
+              //padding: 20
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "transparent",
+              color: 'rgba(255,255,255,0.05)'
+            }
+
+          }],
+
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(255,255,255,0.1)',
+              zeroLineColor: "transparent",
+              display: false,
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f"
+            }
+          }]
+        },
+      }
+    });
+
+
+    ctx = document.getElementById('chartEmail').getContext("2d");
+
+    myChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: [1, 2, 3],
+        datasets: [{
+          label: "Emails",
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          backgroundColor: [
+            '#e3e3e3',
+            '#4acccd',
+            '#fcc468'
+          ],
+          borderWidth: 0,
+          data: [542, 480, 430]
+        }]
+      },
+      options: {
+
+        legend: {
+
+          display: false
+        },
+
+        tooltips: {
+          enabled: false
+        },
+
+        scales: {
+          yAxes: [{
+
+            ticks: {
+              display: false
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "transparent",
+              color: 'rgba(255,255,255,0.05)'
+            }
+
+          }],
+
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(255,255,255,0.1)',
+              zeroLineColor: "transparent"
+            },
+            ticks: {
+              display: false,
+            }
+          }]
+        },
+      }
+    });
+
+
+    ctx = document.getElementById('chartActivity').getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, '#80b6f4');
+    gradientStroke.addColorStop(1, chartColor);
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
+
+    myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        datasets: [
+
+          {
+            label: "Data",
+            borderColor: '#fcc468',
+            fill: true,
+            backgroundColor: '#fcc468',
+            hoverBorderColor: '#fcc468',
+            borderWidth: 8,
+            data: [100, 120, 80, 100, 90, 130, 110, 100, 80, 110, 130, 140, 130, 120, 130, 80, 100, 90, 120, 130],
+          },
+          {
+            label: "Data",
+            borderColor: '#4cbdd7',
+            fill: true,
+            backgroundColor: '#4cbdd7',
+            hoverBorderColor: '#4cbdd7',
+            borderWidth: 8,
+            data: [80, 140, 50, 120, 50, 150, 60, 130, 50, 130, 150, 100, 110, 80, 140, 50, 140, 50, 110, 150],
+          }
+        ]
+      },
+      options: {
+
+        tooltips: {
+          tooltipFillColor: "rgba(0,0,0,0.5)",
+          tooltipFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+          tooltipFontSize: 14,
+          tooltipFontStyle: "normal",
+          tooltipFontColor: "#fff",
+          tooltipTitleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+          tooltipTitleFontSize: 14,
+          tooltipTitleFontStyle: "bold",
+          tooltipTitleFontColor: "#fff",
+          tooltipYPadding: 6,
+          tooltipXPadding: 6,
+          tooltipCaretSize: 8,
+          tooltipCornerRadius: 6,
+          tooltipXOffset: 10,
+        },
+
+
+        legend: {
+
+          display: false
+        },
+        scales: {
+
+          yAxes: [{
+            ticks: {
+              fontColor: "#9f9f9f",
+              fontStyle: "bold",
+              beginAtZero: true,
+              maxTicksLimit: 5,
+              padding: 20
+            },
+            gridLines: {
+              zeroLineColor: "transparent",
+              display: true,
+              drawBorder: false,
+              color: '#9f9f9f',
+            }
+
+          }],
+          xAxes: [{
+            barPercentage: 0.4,
+            gridLines: {
+              zeroLineColor: "white",
+              display: false,
+
+              drawBorder: false,
+              color: 'transparent',
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f",
+              fontStyle: "bold"
+            }
+          }]
+        }
+      }
+    });
+
+    ctx = document.getElementById('chartViews').getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, '#80b6f4');
+    gradientStroke.addColorStop(1, chartColor);
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
+
+    myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        datasets: [
+
+          {
+            label: "Data",
+            borderColor: '#fcc468',
+            fill: true,
+            backgroundColor: '#fcc468',
+            hoverBorderColor: '#fcc468',
+            borderWidth: 5,
+            data: [100, 120, 80, 100, 90, 130, 110, 100, 80, 110, 130, 140, 130, 120, 130, 80, 100, 90, 120, 130],
+          }
+        ]
+      },
+      options: {
+
+        tooltips: {
+          tooltipFillColor: "rgba(0,0,0,0.5)",
+          tooltipFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+          tooltipFontSize: 14,
+          tooltipFontStyle: "normal",
+          tooltipFontColor: "#fff",
+          tooltipTitleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+          tooltipTitleFontSize: 14,
+          tooltipTitleFontStyle: "bold",
+          tooltipTitleFontColor: "#fff",
+          tooltipYPadding: 6,
+          tooltipXPadding: 6,
+          tooltipCaretSize: 8,
+          tooltipCornerRadius: 6,
+          tooltipXOffset: 10,
+        },
+
+
+        legend: {
+
+          display: false
+        },
+        scales: {
+
+          yAxes: [{
+            ticks: {
+              fontColor: "#9f9f9f",
+              fontStyle: "bold",
+              beginAtZero: true,
+              maxTicksLimit: 5,
+              padding: 20
+            },
+            gridLines: {
+              zeroLineColor: "transparent",
+              display: true,
+              drawBorder: false,
+              color: '#9f9f9f',
+            }
+
+          }],
+          xAxes: [{
+            barPercentage: 0.4,
+            gridLines: {
+              zeroLineColor: "white",
+              display: false,
+
+              drawBorder: false,
+              color: 'transparent',
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f",
+              fontStyle: "bold"
+            }
+          }]
+        }
+      }
+    });
+
+
+    ctx = document.getElementById('chartStock').getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, '#80b6f4');
+    gradientStroke.addColorStop(1, chartColor);
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
+
+    myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ["6pm", "9pm", "11pm", "2am", "4am", "6am", "8am"],
+        datasets: [{
+          label: "Active Users",
+          borderColor: "#f17e5d",
+          pointBackgroundColor: "#f17e5d",
+          pointRadius: 3,
+          pointHoverRadius: 3,
+          lineTension: 0,
+          fill: false,
+          borderWidth: 3,
+          data: [200, 250, 300, 350, 280, 330, 400]
+        }]
+      },
+      options: {
+
+        legend: {
+
+          display: false
+        },
+
+        tooltips: {
+          enabled: false
+        },
+
+        scales: {
+          yAxes: [{
+
+            ticks: {
+              fontColor: "#9f9f9f",
+              beginAtZero: false,
+              maxTicksLimit: 5,
+            },
+            gridLines: {
+              drawBorder: false,
+              borderDash: [8, 5],
+              zeroLineColor: "transparent",
+              color: '#9f9f9f'
+            }
+
+          }],
+
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              borderDash: [8, 5],
+              color: '#9f9f9f',
+              zeroLineColor: "transparent"
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f"
+            }
+          }]
+        },
+      }
+    });
+
+
+    ctx = document.getElementById('activeUsers').getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, '#80b6f4');
+    gradientStroke.addColorStop(1, chartColor);
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
+
+    myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"],
+        datasets: [{
+          label: "Active Users",
+          borderColor: "#6bd098",
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          fill: false,
+          borderWidth: 3,
+          data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610]
+        }]
+      },
+      options: {
+
+        legend: {
+
+          display: false
+        },
+
+        tooltips: {
+          enabled: false
+        },
+
+        scales: {
+          yAxes: [{
+
+            ticks: {
+              fontColor: "#9f9f9f",
+              beginAtZero: false,
+              maxTicksLimit: 5,
+              //padding: 20
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "transparent",
+              color: 'rgba(255,255,255,0.05)'
+            }
+
+          }],
+
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(255,255,255,0.1)',
+              zeroLineColor: "transparent",
+              display: false,
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f"
+            }
+          }]
+        },
+      }
+    });
+
+
+    // General configuration for the charts with Line gradientStroke
+    gradientChartOptionsConfiguration = {
+      maintainAspectRatio: false,
+      legend: {
+        display: false
+      },
+      tooltips: {
+        bodySpacing: 4,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest",
+        xPadding: 10,
+        yPadding: 10,
+        caretPadding: 10
+      },
+      responsive: 1,
+      scales: {
+        yAxes: [{
+          display: 0,
+          gridLines: 0,
+          ticks: {
+            display: false
+          },
+          gridLines: {
+            zeroLineColor: "transparent",
+            drawTicks: false,
+            display: false,
+            drawBorder: false
+          }
+        }],
+        xAxes: [{
+          display: 0,
+          gridLines: 0,
+          ticks: {
+            display: false
+          },
+          gridLines: {
+            zeroLineColor: "transparent",
+            drawTicks: false,
+            display: false,
+            drawBorder: false
+          }
+        }]
+      },
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 15,
+          bottom: 15
+        }
+      }
+    };
+
+    gradientChartOptionsConfigurationWithNumbersAndGrid = {
+      maintainAspectRatio: false,
+      legend: {
+        display: false
+      },
+      tooltips: {
+        bodySpacing: 4,
+        mode: "nearest",
+        intersect: 0,
+        position: "nearest",
+        xPadding: 10,
+        yPadding: 10,
+        caretPadding: 10
+      },
+      responsive: true,
+      scales: {
+        yAxes: [{
+          gridLines: 0,
+          gridLines: {
+            zeroLineColor: "transparent",
+            drawBorder: false
+          }
+        }],
+        xAxes: [{
+          display: 0,
+          gridLines: 0,
+          ticks: {
+            display: false
+          },
+          gridLines: {
+            zeroLineColor: "transparent",
+            drawTicks: false,
+            display: false,
+            drawBorder: false
+          }
+        }]
+      },
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 15,
+          bottom: 15
+        }
+      }
+    };
+
+  },
+
+  initDocChart: function() {
+    ctx = document.getElementById('BarChartExample').getContext("2d");
+
+    myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        datasets: [
+
+          {
+            label: "Data",
+            borderColor: '#fcc468',
+            fill: true,
+            backgroundColor: '#fcc468',
+            hoverBorderColor: '#fcc468',
+            borderWidth: 8,
+            data: [100, 120, 80, 100, 90, 130, 110, 100, 80, 110, 130, 140, 130, 120, 130, 80, 100, 90, 120, 130],
+          },
+          {
+            label: "Data",
+            borderColor: '#4cbdd7',
+            fill: true,
+            backgroundColor: '#4cbdd7',
+            hoverBorderColor: '#4cbdd7',
+            borderWidth: 8,
+            data: [80, 140, 50, 120, 50, 150, 60, 130, 50, 130, 150, 100, 110, 80, 140, 50, 140, 50, 110, 150],
+          }
+        ]
+      },
+      options: {
+
+        tooltips: {
+          tooltipFillColor: "rgba(0,0,0,0.5)",
+          tooltipFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+          tooltipFontSize: 14,
+          tooltipFontStyle: "normal",
+          tooltipFontColor: "#fff",
+          tooltipTitleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+          tooltipTitleFontSize: 14,
+          tooltipTitleFontStyle: "bold",
+          tooltipTitleFontColor: "#fff",
+          tooltipYPadding: 6,
+          tooltipXPadding: 6,
+          tooltipCaretSize: 8,
+          tooltipCornerRadius: 6,
+          tooltipXOffset: 10,
+        },
+
+
+        legend: {
+
+          display: false
+        },
+        scales: {
+
+          yAxes: [{
+            ticks: {
+              fontColor: "#9f9f9f",
+              fontStyle: "bold",
+              beginAtZero: true,
+              maxTicksLimit: 5,
+              padding: 20
+            },
+            gridLines: {
+              zeroLineColor: "transparent",
+              display: true,
+              drawBorder: false,
+              color: '#9f9f9f',
+            }
+
+          }],
+          xAxes: [{
+            barPercentage: 0.4,
+            gridLines: {
+              zeroLineColor: "white",
+              display: false,
+
+              drawBorder: false,
+              color: 'transparent',
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f",
+              fontStyle: "bold"
+            }
+          }]
+        }
+      }
+    });
+  },
+
+  initDashboardPageCharts: function() {
+
+    chartColor = "#FFFFFF";
+
+    var cardStatsMiniLineColor = "#fff",
+      cardStatsMiniDotColor = "#fff";
+
+    ctx = document.getElementById('chartActivity').getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, '#80b6f4');
+    gradientStroke.addColorStop(1, chartColor);
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
+
+    myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        datasets: [
+
+          {
+            label: "Data",
+            borderColor: '#fcc468',
+            fill: true,
+            backgroundColor: '#fcc468',
+            hoverBorderColor: '#fcc468',
+            borderWidth: 8,
+            data: [100, 120, 80, 100, 90, 130, 110, 100, 80, 110, 130, 140, 130, 120, 130, 80, 100, 90, 120, 130],
+          },
+          {
+            label: "Data",
+            borderColor: '#4cbdd7',
+            fill: true,
+            backgroundColor: '#4cbdd7',
+            hoverBorderColor: '#4cbdd7',
+            borderWidth: 8,
+            data: [80, 140, 50, 120, 50, 150, 60, 130, 50, 130, 150, 100, 110, 80, 140, 50, 140, 50, 110, 150],
+          }
+        ]
+      },
+      options: {
+
+        tooltips: {
+          tooltipFillColor: "rgba(0,0,0,0.5)",
+          tooltipFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+          tooltipFontSize: 14,
+          tooltipFontStyle: "normal",
+          tooltipFontColor: "#fff",
+          tooltipTitleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+          tooltipTitleFontSize: 14,
+          tooltipTitleFontStyle: "bold",
+          tooltipTitleFontColor: "#fff",
+          tooltipYPadding: 6,
+          tooltipXPadding: 6,
+          tooltipCaretSize: 8,
+          tooltipCornerRadius: 6,
+          tooltipXOffset: 10,
+        },
+
+
+        legend: {
+
+          display: false
+        },
+        scales: {
+
+          yAxes: [{
+            ticks: {
+              fontColor: "#9f9f9f",
+              fontStyle: "bold",
+              beginAtZero: true,
+              maxTicksLimit: 5,
+              padding: 20
+            },
+            gridLines: {
+              zeroLineColor: "transparent",
+              display: true,
+              drawBorder: false,
+              color: '#9f9f9f',
+            }
+
+          }],
+          xAxes: [{
+            barPercentage: 0.4,
+            gridLines: {
+              zeroLineColor: "white",
+              display: false,
+
+              drawBorder: false,
+              color: 'transparent',
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f",
+              fontStyle: "bold"
+            }
+          }]
+        }
+      }
+    });
+
+    Chart.pluginService.register({
+      beforeDraw: function(chart) {
+        if (chart.config.options.elements.center) {
+          //Get ctx from string
+          var ctx = chart.chart.ctx;
+
+          //Get options from the center object in options
+          var centerConfig = chart.config.options.elements.center;
+          var fontStyle = centerConfig.fontStyle || 'Arial';
+          var txt = centerConfig.text;
+          var color = centerConfig.color || '#000';
+          var sidePadding = centerConfig.sidePadding || 20;
+          var sidePaddingCalculated = (sidePadding / 100) * (chart.innerRadius * 2)
+          //Start with a base font of 30px
+          ctx.font = "30px " + fontStyle;
+
+          //Get the width of the string and also the width of the element minus 10 to give it 5px side padding
+          var stringWidth = ctx.measureText(txt).width;
+          var elementWidth = (chart.innerRadius * 2) - sidePaddingCalculated;
+
+          // Find out how much the font can grow in width.
+          var widthRatio = elementWidth / stringWidth;
+          var newFontSize = Math.floor(30 * widthRatio);
+          var elementHeight = (chart.innerRadius * 2);
+
+          // Pick a new font size so it will not be larger than the height of label.
+          var fontSizeToUse = Math.min(newFontSize, elementHeight);
+
+          //Set font settings to draw it correctly.
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          var centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+          var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+          ctx.font = fontSizeToUse + "px " + fontStyle;
+          ctx.fillStyle = color;
+
+          //Draw text in center
+          ctx.fillText(txt, centerX, centerY);
+        }
+      }
+    });
+
+    ctx = document.getElementById('chartDonut1').getContext("2d");
+
+    myChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: [1, 2],
+        datasets: [{
+          label: "Emails",
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          backgroundColor: ['#4acccd', '#f4f3ef'],
+          borderWidth: 0,
+          data: [60, 40]
+        }]
+      },
+      options: {
+        elements: {
+          center: {
+            text: '60%',
+            color: '#66615c', // Default is #000000
+            fontStyle: 'Arial', // Default is Arial
+            sidePadding: 60 // Defualt is 20 (as a percentage)
+          }
+        },
+        cutoutPercentage: 90,
+        legend: {
+
+          display: false
+        },
+
+        tooltips: {
+          enabled: false
+        },
+
+        scales: {
+          yAxes: [{
+
+            ticks: {
+              display: false
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "transparent",
+              color: 'rgba(255,255,255,0.05)'
+            }
+
+          }],
+
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(255,255,255,0.1)',
+              zeroLineColor: "transparent"
+            },
+            ticks: {
+              display: false,
+            }
+          }]
+        },
+      }
+    });
+
+    ctx = document.getElementById('chartDonut2').getContext("2d");
+
+    myChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: [1, 2],
+        datasets: [{
+          label: "Emails",
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          backgroundColor: ['#fcc468', '#f4f3ef'],
+          borderWidth: 0,
+          data: [34, 66]
+        }]
+      },
+      options: {
+        elements: {
+          center: {
+            text: '34%',
+            color: '#66615c', // Default is #000000
+            fontStyle: 'Arial', // Default is Arial
+            sidePadding: 60 // Defualt is 20 (as a percentage)
+          }
+        },
+        cutoutPercentage: 90,
+        legend: {
+
+          display: false
+        },
+
+        tooltips: {
+          enabled: false
+        },
+
+        scales: {
+          yAxes: [{
+
+            ticks: {
+              display: false
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "transparent",
+              color: 'rgba(255,255,255,0.05)'
+            }
+
+          }],
+
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(255,255,255,0.1)',
+              zeroLineColor: "transparent"
+            },
+            ticks: {
+              display: false,
+            }
+          }]
+        },
+      }
+    });
+
+    ctx = document.getElementById('chartDonut3').getContext("2d");
+
+    myChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: [1, 2],
+        datasets: [{
+          label: "Emails",
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          backgroundColor: ['#f17e5d', '#f4f3ef'],
+          borderWidth: 0,
+          data: [80, 20]
+        }]
+      },
+      options: {
+        elements: {
+          center: {
+            text: '80%',
+            color: '#66615c', // Default is #000000
+            fontStyle: 'Arial', // Default is Arial
+            sidePadding: 60 // Defualt is 20 (as a percentage)
+          }
+        },
+        cutoutPercentage: 90,
+        legend: {
+
+          display: false
+        },
+
+        tooltips: {
+          enabled: false
+        },
+
+        scales: {
+          yAxes: [{
+
+            ticks: {
+              display: false
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "transparent",
+              color: 'rgba(255,255,255,0.05)'
+            }
+
+          }],
+
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(255,255,255,0.1)',
+              zeroLineColor: "transparent"
+            },
+            ticks: {
+              display: false,
+            }
+          }]
+        },
+      }
+    });
+
+
+    ctx = document.getElementById('chartDonut4').getContext("2d");
+
+    myChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: [1, 2],
+        datasets: [{
+          label: "Emails",
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          backgroundColor: ['#66615b', '#f4f3ef'],
+          borderWidth: 0,
+          data: [11, 89]
+        }]
+      },
+      options: {
+        elements: {
+          center: {
+            text: '11%',
+            color: '#66615c', // Default is #000000
+            fontStyle: 'Arial', // Default is Arial
+            sidePadding: 60 // Defualt is 20 (as a percentage)
+          }
+        },
+        cutoutPercentage: 90,
+        legend: {
+
+          display: false
+        },
+
+        tooltips: {
+          enabled: false
+        },
+
+        scales: {
+          yAxes: [{
+
+            ticks: {
+              display: false
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "transparent",
+              color: 'rgba(255,255,255,0.05)'
+            }
+
+          }],
+
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(255,255,255,0.1)',
+              zeroLineColor: "transparent"
+            },
+            ticks: {
+              display: false,
+            }
+          }]
+        },
+      }
+    });
+
+
+
+
+    ctx = document.getElementById('activeUsers').getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, '#80b6f4');
+    gradientStroke.addColorStop(1, chartColor);
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
+
+    myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"],
+        datasets: [{
+          label: "Active Users",
+          borderColor: "#6bd098",
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          fill: false,
+          borderWidth: 3,
+          data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610]
+        }]
+      },
+      options: {
+
+        legend: {
+
+          display: false
+        },
+
+        tooltips: {
+          enabled: false
+        },
+
+        scales: {
+          yAxes: [{
+
+            ticks: {
+              fontColor: "#9f9f9f",
+              beginAtZero: false,
+              maxTicksLimit: 5,
+              //padding: 20
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "transparent",
+              color: 'rgba(255,255,255,0.05)'
+            }
+
+          }],
+
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(255,255,255,0.1)',
+              zeroLineColor: "transparent",
+              display: false,
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f"
+            }
+          }]
+        },
+      }
+    });
+
+
+    ctx = document.getElementById('emailsCampaignChart').getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, '#18ce0f');
+    gradientStroke.addColorStop(1, chartColor);
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, hexToRGB('#18ce0f', 0.4));
+
+    myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ["12pm", "3pm", "6pm", "9pm", "12am", "3am", "6am", "9am"],
+        datasets: [{
+          label: "Email Stats",
+          borderColor: "#ef8156",
+          pointHoverRadius: 0,
+          pointRadius: 0,
+          fill: false,
+          backgroundColor: gradientFill,
+          borderWidth: 3,
+          data: [40, 500, 650, 700, 1200, 1250, 1300, 1900]
+        }]
+      },
+      options: {
+
+        legend: {
+
+          display: false
+        },
+
+        tooltips: {
+          enabled: false
+        },
+
+        scales: {
+          yAxes: [{
+
+            ticks: {
+              fontColor: "#9f9f9f",
+              beginAtZero: false,
+              maxTicksLimit: 5,
+              //padding: 20
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "transparent",
+              color: 'rgba(255,255,255,0.05)'
+            }
+
+          }],
+
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(255,255,255,0.1)',
+              zeroLineColor: "transparent",
+              display: false,
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f"
+            }
+          }]
+        },
+      }
+    });
+
+    var e = document.getElementById("activeCountries").getContext("2d");
+
+    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
+    gradientStroke.addColorStop(0, '#2CA8FF');
+    gradientStroke.addColorStop(1, chartColor);
+
+    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
+    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
+    gradientFill.addColorStop(1, hexToRGB('#2CA8FF', 0.4));
+
+    var a = {
+      type: "line",
+      data: {
+        labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October"],
+        datasets: [{
+          label: "Active Countries",
+          backgroundColor: gradientFill,
+          borderColor: "#fbc658",
+          pointHoverRadius: 0,
+          pointRadius: 0,
+          fill: false,
+          borderWidth: 3,
+          data: [80, 78, 86, 96, 83, 85, 76, 75, 88, 90]
+        }]
+      },
+      options: {
+
+        legend: {
+
+          display: false
+        },
+
+        tooltips: {
+          enabled: false
+        },
+
+        scales: {
+          yAxes: [{
+
+            ticks: {
+              fontColor: "#9f9f9f",
+              beginAtZero: false,
+              maxTicksLimit: 5,
+              //padding: 20
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "transparent",
+              color: 'rgba(255,255,255,0.05)'
+            }
+
+          }],
+
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(255,255,255,0.1)',
+              zeroLineColor: "transparent",
+              display: false,
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f"
+            }
+          }]
+        },
+      }
+    };
+
+    var viewsChart = new Chart(e, a);
+
   }
 
 };
