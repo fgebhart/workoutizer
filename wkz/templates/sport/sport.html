@@ -1,54 +1,32 @@
 {% extends 'lib/base_new.html' %}
-{% load filters %}
 {% block body %}
+
 <style type="text/css" media="screen">
     .leaflet-container {
-        height: 320px;
+        height: 390px;
     }
 </style>
-{% include "lib/messages.html" %}
 
-<div class="row">
-    <div class="col-md-5">
-        <div class="card">
-            <div class="card-header">
-                <center>
-                    <h4 class="card-title"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i>&nbsp;&nbsp;{{ sport.name }}</h4>
-                </center>
-            </div>
-            <div class="card-body">
-                <center>
-                    <a class="btn btn-warning" href="{{ sport.slug }}/edit"><i class="fas fa-pen"></i>&nbsp;&nbsp;Edit Sport</a>
-                </center>
-            </div>
-            <div class="card-footer">
-                <hr>
-                <div class="row">
-                    <div class="col-lg-3 col-md-6 col-6 ml-auto">
-                        <h7>{{ summary.count }}<br><small class="text-muted">Activities</small></h7>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-6 ml-auto mr-auto">
-                        <h7>{{ summary.distance }} km<br><small class="text-muted">Distance</small></h7>
-                    </div>
-                    <div class="col-lg-3 mr-auto">
-                        <h7>{{ summary.duration|duration }}<br><small class="text-muted">Duration</small></h7>
-                    </div>
-                </div>
-            </div>
+{% include "lib/messages.html" %}
+{% include "lib/summary_facts.html" %}
+
+{% if traces or not activities_selected_for_plot %}
+    <div class="row">
+        <div class="col-md-5">
+            {% include 'map/sport_map.html' %}
+        </div>
+        <div class="col-md-7">
+            {% include 'plotting/plot_history.html' %}
         </div>
     </div>
-    <div class="col-md-7">
-        {% if traces or not activities_selected_for_plot %}
-            {% include 'map/sport_map.html' %}
-        {% else %}
-            {% include 'plotting/plot_history.html' %}
-        {% endif %}
-    </div>
-</div>
-{% if traces or not activities_selected_for_plot %}
+{% else %}
     {% include 'plotting/plot_history.html' %}
 {% endif %}
 
-{% include 'lib/table.html' %}
+<div class="row">
+    <div class="col-md-12">
+    {% include 'lib/table.html' %}
+    </div>
+</div>
 
 {% endblock %}

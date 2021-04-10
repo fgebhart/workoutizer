@@ -28,7 +28,6 @@ def plot_pie_chart(activities):
 
     data = pd.Series(sport_distribution).reset_index(name="value").rename(columns={"index": "sport"})
     data["angle"] = data["value"] / data["value"].sum() * 2 * pi
-    print(f"color list: {color_list}")
     data["color"] = color_list
 
     p = figure(

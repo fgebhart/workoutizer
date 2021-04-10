@@ -1,25 +1,28 @@
 {% load static %}
-<br>
-<table class="table table-hover" hx-indicator=".htmx-indicator">
-    <thead>
-    <tr>
-        <th>Date</th>
-        <th>Activity</th>
-        <th></th>
-        <th>Track</th>
-        <th>Sport</th>
-        <th>Duration</th>
-        <th>Distance</th>
-    </tr>
-    </thead>
-    <tbody>
-        <tr hx-get="/activities_page/{{ current_page }}"
-            hx-trigger="revealed"
-            hx-swap="afterend"
-            id="htmx-trigger-row">
-        </tr>
-    </tbody>
-</table>
-<center>
-    <img class="htmx-indicator" id="loading-bar" src="{% static 'img/bars.svg' %}" width="60">
-</center>
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover" hx-indicator=".htmx-indicator">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Activity</th>
+                <th></th>
+                <th>Track</th>
+                <th>Sport</th>
+                <th>Duration</th>
+                <th>Distance</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr hx-get="/activities_page/{{ current_page }}"
+                    hx-trigger="revealed"
+                    hx-swap="afterend"
+                    id="htmx-trigger-row">
+                </tr>
+            </tbody>
+        </table>
+        <center>
+            <img class="htmx-indicator" id="loading-bar" src="{% static 'img/bars.svg' %}" width="60">
+        </center>
+    </div>
+</div>

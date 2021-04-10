@@ -93,6 +93,7 @@ class SportView(MapView, PlotView):
                 **map_context,
                 **context,
                 "page_name": sport["name"],
+                "available_sport_names": [sport.name for sport in sports],
                 "current_page": page,
                 "is_last_page": False,
                 "sports": sports,
