@@ -1,22 +1,23 @@
-{% extends 'lib/base.html' %}
+{% extends 'lib/base_new.html' %}
 {% load static %}
 {% block body %}
-    <title>Edit {{ sport.name }} Sport | Workoutizer</title>
-    <h3>Edit&nbsp;&nbsp;&nbsp;<i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i>&nbsp;&nbsp;&nbsp;{{ sport.name }}
-    </h3>
-    <hr>
-    <br>
-    <div class="container">
-        <form action="/sport/{{ sport.slug }}/edit/" method="post" accept-charset="utf-8"
-              enctype="multipart/form-data">
-            {% include "sport/sport_form.html" %}
-            <button id="button" class="float-left btn btn-warning btn-space" type="submit" name="action"><i
-                    class="fas fa-check"></i>&nbsp;&nbsp;Save
-            </button>
-            <a href="/sport/{{ sport.slug }}" class="float-left btn btn-outline-secondary">Cancel</a>
-            <a href="/sport/{{ sport.slug }}/delete/" class="float-right btn btn-danger"><i
-                    class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete</a>
-            <div class="clearfix"></div>
-        </form>
+<div class="row">
+    <div class="col-md-10 mr-auto ml-auto">
+        <div class="card">
+            <div class="card-body">
+                <form action="/sport/{{ sport.slug }}/edit/" method="post" accept-charset="utf-8"
+                    enctype="multipart/form-data">
+                    {% include "sport/sport_form.html" %}
+                    <button id="button" class="float-left btn btn-success btn-space" type="submit" name="action"><i
+                            class="fas fa-check"></i>&nbsp;&nbsp;Save
+                    </button>
+                    <a href="/sport/{{ sport.slug }}" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="/sport/{{ sport.slug }}/delete/" class="float-right btn btn-danger"><i
+                            class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete</a>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}

@@ -33,6 +33,7 @@ class ActivityView(MapView):
             "form_field_ids": get_all_form_field_ids(),
             "fastest_sections": BestSection.objects.filter(activity=activity, kind="fastest"),
             "climb_sections": BestSection.objects.filter(activity=activity, kind="climb"),
+            "page_name": activity.name,
         }
         if activity.trace_file:
             script_time_series, div_time_series = plot_time_series(activity)
@@ -69,7 +70,7 @@ def add_activity_view(request):
     return render(
         request,
         "activity/add_activity.html",
-        {"sports": sports, "form": form, "form_field_ids": get_all_form_field_ids()},
+        {"sports": sports, "form": form, "form_field_ids": get_all_form_field_ids(), "page_name": "Add Activity"},
     )
 
 
@@ -109,6 +110,7 @@ def edit_activity_view(request, activity_id):
             "formset": formset,
             "has_laps": has_laps,
             "form_field_ids": form_field_ids,
+            "page_name": f"Edit Activity: {activity.name}",
         },
     )
 
@@ -149,7 +151,12 @@ class ActivityDeleteView(DeleteView):
         return render(
             request,
             self.template_name,
-            {"sports": sports, "activity": activity, "form_field_ids": get_all_form_field_ids()},
+            {
+                "sports": sports,
+                "activity": activity,
+                "form_field_ids": get_all_form_field_ids(),
+                "page_name": f"Delete Activity: {activity.name}",
+            },
         )
 
 

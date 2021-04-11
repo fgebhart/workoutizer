@@ -15,11 +15,11 @@ class Sport(models.Model):
     def __str__(self):
         return self.name
 
-    name = models.CharField(max_length=24, unique=True, verbose_name="Sport Name:")
-    icon = models.CharField(max_length=24, verbose_name="Icon:")
+    name = models.CharField(max_length=24, unique=True, verbose_name="Sport Name")
+    icon = models.CharField(max_length=24, verbose_name="Icon")
     slug = models.SlugField(max_length=100, unique=True, blank=True)
-    color = ColorField(default="#42FF71", verbose_name="Color:")
-    evaluates_for_awards = models.BooleanField(verbose_name="Consider Awards for this Sport:", default=True)
+    color = ColorField(default="#42FF71", verbose_name="Color")
+    evaluates_for_awards = models.BooleanField(verbose_name="Consider Sport for Awards", default=True)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -95,15 +95,15 @@ class Activity(models.Model):
     def __str__(self):
         return f"{self.name} ({self.sport})"
 
-    name = models.CharField(max_length=200, verbose_name="Activity Name:", default="unknown")
-    sport = models.ForeignKey(Sport, on_delete=models.SET_DEFAULT, default=default_sport, verbose_name="Sport:")
-    date = models.DateTimeField(blank=False, default=timezone.now, verbose_name="Date:")
-    duration = models.DurationField(verbose_name="Duration:", default=datetime.timedelta(minutes=30))
-    distance = models.FloatField(blank=True, null=True, verbose_name="Distance:", default=0)
-    description = models.CharField(max_length=600, blank=True, null=True, verbose_name="Description:")
+    name = models.CharField(max_length=200, verbose_name="Activity Name", default="unknown")
+    sport = models.ForeignKey(Sport, on_delete=models.SET_DEFAULT, default=default_sport, verbose_name="Sport")
+    date = models.DateTimeField(blank=False, default=timezone.now, verbose_name="Date")
+    duration = models.DurationField(verbose_name="Duration", default=datetime.timedelta(minutes=30))
+    distance = models.FloatField(blank=True, null=True, verbose_name="Distance", default=0)
+    description = models.CharField(max_length=600, blank=True, null=True, verbose_name="Description")
     trace_file = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=True, null=True)
-    is_demo_activity = models.BooleanField(verbose_name="Is this a Demo Activity:", default=False)
-    evaluates_for_awards = models.BooleanField(verbose_name="Consider this Activity for Awards:", default=True)
+    is_demo_activity = models.BooleanField(verbose_name="Is this a Demo Activity", default=False)
+    evaluates_for_awards = models.BooleanField(verbose_name="Consider Activity for Awards", default=True)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -131,7 +131,7 @@ class Lap(models.Model):
     distance = models.FloatField(blank=True, null=True)
     speed = models.FloatField(blank=True, null=True)
     trace = models.ForeignKey(Traces, on_delete=models.CASCADE, blank=False)
-    label = models.CharField(max_length=100, blank=True, null=True, verbose_name="Label:")
+    label = models.CharField(max_length=100, blank=True, null=True, verbose_name="Label")
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -170,13 +170,13 @@ class Settings(models.Model):
     ]
 
     path_to_trace_dir = models.CharField(
-        max_length=120, default=django_settings.TRACKS_DIR, verbose_name="Path to Traces Directory:"
+        max_length=120, default=django_settings.TRACKS_DIR, verbose_name="Path to Traces Directory"
     )
     path_to_garmin_device = models.CharField(
-        max_length=120, default="/run/user/1000/gvfs/", verbose_name="Path to Garmin Device:"
+        max_length=120, default="/run/user/1000/gvfs/", verbose_name="Path to Garmin Device"
     )
     number_of_days = models.IntegerField(choices=days_choices, default=30)
-    delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying: ", default=False)
+    delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying ", default=False)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

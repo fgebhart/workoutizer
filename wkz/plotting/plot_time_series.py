@@ -133,7 +133,7 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str]:
 
                 p.xgrid.grid_line_color = None
                 p.legend.location = "top_left"
-                p.legend.label_text_font = "ubuntu"
+                p.legend.label_text_font = "Montserrat"
                 p.legend.background_fill_alpha = 0.7
                 dtf = DatetimeTickFormatter()
                 dtf.minutes = ["%M:%S"]

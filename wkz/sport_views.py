@@ -142,7 +142,13 @@ def edit_sport_view(request, sports_name_slug):
     return render(
         request,
         "sport/edit_sport.html",
-        {"sports": sports, "sport": sport, "form": form, "form_field_ids": get_all_form_field_ids()},
+        {
+            "sports": sports,
+            "sport": sport,
+            "form": form,
+            "form_field_ids": get_all_form_field_ids(),
+            "page_name": f"Edit Sport: {sport.name}",
+        },
     )
 
 
@@ -159,5 +165,12 @@ class SportDeleteView(DeleteView):
             messages.warning(request, f"Can't delete sport '{sport.name}'")
             return HttpResponseRedirect(f"/sport/{sport.slug}")
         return render(
-            request, self.template_name, {"sports": sports, "sport": sport, "form_field_ids": get_all_form_field_ids()}
+            request,
+            self.template_name,
+            {
+                "sports": sports,
+                "sport": sport,
+                "form_field_ids": get_all_form_field_ids(),
+                "page_name": f"Delete Sport: {sport.name}",
+            },
         )

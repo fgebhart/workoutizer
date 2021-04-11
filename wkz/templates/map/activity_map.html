@@ -1,7 +1,6 @@
 {% load static %}
 {% load filters %}
 
-
 <head>
     <!-- leaflet-ui -->
     <script src="https://unpkg.com/leaflet@1.3.2/dist/leaflet.js"></script>
@@ -9,14 +8,19 @@
     <script src="{% static 'js/map_icons.js' %}"></script>
 </head>
 
-<div id="map"></div>
+<div class="card">
+    <div class="card-body">
+        <div id="map"></div>
+    </div>
+</div>
+
 <script>
     // config options of leaflet-ui plugin: https://github.com/Raruto/leaflet-ui
     var map = L.map('map', {
         center: [41.4583, 12.7059],  // needs value to initialize
         zoom: 5,                     // needs value to initialize
-        mapTypeId: 'streets',
-        mapTypeIds: ['streets', 'topo', 'osm', 'terrain', 'satellite'],
+        mapTypeId: 'topo',
+        mapTypeIds: ['topo', 'streets', 'osm', 'terrain', 'satellite'],
         gestureHandling: false,     // zoom with Cmd + Scroll
         zoomControl: true,          // plus minus buttons
         pegmanControl: false,

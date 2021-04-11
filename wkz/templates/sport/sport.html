@@ -3,7 +3,7 @@
 
 <style type="text/css" media="screen">
     .leaflet-container {
-        height: 390px;
+        height: 395px;
     }
 </style>
 
@@ -12,11 +12,11 @@
 
 {% if traces or not activities_selected_for_plot %}
     <div class="row">
-        <div class="col-md-5">
-            {% include 'map/sport_map.html' %}
-        </div>
         <div class="col-md-7">
             {% include 'plotting/plot_history.html' %}
+        </div>
+        <div class="col-md-5">
+            {% include 'map/sport_map.html' %}
         </div>
     </div>
 {% else %}
