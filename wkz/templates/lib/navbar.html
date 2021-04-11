@@ -1,22 +1,63 @@
-<nav class="fixed-top">
-    <div class="navbar navbar-expand-sm bg-info navbar-dark">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item order-0">
-                <a href="{% url 'add-activity' %}" class="btn btn-warning" id="add-activity-button" data-toggle="tooltip" data-placement="bottom"
-                title="Add new Activity"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Activity</a>
-            </li>
-        </ul>
-        <a class="navbar-brand" href="/"><i class="fas fa-dumbbell"></i>&nbsp;&nbsp;Workoutizer&nbsp;&nbsp;<i
-            class="fas fa-dumbbell"></i></a>
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item order-1">
-                <a class="nav-link" href="{% url 'settings' %}" id="settings-link" data-toggle="tooltip"
-                data-placement="bottom" title="Settings"><i class="fas fa-cogs"></i></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'help' %}" id="help-link" data-toggle="tooltip" data-placement="bottom"
-                title="Help"><i class="fas fa-question-circle"></i></a>
-            </li>
-        </ul>
+<nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
+    <div class="container-fluid">
+        <div class="navbar-wrapper">
+            <div class="navbar-minimize">
+                <button id="minimizeSidebar" class="btn btn-icon btn-round">
+                    <i class="nc-icon nc-minimal-right text-center visible-on-sidebar-mini"></i>
+                    <i class="nc-icon nc-minimal-left text-center visible-on-sidebar-regular"></i>
+                </button>
+            </div>
+        <div class="navbar-toggle">
+            <button type="button" class="navbar-toggler">
+                <span class="navbar-toggler-bar bar1"></span>
+                <span class="navbar-toggler-bar bar2"></span>
+                <span class="navbar-toggler-bar bar3"></span>
+            </button>
+        </div>
+            <div class="navbar-brand">{{ page_name }}</div>
+        </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-bar navbar-kebab"></span>
+                <span class="navbar-toggler-bar navbar-kebab"></span>
+                <span class="navbar-toggler-bar navbar-kebab"></span>
+            </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navigation">
+            <ul class="navbar-nav">
+            {% if page_name in available_sport_names %}
+                <li class="nav-item">
+                    <a href="{{ sport.slug }}/edit" class="nav-link btn-rotate" id="add-activity-button">
+                        <i class="fas fa-pen"></i>
+                        <p>
+                            <span>Edit Sport</span>
+                        </p>
+                    </a>
+                </li>
+            {% endif %}
+                <li class="nav-item">
+                    <a href="{% url 'add-activity' %}" class="nav-link btn-rotate" id="add-activity-button">
+                        <i class="fas fa-plus"></i>
+                        <p>
+                            <span>Activity</span>
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn-rotate" href="{% url 'help' %}">
+                        <i class="fas fa-question-circle"></i>
+                        <p>
+                            <span class="d-lg-none d-md-block">Help</span>
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link btn-rotate" href="{% url 'settings' %}">
+                    <i class="nc-icon nc-settings-gear-65"></i>
+                    <p>
+                        <span class="d-lg-none d-md-block">Settings</span>
+                    </p>
+                </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>

@@ -2,6 +2,12 @@
 {% load filters %}
 {% block body %}
 
+<style type="text/css" media="screen">
+    .leaflet-container {
+        height: 395px;
+    }
+</style>
+
 <div class="btn-group float-right">
     <a class="btn btn-warning" href="{{ activity.id }}/edit" id="edit-activity" data-toggle="tooltip" data-placement="bottom"
         title="Edit Activity"><i class="fas fa-pen"></i></a>
@@ -10,7 +16,7 @@
             title="Download GPX File"><i class="fas fa-download"></i></a>
     {% endif %}
 </div>
-<div class="clearfix"></div>
+{% comment %} <div class="clearfix"></div> {% endcomment %}
 <p class="text-muted">{{ activity.date|date:"M d, Y, H:i" }}</p>
 <br>
 <br>
@@ -40,13 +46,13 @@
         <div class="row">
             <div class="col-sm-8">
                 {% if activity.trace_file.latitude_list != "[]" %}
-                SDFsdf
                     {% include "map/activity_map.html" %}
                 {% endif %}
                 <div style="margin-right: 20px">
                     {% if activity.trace_file.heart_rate_list != "[]" or activity.trace_file.altitude_list != "[]" or activity.trace_file.cadence_list != "[]" or activity.trace_file.speed_list != "[]" or activity.trace_file.temperature_list != "[]" %}
-                        {% include "plotting/plot_time_series.html" %}</div>
-                    {% endif %}
+                        {% include "plotting/plot_time_series.html" %}
+                </div>
+                {% endif %}
             </div>
             <div class="col-sm-4">
                 {% include "activity/activity_data.html" %}

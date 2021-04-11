@@ -1,130 +1,82 @@
-<style>
-    h6 {
-        display: inline;
-        margin-right: 20px;
-    }
-    p {
-        display: inline;
-    }
-    i {
-        width: 20px;
-    }
-    .buttonStyle {
-        border-width: 1px;
-        border-color: rgba(0, 0, 0, 0.1);
-        border-style: solid;
-        border-radius: 0px;
-        border-top: 0px;
-        border-left: 0px;
-        border-right: 0px;
-        width: 200px;
-        height: 40px;
-        outline: none;
-        display: inline-block;
-    }
-    .selected {
-        background: rgba(0, 0, 0, 0.07);
-    }
-    .buttonStyle:hover {
-        background-color: rgba(0, 0, 0, 0.07);
-    }
-    .buttonStyle:hover h6,
-    .buttonStyle:hover p {
-        color: black;
-    }
-    .toggleStyle {
-        border-width: 1px;
-        border-color: rgba(0, 0, 0, 0.1);
-        border-style: solid;
-        border-radius: 0px;
-        border-bottom: 0px;
-        cursor: pointer;
-        width: 45px;
-        position: fixed;
-        bottom: 0px;
-        left: 0px;
-        background-color: whitesmoke;
-        transition: 1s;
-    }
-</style>
+{% load static %}
 
-<div id="sidebar_left" class="sidebar_left">
-    <!-- Dashboard -->
-    {% if page == 'dashboard' %}
-        <a href="{% url 'home' %}" class="btn text-left buttonStyle selected">
-    {% else %}
-        <a href="{% url 'home' %}" class="btn text-left buttonStyle">
-    {% endif %}
-            <h6><i class="fas fa-chart-line"></i></h6>
-            <p>Dashboard</p>
+<div class="sidebar" data-color="default" data-active-color="danger">
+    <div class="logo">
+        <a href="{% url 'home' %}" class="simple-text logo-mini">
+            <div class="logo-image-small">
+            <img src="{% static 'img/favicon.ico' %}">
+            </div>
         </a>
-    <!-- Awards -->
-    {% if page == 'awards' %}
-        <a href="{% url 'awards' %}" class="btn text-left buttonStyle selected">
-    {% else %}
-        <a href="{% url 'awards' %}" class="btn text-left buttonStyle">
-    {% endif %}
-            <h6><i class="fas fa-medal"></i></h6>
-            <p>Awards</p>
+        <a href="{% url 'home' %}" class="simple-text logo-normal">
+            Workoutizer
         </a>
-    <!-- All Sports -->
-    {% if page == 'all_sports' %}
-        <a href="{% url 'sports' %}" class="btn text-left buttonStyle selected">
-    {% else %}
-        <a href="{% url 'sports' %}" class="btn text-left buttonStyle">
-    {% endif %}
-            <h6><i class="fas fa-list"></i></h6>
-            <p>All Sports</p>
-        </a>
-    <!-- Sports -->
-    {% for s in sports %}
-        {% if s.slug != 'unknown' %}
-            {% if activity.sport.slug == s.slug or sport.slug == s.slug %}
-                <a href="/sport/{{ s.slug }}" class="btn text-left buttonStyle selected">
-                    <h6><i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i></h6>
-                    <p>{{ s.name }}</p>
-                </a>
+    </div>
+    <div class="sidebar-wrapper">
+        <ul class="nav">
+
+            {% if page_name == "Dashboard" %}
+            <li class="active ">
             {% else %}
-                <a href="/sport/{{ s.slug }}" class="btn text-left buttonStyle">
-                    <h6><i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i></h6>
-                    <p>{{ s.name }}</p>
-                </a>
+            <li>
             {% endif %}
-        {% endif %}
-    {% endfor %}
-    <!-- Add Sport -->
-    {% if page == 'add_sport' %}
-        <a href="{% url 'add-sport' %}" id="add-sport" class="btn text-left buttonStyle selected">
-    {% else %}
-        <a href="{% url 'add-sport' %}" id="add-sport" class="btn text-left buttonStyle">
-    {% endif %}
-            <h6><i class="fas fa-plus"></i></h6>
-            <p>Add Sport</p>
-        </a>
-    <!-- Collapse Toggle -->
-    <a onClick="toggleNav(); return false;" id="sidebar-toggle" class="btn text-left toggleStyle">
-        <h6><i class="fas fa-arrows-alt-h"></i></h6>
-    </a>
-</div>
+            <a href="/">
+                <i class="fas fa-chart-line"></i>
+                <p>Dashboard</p>
+            </a>
+            </li>
 
-<script>
-    function toggleNav() {
-        const navSize = document.getElementById("sidebar_left").style.width;
-        if (navSize === "45px" || navSize === "") {
-            return openNav();
-        }
-        return closeNav();
-    }
-    function openNav() {
-        document.getElementById("sidebar_left").style.width = 
-        document.getElementById("sidebar-toggle").style.width = 
-        document.getElementById("main").style.marginLeft = 
-        "200px";
-    }
-    function closeNav() {
-        document.getElementById("sidebar_left").style.width = 
-        document.getElementById("sidebar-toggle").style.width = 
-        document.getElementById("main").style.marginLeft = 
-        "45px";
-    }
-</script>
+            {% if page_name == "Awards" %}
+            <li class="active ">
+            {% else %}
+            <li>
+            {% endif %}
+            <a href="/awards">
+                <i class="fas fa-medal"></i>
+                <p>Awards</p>
+            </a>
+            </li>
+
+            {% if page_name == "Sports" %}
+            <li class="active ">
+            {% else %}
+            <li>
+            {% endif %}
+            <a href="/sports">
+                <i class="nc-icon nc-tile-56"></i>
+                <p>Sports</p>
+            </a>
+            </li>
+
+            {% for s in sports %}
+            {% if s.slug != 'unknown' %}
+                {% if activity.sport.slug == s.slug or sport.slug == s.slug %}
+                <li class="active">
+                    <a href="/sport/{{ s.slug }}">
+                        <i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i>
+                        <p>{{ s.name }}</p>
+                    </a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="/sport/{{ s.slug }}">
+                        <i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i>
+                        <p>{{ s.name }}</p>
+                    </a>
+                </li>
+                {% endif %}
+            {% endif %}
+            {% endfor %}
+
+            {% if page_name == "Add Sport" %}
+            <li class="active ">
+            {% else %}
+            <li>
+            {% endif %}
+            <a href="/add-sport">
+                <i class="fas fa-plus"></i>
+                <p>Add Sport</p>
+            </a>
+            </li>
+        </ul>
+    </div>
+</div>

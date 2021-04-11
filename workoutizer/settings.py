@@ -113,19 +113,6 @@ REST_FRAMEWORK = {
 trace_line_width = 3.5
 trace_line_opacity = 0.9
 
-# DATETIME_INPUT_FORMATS = [
-#     '%m/%d/%Y %I:%M %p',  # '2015-08-12 10:07:32 PM'
-#     '%Y-%m-%d %H:%M:%S',     # '2006-10-25 14:30:59'
-#     '%Y-%m-%d %H:%M:%S.%f',  # '2006-10-25 14:30:59.000200'
-#     '%Y-%m-%d %H:%M',        # '2006-10-25 14:30'
-#     '%m/%d/%Y %H:%M:%S',     # '10/25/2006 14:30:59'
-#     '%m/%d/%Y %H:%M:%S.%f',  # '10/25/2006 14:30:59.000200'
-#     '%m/%d/%Y %H:%M',        # '10/25/2006 14:30'
-#     '%m/%d/%y %H:%M:%S',     # '10/25/06 14:30:59'
-#     '%m/%d/%y %H:%M:%S.%f',  # '10/25/06 14:30:59.000200'
-#     '%m/%d/%y %H:%M',        # '10/25/06 14:30'
-# ]
-
 LOGGING = get_logging_config(
     django_log_level=os.getenv("DJANGO_LOG_LEVEL", "INFO"),
     wkz_log_level=os.getenv("WKZ_LOG_LEVEL", "INFO"),

@@ -1,23 +1,21 @@
 {% load static %}
 
 <head>
-    <!-- Leaflet -->
-    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
     <!-- Leaflet-UI -->
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-ui@latest/dist/leaflet-ui.js"></script>
-
     <script src="{% static 'js/map_icons.js' %}"></script>
 </head>
 
 <div class="card">
     <div class="card-body">
-        <div id="map"></div>
+        <div id="leaflet_map"></div>
     </div>
 </div>
 
 <script>
     // config options of leaflet-ui plugin: https://github.com/Raruto/leaflet-ui
-    var map = L.map('map', {
+    var map = L.map('leaflet_map', {
         center: [41.4583, 12.7059],  // needs value to initialize
         zoom: 1,                     // needs value to initialize
         mapTypeId: 'topo',

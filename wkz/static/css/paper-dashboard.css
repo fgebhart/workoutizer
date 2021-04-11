@@ -5137,11 +5137,11 @@ div.dtr-modal div.dtr-modal-background {
     width: 95%;
   }
 }
-
+/*  NOTE: this leads to undesired behavior when zooming in leaflet maps
 svg {
   touch-action: none;
   height: 800px !important;
-}
+} */
 
 .jvectormap-container {
   width: 100%;
