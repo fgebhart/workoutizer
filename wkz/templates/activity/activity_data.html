@@ -1,159 +1,172 @@
 {% load filters %}
 
 <div class="row">
-    {% if fastest_sections %}
-        <div class="col-sm-12">
-            <h5>
-                Fastest Sections
-                {% if evaluates_for_awards %}
-                    &nbsp;<i class="fas fa-trophy" data-toggle="tooltip" data-placement="bottom"
-                    title="Activity evaluates for Awards" style="color: grey;"></i>
-                {% else %}
-                    &nbsp;<i class="fas fa-exclamation-circle" data-toggle="tooltip" data-placement="bottom"
-                    title="Activity does not evaluate for Awards" style="color: grey;"></i>
-                {% endif %}
-            </h5>
-            {% include "activity/velocity_sections_table.html" %}
-        </div>
-    {% endif %}
 
-    {% if climb_sections %}
-        <div class="col-sm-12">
-            <h5>
-                Best Climb Sections
-                {% if evaluates_for_awards %}
-                    &nbsp;<i class="fas fa-trophy" data-toggle="tooltip" data-placement="bottom"
-                    title="Activity evaluates for Awards" style="color: grey;"></i>
-                {% else %}
-                    &nbsp;<i class="fas fa-exclamation-circle" data-toggle="tooltip" data-placement="bottom"
-                    title="Activity does not evaluate for Awards" style="color: grey;"></i>
-                {% endif %}
-            </h5>
-            {% include "activity/climb_sections_table.html" %}
-        </div>
-    {% endif %}
+    {% include "activity/activity_laps.html" %}
+
 
     {% if activity.trace_file.avg_cadence and activity.trace_file.max_cadence %}
-        <div class="col-sm-6">
-            <h5>Cadence</h5>
-            <table class="table table-hover table-borderless text-muted table-sm">
-                {% if activity.trace_file.avg_cadence %}
-                    <tr data-toggle="tooltip" data-placement="left" title="Average Cadence">
-                        <td><i class="fas fa-shoe-prints"></i><small> avg</small></td>
-                        <td>{{ activity.trace_file.avg_cadence }}</td>
-                    </tr>
-                {% endif %}
-                <tr data-toggle="tooltip" data-placement="left" title="Max Cadence">
-                    <td><i class="fas fa-shoe-prints" style="color: grey"></i><small style="color: grey"> max</small>
-                    </td>
-                    <td>{{ activity.trace_file.max_cadence }}</td>
-                </tr>
-            </table>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Cadence</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-borderless text-muted table-sm">
+                        {% if activity.trace_file.avg_cadence %}
+                            <tr data-toggle="tooltip" data-placement="left" title="Average Cadence">
+                                <td><i class="fas fa-shoe-prints"></i><small> avg</small></td>
+                                <td>{{ activity.trace_file.avg_cadence }}</td>
+                            </tr>
+                        {% endif %}
+                        <tr data-toggle="tooltip" data-placement="left" title="Max Cadence">
+                            <td><i class="fas fa-shoe-prints" style="color: grey"></i><small style="color: grey"> max</small>
+                            </td>
+                            <td>{{ activity.trace_file.max_cadence }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
     {% endif %}
 
     {% if activity.trace_file.avg_speed and activity.trace_file.max_speed %}
-        <div class="col-sm-6">
-            <h5>Speed</h5>
-            <table class="table table-hover table-borderless text-muted table-sm">
-                <tr data-toggle="tooltip" data-placement="left" title="Average Speed">
-                    <td><i class="fas fa-tachometer-alt" style="color: grey"></i><small style="color: grey"> avg</small>
-                    </td>
-                    <td>{{ activity.trace_file.avg_speed | m_per_s_to_km_per_h }} km/h</td>
-                </tr>
-                <tr data-toggle="tooltip" data-placement="left" title="Max Speed">
-                    <td><i class="fas fa-tachometer-alt" style="color: grey"></i><small style="color: grey"> max</small>
-                    </td>
-                    <td>{{ activity.trace_file.max_speed | m_per_s_to_km_per_h }} km/h</td>
-                </tr>
-            </table>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Speed</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-borderless text-muted table-sm">
+                        <tr data-toggle="tooltip" data-placement="left" title="Average Speed">
+                            <td><i class="fas fa-tachometer-alt" style="color: grey"></i><small style="color: grey"> avg</small>
+                            </td>
+                            <td>{{ activity.trace_file.avg_speed | m_per_s_to_km_per_h }} km/h</td>
+                        </tr>
+                        <tr data-toggle="tooltip" data-placement="left" title="Max Speed">
+                            <td><i class="fas fa-tachometer-alt" style="color: grey"></i><small style="color: grey"> max</small>
+                            </td>
+                            <td>{{ activity.trace_file.max_speed | m_per_s_to_km_per_h }} km/h</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
     {% endif %}
 
     {% if activity.trace_file.avg_speed and activity.trace_file.max_speed %}
-        <div class="col-sm-6">
-            <h5>Pace</h5>
-            <table class="table table-hover table-borderless text-muted table-sm">
-                <tr data-toggle="tooltip" data-placement="left" title="Average Pace">
-                    <td><i class="fas fa-stopwatch" style="color: grey"></i><small style="color: grey"> avg</small></td>
-                    <td>{{ activity.trace_file.avg_speed | speed_to_pace }} min/km</td>
-                </tr>
-                <tr data-toggle="tooltip" data-placement="left" title="Best Pace">
-                    <td><i class="fas fa-stopwatch" style="color: grey"></i><small style="color: grey"> high</small>
-                    </td>
-                    <td>{{ activity.trace_file.max_speed | speed_to_pace }} min/km</td>
-                </tr>
-            </table>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Pace</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-borderless text-muted table-sm">
+                        <tr data-toggle="tooltip" data-placement="left" title="Average Pace">
+                            <td><i class="fas fa-stopwatch" style="color: grey"></i><small style="color: grey"> avg</small></td>
+                            <td>{{ activity.trace_file.avg_speed | speed_to_pace }} min/km</td>
+                        </tr>
+                        <tr data-toggle="tooltip" data-placement="left" title="Best Pace">
+                            <td><i class="fas fa-stopwatch" style="color: grey"></i><small style="color: grey"> high</small>
+                            </td>
+                            <td>{{ activity.trace_file.max_speed | speed_to_pace }} min/km</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
     {% endif %}
 
     {% if activity.trace_file.aerobic_training_effect and activity.trace_file.anaerobic_training_effect %}
-        <div class="col-sm-6">
-            <h5>Trainings Effect</h5>
-            <table class="table table-hover table-borderless text-muted table-sm">
-                <tr>
-                    <td>Aerobic</td>
-                    <td>{{ activity.trace_file.aerobic_training_effect }}</td>
-                </tr>
-                <tr>
-                    <td>Anaerobic</td>
-                    <td>{{ activity.trace_file.anaerobic_training_effect }}</td>
-                </tr>
-            </table>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Trainings Effect</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-borderless text-muted table-sm">
+                        <tr>
+                            <td>Aerobic</td>
+                            <td>{{ activity.trace_file.aerobic_training_effect }}</td>
+                        </tr>
+                        <tr>
+                            <td>Anaerobic</td>
+                            <td>{{ activity.trace_file.anaerobic_training_effect }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
     {% endif %}
 
     {% if activity.trace_file.avg_heart_rate and activity.trace_file.max_heart_rate %}
-        <div class="col-sm-6">
-            <h5>Heart Rate</h5>
-            <table class="table table-hover table-borderless text-muted table-sm">
-                <tr data-toggle="tooltip" data-placement="left" title="Min Heart Rate">
-                    <td><i class="fas fa-heartbeat" style="color: grey"></i><small style="color: grey"> min</small></td>
-                    <td>{{ activity.trace_file.min_heart_rate }}</td>
-                </tr>
-                <tr data-toggle="tooltip" data-placement="left" title="Average Heart Rate">
-                    <td><i class="fas fa-heartbeat" style="color: grey"></i><small style="color: grey"> avg</small></td>
-                    <td>{{ activity.trace_file.avg_heart_rate }}</td>
-                </tr>
-                <tr data-toggle="tooltip" data-placement="left" title="Max Heart Rate">
-                    <td><i class="fas fa-heartbeat" style="color: grey"></i><small style="color: grey"> max</small></td>
-                    <td>{{ activity.trace_file.max_heart_rate }}</td>
-                </tr>
-            </table>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Heart Rate</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-borderless text-muted table-sm">
+                        <tr data-toggle="tooltip" data-placement="left" title="Min Heart Rate">
+                            <td><i class="fas fa-heartbeat" style="color: grey"></i><small style="color: grey"> min</small></td>
+                            <td>{{ activity.trace_file.min_heart_rate }}</td>
+                        </tr>
+                        <tr data-toggle="tooltip" data-placement="left" title="Average Heart Rate">
+                            <td><i class="fas fa-heartbeat" style="color: grey"></i><small style="color: grey"> avg</small></td>
+                            <td>{{ activity.trace_file.avg_heart_rate }}</td>
+                        </tr>
+                        <tr data-toggle="tooltip" data-placement="left" title="Max Heart Rate">
+                            <td><i class="fas fa-heartbeat" style="color: grey"></i><small style="color: grey"> max</small></td>
+                            <td>{{ activity.trace_file.max_heart_rate }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
     {% endif %}
 
     {% if activity.trace_file.min_temperature and activity.trace_file.avg_temperature and activity.trace_file.max_temperature %}
-        <div class="col-sm-6">
-            <h5>Temperature</h5>
-            <table class="table table-hover table-borderless text-muted table-sm">
-                <tr data-toggle="tooltip" data-placement="left" title="Min Temperature">
-                    <td><i class="fas fa-thermometer-empty" style="color: grey"></i><small style="color: grey">
-                        min</small></td>
-                    <td>{{ activity.trace_file.min_temperature }} °C</td>
-                </tr>
-                {% if activity.trace_file.avg_temperature %}
-                    <tr data-toggle="tooltip" data-placement="left" title="Average Temperature">
-                        <td><i class="fas fa-thermometer-half" style="color: grey"></i><small style="color: grey">
-                            avg</small></td>
-                        <td>{{ activity.trace_file.avg_temperature }} °C</td>
-                    </tr>
-                {% endif %}
-                <tr data-toggle="tooltip" data-placement="left" title="Max Temperature">
-                    <td><i class="fas fa-thermometer-full" style="color: grey"></i><small style="color: grey">
-                        max</small></td>
-                    <td>{{ activity.trace_file.max_temperature }} °C</td>
-                </tr>
-            </table>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Temperature</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-borderless text-muted table-sm">
+                        <tr data-toggle="tooltip" data-placement="left" title="Min Temperature">
+                            <td><i class="fas fa-thermometer-empty" style="color: grey"></i><small style="color: grey">
+                                min</small></td>
+                            <td>{{ activity.trace_file.min_temperature }} °C</td>
+                        </tr>
+                        {% if activity.trace_file.avg_temperature %}
+                            <tr data-toggle="tooltip" data-placement="left" title="Average Temperature">
+                                <td><i class="fas fa-thermometer-half" style="color: grey"></i><small style="color: grey">
+                                    avg</small></td>
+                                <td>{{ activity.trace_file.avg_temperature }} °C</td>
+                            </tr>
+                        {% endif %}
+                        <tr data-toggle="tooltip" data-placement="left" title="Max Temperature">
+                            <td><i class="fas fa-thermometer-full" style="color: grey"></i><small style="color: grey">
+                                max</small></td>
+                            <td>{{ activity.trace_file.max_temperature }} °C</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
     {% endif %}
+
+    {% if activity.description %}
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Description</h4>
+                </div>
+                <div class="card-body">
+                    {{ activity.description }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
 </div>
-{% if activity.description %}
-    <h5>Description</h5>
-    {{ activity.description }}
-{% endif %}
-{% if laps %}
-{% include "activity/activity_laps.html" %}
-{% endif %}
-<br>
-&nbsp;
