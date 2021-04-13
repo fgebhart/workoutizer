@@ -5,10 +5,22 @@ from wkz.models import Sport, Activity, Settings
 DATETIMEPICKER_FORMAT = ["%m/%d/%Y %I:%M %p"]
 
 
+def set_field_attributes(visible_fields):
+    for visible in visible_fields:
+        if visible.name == "date":  # because it would overwrite settings from above
+            continue
+        else:
+            visible.field.widget.attrs["class"] = "form-control"
+
+
 class AddSportsForm(forms.ModelForm):
     class Meta:
         model = Sport
         exclude = ("created", "modified")
+
+    def __init__(self, *args, **kwargs):
+        super(AddSportsForm, self).__init__(*args, **kwargs)
+        set_field_attributes(self.visible_fields())
 
 
 class AddActivityForm(forms.ModelForm):
@@ -25,14 +37,6 @@ class AddActivityForm(forms.ModelForm):
         super(AddActivityForm, self).__init__(*args, **kwargs)
         self.fields["sport"] = forms.ModelChoiceField(queryset=Sport.objects.all().exclude(name="unknown"))
         set_field_attributes(self.visible_fields())
-
-
-def set_field_attributes(visible_fields):
-    for visible in visible_fields:
-        if visible.name == "date":  # because it would overwrite settings from above
-            continue
-        else:
-            visible.field.widget.attrs["class"] = "form-control"
 
 
 class EditActivityForm(forms.ModelForm):

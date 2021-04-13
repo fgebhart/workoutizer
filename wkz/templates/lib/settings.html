@@ -3,7 +3,7 @@
 {% include "lib/form_errors.html" %}
 {% include "lib/messages.html" %}
 <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-10 mr-auto ml-auto">
         <div class="card">
             <div class="card-body">
                 <form action="{% url 'settings' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
@@ -11,7 +11,7 @@
                     {% if delete_demos %}
                         <h5><b>Demo</b></h5>
                         <div class="form-group row">
-                            <div class="col-sm-4">Delete Demo Data:</div>
+                            <div class="col-sm-4">Delete Demo Data</div>
                             <div class="col-sm-8">
                                 <a href="{% url 'delete-demo-data' %}" id="delete-demo-data" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip"
                                 data-placement="right"
@@ -44,7 +44,7 @@
                     <br>
                     <h5><b>Reimporter</b></h5>
                     <div class="form-group row">
-                        <div class="col-sm-4">Reimport all Files:</div>
+                        <div class="col-sm-4">Reimport all Files</div>
                         <div class="col-sm-8">
                             <a href="{% url 'reimport' %}" id="reimport-activities" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip"
                             data-placement="right"
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <br>
-                    <button id="button" class="btn btn-warning" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Save
+                    <button id="button" class="btn btn-success" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Save
                     </button>
                 </form>
             </div>

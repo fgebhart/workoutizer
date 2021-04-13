@@ -6,15 +6,14 @@
         <div class="card">
             <div class="card-body">
                 <form action="/sport/{{ sport.slug }}/edit/" method="post" accept-charset="utf-8"
-                    enctype="multipart/form-data">
-                    {% include "sport/sport_form.html" %}
-                    <button id="button" class="float-left btn btn-success btn-space" type="submit" name="action"><i
+                    enctype="multipart/form-data" class="form-horizontal">
+                    {% include "sport/sport_form_fields.html" %}
+                    <button id="button" class="float-left btn btn-success" type="submit" name="action"><i
                             class="fas fa-check"></i>&nbsp;&nbsp;Save
                     </button>
                     <a href="/sport/{{ sport.slug }}" class="btn btn-outline-secondary">Cancel</a>
                     <a href="/sport/{{ sport.slug }}/delete/" class="float-right btn btn-danger"><i
                             class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete</a>
-                    <div class="clearfix"></div>
                 </form>
             </div>
         </div>

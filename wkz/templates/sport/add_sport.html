@@ -5,9 +5,11 @@
     <div class="col-md-10 mr-auto ml-auto">
         <div class="card">
             <div class="card-body">
-                <form action="{% url 'add-sport' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
-                    {% include "sport/sport_form.html" %}
-                    <button id="button" class="btn btn-success" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Submit
+                <form action="{% url 'add-sport' %}" method="post" accept-charset="utf-8"
+                    enctype="multipart/form-data" class="form-horizontal">
+                    {% include "sport/sport_form_fields.html" %}
+                    <button id="button" class="btn btn-success" type="submit" name="action"><i
+                            class="fas fa-check"></i>&nbsp;&nbsp;Submit
                     </button>
                     <a href="/sport/{{ sport.slug }}" class="btn btn-outline-secondary">Cancel</a>
                 </form>
