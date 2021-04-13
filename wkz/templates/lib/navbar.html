@@ -23,21 +23,32 @@
             </button>
         <div class="collapse navbar-collapse justify-content-end" id="navigation">
             <ul class="navbar-nav">
+            {% if is_activity_page %}
+                <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Edit Activity">
+                    <a href="{{ activity.id }}/edit" class="nav-link btn-rotate" id="edit-activity">
+                        <i class="fas fa-pen"></i>
+                    </a>
+                </li>
+                {% if activity.trace_file.longitude_list != "[]" %}
+                <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Download GPX File">
+                    <a href="{{ activity.id }}/download" class="nav-link btn-rotate" id="edit-activity">
+                        <i class="fas fa-download"></i>
+                    </a>
+                </li>
+                {% endif %}
+            {% endif %}
             {% if page_name in available_sport_names %}
-                <li class="nav-item">
+                <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Edit Sport">
                     <a href="{{ sport.slug }}/edit" class="nav-link btn-rotate" id="add-activity-button">
                         <i class="fas fa-pen"></i>
-                        <p>
-                            <span>Edit Sport</span>
-                        </p>
                     </a>
                 </li>
             {% endif %}
-                <li class="nav-item">
+                <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Add Activity">
                     <a href="{% url 'add-activity' %}" class="nav-link btn-rotate" id="add-activity-button">
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-running"></i>
                         <p>
-                            <span>Activity</span>
+                            <span class="d-lg-none d-md-block">Add Activity</span>
                         </p>
                     </a>
                 </li>
@@ -50,12 +61,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link btn-rotate" href="{% url 'settings' %}">
-                    <i class="nc-icon nc-settings-gear-65"></i>
-                    <p>
-                        <span class="d-lg-none d-md-block">Settings</span>
-                    </p>
-                </a>
+                    <a class="nav-link btn-rotate" href="{% url 'settings' %}">
+                        <i class="nc-icon nc-settings-gear-65"></i>
+                        <p>
+                            <span class="d-lg-none d-md-block">Settings</span>
+                        </p>
+                    </a>
                 </li>
             </ul>
         </div>

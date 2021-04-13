@@ -13,9 +13,9 @@
                         </div>
                     </div>
                     <div class="col-7 col-md-8">
-                        <div class="numbers">
+                        <div class="numbers" data-toggle="tooltip" data-placement="bottom" title="{{ activity.date|date:"Y-m-d H:i" }}">
                             <p class="card-category">Date</p>
-                            <p>{{ activity.date|date:"d. M y H:i" }}</p>
+                            <p>{{ activity.date|date:"d. M y" }}</p>
                         </div>
                     </div>
                 </div>

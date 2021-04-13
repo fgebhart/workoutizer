@@ -4,7 +4,7 @@
 
 <style type="text/css" media="screen">
     .leaflet-container {
-        height: 400px;
+        height: {{ map_height }}px;
     }
     .table td {
         padding: 0.3rem !important;
@@ -12,15 +12,6 @@
 </style>
 
 {% include "lib/messages.html" %}
-
-<div class="btn-group">
-    <a class="btn btn-warning" href="{{ activity.id }}/edit" id="edit-activity" data-toggle="tooltip" data-placement="bottom"
-        title="Edit Activity"><i class="fas fa-pen"></i></a>
-    {% if activity.trace_file.longitude_list != "[]" %}
-        <a class="btn btn-warning" href="{{ activity.id }}/download" data-toggle="tooltip" data-placement="bottom"
-            title="Download GPX File"><i class="fas fa-download"></i></a>
-    {% endif %}
-</div>
 
 {% include "activity/activity_facts.html" %}
 
