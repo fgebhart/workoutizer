@@ -6,8 +6,6 @@
 #
 asgiref==3.3.1
     # via django
-beautifulsoup4==4.9.3
-    # via django-bootstrap4
 bokeh==1.4.0
     # via -r requirements.in
 certifi==2020.12.5
@@ -17,18 +15,12 @@ chardet==4.0.0
 click==7.1.2
     # via -r requirements.in
 coloredlogs==15.0
-    # via -r requirements.in
-django-bootstrap-datepicker-plus==3.0.5
-    # via -r requirements.in
-django-bootstrap4==2.3.1
-    # via -r requirements.in
+    # via -r setup/requirements/requirements.in
 django-colorfield==0.4.1
     # via -r requirements.in
 django==3.1.6
     # via
-    #   -r requirements.in
-    #   django-bootstrap-datepicker-plus
-    #   django-bootstrap4
+    #   -r setup/requirements/requirements.in
     #   djangorestframework
 djangorestframework==3.12.2
     # via -r requirements.in
@@ -80,8 +72,6 @@ six==1.15.0
     # via
     #   bokeh
     #   python-dateutil
-soupsieve==2.2
-    # via beautifulsoup4
 sportgems==0.5.0
     # via -r requirements.in
 sqlparse==0.4.1
