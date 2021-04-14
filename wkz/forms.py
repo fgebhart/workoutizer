@@ -2,12 +2,13 @@ from django import forms
 
 from wkz.models import Sport, Activity, Settings
 
+
 DATETIMEPICKER_FORMAT = ["%m/%d/%Y %I:%M %p"]
 
 
 def set_field_attributes(visible_fields):
     for visible in visible_fields:
-        if visible.name == "date":  # because it would overwrite settings from above
+        if visible.name == "date":  # because it would overwrite the required 'datetimepicker' class
             continue
         else:
             visible.field.widget.attrs["class"] = "form-control"
