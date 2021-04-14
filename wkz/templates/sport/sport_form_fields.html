@@ -1,7 +1,6 @@
 {% csrf_token %}
 {{ form.media }}
 {% include "lib/form_errors.html" %}
-{% include "lib/messages.html" %}
 <div class="row">
     <label class="col-md-4 col-form-label">{{ form.name.label }}</label>
     <div class="col-md-8">
