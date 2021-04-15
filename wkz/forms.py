@@ -3,7 +3,7 @@ from django import forms
 from wkz.models import Sport, Activity, Settings
 
 
-DATETIMEPICKER_FORMAT = ["%m/%d/%Y %I:%M %p"]
+DATETIMEPICKER_FORMAT = "%m/%d/%Y %I:%M %p"
 
 
 def set_field_attributes(visible_fields):
@@ -26,7 +26,7 @@ class AddSportsForm(forms.ModelForm):
 
 class AddActivityForm(forms.ModelForm):
     date = forms.DateTimeField(
-        input_formats=DATETIMEPICKER_FORMAT,
+        input_formats=[DATETIMEPICKER_FORMAT],
         widget=forms.DateTimeInput(attrs={"class": "form-control datetimepicker"}),
     )
 
@@ -42,7 +42,7 @@ class AddActivityForm(forms.ModelForm):
 
 class EditActivityForm(forms.ModelForm):
     date = forms.DateTimeField(
-        input_formats=DATETIMEPICKER_FORMAT,
+        input_formats=[DATETIMEPICKER_FORMAT],
         widget=forms.DateTimeInput(attrs={"class": "form-control datetimepicker"}),
     )
 

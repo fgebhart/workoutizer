@@ -1,5 +1,6 @@
 import os
 import logging
+import datetime
 
 from django.shortcuts import render
 from django.views.generic import DeleteView
@@ -8,11 +9,13 @@ from django.contrib import messages
 from django.http import HttpResponse, Http404
 from django.urls import reverse
 from django.forms import modelformset_factory
+import pytz
 
+from workoutizer import settings as django_settings
 from wkz.views import MapView, get_all_form_field_ids
 from wkz.awards_views import get_top_awards_for_one_sport
 from wkz.models import Sport, Activity, Lap, BestSection
-from wkz.forms import AddActivityForm, EditActivityForm
+from wkz.forms import AddActivityForm, EditActivityForm, DATETIMEPICKER_FORMAT
 from wkz.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wkz.plotting.plot_time_series import plot_time_series
 from wkz.best_sections.generic import _activity_suitable_for_awards
@@ -68,7 +71,7 @@ def add_activity_view(request):
         else:
             log.warning(f"form invalid: {form.errors}")
     else:
-        form = AddActivityForm()
+        form = AddActivityForm(initial={"date": str(datetime.datetime.now().strftime(DATETIMEPICKER_FORMAT))})
     return render(
         request,
         "activity/add_activity.html",
@@ -80,7 +83,13 @@ def edit_activity_view(request, activity_id):
     form_field_ids = get_all_form_field_ids()
     sports = Sport.objects.all().order_by("name")
     activity = Activity.objects.get(id=activity_id)
-    activity_form = EditActivityForm(request.POST or None, instance=activity)
+    print(f"activity.date: {activity.date}")
+    date = activity.date.astimezone(pytz.timezone(django_settings.TIME_ZONE))
+    print(f"date: {date}")
+    date = str(date.strftime(DATETIMEPICKER_FORMAT))
+    print(f"date: {date}")
+    # print(f"tz: {date.tzinfo}")
+    activity_form = EditActivityForm(request.POST or None, instance=activity, initial={"date": date})
     laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
     has_laps = True if laps else False
     if has_laps:
