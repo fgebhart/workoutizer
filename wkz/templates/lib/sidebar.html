@@ -4,7 +4,7 @@
     <div class="logo">
         <a href="{% url 'home' %}" class="simple-text logo-mini">
             <div class="logo-image-small">
-            <img src="{% static 'img/favicon.ico' %}">
+                <img src="{% static 'img/favicon.ico' %}">
             </div>
         </a>
         <a href="{% url 'home' %}" class="simple-text logo-normal">
@@ -15,33 +15,33 @@
         <ul class="nav">
 
             {% if page_name == "Dashboard" %}
-            <li class="active ">
+                <li class="active ">
             {% else %}
-            <li>
+                <li>
             {% endif %}
-            <a href="/">
+            <a href="{% url 'home' %}">
                 <i class="fas fa-chart-line"></i>
                 <p>Dashboard</p>
             </a>
             </li>
 
             {% if page_name == "Awards" %}
-            <li class="active ">
+                <li class="active ">
             {% else %}
-            <li>
+                <li>
             {% endif %}
-            <a href="/awards">
+            <a href="{% url 'awards' %}">
                 <i class="fas fa-medal"></i>
                 <p>Awards</p>
             </a>
             </li>
 
             {% if page_name == "Sports" %}
-            <li class="active ">
+                <li class="active ">
             {% else %}
-            <li>
+                <li>
             {% endif %}
-            <a href="/sports">
+            <a href="{% url 'sports' %}">
                 <i class="nc-icon nc-tile-56"></i>
                 <p>Sports</p>
             </a>
@@ -50,29 +50,29 @@
             {% for s in sports %}
             {% if s.slug != 'unknown' %}
                 {% if activity.sport.slug == s.slug or sport.slug == s.slug %}
-                <li class="active">
-                    <a href="/sport/{{ s.slug }}">
-                        <i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i>
-                        <p>{{ s.name }}</p>
-                    </a>
-                </li>
+                    <li class="active">
+                        <a href="/sport/{{ s.slug }}">
+                            <i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i>
+                            <p>{{ s.name }}</p>
+                        </a>
+                    </li>
                 {% else %}
-                <li>
-                    <a href="/sport/{{ s.slug }}">
-                        <i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i>
-                        <p>{{ s.name }}</p>
-                    </a>
-                </li>
+                    <li>
+                        <a href="/sport/{{ s.slug }}">
+                            <i class="fas fa-{{ s.icon }}" style="color: {{ s.color }};"></i>
+                            <p>{{ s.name }}</p>
+                        </a>
+                    </li>
                 {% endif %}
             {% endif %}
             {% endfor %}
 
             {% if page_name == "Add Sport" %}
-            <li class="active ">
+                <li class="active ">
             {% else %}
-            <li>
+                <li>
             {% endif %}
-            <a href="/add-sport">
+            <a href="{% url 'add-sport' %}">
                 <i class="fas fa-plus"></i>
                 <p>Add Sport</p>
             </a>

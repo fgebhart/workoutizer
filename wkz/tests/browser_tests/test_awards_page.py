@@ -18,11 +18,11 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
 
     # 1. assert existence of different html tags,...
     table_header = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
-    assert "Rank" in table_header
-    assert "Distance" in table_header
-    assert "Date" in table_header
-    assert "Activity" in table_header
-    assert "Speed  " in table_header
+    assert "RANK" in table_header
+    assert "DISTANCE" in table_header
+    assert "DATE" in table_header
+    assert "ACTIVITY" in table_header
+    assert "SPEED  " in table_header
 
     h4 = [h4.text for h4 in webdriver.find_elements_by_tag_name("h4")]
     # note hiking activities won't show up, since they are disabled for awards in initial_data_handler
@@ -31,8 +31,6 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Cycling  " in h4
 
     links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
-    assert "  Add Activity" in links
-    assert "  Workoutizer  " in links
     assert "Noon Hiking in Aftersteg" not in links
     assert "Noon Hiking in Kornau" not in links
     assert "Noon Hiking in Bad Schandau" not in links
@@ -105,11 +103,11 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     webdriver.get(live_server.url + reverse("awards"))
 
     th = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
-    assert "Rank" in th
-    assert "Distance" in th
-    assert "Date" in th
-    assert "Activity" in th
-    assert "Speed  " in th
+    assert "RANK" in th
+    assert "DISTANCE" in th
+    assert "DATE" in th
+    assert "ACTIVITY" in th
+    assert "SPEED  " in th
 
     fastest_top_awards = []
     for distance in configuration.fastest_distances:
@@ -140,11 +138,11 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     webdriver.find_element(By.LINK_TEXT, "Climb Awards").click()
 
     th = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
-    assert "Rank" in th
-    assert "Distance" in th
-    assert "Date" in th
-    assert "Activity" in th
-    assert "Climb  " in th
+    assert "RANK" in th
+    assert "DISTANCE" in th
+    assert "DATE" in th
+    assert "ACTIVITY" in th
+    assert "CLIMB  " in th
 
     climb_top_awards = []
     for distance in configuration.climb_distances:

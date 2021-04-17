@@ -25,13 +25,13 @@
             <ul class="navbar-nav">
             {% if is_activity_page %}
                 <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Edit Activity">
-                    <a href="{{ activity.id }}/edit" class="nav-link btn-rotate" id="edit-activity">
+                    <a href="{{ activity.id }}/edit/" class="nav-link btn-rotate" id="edit-activity-button">
                         <i class="fas fa-pen"></i>
                     </a>
                 </li>
                 {% if activity.trace_file.longitude_list != "[]" %}
                 <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Download GPX File">
-                    <a href="{{ activity.id }}/download" class="nav-link btn-rotate" id="edit-activity">
+                    <a href="{{ activity.id }}/download/" class="nav-link btn-rotate" id="download-activity-button">
                         <i class="fas fa-download"></i>
                     </a>
                 </li>
@@ -39,7 +39,7 @@
             {% endif %}
             {% if page_name in available_sport_names %}
                 <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Edit Sport">
-                    <a href="{{ sport.slug }}/edit" class="nav-link btn-rotate" id="add-activity-button">
+                    <a href="{{ sport.slug }}/edit/" class="nav-link btn-rotate" id="edit-sport-button">
                         <i class="fas fa-pen"></i>
                     </a>
                 </li>
@@ -53,7 +53,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link btn-rotate" href="{% url 'help' %}">
+                    <a class="nav-link btn-rotate" href="{% url 'help' %}" id="help-button">
                         <i class="fas fa-question-circle"></i>
                         <p>
                             <span class="d-lg-none d-md-block">Help</span>
@@ -61,7 +61,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link btn-rotate" href="{% url 'settings' %}">
+                    <a class="nav-link btn-rotate" href="{% url 'settings' %}" id="settings-button">
                         <i class="nc-icon nc-settings-gear-65"></i>
                         <p>
                             <span class="d-lg-none d-md-block">Settings</span>

@@ -83,12 +83,8 @@ def edit_activity_view(request, activity_id):
     form_field_ids = get_all_form_field_ids()
     sports = Sport.objects.all().order_by("name")
     activity = Activity.objects.get(id=activity_id)
-    print(f"activity.date: {activity.date}")
     date = activity.date.astimezone(pytz.timezone(django_settings.TIME_ZONE))
-    print(f"date: {date}")
     date = str(date.strftime(DATETIMEPICKER_FORMAT))
-    print(f"date: {date}")
-    # print(f"tz: {date.tzinfo}")
     activity_form = EditActivityForm(request.POST or None, instance=activity, initial={"date": date})
     laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
     has_laps = True if laps else False
@@ -181,7 +177,12 @@ class DemoActivityDeleteView(DeleteView):
         return render(
             request,
             self.template_name,
-            {"sports": sports, "activities": self.activities, "form_field_ids": get_all_form_field_ids()},
+            {
+                "sports": sports,
+                "activities": self.activities,
+                "form_field_ids": get_all_form_field_ids(),
+                "page_name": "Delete Demo Activities",
+            },
         )
 
     def post(self, request, *args, **kwargs):
