@@ -282,6 +282,7 @@ def test_keyboard_shortcuts__toggle_sidebar(live_server, webdriver):
     with pytest.raises(NoSuchElementException):
         webdriver.find_element(By.LINK_TEXT, "WORKOUTIZER")
 
+    element = webdriver.find_element(By.CLASS_NAME, "navbar-brand")
     # expand sidebar
     ac = ActionChains(webdriver)
     ac.key_down("[")
@@ -289,7 +290,5 @@ def test_keyboard_shortcuts__toggle_sidebar(live_server, webdriver):
     ac.key_up("[")
     _try_to_perform_chain(ac)
 
+    # wait and see if WORKOUTIZER will be coming back again
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.LINK_TEXT, "WORKOUTIZER")))
-
-    # verify WORKOUTIZER is again visible
-    webdriver.find_element(By.LINK_TEXT, "WORKOUTIZER")
