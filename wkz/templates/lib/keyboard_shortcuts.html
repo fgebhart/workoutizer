@@ -1,7 +1,8 @@
 {% load filters %}
 
 <script>
-    var map = {};   // thanks to https://stackoverflow.com/questions/5203407/how-to-detect-if-multiple-keys-are-pressed-at-once-using-javascript
+// thanks to https://stackoverflow.com/questions/5203407/how-to-detect-if-multiple-keys-are-pressed-at-once-using-javascript
+    var km = {};    // key map to hold pressed keys
     onkeydown = onkeyup = function (e) {
         let ids = {{ form_field_ids | safe }};
         if (ids.includes(document.activeElement.id)) {
@@ -9,68 +10,68 @@
         } else {
             let sports = {{ sports | queryset_to_list | safe }}
                 e = e || event; // to deal with IE
-            map[e.key] = e.type === 'keydown';
+            km[e.key] = e.type === 'keydown';
             go_to_page_with_key(event, sports)
         }
     }
 
     function go_to_page_with_key(event, sports) {
-        if (map['g'] && map['d']) {
+        if (km['g'] && km['d']) {
             window.location.href = '/';
-            map = {};
-        } else if (map['g'] && map['s']) {
+            km = {};
+        } else if (km['g'] && km['s']) {
             window.location.href = '/sports';
-            map = {};
-        } else if (map['g'] && map['n']) {
+            km = {};
+        } else if (km['g'] && km['n']) {
             window.location.href = '/add-activity';
-            map = {};
-        } else if (map['g'] && map['a']) {
+            km = {};
+        } else if (km['g'] && km['a']) {
             window.location.href = '/awards';
-            map = {};
-        } else if (map['g'] && map[',']) {
+            km = {};
+        } else if (km['g'] && km[',']) {
             window.location.href = '/settings';
-            map = {};
-        } else if (map['g'] && map['h']) {
+            km = {};
+        } else if (km['g'] && km['h']) {
             window.location.href = '/help';
-            map = {};
-        } else if (map['g'] && map['e']) {
+            km = {};
+        } else if (km['g'] && km['e']) {
             {% if is_activity_page or page_name in available_sport_names %}
                 window.location.href = window.location.href + '/edit';
-                map = {};
+                km = {};
             {% endif %}
-        } else if (map['g'] && map['0']) {
+        } else if (km['g'] && km['0']) {
             window.location.href = get_sport(event, sports);
-            map = {};
-        } else if (map['g'] && map['1']) {
+            km = {};
+        } else if (km['g'] && km['1']) {
             window.location.href = get_sport(event, sports);
-            map = {};
-        } else if (map['g'] && map['2']) {
+            km = {};
+        } else if (km['g'] && km['2']) {
             window.location.href = get_sport(event, sports);
-            map = {};
-        } else if (map['g'] && map['3']) {
+            km = {};
+        } else if (km['g'] && km['3']) {
             window.location.href = get_sport(event, sports);
-            map = {};
-        } else if (map['g'] && map['4']) {
+            km = {};
+        } else if (km['g'] && km['4']) {
             window.location.href = get_sport(event, sports);
-            map = {};
-        } else if (map['g'] && map['5']) {
+            km = {};
+        } else if (km['g'] && km['5']) {
             window.location.href = get_sport(event, sports);
-            map = {};
-        } else if (map['g'] && map['6']) {
+            km = {};
+        } else if (km['g'] && km['6']) {
             window.location.href = get_sport(event, sports);
-            map = {};
-        } else if (map['g'] && map['7']) {
+            km = {};
+        } else if (km['g'] && km['7']) {
             window.location.href = get_sport(event, sports);
-            map = {};
-        } else if (map['g'] && map['8']) {
+            km = {};
+        } else if (km['g'] && km['8']) {
             window.location.href = get_sport(event, sports);
-            map = {};
-        } else if (map['g'] && map['9']) {
+            km = {};
+        } else if (km['g'] && km['9']) {
             window.location.href = get_sport(event, sports);
-            map = {};
-        } else if (map['[']) {
+            km = {};
+        } else if (km['[']) {
             document.getElementById("minimizeSidebar").click();
-            map = {};
+            km = {};
         }
     }
 
