@@ -2,12 +2,13 @@ from django.urls import reverse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import ElementNotInteractableException, NoSuchElementException
+from selenium.common.exceptions import ElementNotInteractableException, NoSuchElementException, WebDriverException
+from selenium.webdriver.common.action_chains import ActionChains
 import pytest
 
 
 def test_sidebar(live_server, webdriver):
-    def assert_only_selected_link_is_highlighted(red_link_text: str):
+    def _assert_only_selected_link_is_highlighted(red_link_text: str):
         all_links = webdriver.find_elements(By.TAG_NAME, "a")
         for link in all_links:
             if link.text == red_link_text:
@@ -18,25 +19,25 @@ def test_sidebar(live_server, webdriver):
     webdriver.get(live_server.url + reverse("home"))
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Dashboard"
     assert webdriver.current_url == live_server.url + reverse("home")
-    assert_only_selected_link_is_highlighted("DASHBOARD")
+    _assert_only_selected_link_is_highlighted("DASHBOARD")
 
     # test element in sidebar
     webdriver.find_element(By.LINK_TEXT, "ADD SPORT").click()
     assert webdriver.current_url == live_server.url + reverse("add-sport")
-    assert_only_selected_link_is_highlighted("ADD SPORT")
+    _assert_only_selected_link_is_highlighted("ADD SPORT")
 
     webdriver.find_element(By.LINK_TEXT, "AWARDS").click()
     assert webdriver.current_url == live_server.url + reverse("awards")
-    assert_only_selected_link_is_highlighted("AWARDS")
+    _assert_only_selected_link_is_highlighted("AWARDS")
 
     # test clicking on "WORKOUTIZER" in the sidebar
     webdriver.find_element(By.LINK_TEXT, "WORKOUTIZER").click()
     assert webdriver.current_url == live_server.url + reverse("home")
-    assert_only_selected_link_is_highlighted("DASHBOARD")
+    _assert_only_selected_link_is_highlighted("DASHBOARD")
 
     webdriver.find_element(By.LINK_TEXT, "SPORTS").click()
     assert webdriver.current_url == live_server.url + reverse("sports")
-    assert_only_selected_link_is_highlighted("SPORTS")
+    _assert_only_selected_link_is_highlighted("SPORTS")
 
     # minimize sidebar
     webdriver.find_element(By.CSS_SELECTOR, ".nc-minimal-left").click()
@@ -44,7 +45,7 @@ def test_sidebar(live_server, webdriver):
     # verify dumpbell img is present
     webdriver.find_element(By.TAG_NAME, "img").click()
     assert webdriver.current_url == live_server.url + reverse("home")
-    assert_only_selected_link_is_highlighted("DASHBOARD")
+    _assert_only_selected_link_is_highlighted("DASHBOARD")
 
     # now check that both normal logo (text) and mini logo (img) are visible
     webdriver.find_element(By.CLASS_NAME, "logo-normal")
@@ -127,7 +128,7 @@ def test_responsiveness(live_server, webdriver):
     webdriver.find_element(By.ID, "settings-button").click()
 
 
-def test_custom_navbar_items(live_server, webdriver, import_one_activity, take_screenshot):
+def test_custom_navbar_items(live_server, webdriver, import_one_activity, flush_db):
     default_slugs = ["add-activity", "settings", "help", "awards", "sports", "add-sport"]
     all_possible_slugs = set(default_slugs + ["edit", "download"])
 
@@ -181,5 +182,114 @@ def test_custom_navbar_items(live_server, webdriver, import_one_activity, take_s
 
     # activity page should have default slugs + edit + download
     webdriver.get(live_server.url + "/activity/1")
-    take_screenshot(webdriver, "download")
     _assert_that_only_these_slugs_are_present(default_slugs + ["edit", "download"])
+
+
+def _try_to_perform_chain(action_chain: ActionChains):
+    # sometimes fails with: Component returned failure code: 0x80004005 (NS_ERROR_FAILURE)
+    # maybe due to too lager page_source, TODO try removing try/except once js/css got cleaned up
+    # https://stackoverflow.com/questions/57598293/webdriverexception-message-ns-error-failure-location-js-frame-chrome
+    try:
+        action_chain.perform()
+    except WebDriverException as e:
+        print(f"failed due to : {e}")
+
+
+@pytest.mark.parametrize(
+    "buttons, page",
+    [
+        (["g", "d"], "home"),
+        (["g", "s"], "sports"),
+        (["g", "a"], "awards"),
+        (["g", ","], "settings"),
+        (["g", "h"], "help"),
+        (["g", "n"], "add-activity"),
+    ],
+)
+def test_keyboard_shortcuts__go_to(live_server, webdriver, buttons, page):
+    webdriver.get(live_server.url + reverse("add-sport"))
+    assert webdriver.current_url == live_server.url + reverse("add-sport")
+    element = webdriver.find_element(By.CLASS_NAME, "navbar-brand")
+
+    ac = ActionChains(webdriver)
+    ac.key_down(buttons[0])
+    ac.click(element)
+    ac.key_down(buttons[1])
+    ac.click(element)
+    ac.key_up(buttons[0])
+    ac.key_up(buttons[1])
+
+    _try_to_perform_chain(ac)
+
+    assert webdriver.current_url == live_server.url + reverse(page)
+
+
+def test_keyboard_shortcuts__activity_and_sport(flush_db, live_server, webdriver, insert_sport, insert_activity):
+    insert_sport("Bowling")
+    insert_activity()
+
+    webdriver.get(live_server.url + "/activity/1")
+    assert webdriver.current_url == live_server.url + "/activity/1"
+    element = webdriver.find_element(By.CLASS_NAME, "navbar-brand")
+
+    # test going to edit activity
+    ac = ActionChains(webdriver)
+    ac.key_down("g")
+    ac.click(element)
+    ac.key_down("e")
+    ac.click(element)
+    ac.key_up("g")
+    ac.key_up("e")
+    _try_to_perform_chain(ac)
+
+    assert webdriver.current_url == live_server.url + "/activity/1/edit/"
+
+    webdriver.get(live_server.url + "/sport/bowling")
+    assert webdriver.current_url == live_server.url + "/sport/bowling"
+    element = webdriver.find_element(By.CLASS_NAME, "navbar-brand")
+
+    # test going to edit sport
+    ac = ActionChains(webdriver)
+    ac.key_down("g")
+    ac.click(element)
+    ac.key_down("e")
+    ac.click(element)
+    ac.key_up("g")
+    ac.key_up("e")
+    _try_to_perform_chain(ac)
+
+    assert webdriver.current_url == live_server.url + "/sport/bowling/edit/"
+
+
+def test_keyboard_shortcuts__toggle_sidebar(live_server, webdriver):
+    webdriver.get(live_server.url + reverse("home"))
+    assert webdriver.current_url == live_server.url + reverse("home")
+    element = webdriver.find_element(By.CLASS_NAME, "navbar-brand")
+
+    # check that WORKOUTIZER is visible
+    webdriver.find_element(By.LINK_TEXT, "WORKOUTIZER")
+
+    # collapse sidebar
+    ac = ActionChains(webdriver)
+    ac.key_down("[")
+    ac.click(element)
+    ac.key_up("[")
+    _try_to_perform_chain(ac)
+
+    WebDriverWait(webdriver, 3).until(EC.invisibility_of_element_located((By.LINK_TEXT, "WORKOUTIZER")))
+
+    # check that WORKOUTIZER is now invisible
+    with pytest.raises(NoSuchElementException):
+        webdriver.find_element(By.LINK_TEXT, "WORKOUTIZER")
+
+    # expand sidebar
+    ac = ActionChains(webdriver)
+    ac.key_down("[")
+    ac.click(element)
+    ac.key_up("[")
+    _try_to_perform_chain(ac)
+
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.LINK_TEXT, "WORKOUTIZER")))
+
+    # verify WORKOUTIZER is again visible
+    webdriver.find_element(By.LINK_TEXT, "WORKOUTIZER")

@@ -14,8 +14,8 @@ def test_all_sports_page_accessible(live_server, webdriver):
     webdriver.get(live_server.url + reverse("sports"))
 
     # first time running workoutizer will lead to the dashboard page with no data
-    h3 = webdriver.find_element_by_class_name("card-title")
-    assert h3.text == "Sports Overview"
+    card_title = webdriver.find_element_by_class_name("card-title")
+    assert card_title.text == "Sports Overview"
     assert "Sports" in webdriver.find_element_by_class_name("navbar-brand").text
 
 

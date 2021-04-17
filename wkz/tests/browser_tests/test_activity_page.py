@@ -186,7 +186,6 @@ CANCEL
     assert "CANCEL" in links
     assert "  DELETE" in links
     assert "REPORT AN ISSUE" in links
-    assert "LICENSE" in links
     assert "" in links
 
     # uncheck the box for evaluates_for_awards

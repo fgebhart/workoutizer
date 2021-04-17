@@ -3,16 +3,10 @@ from py._path.local import LocalPath
 from typing import List
 
 import pytest
-from django.core.management import call_command
 
 from workoutizer import settings as django_settings
 from wkz.file_importer import copy_demo_fit_files_to_track_dir
 from wkz import models
-
-
-@pytest.fixture
-def flush_db(db):
-    call_command("flush", verbosity=0, interactive=False)
 
 
 class FakeDevice:
