@@ -89,9 +89,10 @@ Remote - Containers extension.
 
 ## Thanks
 
-Thanks to the authors of projects I integrated into workoutizer:
+Third part libraries, tools used by Workoutizer:
 * [leaflet-ui](https://github.com/Raruto/leaflet-ui) by [Raruto](https://github.com/Raruto)
 * [django-colorfield](https://github.com/fabiocaccamo/django-colorfield) by [Fabio Caccamo](https://github.com/fabiocaccamo)
 * [python-fitparse](https://github.com/dtcooper/python-fitparse) by [dtcooper](https://github.com/dtcooper)
 * [leaflet-color-markers](https://github.com/pointhi/leaflet-color-markers) by [pointhi](https://github.com/pointhi)
 * [Font Awesome Icons](https://fontawesome.com/)
+* [Paper-Dashboard Pro](https://www.creative-tim.com/product/paper-dashboard-2-pro) by [Creative Tim](https://www.creative-tim.com/)
