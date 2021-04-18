@@ -89,7 +89,7 @@ Remote - Containers extension.
 
 ## Thanks
 
-Third part libraries, tools used by Workoutizer:
+Libraries and other tools used by Workoutizer:
 * [leaflet-ui](https://github.com/Raruto/leaflet-ui) by [Raruto](https://github.com/Raruto)
 * [django-colorfield](https://github.com/fabiocaccamo/django-colorfield) by [Fabio Caccamo](https://github.com/fabiocaccamo)
 * [python-fitparse](https://github.com/dtcooper/python-fitparse) by [dtcooper](https://github.com/dtcooper)
