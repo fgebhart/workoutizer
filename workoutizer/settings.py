@@ -109,6 +109,9 @@ REST_FRAMEWORK = {
     ],
 }
 
+# set auto primary key to BigAutoField explicitly to suppress warning
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 # plotting
 trace_line_width = 3.5
 trace_line_opacity = 0.9
