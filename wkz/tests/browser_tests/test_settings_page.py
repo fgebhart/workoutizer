@@ -14,10 +14,6 @@ def test_settings_page__no_demo_activity(live_server, webdriver):
 
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Settings"
 
-    headings = [h.text for h in webdriver.find_elements_by_tag_name("h3")]
-    assert "File Importer" in headings
-    assert "Reimporter" in headings
-
     # verify the text of the input field labels
     input_labels = [link.text for link in webdriver.find_elements_by_class_name("col-md-4")]
     assert "Path to Traces Directory" in input_labels
@@ -33,8 +29,9 @@ def test_settings_page__no_demo_activity(live_server, webdriver):
 
     # verify no demo activity is present
     assert len(models.Activity.objects.filter(is_demo_activity=True)) == 0
-    # no Demo heading present
-    assert "Demo" not in headings
+    # no delete demo data button present
+    with pytest.raises(NoSuchElementException):
+        webdriver.find_element(By.ID, "delete-demo-data")
 
 
 def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_server, webdriver):
@@ -43,14 +40,10 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
 
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Settings"
 
-    headings = [h.text for h in webdriver.find_elements_by_tag_name("h3")]
-    assert "File Importer" in headings
-    assert "Reimporter" in headings
-
     # verify no demo activity is present
     assert models.Activity.objects.filter(is_demo_activity=True).count() == 19
     # Demo heading is present
-    assert "Demo" in headings
+    webdriver.find_element(By.ID, "delete-demo-data")
 
     # also delete demo activity button is present
     first_delete_button = webdriver.find_element_by_id("delete-demo-data")
@@ -68,6 +61,10 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
 
     # verify that all demo data got deleted
     assert models.Activity.objects.filter(is_demo_activity=True).count() == 0
+
+    # no delete demo data button present
+    with pytest.raises(NoSuchElementException):
+        webdriver.find_element(By.ID, "delete-demo-data")
 
 
 def test_settings_page__edit_and_submit_form(live_server, webdriver):
