@@ -15,12 +15,12 @@ chardet==4.0.0
 click==7.1.2
     # via -r requirements.in
 coloredlogs==15.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 django-colorfield==0.4.1
     # via -r requirements.in
-django==3.1.6
+django==3.1.8
     # via
-    #   -r setup/requirements/requirements.in
+    #   -r requirements.in
     #   djangorestframework
 djangorestframework==3.12.2
     # via -r requirements.in
