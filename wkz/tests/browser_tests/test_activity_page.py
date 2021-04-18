@@ -20,13 +20,26 @@ def test_activity_page__complete(import_one_activity, live_server, webdriver):
     webdriver.get(live_server.url + f"/activity/{pk}")
 
     table_header = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
-    assert "  Duration:  4:59 h" in table_header
-    assert "  Distance:  44.96 km" in table_header
-    assert "  Calories:  1044 kcal" in table_header
-    assert "Time" in table_header
-    assert "Distance" in table_header
-    assert "Pace" in table_header
-    assert "Label" in table_header
+    # assert "  Duration:  4:59 h" in table_header
+    # assert "  Distance:  44.96 km" in table_header
+    # assert "  Calories:  1044 kcal" in table_header
+    assert "#" in table_header
+    assert "TIME" in table_header
+    assert "DISTANCE" in table_header
+    assert "PACE" in table_header
+    assert "LABEL" in table_header
+
+    # check summary facts
+    card_category = [cell.text for cell in webdriver.find_elements_by_class_name("card-category")]
+    assert "Date" in card_category
+    assert "Distance" in card_category
+    assert "Duration" in card_category
+    assert "Calories" in card_category
+    card_title = [cell.text for cell in webdriver.find_elements_by_class_name("card-title")]
+    assert "4h 59m" in card_title
+    assert "44.96 km" in card_title
+    assert "1044 kcal" in card_title
+    assert "29. Aug 20" in card_title
 
     table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
     # best sections
@@ -55,25 +68,26 @@ def test_activity_page__complete(import_one_activity, live_server, webdriver):
     assert "11423" in table_data
     assert "09:18" in table_data
 
-    assert webdriver.find_element_by_tag_name("h3").text == "Noon Cycling in Bad Schandau  "
+    assert webdriver.find_element_by_class_name("navbar-brand").text == "Noon Cycling In Bad Schandau"
 
-    headings = [h.text for h in webdriver.find_elements_by_tag_name("h5")]
-    assert "Fastest Sections  " in headings
-    assert "Speed" in headings
-    assert "Pace" in headings
-    assert "Temperature" in headings
-    assert "Laps" in headings
+    # check card titles
+    assert "Fastest Sections  " in card_title
+    assert "Best Climb Sections  " in card_title
+    assert "Speed" in card_title
+    assert "Pace" in card_title
+    assert "Temperature" in card_title
+    assert "Laps" in card_title
 
     links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
-    assert "  Add Activity" in links
-    assert "  Workoutizer  " in links
+    assert "WORKOUTIZER" in links
+    assert "DASHBOARD" in links
+    assert "AWARDS" in links
+    assert "SPORTS" in links
+    assert "ADD SPORT" in links
     assert "+" in links
     assert "−" in links
     assert "Leaflet" in links
     assert "OpenStreetMap" in links
-
-    ps = [p.text for p in webdriver.find_elements_by_tag_name("p")]
-    assert "Aug 29, 2020, 17:12" in ps
 
     spans = [a.text for a in webdriver.find_elements_by_tag_name("span")]
     assert "Streets" in spans
@@ -86,11 +100,13 @@ def test_activity_page__complete(import_one_activity, live_server, webdriver):
     assert len(webdriver.find_elements_by_class_name("fa-fire")) > 0
     assert len(webdriver.find_elements_by_class_name("fa-road")) > 0
     assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-calendar-alt")) > 0
 
     # check that map is displayed
     assert (
-        webdriver.find_element_by_id("map").text
-        == "Streets\nTopo\nTerrain\nSatellite\n+\n−\n2 km\nLeaflet | Map data: © OpenStreetMap"
+        webdriver.find_element_by_id("leaflet_map").text
+        == "Streets\nTopo\nTerrain\nSatellite\n+\n−\n3 km\nLeaflet | Map data: © OpenStreetMap"
     )
 
     # check that bokeh plots are available
@@ -122,7 +138,7 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     assert len(webdriver.find_elements_by_class_name("fa-exclamation-circle")) == 0
 
     # go to edit activity page by clicking the edit button
-    button = webdriver.find_element_by_id("edit-activity")
+    button = webdriver.find_element_by_id("edit-activity-button")
     button.click()
 
     # verify url got changed to activity view
@@ -137,23 +153,43 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     activity.save()
     assert activity.is_demo_activity is True
 
-    assert webdriver.find_element_by_tag_name("h3").text == "Edit Activity: Noon Cycling in Bad Schandau (Cycling)"
-    assert webdriver.find_element_by_tag_name("button").text == "  Save"
+    assert webdriver.find_element_by_class_name("navbar-brand").text == "Edit Activity: Noon Cycling In Bad Schandau"
+    assert webdriver.find_element_by_id("submit-button").text == "  SAVE"
     assert (
         webdriver.find_element_by_tag_name("form").text
-        == "Activity Name:\nSport:\nCycling\nMTB\nDate:\nDuration:\n  min\nDistance:\n  km\nDescription:\nConsider this "
-        "Activity for Awards:\n  \nLap Data\n\n\n  Save\nCancel\n  Delete"
+        == """Activity Name
+Sport
+---------
+Cycling
+MTB
+Date
+Duration [HH:MM:SS]
+Distance [in km]
+Description
+Consider Activity for Awards
+
+Lap Data
+
+
+  SAVE
+CANCEL
+  DELETE"""
     )
 
     links = [link.text for link in webdriver.find_elements_by_tag_name("a")]
-    assert "  Add Activity" in links
-    assert "  Workoutizer  " in links
+    assert "DASHBOARD" in links
+    assert "ADD SPORT" in links
+    assert "SPORTS" in links
+    assert "AWARDS" in links
+    assert "WORKOUTIZER" in links
     assert "Lap Data" in links  # means activity has some laps
-    assert "Cancel" in links
-    assert "  Delete" in links
+    assert "CANCEL" in links
+    assert "  DELETE" in links
+    assert "REPORT AN ISSUE" in links
+    assert "" in links
 
     # uncheck the box for evaluates_for_awards
-    webdriver.find_element_by_id("id_evaluates_for_awards").click()
+    webdriver.find_element_by_class_name("form-check-label").click()
 
     # enter a different name
     name_field = webdriver.find_element_by_css_selector("#id_name")
@@ -173,9 +209,8 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     webdriver.find_element(By.ID, "id_date").click()
     webdriver.find_element(By.CSS_SELECTOR, "tr:nth-child(4) > .day:nth-child(5)").click()
     webdriver.find_element(By.CSS_SELECTOR, "tr:nth-child(3) > .day:nth-child(3)").click()
-    webdriver.find_element(By.CSS_SELECTOR, ".glyphicon-time").click()
-    webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(3) .glyphicon-chevron-down").click()
-    webdriver.find_element(By.CSS_SELECTOR, ".glyphicon-remove").click()
+    webdriver.find_element(By.CSS_SELECTOR, ".fa-clock-o").click()
+    webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(3) .fa-chevron-down").click()
 
     # also edit lap data
     webdriver.find_element(By.ID, "edit-lap-data").click()
@@ -233,22 +268,17 @@ def test_add_activity_page(insert_sport, webdriver, live_server):
     dropdown.find_element(By.XPATH, "//option[. = 'Cycling']").click()
     # set date
     webdriver.find_element(By.ID, "id_date").click()
-    webdriver.find_element(By.CSS_SELECTOR, ".glyphicon-time").click()
-    # minus one hour
-    webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(1) .glyphicon-chevron-down").click()
-    # plus one minute
-    webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(3) .glyphicon-chevron-up").click()
-    webdriver.find_element(By.ID, "id_date").click()
-    webdriver.find_element(By.CSS_SELECTOR, ".input-group").click()
+    webdriver.find_element(By.CSS_SELECTOR, ".fa-clock-o").click()
+    # change hours
+    webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(1) .fa-chevron-up").click()
+    # change minutes
+    webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(3) .fa-chevron-down").click()
     # set duration
-    webdriver.find_element(By.ID, "id_duration").click()
     webdriver.find_element(By.ID, "id_duration").clear()
     webdriver.find_element(By.ID, "id_duration").send_keys("00:31:00")
     # set distance
-    webdriver.find_element(By.ID, "id_distance").click()
     webdriver.find_element(By.ID, "id_distance").send_keys("2.3")
     # set description
-    webdriver.find_element(By.ID, "id_description").click()
     webdriver.find_element(By.ID, "id_description").send_keys("super sport")
     webdriver.find_element(By.CSS_SELECTOR, "form").click()
     # submit and wait
@@ -313,8 +343,10 @@ def test_activity_page__rendering_of_sport_icon_on_map(insert_sport, import_one_
 
     initial_number_of_sport_icons = len(webdriver.find_elements_by_class_name(f"fa-{icon_name}"))
 
-    headings = [h.text for h in webdriver.find_elements_by_tag_name("h5")]
+    headings = [h.text for h in webdriver.find_elements_by_tag_name("h4")]
     assert "Fastest Sections  " in headings
+    assert "Best Climb Sections  " in headings
+    assert "Cadence" in headings
     assert "Speed" in headings
     assert "Pace" in headings
     assert "Temperature" in headings
@@ -349,10 +381,10 @@ def test_activity_page__missing_attributes(import_one_activity, live_server, web
     webdriver.get(live_server.url + f"/activity/{pk}")
 
     # verify that page load does not fail (without safety measures in place this would fail with TypeError, see GH95)
-    assert webdriver.find_element_by_tag_name("h3").text == "Noon Cycling in Bad Schandau  "
+    assert webdriver.find_element_by_class_name("navbar-brand").text == "Noon Cycling In Bad Schandau"
 
     # also verify that the sections with missing data are not displayed
-    headings = [h.text for h in webdriver.find_elements_by_tag_name("h5")]
+    headings = [h.text for h in webdriver.find_elements_by_tag_name("h4")]
     assert "Trainings Effect" not in headings
     assert "Heart Rate" not in headings
     assert "Speed" not in headings
@@ -382,7 +414,7 @@ def test_activity_page__missing_attributes(import_one_activity, live_server, web
     webdriver.refresh()
 
     # and verify all headings are back
-    headings = [h.text for h in webdriver.find_elements_by_tag_name("h5")]
+    headings = [h.text for h in webdriver.find_elements_by_tag_name("h4")]
     assert "Fastest Sections  " in headings
     assert "Laps" in headings
     assert "Speed" in headings

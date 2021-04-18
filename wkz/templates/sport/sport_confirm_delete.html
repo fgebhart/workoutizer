@@ -1,23 +1,19 @@
 {% extends 'lib/base.html' %}
-{% load static %}
 {% block body %}
-    <title>Delete {{ sport }} Sport | Workoutizer</title>
-
-    <h3>Delete ' {{ sport }} <i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i> ' Sport?</h3>
-    <hr>
-    <br>
-    <div class="container">
-
-        <br>
-        <p>Are you sure you want to delete ' {{ sport }} ' Sport?</p>
-
-        <form method="post">{% csrf_token %}
-            <br>
-            <button class="float-left btn btn-danger btn-space" type="submit">
-                <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete
-            </button>
-            <a href="/sport/{{ sport.slug }}" class="float-left btn btn-outline-secondary">Cancel</a>
-            <div class="clearfix"></div>
-        </form>
+<div class="row">
+    <div class="col-md-6 mr-auto ml-auto">
+        <div class="card">
+            <div class="card-body">
+                <p>Are you sure you want to delete '{{ sport }}' Sport?</p>
+                <form method="post">{% csrf_token %}
+                    <br>
+                    <button class="float-left btn btn-danger btn-space" type="submit">
+                        <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete
+                    </button>
+                    <a href="/sport/{{ sport.slug }}/edit" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}

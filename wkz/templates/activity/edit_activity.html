@@ -1,80 +1,59 @@
 {% extends 'lib/base.html' %}
 {% load static %}
 {% block body %}
-<style>
-    #id_date {
-        max-width: 23ch;
-    }
-</style>
-    <title>Edit {{ activity }} | Workoutizer</title>
-    <h3>Edit Activity: {{ activity }}</h3>
-    <hr>
-    <br>
-    <div class="container">
-        <form action="/activity/{{ activity.id }}/edit/" method="post" accept-charset="utf-8"
-              enctype="multipart/form-data">
-            {% csrf_token %}
-            {% include "lib/form_errors.html" %}
-            {% include "lib/messages.html" %}
-            <div class="form-group row">
-                <div class="col-sm-3">{{ form.name.label }}</div>
-                <div class="col-sm-9">{{ form.name }}</div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-3">{{ form.sport.label }}</div>
-                <div class="col-sm-9">{{ form.sport }}</div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-3">{{ form.date.label }}:</div>
-                <div class="col-sm-9">{{ form.date }}</div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-3">{{ form.duration.label }}</div>
-                <div class="col-sm-9">{{ form.duration }}&nbsp;&nbsp;min</div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-3">{{ form.distance.label }}</div>
-                <div class="col-sm-9">{{ form.distance }}&nbsp;&nbsp;km</div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-3">{{ form.description.label }}</div>
-                <div class="col-sm-9">{{ form.description }}</div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-3">{{ form.evaluates_for_awards.label }}</div>
-                <div class="col-sm-9">{{ form.evaluates_for_awards }}&nbsp;&nbsp;
-                    <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right"
-                       title="Disable to exclude this activity from awards. Note this option needs to be enabled for both this activity and its sport to consider it for awards."></i>
-                </div>
-            </div>
-            <br>
-            {% if has_laps %}
-                <a href="#edit_laps" id="edit-lap-data" class="h4" style="color: black;" data-toggle="collapse">Lap Data <i
-                        class="fas fa-angle-down"></i></a>
-                <div id="edit_laps" class="collapse">
-                    <br>
-                    {{ formset.management_form }}
-                    {% for lap_form in formset %}
-                        {% if forloop.counter < formset|length %}
-                            {% comment %} always skip last entry {% endcomment %}
-                            {{ lap_form.id }}
-                            <div class="form-group row">
-                                <div class="col-sm-3">{{ forloop.counter }}. Lap:</div>
-                                <div class="col-sm-9">{{ lap_form.label }}</div>
+<div class="row">
+    <div class="col-md-10 mr-auto ml-auto">
+        <div class="card">
+            <div class="card-body">
+                <form action="/activity/{{ activity.id }}/edit/" method="post" accept-charset="utf-8"
+                    enctype="multipart/form-data" class="form-horizontal">
+                    {% include "activity/activity_form_fields.html" %}
+                    <div class="row">
+                        <label class="col-md-4 col-form-label">{{ form.evaluates_for_awards.label }}</label>
+                        <div class="col-md-8">
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label">
+                                    {{ form.evaluates_for_awards }}
+                                    <span class="form-check-sign"></span>
+                                    <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right"
+                                    title="Disable to exclude this activity from awards. Note this option needs to be enabled for both this activity and its sport to consider it for awards."></i>
+                                </label>
                             </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <br>
-                <br>
-            {% endif %}
-            <button id="submit-button" class="float-left btn btn-warning btn-space" type="submit" name="action"><i
-                    class="fas fa-check"></i>&nbsp;&nbsp;Save
-            </button>
-            <a href="/activity/{{ activity.id }}" id="cancel-button" class="float-left btn btn-outline-secondary">Cancel</a>
-            <a href="/activity/{{ activity.id }}/delete/" class="float-right btn btn-danger"><i
-                    class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete</a>
-            <div class="clearfix"></div>
-        </form>
+                        </div>
+                    </div>
+                    <br>
+                    {% if has_laps %}
+                        <a href="#edit_laps" id="edit-lap-data" class="h4" style="color: black;" data-toggle="collapse">Lap Data <i
+                                class="fas fa-angle-down"></i></a>
+                        <div id="edit_laps" class="collapse">
+                            <br>
+                            {{ formset.management_form }}
+                            {% for lap_form in formset %}
+                                {% if forloop.counter < formset|length %} {% comment %} always skip last entry {% endcomment %}
+                                    {{ lap_form.id }}
+                                    <div class="row">
+                                        <label class="col-md-4 col-form-label">{{ forloop.counter }}. Lap</label>
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                {{ lap_form.label }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <br>
+                        <br>
+                    {% endif %}
+                    <button id="submit-button" class="float-left btn btn-success btn-space" type="submit" name="action"><i
+                            class="fas fa-check"></i>&nbsp;&nbsp;Save
+                    </button>
+                    <a href="/activity/{{ activity.id }}" id="cancel-button" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="/activity/{{ activity.id }}/delete/" class="float-right btn btn-danger"><i
+                            class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete</a>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'lib/base.html' %}
+{% load static %}
+{% block body %}
+<title>All Sports | Workoutizer</title>
+<div class="row">
+    <div class="col-md-10 mr-auto ml-auto">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Sports Overview</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Sport Name</th>
+                                <th>Icon</th>
+                                <th>Number of Activities &nbsp;<i class="fas fa-hashtag"></i></th>
+                                <th>Total Duration &nbsp;<i class="fas fa-history"></i></th>
+                                <th>Total Distance &nbsp;<i class="fas fa-road"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sport in sports %}
+                                {% if sport.slug != 'unknown' %}
+                                    <tr>
+                                        <td><a href="/sport/{{ sport.slug }}">{{ sport.name }}</a></td>
+                                        <td style="color:{{ sport.color }}"><i class="fas fa-{{ sport.icon }}"></i></td>
+                                        <td>{{ sport.total_count }}</td>
+                                        <td>
+                                            {% if sport.total_duration != 0.0 %}
+                                                {{ sport.total_duration }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if sport.total_distance != 0.0 %}
+                                                {{ sport.total_distance }} km
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            <a href="{% url 'add-sport' %}" class="btn btn-default"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add new Sport</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,48 +1,54 @@
 {% include "plotting/bokeh_statics.html" %}
 
-<div class="row">
-    <div class="col-sm-8">
-        <p>Overview of your {{ sport.name }} activities:</p>
-    </div>
-    <div class="col-sm-4">
-        <div class="float-right">
-            <div class="dropdown">
-                display
-                <button type="button" id='dropdown-btn' class="btn btn-warning btn-sm dropdown-toggle"
-                    data-toggle="dropdown">
-                    {% for k, v in choices %}
-                        {% if days == k %}
-                            {{ v }}
-                        {% endif %}
-                    {% endfor %}
-                </button>
-                <div class="dropdown-menu">
-                    {% for k, v in choices %}
-                        {% if k == days %}
-                            <a class="dropdown-item"><b>{{ v }}&nbsp;<i class="fas fa-check"></i></b></a>
-                        {% else %}
-                            <a class="dropdown-item" href="/set_number_of_days/{{ k }}">{{ v }}</a>
-                        {% endif %}
-                    {% endfor %}
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-8">
+                <h4 class="card-title">Overview</h4>
+            </div>
+            <div class="col-sm-4">
+                <div class="float-right">
+                    <div class="dropdown">
+                        display
+                        <button type="button" id='dropdown-btn' class="btn btn-default btn-sm dropdown-toggle"
+                            data-toggle="dropdown">
+                            {% for k, v in choices %}
+                                {% if days == k %}
+                                    {{ v }}
+                                {% endif %}
+                            {% endfor %}
+                        </button>
+                        <div class="dropdown-menu">
+                            {% for k, v in choices %}
+                                {% if k == days %}
+                                    <a class="dropdown-item"><b>{{ v }}&nbsp;<i class="fas fa-check"></i></b></a>
+                                {% else %}
+                                    <a class="dropdown-item" href="/set_number_of_days/{{ k }}">{{ v }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="card-body">
+        {% if activities_selected_for_plot %}
+            {{ script_history | safe }}
+            {% if div_history %}
+                {{ div_history | safe }}
+            {% endif %}
+        {% else %}
+            <br>
+            <h3>No activity data selected for plotting&nbsp;&nbsp;<i class="fas fa-chart-line"></i></h3>
+            <br>
+            <p>
+                Either increase the selected time range, or do some sports and add it to Workoutizer.
+                <br>
+                The activity plot will appear here &nbsp;<i class="fas fa-running"></i></p>
+                <br>
+                <br>
+        {% endif %}
+        <br>
+    </div>
 </div>
-{% if activities_selected_for_plot %}
-    {{ script_history | safe }}
-    {% if div_history %}
-        {{ div_history | safe }}
-    {% endif %}
-{% else %}
-    <br>
-    <h3>No activity data selected for plotting&nbsp;&nbsp;<i class="fas fa-chart-line"></i></h3>
-    <br>
-    <p>
-        Either increase the selected time range, or do some sports and add it to Workoutizer.
-        <br>
-        The activity plot will appear here &nbsp;<i class="fas fa-running"></i></p>
-        <br>
-        <br>
-{% endif %}
-<br>

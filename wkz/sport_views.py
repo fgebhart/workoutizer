@@ -25,8 +25,8 @@ from wkz.tools.utils import remove_microseconds
 log = logging.getLogger(__name__)
 
 
-class AllSportsView(View):
-    template_name = "sport/all_sports.html"
+class SportsView(View):
+    template_name = "sport/sports.html"
 
     def get(self, request):
         sports = models.Sport.objects.all().order_by("name")
@@ -46,11 +46,11 @@ class AllSportsView(View):
         return render(
             request,
             self.template_name,
-            {"sports": sports, "page": "all_sports", "form_field_ids": get_all_form_field_ids(), **sport_data},
+            {"sports": sports, "page_name": "Sports", "form_field_ids": get_all_form_field_ids(), **sport_data},
         )
 
 
-class SportsView(MapView, PlotView):
+class SportView(MapView, PlotView):
     template_name = "sport/sport.html"
 
     def get(self, request, sports_name_slug):
@@ -75,7 +75,7 @@ class SportsView(MapView, PlotView):
             context["activities_selected_for_plot"] = True
         else:
             context["activities_selected_for_plot"] = False
-        map_context = super(SportsView, self).get(request=request, list_of_activities=activities)
+        map_context = super(SportView, self).get(request=request, list_of_activities=activities)
         if sport.evaluates_for_awards:
             top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit, sports_name_slug)
             context["top_awards"] = top_awards
@@ -92,6 +92,8 @@ class SportsView(MapView, PlotView):
             {
                 **map_context,
                 **context,
+                "page_name": sport["name"],
+                "available_sport_names": [sport.name for sport in sports],
                 "current_page": page,
                 "is_last_page": False,
                 "sports": sports,
@@ -118,7 +120,7 @@ def add_sport_view(request):
     return render(
         request,
         "sport/add_sport.html",
-        {"sports": sports, "form": form, "page": "add_sport", "form_field_ids": get_all_form_field_ids()},
+        {"sports": sports, "form": form, "page_name": "Add Sport", "form_field_ids": get_all_form_field_ids()},
     )
 
 
@@ -140,7 +142,13 @@ def edit_sport_view(request, sports_name_slug):
     return render(
         request,
         "sport/edit_sport.html",
-        {"sports": sports, "sport": sport, "form": form, "form_field_ids": get_all_form_field_ids()},
+        {
+            "sports": sports,
+            "sport": sport,
+            "form": form,
+            "form_field_ids": get_all_form_field_ids(),
+            "page_name": f"Edit Sport: {sport.name}",
+        },
     )
 
 
@@ -157,5 +165,12 @@ class SportDeleteView(DeleteView):
             messages.warning(request, f"Can't delete sport '{sport.name}'")
             return HttpResponseRedirect(f"/sport/{sport.slug}")
         return render(
-            request, self.template_name, {"sports": sports, "sport": sport, "form_field_ids": get_all_form_field_ids()}
+            request,
+            self.template_name,
+            {
+                "sports": sports,
+                "sport": sport,
+                "form_field_ids": get_all_form_field_ids(),
+                "page_name": f"Delete Sport: {sport.name}",
+            },
         )

@@ -2,72 +2,42 @@
 {% load filters %}
 {% block body %}
 
-    <title>{{ activity.name }} | Workoutizer</title>
-    <h3 class="float-left">{{ activity.name }}&nbsp;&nbsp; <a href="/sport/{{ activity.sport.slug }}"
-                                                              style="color: {{ activity.sport.color }};">
-        <i class="fas fa-{{ activity.sport.icon }}"></i>
-    </a></h3>
-    <div class="btn-group float-right">
-        <a class="btn btn-warning" href="{{ activity.id }}/edit" id="edit-activity" data-toggle="tooltip" data-placement="bottom"
-           title="Edit Activity"><i class="fas fa-pen"></i></a>
-        {% if activity.trace_file.longitude_list != "[]" %}
-            <a class="btn btn-warning" href="{{ activity.id }}/download" data-toggle="tooltip" data-placement="bottom"
-               title="Download GPX File"><i class="fas fa-download"></i></a>
-        {% endif %}
-    </div>
-    <div class="clearfix"></div>
-    <p class="text-muted">{{ activity.date|date:"M d, Y, H:i" }}</p>
-    <br>
-    <br>
-    {% include "lib/messages.html" %}
-    <table class="table table-bordered table-responsive-xl">
-        <thead class="thead-secondary">
-        <tr>
-            <th><i class="fas fa-history"></i>&nbsp;&nbsp;Duration:&nbsp;&nbsp;{{ activity.duration|table_duration }} h
-            </th>
-            {% if activity.distance %}
-                <th><i class="fas fa-road"></i>&nbsp;&nbsp;Distance:&nbsp;&nbsp;{{ activity.distance }} km</th>
-            {% endif %}
-            {% if activity.trace_file.calories %}
-                <th><i class="fas fa-fire"></i>&nbsp;&nbsp;Calories:&nbsp;&nbsp;{{ activity.trace_file.calories }} kcal
-                </th>
-            {% endif %}
-        </tr>
-        </thead>
-    </table>
-    <br>
-    {% if activity.description and not activity.trace_file %}
-        <h5>Description</h5>
-        {{ activity.description }}
-    {% endif %}
-    {% if activity.trace_file %}
-        {% if traces %}
-            <div class="row">
-                <div class="col-sm-8">
-                    {% if activity.trace_file.latitude_list != "[]" %}
-                        {% include "map/activity_map.html" %}
-                    {% endif %}
-                    <div style="margin-right: 20px">
-                        {% if activity.trace_file.heart_rate_list != "[]" or activity.trace_file.altitude_list != "[]" or activity.trace_file.cadence_list != "[]" or activity.trace_file.speed_list != "[]" or activity.trace_file.temperature_list != "[]" %}
-                            {% include "plotting/plot_time_series.html" %}</div>
-                        {% endif %}
-                </div>
-                <div class="col-sm-4">
-                    {% include "activity/activity_data.html" %}
-                </div>
-            </div>
-        {% else %}
-            <div class="row">
-                <div class="col-sm-8">
-                    {% include "plotting/plot_time_series.html" %}
-                </div>
-                <div class="col-sm-4">
-                    {% include "activity/activity_data.html" %}
-                </div>
-            </div>
-        {% endif %}
-    {% elif not activity.trace_file and traces %}
-        {% include "map/activity_map.html" %}
-    {% endif %}
-{% endblock %}
+<style type="text/css" media="screen">
+    .leaflet-container {
+        height: {{ map_height }}px;
+    }
+    .table td {
+        padding: 0.3rem !important;
+    }
+</style>
 
+{% include "activity/activity_facts.html" %}
+
+{% include "activity/activity_best_sections.html" %}
+
+{% if activity.trace_file %}
+    {% if traces %}
+        <div class="row">
+            <div class="col-sm-5">
+                {% if activity.trace_file.latitude_list != "[]" %}
+                    {% include "map/activity_map.html" %}
+                {% endif %}
+            </div>
+            <div class="col-sm-7">
+                {% include "plotting/plot_time_series.html" %}
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            {% include "plotting/plot_time_series.html" %}
+        </div>
+    {% endif %}
+{% elif not activity.trace_file and traces %}
+    <div class="row">
+        {% include "map/activity_map.html" %}
+    </div>
+{% endif %}
+
+{% include "activity/activity_data.html" %}
+
+{% endblock %}

@@ -7,10 +7,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.contrib import messages
-from multiprocessing import Process
 from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Sum
+from multiprocessing import Process
+import pytz
 
 from wkz import models
 from wkz import forms
@@ -124,7 +125,7 @@ class DashboardView(View, PlotView):
             "days": self.number_of_days,
             "choices": self.days_choices,
             "summary": summary,
-            "page": "dashboard",
+            "page_name": "Dashboard",
             "form_field_ids": get_all_form_field_ids(),
         }
         if activities:
@@ -167,6 +168,7 @@ def settings_view(request):
         "lib/settings.html",
         {
             "sports": sports,
+            "page_name": "Settings",
             "form": form,
             "settings": settings,
             "form_field_ids": get_all_form_field_ids(),
@@ -175,11 +177,16 @@ def settings_view(request):
     )
 
 
+def new_frontend(request):
+    return render(request, "dashboard_new.html")
+
+
 class HelpView(WKZView):
     template_name = "lib/help.html"
 
     def get(self, request):
         self.context["version"] = __version__
+        self.context["page_name"] = "Help"
         return render(request, template_name=self.template_name, context=self.context)
 
 
@@ -195,17 +202,31 @@ def set_number_of_days(request, number_of_days):
 
 
 def get_summary_of_all_activities(sport_slug=None):
+    all_activities = models.Activity.objects.all()
+    seven_days_back = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(
+        tzinfo=pytz.timezone(django_settings.TIME_ZONE)
+    )
     if sport_slug:
         count = models.Activity.objects.filter(sport__slug=sport_slug).count()
-        total_duration = models.Activity.objects.filter(sport__slug=sport_slug).aggregate(Sum("duration"))
+        duration = models.Activity.objects.filter(sport__slug=sport_slug)
+        total_duration = duration.aggregate(Sum("duration"))
         total_distance = models.Activity.objects.filter(sport__slug=sport_slug).aggregate(Sum("distance"))
+        seven_days_trend = (
+            models.Activity.objects.filter(sport__slug=sport_slug)
+            .filter(date__gt=seven_days_back)
+            .aggregate(Sum("duration"))
+        )
     else:
-        count = models.Activity.objects.all().count()
-        total_duration = models.Activity.objects.all().aggregate(Sum("duration"))
+        count = all_activities.count()
+        total_duration = all_activities.aggregate(Sum("duration"))
         total_distance = models.Activity.objects.all().aggregate(Sum("distance"))
+        seven_days_trend = models.Activity.objects.filter(date__gt=seven_days_back).aggregate(Sum("duration"))
     duration = total_duration["duration__sum"] if total_duration["duration__sum"] else datetime.timedelta(minutes=0)
     distance = int(total_distance["distance__sum"]) if total_distance["distance__sum"] else 0
-    return {"count": count, "duration": duration, "distance": distance}
+    seven_days_trend = (
+        seven_days_trend["duration__sum"] if seven_days_trend["duration__sum"] else datetime.timedelta(minutes=0)
+    )
+    return {"count": count, "duration": duration, "distance": distance, "seven_days_trend": seven_days_trend}
 
 
 def custom_404_view(request, exception=None):

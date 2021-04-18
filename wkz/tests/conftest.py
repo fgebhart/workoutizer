@@ -3,6 +3,7 @@ import os
 
 import pytest
 import pytz
+from django.core.management import call_command
 
 from workoutizer import settings as django_settings
 from wkz.file_importer import (
@@ -11,6 +12,11 @@ from wkz.file_importer import (
     copy_demo_fit_files_to_track_dir,
 )
 from wkz import models
+
+
+@pytest.fixture
+def flush_db(db):
+    call_command("flush", verbosity=0, interactive=False)
 
 
 @pytest.fixture
@@ -123,12 +129,13 @@ def insert_activity(db, sport):
         evaluates_for_awards: bool = True,
         sport=sport,
         date: datetime.datetime = datetime.datetime(2020, 7, 7, tzinfo=pytz.timezone(django_settings.TIME_ZONE)),
+        duration: datetime.timedelta = datetime.timedelta(minutes=30),
     ):
         activity = models.Activity(
             name=name,
             sport=sport,
             date=date,
-            duration=datetime.timedelta(minutes=30),
+            duration=duration,
             distance=5.2,
             description="some super activity",
             evaluates_for_awards=evaluates_for_awards,

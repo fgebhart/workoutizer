@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 
 def plot_pie_chart(activities):
     sport_distribution = {}
+    sports = set()
     color_list = []
     for activity in activities:
         try:
@@ -18,22 +19,23 @@ def plot_pie_chart(activities):
         except AttributeError as e:
             log.error(f"activity {activity} has unknown sport '{activity.sport}'.")
             raise e
-        if activity.sport.color not in color_list:
-            color_list.append(activity.sport.color)
+        sports.add(activity.sport)
     for activity in activities:
         if activity.sport.name in sport_distribution:
             sport_distribution[activity.sport.name] += 1
+    for sport in sports:
+        color_list.append(sport.color)
 
-    data = pd.Series(sport_distribution).reset_index(name="value").rename(columns={"index": "country"})
+    data = pd.Series(sport_distribution).reset_index(name="value").rename(columns={"index": "sport"})
     data["angle"] = data["value"] / data["value"].sum() * 2 * pi
     data["color"] = color_list
 
     p = figure(
-        plot_height=120,
+        plot_height=250,
         toolbar_location=None,
-        sizing_mode="stretch_width",
+        sizing_mode="scale_width",
         tools="hover",
-        tooltips="@country: @value",
+        tooltips="@sport: @value",
         x_range=(-0.5, 1.0),
     )
 
@@ -52,8 +54,6 @@ def plot_pie_chart(activities):
     p.axis.visible = False
     p.grid.grid_line_color = None
     p.outline_line_color = None
-    p.background_fill_color = "whitesmoke"
-    p.border_fill_color = "whitesmoke"
 
     script_pc, div_pc = components(p)
 

@@ -1,8 +1,10 @@
 {% include "plotting/bokeh_statics.html" %}
 
-{{ script_time_series | safe }}
-
-{% if div_time_series %}
-    {{ div_time_series | safe }}
-{% endif %}
-<br>
+<div class="card">
+    <div class="card-body">
+        {{ script_time_series | safe }}
+        {% if div_time_series %}
+            {{ div_time_series | safe }}
+        {% endif %}
+    </div>
+</div>

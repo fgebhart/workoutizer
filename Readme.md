@@ -43,11 +43,11 @@ In case you want to run workoutizer on a Raspberry Pi in your local network, fol
 
  Dashboard             |  Sport Page
 :-------------------------:|:-------------------------:
-![](https://i.imgur.com/FcB5JDl.png)  |  ![](https://i.imgur.com/6fwcEZX.png)
+![](https://i.imgur.com/3CUCGC8.png)  |  ![](https://i.imgur.com/p5FcrHz.png)
 
  Activity Page 1/2             |  Activity Page 2/2
 :-------------------------:|:-------------------------:
-![](https://i.imgur.com/tcS6L4Y.png)  |  ![](https://i.imgur.com/QSf3Dpo.png)
+![](https://i.imgur.com/FnVFz9P.png)  |  ![](https://i.imgur.com/zp8iQcm.png)
 
 ## Changelog
 
@@ -89,9 +89,10 @@ Remote - Containers extension.
 
 ## Thanks
 
-Thanks to the authors of projects I integrated into workoutizer:
+Third part libraries, tools used by Workoutizer:
 * [leaflet-ui](https://github.com/Raruto/leaflet-ui) by [Raruto](https://github.com/Raruto)
 * [django-colorfield](https://github.com/fabiocaccamo/django-colorfield) by [Fabio Caccamo](https://github.com/fabiocaccamo)
 * [python-fitparse](https://github.com/dtcooper/python-fitparse) by [dtcooper](https://github.com/dtcooper)
 * [leaflet-color-markers](https://github.com/pointhi/leaflet-color-markers) by [pointhi](https://github.com/pointhi)
 * [Font Awesome Icons](https://fontawesome.com/)
+* [Paper-Dashboard Pro](https://www.creative-tim.com/product/paper-dashboard-2-pro) by [Creative Tim](https://www.creative-tim.com/)

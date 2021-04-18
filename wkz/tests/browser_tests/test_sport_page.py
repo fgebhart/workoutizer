@@ -14,8 +14,9 @@ def test_all_sports_page_accessible(live_server, webdriver):
     webdriver.get(live_server.url + reverse("sports"))
 
     # first time running workoutizer will lead to the dashboard page with no data
-    h3 = webdriver.find_element_by_css_selector("h3")
-    assert h3.text == "Your Sports"
+    card_title = webdriver.find_element_by_class_name("card-title")
+    assert card_title.text == "Sports Overview"
+    assert "Sports" in webdriver.find_element_by_class_name("navbar-brand").text
 
 
 def test_adding_new_sport(live_server, webdriver):
@@ -60,24 +61,42 @@ def test_sport_page__complete(import_demo_data, live_server, webdriver):
     webdriver.get(live_server.url + "/sport/cycling")
 
     table_header = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
-    assert "Date" in table_header
-    assert "Activity" in table_header
-    assert "Track" in table_header
-    assert "Sport" in table_header
-    assert "Duration" in table_header
-    assert "Distance" in table_header
+    assert "DATE" in table_header
+    assert "ACTIVITY" in table_header
+    assert "TRACK" in table_header
+    assert "SPORT" in table_header
+    assert "DURATION" in table_header
+    assert "DISTANCE" in table_header
 
     # the sport name should be unknown
-    assert "Cycling" in webdriver.find_element_by_tag_name("h3").text
-    assert "Summary" in webdriver.find_element_by_tag_name("h5").text
+    assert "Cycling" in webdriver.find_element_by_class_name("navbar-brand").text
+
+    card_category = [a.text for a in webdriver.find_elements_by_class_name("card-category")]
+    assert "Trend" in card_category
+    assert "Distance" in card_category
+    assert "Duration" in card_category
+    assert "Count" in card_category
+
+    card_title = [a.text for a in webdriver.find_elements_by_class_name("card-title")]
+    # assert "0h 0m" in card_title        # fails in CI
+    assert "121 km" in card_title
+    assert "13h 44m" in card_title
+    assert "3" in card_title
 
     links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
-    assert "  Add Activity" in links
-    assert "  Workoutizer  " in links
-    assert "  Edit Sport" in links
+    assert "CYCLING" in links
+
+    card_title = [p.text for p in webdriver.find_elements_by_class_name("card-title")]
+    assert "Overview" in card_title
 
     paragraph = [p.text for p in webdriver.find_elements_by_tag_name("p")]
-    assert "Overview of your Cycling activities:" in paragraph
+    assert "DASHBOARD" in paragraph
+    assert "AWARDS" in paragraph
+    assert "SPORTS" in paragraph
+    assert "CYCLING" in paragraph
+    assert "HIKING" in paragraph
+    assert "JOGGING" in paragraph
+    assert "ADD SPORT" in paragraph
 
     # wait until loading image is present
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "loading-bar")))
@@ -89,15 +108,14 @@ def test_sport_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Cycling in Dahn" in table_data
     assert "Noon Cycling in Hinterzarten" in table_data
 
-    centered = [cell.text for cell in webdriver.find_elements_by_tag_name("center")]
-    assert "Sum of all Activities:" in centered
-
+    assert len(webdriver.find_elements_by_class_name("fa-chart-line")) > 0
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
     assert len(webdriver.find_elements_by_class_name("fa-road")) > 0
     assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-hashtag")) > 0
 
     # check that map is displayed
-    map_text = webdriver.find_element_by_id("map").text
+    map_text = webdriver.find_element_by_id("leaflet_map").text
     assert "Streets" in map_text
     assert "Leaflet | Map data: © OpenStreetMap" in map_text
     assert "−" in map_text
@@ -154,7 +172,7 @@ def test_sport_page__no_activities_selected_for_plot(live_server, webdriver, ins
     assert len(table_rows) == 5
 
     paragraph = [p.text for p in webdriver.find_elements_by_tag_name("p")]
-    assert "Overview of your Bungee Jumping activities:" in paragraph
+    assert "BUNGEE JUMPING" in paragraph
     # because the activity was added has dates far in the past, there is no activity data available for plotting
     assert (
         "Either increase the selected time range, or do some sports and add it to Workoutizer.\n"
@@ -162,8 +180,8 @@ def test_sport_page__no_activities_selected_for_plot(live_server, webdriver, ins
     ) in paragraph
 
     links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
-    assert "  Add Activity" in links
-    assert "  Workoutizer  " in links
+    assert "WORKOUTIZER" in links
+
     # verify leaflet elements are present
     assert "+" in links
     assert "−" in links

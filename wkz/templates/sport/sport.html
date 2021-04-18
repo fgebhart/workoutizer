@@ -1,40 +1,31 @@
 {% extends 'lib/base.html' %}
 {% block body %}
-    <title>{{ sport.name }} | Workoutizer</title>
-    <h3 class="float-left"><i class="fas fa-{{ sport.icon }}"
-                              style="color: {{ sport.color }};"></i>&nbsp;&nbsp;&nbsp;{{ sport.name }}
-    </h3>
-    <a class="float-right btn btn-warning" href="{{ sport.slug }}/edit"><i
-            class="fas fa-pen"></i>&nbsp;&nbsp;Edit Sport</a>
-    <div class="clearfix"></div>
-    <style type="text/css" media="screen">
-        .leaflet-container {
-            height: 320px;
-        }
-    </style>
-    <hr>
-    {% include "lib/messages.html" %}
+
+<style type="text/css" media="screen">
+    .leaflet-container {
+        height: 395px;
+    }
+</style>
+
+{% include "lib/summary_facts.html" %}
+
+{% if traces or not activities_selected_for_plot %}
     <div class="row">
-        {% if traces or not activities_selected_for_plot %}
-            <div class="col-sm-7">
-                {% include 'plotting/plot_history.html' %}
-            </div>
-            <div class="col-sm-5">
-                {% include 'map/sport_map.html' %}
-            </div>
-        {% else %}
-            <div class="col-sm-12">
-                {% include 'plotting/plot_history.html' %}
-            </div>
-        {% endif %}
-    </div>
-    <br>
-    <div class="row">
-        <div class="col-sm-9">
-            {% include 'lib/table.html' %}
+        <div class="col-md-7">
+            {% include 'plotting/plot_history.html' %}
         </div>
-        <div class="col-sm-3">
-            {% include 'lib/summary_facts.html' %}
+        <div class="col-md-5">
+            {% include 'map/sport_map.html' %}
         </div>
     </div>
+{% else %}
+    {% include 'plotting/plot_history.html' %}
+{% endif %}
+
+<div class="row">
+    <div class="col-md-12">
+    {% include 'lib/table.html' %}
+    </div>
+</div>
+
 {% endblock %}

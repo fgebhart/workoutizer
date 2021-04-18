@@ -1,0 +1,48 @@
+{% csrf_token %}
+{{ form.media }}
+{% include "lib/form_errors.html" %}
+<div class="row">
+    <label class="col-md-4 col-form-label">{{ form.name.label }}</label>
+    <div class="col-md-8">
+        <div class="form-group">
+            {{ form.name }}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <label class="col-md-4 col-form-label">
+        {{ form.icon.label }}&nbsp;&nbsp;
+        <a href="https://fontawesome.com/">
+            <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right"
+                title="Chose a name of the font-awesome icons.">
+            </i>
+        </a>
+    </label>
+    <div class="col-md-8">
+        <div class="form-group">
+            {{ form.icon }}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <label class="col-md-4 col-form-label">{{ form.color.label }}</label>
+    <div class="col-md-8">
+        <div class="form-group">
+            {{ form.color }}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <label class="col-md-4 col-form-label">{{ form.evaluates_for_awards.label }}</label>
+    <div class="col-md-8">
+        <div class="form-check form-check-inline">
+            <label class="form-check-label">
+                {{ form.evaluates_for_awards }}
+                <span class="form-check-sign"></span>
+                <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right"
+                title="When enabled {{ sport.name }} activities will be considered for awards."></i>
+            </label>
+        </div>
+    </div>
+</div>
+<br>

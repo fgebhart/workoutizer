@@ -44,7 +44,7 @@ plot_matrix = {
 }
 
 
-def plot_time_series(activity: models.Activity) -> Tuple[str, str]:
+def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
     """
     Plotting function to create the time series plots shown in tha activity page. Depending
     on what data is available this creates the following plots:
@@ -62,8 +62,9 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str]:
 
     Returns
     -------
-    script, div : tuple(str, str)
-        the html script and div elements used to render the plots in the html templates
+    script, div : tuple(str, str, int)
+        the html script and div elements as str used to render the plots in the html templates
+        and the third element in the tuple is the number of plots to be rendered
     """
 
     attributes = activity.trace_file.__dict__
@@ -133,7 +134,7 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str]:
 
                 p.xgrid.grid_line_color = None
                 p.legend.location = "top_left"
-                p.legend.label_text_font = "ubuntu"
+                p.legend.label_text_font = "Montserrat"
                 p.legend.background_fill_alpha = 0.7
                 dtf = DatetimeTickFormatter()
                 dtf.minutes = ["%M:%S"]
@@ -156,7 +157,7 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str]:
         layout = _add_button_to_toggle_laps(lap_lines, layout)
 
     script, div = components(layout)
-    return script, div
+    return script, div, len(plots)
 
 
 def _add_button_to_toggle_laps(lap_lines, layout):

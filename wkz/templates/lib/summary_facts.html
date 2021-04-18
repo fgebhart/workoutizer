@@ -1,30 +1,117 @@
 {% load filters %}
 
-{% if sport.icon %}
-    <h5 class="text-center">
-        <i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i>&nbsp;&nbsp;Summary&nbsp;&nbsp;
-    </h5>
-    <br>
-{% endif %}
-<center>
-    Sum of all Activities:
-</center>
-<br>
-<table class="table">
-    <tr>
-        <th scope="row"><i class="fas fa-hashtag" data-toggle="tooltip" data-placement="bottom"
-                           title="Number of Activities"></i></th>
-        <td>{{ summary.count }}</td>
-    </tr>
-    <tr>
-        <th scope="row"><i class="fas fa-road" data-toggle="tooltip" data-placement="bottom"
-                           title="Total Distance"></i></th>
-        <td>{{ summary.distance }} km</td>
-    </tr>
-    <tr>
-        <th scope="row"><i class="fas fa-history" data-toggle="tooltip" data-placement="bottom"
-                           title="Total Duration"></i></th>
-        <td>{{ summary.duration|duration }}</td>
-    </tr>
-</table>
-<br>
+<div class="row">
+
+    {% comment %} Trend {% endcomment %}
+    <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-5 col-md-4">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="fa fa-chart-line text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-md-8">
+                        <div class="numbers">
+                            <p class="card-category">Trend</p>
+                            <p class="card-title">{{ summary.seven_days_trend|duration }}<p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                    <i class="fa fa-calendar"></i>
+                    Duration over last 7 Days
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% comment %} Distance {% endcomment %}
+    <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-5 col-md-4">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="fa fa-road text-success"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-md-8">
+                        <div class="numbers">
+                            <p class="card-category">Distance</p>
+                            <p class="card-title">{{ summary.distance }} km<p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                    <i class="fa fa-arrows-alt-h"></i>
+                    Total Distance of Activities
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% comment %} Duration {% endcomment %}
+    <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-5 col-md-4">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="fas fa-history text-danger"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-md-8">
+                        <div class="numbers">
+                            <p class="card-category">Duration</p>
+                            <p class="card-title">{{ summary.duration|duration }}<p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                    <i class="fa fa-arrows-alt-h"></i>
+                    Total Duration of Activities
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% comment %} Count {% endcomment %}
+    <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-5 col-md-4">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="fa fa-hashtag text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-md-8">
+                        <div class="numbers">
+                            <p class="card-category">Count</p>
+                            <p class="card-title">{{ summary.count }}<p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                    <i class="fa fa-arrows-alt-h"></i>
+                    Total Number of Activities
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

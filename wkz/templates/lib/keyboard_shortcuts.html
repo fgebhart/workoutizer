@@ -1,0 +1,85 @@
+{% load filters %}
+
+<script>
+// thanks to https://stackoverflow.com/questions/5203407/how-to-detect-if-multiple-keys-are-pressed-at-once-using-javascript
+    var km = {};    // key map to hold pressed keys
+    onkeydown = onkeyup = function (e) {
+        let ids = {{ form_field_ids | safe }};
+        if (ids.includes(document.activeElement.id)) {
+            // do nothing in case focus is in input form fields
+        } else {
+            let sports = {{ sports | queryset_to_list | safe }}
+                e = e || event; // to deal with IE
+            km[e.key] = e.type === 'keydown';
+            go_to_page_with_key(event, sports)
+        }
+    }
+
+    function go_to_page_with_key(event, sports) {
+        if (km['g'] && km['d']) {
+            window.location.href = '/';
+            km = {};
+        } else if (km['g'] && km['s']) {
+            window.location.href = '/sports';
+            km = {};
+        } else if (km['g'] && km['n']) {
+            window.location.href = '/add-activity';
+            km = {};
+        } else if (km['g'] && km['a']) {
+            window.location.href = '/awards';
+            km = {};
+        } else if (km['g'] && km[',']) {
+            window.location.href = '/settings';
+            km = {};
+        } else if (km['g'] && km['h']) {
+            window.location.href = '/help';
+            km = {};
+        } else if (km['g'] && km['e']) {
+            {% if is_activity_page or page_name in available_sport_names %}
+                window.location.href = window.location.href + '/edit';
+                km = {};
+            {% endif %}
+        } else if (km['g'] && km['0']) {
+            window.location.href = get_sport(event, sports);
+            km = {};
+        } else if (km['g'] && km['1']) {
+            window.location.href = get_sport(event, sports);
+            km = {};
+        } else if (km['g'] && km['2']) {
+            window.location.href = get_sport(event, sports);
+            km = {};
+        } else if (km['g'] && km['3']) {
+            window.location.href = get_sport(event, sports);
+            km = {};
+        } else if (km['g'] && km['4']) {
+            window.location.href = get_sport(event, sports);
+            km = {};
+        } else if (km['g'] && km['5']) {
+            window.location.href = get_sport(event, sports);
+            km = {};
+        } else if (km['g'] && km['6']) {
+            window.location.href = get_sport(event, sports);
+            km = {};
+        } else if (km['g'] && km['7']) {
+            window.location.href = get_sport(event, sports);
+            km = {};
+        } else if (km['g'] && km['8']) {
+            window.location.href = get_sport(event, sports);
+            km = {};
+        } else if (km['g'] && km['9']) {
+            window.location.href = get_sport(event, sports);
+            km = {};
+        } else if (km['[']) {
+            document.getElementById("minimizeSidebar").click();
+            km = {};
+        }
+    }
+
+    function get_sport(event, sports) {
+        let event_as_int = Number(String.fromCharCode(event.which));
+        if (event_as_int === 0) {
+            event_as_int = sports.length;
+        }
+        return '/sport/' + sports[event_as_int - 1]
+    }
+</script>

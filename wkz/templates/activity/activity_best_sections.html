@@ -1,0 +1,43 @@
+<div class="row">
+    {% if fastest_sections %}
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        Fastest Sections
+                        {% if evaluates_for_awards %}
+                            &nbsp;<i class="fas fa-trophy" data-toggle="tooltip" data-placement="bottom"
+                            title="Activity evaluates for Awards" style="color: grey;"></i>
+                        {% else %}
+                            &nbsp;<i class="fas fa-exclamation-circle" data-toggle="tooltip" data-placement="bottom"
+                            title="Activity does not evaluate for Awards" style="color: grey;"></i>
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% include "activity/velocity_sections_table.html" %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if climb_sections %}
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        Best Climb Sections
+                        {% if evaluates_for_awards %}
+                            &nbsp;<i class="fas fa-trophy" data-toggle="tooltip" data-placement="bottom"
+                            title="Activity evaluates for Awards" style="color: grey;"></i>
+                        {% else %}
+                            &nbsp;<i class="fas fa-exclamation-circle" data-toggle="tooltip" data-placement="bottom"
+                            title="Activity does not evaluate for Awards" style="color: grey;"></i>
+                        {% endif %}
+                    </div>
+                <div class="card-body">
+                    {% include "activity/climb_sections_table.html" %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,50 @@
+{% csrf_token %}
+{% include "lib/form_errors.html" %}
+<div class="row">
+    <label class="col-md-4 col-form-label">{{ form.name.label }}</label>
+    <div class="col-md-8">
+        <div class="form-group">
+            {{ form.name }}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <label class="col-md-4 col-form-label">{{ form.sport.label }}</label>
+    <div class="col-md-8">
+        <div class="form-group">
+            {{ form.sport }}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <label class="col-md-4 col-form-label">{{ form.date.label }}</label>
+    <div class="col-md-8">
+        <div class="form-group">
+            {{ form.date }}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <label class="col-md-4 col-form-label">{{ form.duration.label }} [HH:MM:SS]</label>
+    <div class="col-md-8">
+        <div class="form-group">
+            {{ form.duration }}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <label class="col-md-4 col-form-label">{{ form.distance.label }} [in km]</label>
+    <div class="col-md-8">
+        <div class="form-group">
+            {{ form.distance }}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <label class="col-md-4 col-form-label">{{ form.description.label }}</label>
+    <div class="col-md-8">
+        <div class="form-group">
+            {{ form.description }}
+        </div>
+    </div>
+</div>

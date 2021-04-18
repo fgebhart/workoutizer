@@ -22,17 +22,20 @@ def plot_trend(activities, sport_model):
         id_color_mapping[sport["id"]] = sport["color"]
     df = df.rename(columns=id_color_mapping)
 
-    p = figure(width=280, height=200, x_axis_type="datetime", y_axis_type="datetime")
+    p = figure(
+        height=155,
+        sizing_mode="stretch_width",
+        x_axis_type="datetime",
+        y_axis_type="datetime",
+    )
     p.multi_line(
-        xs=[df.index.values] * len(df.columns), ys=[df[name].values for name in df], line_color=df.columns, line_width=2
+        xs=[df.index.values] * len(df.columns), ys=[df[name].values for name in df], line_color=df.columns, line_width=3
     )
 
     # render zero hours properly
     p.yaxis.major_label_overrides = {0: "0h"}
     p.toolbar.logo = None
     p.toolbar_location = None
-    p.background_fill_color = "whitesmoke"
-    p.border_fill_color = "whitesmoke"
     p.tools = []
 
     script_trend, div_trend = components(p)
