@@ -18,12 +18,12 @@
 {% if activity.trace_file %}
     {% if traces %}
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-5">
                 {% if activity.trace_file.latitude_list != "[]" %}
                     {% include "map/activity_map.html" %}
                 {% endif %}
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-7">
                 {% include "plotting/plot_time_series.html" %}
             </div>
         </div>

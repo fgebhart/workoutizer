@@ -43,11 +43,11 @@ In case you want to run workoutizer on a Raspberry Pi in your local network, fol
 
  Dashboard             |  Sport Page
 :-------------------------:|:-------------------------:
-![](https://i.imgur.com/FcB5JDl.png)  |  ![](https://i.imgur.com/6fwcEZX.png)
+![](https://i.imgur.com/3CUCGC8.png)  |  ![](https://i.imgur.com/p5FcrHz.png)
 
  Activity Page 1/2             |  Activity Page 2/2
 :-------------------------:|:-------------------------:
-![](https://i.imgur.com/tcS6L4Y.png)  |  ![](https://i.imgur.com/QSf3Dpo.png)
+![](https://i.imgur.com/FnVFz9P.png)  |  ![](https://i.imgur.com/zp8iQcm.png)
 
 ## Changelog
 
