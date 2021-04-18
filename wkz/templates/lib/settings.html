@@ -10,59 +10,77 @@
                     {% if delete_demos %}
                         <h3>Demo</h3>
                         <div class="row">
-                            <label class="col-md-4 col-form-label">{{ form.name.label }}</label>
+                            <label class="col-md-4 col-form-label">Delete Demo Data</label>
                             <div class="col-md-8">
                                 <div class="form-group">
-                                    {{ form.name }}
+                                    <a href="{% url 'delete-demo-data' %}" id="delete-demo-data"
+                                        class="btn btn-outline-secondary btn-sm" data-toggle="tooltip"
+                                        data-placement="right"
+                                        title="Click here if you want to delete the initial demo activity data. You will
+                                        be prompted a list with the demo activities data prior to deletion."
+                                        type="submit"><i class="fas fa-trash-alt"></i>
+                                        &nbsp;&nbsp;Delete
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <div class="col-sm-4">Delete Demo Data</div>
-                            <div class="col-sm-8">
-                                <a href="{% url 'delete-demo-data' %}" id="delete-demo-data" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip"
-                                data-placement="right"
-                                title="Click here if you want to delete the initial demo activity data. You will be prompted
-                                a list with the demo activities data prior to deletion." type="submit"><i
-                                        class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete</a>
-                            </div>
-                        </div>
-                        <br>
                     {% endif %}
                     <h3>File Importer</h3>
-                    <div class="form-group row">
-                        <div class="col-sm-4">{{ form.path_to_trace_dir.label }}</div>
-                        <div class="col-sm-8">{{ form.path_to_trace_dir }}</div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-sm-4">{{ form.path_to_garmin_device.label }}</div>
-                        <div class="col-sm-8">{{ form.path_to_garmin_device }}&nbsp;
-                            <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right"
-                            title="Enter the path to a directory in which your connected device shows up after mounting. Workoutizer will search for a folder called 'Activity' containing .fit files."></i>
+                    <div class="row">
+                        <label class="col-md-4 col-form-label">{{ form.path_to_trace_dir.label }}</label>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                {{ form.path_to_trace_dir }}
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <div class="col-sm-4">{{ form.delete_files_after_import.label }}</div>
-                        <div class="col-sm-8">{{ form.delete_files_after_import }}&nbsp;
+                    <div class="row">
+                        <label class="col-md-4 col-form-label">
+                            {{ form.path_to_garmin_device.label }}&nbsp;
                             <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right"
-                            title="Enable this setting to delete fit files from your Garmin device after a successful import. The imported copy in the 'Traces Directory' will stay untouched."></i>
+                            title="Enter the path to a directory in which your connected device shows up after mounting.
+                            Workoutizer will search for a folder called 'Activity' containing .fit files."></i>
+                        </label>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                {{ form.path_to_garmin_device }}
+                            </div>
                         </div>
                     </div>
-                    <br>
+                    <div class="row">
+                        <label class="col-md-4 col-form-label">
+                            {{ form.delete_files_after_import.label }}
+                        </label>
+                        <div class="col-md-8">
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label">
+                                    {{ form.delete_files_after_import }}
+                                    <span class="form-check-sign"></span>
+                                    <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right"
+                                    title="Enable this setting to delete fit files from your Garmin device after a
+                                    successful import. The imported copy in the 'Traces Directory' will stay untouched.">
+                                    </i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                     <h3>Reimporter</h3>
-                    <div class="form-group row">
-                        <div class="col-sm-4">Reimport all Files</div>
-                        <div class="col-sm-8">
-                            <a href="{% url 'reimport' %}" id="reimport-activities" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip"
-                            data-placement="right"
-                            title="In case of a new version which supports parsing more activity data from your files,
-                                    click this button to re-import all your files and update your activities. This might take a while."
-                            type="submit">
-                                Reimport Files
+                    <div class="row">
+                        <label class="col-md-4 col-form-label">Reimport all Files</label>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <a href="{% url 'reimport' %}" id="reimport-activities"
+                                    class="btn btn-outline-secondary btn-sm" data-toggle="tooltip"
+                                    data-placement="right"
+                                    title="In case of a new version which supports parsing more activity data from your
+                                    files, click this button to re-import all your files and update your activities. This
+                                    might take a while."
+                                    type="submit">
+                                    Reimport Files
                             </a>
+                            </div>
                         </div>
                     </div>
-                    <br>
                     <button id="button" class="btn btn-success" type="submit" name="action"><i class="fas fa-check"></i>&nbsp;&nbsp;Save
                     </button>
                 </form>

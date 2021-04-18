@@ -60,3 +60,7 @@ class EditSettingsForm(forms.ModelForm):
     class Meta:
         model = Settings
         exclude = ("number_of_days", "created", "modified")
+
+    def __init__(self, *args, **kwargs):
+        super(EditSettingsForm, self).__init__(*args, **kwargs)
+        set_field_attributes(self.visible_fields())
