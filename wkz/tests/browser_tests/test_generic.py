@@ -1,3 +1,5 @@
+import operator
+
 from django.urls import reverse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -5,6 +7,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import ElementNotInteractableException, NoSuchElementException, WebDriverException
 from selenium.webdriver.common.action_chains import ActionChains
 import pytest
+
+from wkz import models
+from wkz.tests.db_tests.test_file_watchdogs import condition
 
 
 def test_sidebar(live_server, webdriver):
@@ -128,9 +133,10 @@ def test_responsiveness(live_server, webdriver):
     webdriver.find_element(By.ID, "settings-button").click()
 
 
-def test_custom_navbar_items(live_server, webdriver, import_one_activity):
+def test_custom_navbar_items(db, live_server, webdriver, import_one_activity):
     default_slugs = ["add-activity", "settings", "help", "awards", "sports", "add-sport"]
     all_possible_slugs = set(default_slugs + ["edit", "download"])
+    import_one_activity("cycling_bad_schandau.fit")
 
     def _assert_that_only_these_slugs_are_present(slugs_to_check: list):
         links = [cell.get_attribute("href") for cell in webdriver.find_elements(By.TAG_NAME, "a")]
@@ -175,13 +181,14 @@ def test_custom_navbar_items(live_server, webdriver, import_one_activity):
     webdriver.get(live_server.url + reverse("add-sport"))
     _assert_that_only_these_slugs_are_present(default_slugs)
 
-    import_one_activity("cycling_bad_schandau.fit")
     # sport page should have default slugs + edit slug
     webdriver.get(live_server.url + "/sport/unknown")
     _assert_that_only_these_slugs_are_present(default_slugs + ["edit"])
 
     # activity page should have default slugs + edit + download
-    webdriver.get(live_server.url + "/activity/1")
+    assert condition(models.Activity.objects.count, operator.eq, 1)
+    pk = models.Activity.objects.get().pk
+    webdriver.get(live_server.url + f"/activity/{pk}")
     _assert_that_only_these_slugs_are_present(default_slugs + ["edit", "download"])
 
 
