@@ -53,7 +53,7 @@ def run(url):
             url = "127.0.0.1:8000"
         else:
             url = f"{get_local_ip_address()}:8000"
-    execute_from_command_line(["manage.py", "runserver", url])
+    execute_from_command_line(["manage.py", "runserver", url, "--insecure"])
 
 
 @click.argument("cmd", nargs=1)

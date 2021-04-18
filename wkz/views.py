@@ -230,7 +230,8 @@ def get_summary_of_all_activities(sport_slug=None):
 
 
 def custom_404_view(request, exception=None):
-    return render(None, "lib/404.html", status=404)
+    messages.error(request, f"Could not find {request.path}")
+    return redirect(reverse("home"))
 
 
 def reimport_activities(request):
