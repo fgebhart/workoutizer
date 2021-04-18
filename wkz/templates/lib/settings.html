@@ -1,14 +1,22 @@
 {% extends 'lib/base.html' %}
 {% block body %}
-{% include "lib/form_errors.html" %}
 <div class="row">
     <div class="col-md-10 mr-auto ml-auto">
         <div class="card">
             <div class="card-body">
-                <form action="{% url 'settings' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+                <form action="{% url 'settings' %}" method="post" accept-charset="utf-8" enctype="multipart/form-data" class="form-horizontal">
                     {% csrf_token %}
+                    {% include "lib/form_errors.html" %}
                     {% if delete_demos %}
-                        <h5><b>Demo</b></h5>
+                        <h3>Demo</h3>
+                        <div class="row">
+                            <label class="col-md-4 col-form-label">{{ form.name.label }}</label>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    {{ form.name }}
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group row">
                             <div class="col-sm-4">Delete Demo Data</div>
                             <div class="col-sm-8">
@@ -21,7 +29,7 @@
                         </div>
                         <br>
                     {% endif %}
-                    <h5><b>File Importer</b></h5>
+                    <h3>File Importer</h3>
                     <div class="form-group row">
                         <div class="col-sm-4">{{ form.path_to_trace_dir.label }}</div>
                         <div class="col-sm-8">{{ form.path_to_trace_dir }}</div>
@@ -41,7 +49,7 @@
                         </div>
                     </div>
                     <br>
-                    <h5><b>Reimporter</b></h5>
+                    <h3>Reimporter</h3>
                     <div class="form-group row">
                         <div class="col-sm-4">Reimport all Files</div>
                         <div class="col-sm-8">

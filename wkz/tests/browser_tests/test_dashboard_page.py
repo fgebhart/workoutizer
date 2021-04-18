@@ -74,7 +74,7 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
 
     # check icons in top navbar are present
     assert len(webdriver.find_elements_by_class_name("fa-question-circle")) == 1
-    assert len(webdriver.find_elements_by_class_name("nc-settings-gear-65")) == 1
+    assert len(webdriver.find_elements_by_class_name("fa-cog")) == 1
 
     # check icons in right sidebar are present
     assert len(webdriver.find_elements_by_class_name("fa-hashtag")) == 1

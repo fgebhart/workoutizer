@@ -40,7 +40,7 @@ def test_sidebar(live_server, webdriver):
     _assert_only_selected_link_is_highlighted("SPORTS")
 
     # minimize sidebar
-    webdriver.find_element(By.CSS_SELECTOR, ".nc-minimal-left").click()
+    webdriver.find_element(By.CSS_SELECTOR, ".fa-chevron-left").click()
 
     # verify dumpbell img is present
     webdriver.find_element(By.TAG_NAME, "img").click()
@@ -52,9 +52,9 @@ def test_sidebar(live_server, webdriver):
     webdriver.find_element(By.CLASS_NAME, "logo-mini")
 
     # again minimize sidebar
-    webdriver.find_element(By.CSS_SELECTOR, ".nc-minimal-left").click()
+    webdriver.find_element(By.CSS_SELECTOR, ".fa-chevron-left").click()
     # maximize
-    webdriver.find_element(By.CSS_SELECTOR, ".nc-minimal-right").click()
+    webdriver.find_element(By.CSS_SELECTOR, ".fa-chevron-right").click()
     assert webdriver.current_url == live_server.url + reverse("home")
 
 
