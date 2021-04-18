@@ -1,6 +1,9 @@
 # Workoutizer Changelog
 
-## Workoutizer 0.XX.Y (2021-MM-DD)
+## Workoutizer 0.17.0 (2021-MM-DD)
+### Changes
+* Migrate to new frontend: Paper Dashboard 🎉
+* Introduce 7-days sport and activity trend given as hours per 7 days.
 ### Clean-ups
 * restructure test directories
 * rename django app `wizer` to `wkz`
