@@ -299,3 +299,21 @@ def test_keyboard_shortcuts__toggle_sidebar(live_server, webdriver):
 
     # wait and see if WORKOUTIZER will be coming back again
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.LINK_TEXT, "WORKOUTIZER")))
+
+
+def test_custom_404_page(live_server, webdriver):
+    webdriver.get(live_server.url + reverse("home"))
+    assert webdriver.current_url == live_server.url + reverse("home")
+
+    # show that no alert box is visible
+    with pytest.raises(NoSuchElementException):
+        webdriver.find_element(By.CLASS_NAME, "alert-danger")
+
+    # try to open non existing page
+    webdriver.get(live_server.url + "/does-not-exist")
+
+    # verify that we got redirected to home
+    assert webdriver.current_url == live_server.url + reverse("home")
+
+    # verify that the alert box is visible
+    webdriver.find_element(By.CLASS_NAME, "alert-danger")

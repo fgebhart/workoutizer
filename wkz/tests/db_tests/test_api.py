@@ -16,7 +16,8 @@ def client():
 def test_missing_endpoint(client):
     res = client.post("/this-endpoint-is-not-implemented/")
 
-    assert res.status_code == 404
+    # having a redirection in place for all 404s will actually give as a 302 "Found (Previously "Moved temporarily")"
+    assert res.status_code == 302
 
 
 def test_stop(client):
