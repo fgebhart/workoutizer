@@ -1,4 +1,4 @@
-from wkz.watchdogs import _was_runserver_triggered
+from wkz.apps import _was_runserver_triggered
 
 
 def test__was_runserver_triggered():

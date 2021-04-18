@@ -2,7 +2,7 @@ import time
 from pathlib import Path
 import operator
 
-from wkz.watchdogs import _start_file_importer_watchdog, _start_device_watchdog
+from wkz.apps import _start_file_importer_watchdog, _start_device_watchdog
 from wkz.file_importer import copy_demo_fit_files_to_track_dir
 from wkz import models
 
