@@ -128,7 +128,7 @@ def test_responsiveness(live_server, webdriver):
     webdriver.find_element(By.ID, "settings-button").click()
 
 
-def test_custom_navbar_items(live_server, webdriver, import_one_activity, flush_db):
+def test_custom_navbar_items(live_server, webdriver, import_one_activity):
     default_slugs = ["add-activity", "settings", "help", "awards", "sports", "add-sport"]
     all_possible_slugs = set(default_slugs + ["edit", "download"])
 
