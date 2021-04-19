@@ -25,14 +25,14 @@ def print_version(ctx, param, value):
 
 
 @click.option(
-    "--version", help="prints the version", is_flag=True, callback=print_version, expose_value=False, is_eager=True
+    "-v", "--version", help="prints the version", is_flag=True, callback=print_version, expose_value=False, is_eager=True
 )
 @click.group()
 def wkz():
     pass
 
 
-@click.option("--demo", help="adds demo activity data", is_flag=True)
+@click.option("-d", "--demo", help="adds demo activity data", is_flag=True)
 @click.command(
     help="Mandatory command to initialize workoutizer. This fetches the static files, creates the database, "
     "applies the required migrations and inserts the demo activities."
@@ -47,7 +47,6 @@ def init(demo):
     "being passed, it will be determined automatically. Usage, e.g.: 'wkz run 0.0.0.0:8000'."
 )
 def run(url):
-    _check()
     if not url:
         if os.getenv("WKZ_ENV") == "devel":
             url = "127.0.0.1:8000"
