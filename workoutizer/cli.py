@@ -25,14 +25,14 @@ def print_version(ctx, param, value):
 
 
 @click.option(
-    "--version", help="prints the version", is_flag=True, callback=print_version, expose_value=False, is_eager=True
+    "-v", "--version", help="prints the version", is_flag=True, callback=print_version, expose_value=False, is_eager=True
 )
 @click.group()
 def wkz():
     pass
 
 
-@click.option("--demo", help="adds demo activity data", is_flag=True)
+@click.option("-d", "--demo", help="adds demo activity data", is_flag=True)
 @click.command(
     help="Mandatory command to initialize workoutizer. This fetches the static files, creates the database, "
     "applies the required migrations and inserts the demo activities."

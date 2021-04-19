@@ -14,6 +14,9 @@ def test_cli_version():
     output = subprocess.check_output(["wkz", "--version"]).decode("utf-8")
     assert output == f"{__version__}\n"
 
+    output = subprocess.check_output(["wkz", "-v"]).decode("utf-8")
+    assert output == f"{__version__}\n"
+
 
 def test_cli__init(db, tracks_in_tmpdir):
     cli._init(import_demo_activities=False)
