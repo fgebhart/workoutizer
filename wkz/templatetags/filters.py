@@ -16,6 +16,25 @@ def duration(td):
 
 
 @register.filter
+def hours_only(td):
+    total_seconds = int(td.total_seconds())
+    hours = total_seconds // 3600
+    return f"{hours}h"
+
+
+@register.filter
+def days_to_years(days):
+    if int(days) >= 365:
+        result = days / 365
+    else:
+        return f"{days} days"
+    if result > 1:
+        return f"{int(result)} years"
+    else:
+        return f"{int(result)} year"
+
+
+@register.filter
 def table_duration(td):
     total_seconds = int(td.total_seconds())
     hours = total_seconds // 3600

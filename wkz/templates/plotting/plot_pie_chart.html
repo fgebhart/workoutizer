@@ -1,8 +1,22 @@
 {% include "plotting/bokeh_statics.html" %}
+{% load filters %}
 
 {{ script_pc | safe }}
 
 {% if div_pc %}
-    {{ div_pc | safe }}
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Sport Distribution</h4>
+    </div>
+    <div class="card-body">
+        {{ div_pc | safe }}
+    </div>
+    <div class="card-footer ">
+        <hr>
+        <div class="stats">
+            <i class="fas fa-history"></i>
+            Over the last {{ days|days_to_years }}
+        </div>
+    </div>
+</div>
 {% endif %}
-<br>

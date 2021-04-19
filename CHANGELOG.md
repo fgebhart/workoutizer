@@ -1,12 +1,22 @@
 # Workoutizer Changelog
 
+## Workoutizer 0.XX.Y (2021-MM-DD)
+### Changes
+* Setting `Debug` mode to `False` to handle HTTP errors with redirecting to home
+* always show number of selected days as either days or years on dashboard
+* show only hours (and not minutes) in summary facts duration card
+### Bugfixes
+* fix incorrect displaying of colors in "Sport Distribution" pie chart
+
 ## Workoutizer 0.17.0 (2021-04-18)
 ### Changes
 * Migrate to new frontend: Paper Dashboard 🎉
 * Introduce 7-days sport and activity trend given as hours per 7 days.
 ### Clean-ups
 * restructure test directories
-* rename django app `wizer` to `wkz`
+* rename django app `wizer` to `wkz` (follow 
+[this guide](https://odwyer.software/blog/how-to-rename-an-existing-django-application) if you have trouble renaming your
+ existing django app)
 
 ## Workoutizer 0.16.0 (2021-04-03)
 ### Changes
