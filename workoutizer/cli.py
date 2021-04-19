@@ -102,7 +102,7 @@ def _upgrade():
     if latest_version == current_version:
         click.echo(f"No update available. You are running the latest version: {latest_version}")
     else:
-        click.echo(f"found newer version: {latest_version}, you have {current_version} installed")
+        click.echo(f"found newer version: {latest_version}, you have {current_version} installed - upgrading...")
         _pip_install("workoutizer", upgrade=True)
         execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
         execute_from_command_line(["manage.py", "migrate"])
