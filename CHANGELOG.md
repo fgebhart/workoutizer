@@ -5,6 +5,9 @@
 * Setting `Debug` mode to `False` to handle HTTP errors with redirecting to home
 * always show number of selected days as either days or years on dashboard
 * show only hours (and not minutes) in summary facts duration card
+* provide shortcut cli options, e.g.:
+  - `wkz --version` equals `wkz -v` and 
+  - `wkz init --demo` equals `wkz init -d`
 ### Bugfixes
 * fix incorrect displaying of colors in "Sport Distribution" pie chart
 
