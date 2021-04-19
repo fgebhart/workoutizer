@@ -74,11 +74,7 @@ pytest wkz/tests/ -n4
 ```
 Once this was successful you are good to go.
 
-In order to run workoutizer you could either run it using django's `manage.py` script
-```
-python manage.py runserver
-```
-or using the `wkz` cli
+In order to run workoutizer use the `wkz` cli. If not done yet, run `wkz init` (optionally with `--demo`):
 ```
 wkz run
 ```
