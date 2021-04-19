@@ -1,0 +1,3 @@
+- [ ] tests added / passed
+- [ ] Ensure pre-commit formatting checks are passing
+- [ ] changelog entry
