@@ -47,7 +47,6 @@ def init(demo):
     "being passed, it will be determined automatically. Usage, e.g.: 'wkz run 0.0.0.0:8000'."
 )
 def run(url):
-    _check()
     if not url:
         if os.getenv("WKZ_ENV") == "devel":
             url = "127.0.0.1:8000"
