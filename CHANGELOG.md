@@ -1,6 +1,6 @@
 # Workoutizer Changelog
 
-## Workoutizer 0.XX.Y (2021-MM-DD)
+## Workoutizer 0.17.1 (2021-04-20)
 ### Changes
 * Setting `Debug` mode to `False` to handle HTTP errors with redirecting to home
 * always show number of selected days as either days or years on dashboard
