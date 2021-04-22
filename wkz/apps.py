@@ -99,7 +99,7 @@ def _start_file_importer_watchdog(path: str, models: ModuleType):
 def _watch_for_device(path_to_garmin_device: str, path_to_trace_dir: str, delete_files_after_import: bool):
     device_mounted = False
     while True:
-        sub_dirs = [f for f in os.scandir(path_to_garmin_device) if f.is_dir()]
+        sub_dirs = os.listdir(path_to_garmin_device)
         if len(sub_dirs) == 1 and not device_mounted:
             device_mounted = True
             log.info(f"New device got mounted at {path_to_garmin_device}, triggering fit collector...")
