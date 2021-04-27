@@ -229,9 +229,21 @@ def get_summary_of_all_activities(sport_slug=None):
     return {"count": count, "duration": duration, "distance": distance, "seven_days_trend": seven_days_trend}
 
 
-def custom_404_view(request, exception=None):
+def custom_400_view(request, exception=None):
     messages.error(request, f"Could not find {request.path}")
     return redirect(reverse("home"))
+
+
+def custom_500_view(request, exception=None):
+    sports = models.Sport.objects.all().order_by("name")
+
+    template_name = "lib/500.html"
+    messages.error(request, f"Error while loading {request.path}")
+    return render(
+        request,
+        template_name=template_name,
+        context={"url": request.path, "sports": sports, "page_name": "Error 500", "form_field_ids": []},
+    )
 
 
 def reimport_activities(request):

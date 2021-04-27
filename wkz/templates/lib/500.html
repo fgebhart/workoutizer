@@ -1,0 +1,21 @@
+{% extends 'lib/base.html' %}
+{% block body %}
+<div class="row">
+    <div class="col-md-10 mr-auto ml-auto">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Error 🤕</h4>
+            </div>
+            <div class="card-body">
+                Got error 500 while loading page at: <code>{{ url }}</code>
+                <br>
+                <br>
+                <a href="https://github.com/fgebhart/workoutizer/issues">
+                    Open an issue
+                </a>
+                if you think this should not have happened.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

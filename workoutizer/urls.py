@@ -4,10 +4,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 # custom error handler
-handler404 = "wkz.views.custom_404_view"
-handler500 = "wkz.views.custom_404_view"
-handler403 = "wkz.views.custom_404_view"
-handler400 = "wkz.views.custom_404_view"
+handler404 = "wkz.views.custom_400_view"
+handler500 = "wkz.views.custom_500_view"
+handler403 = "wkz.views.custom_400_view"
+handler400 = "wkz.views.custom_400_view"
 
 urlpatterns = [
     path("admin/", admin.site.urls),
