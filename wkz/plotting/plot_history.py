@@ -55,6 +55,18 @@ def _plot_activities(activities, sport_model, number_of_days):
         muted_alpha=0.2,
         source=df,
     )
+    print(f"sports_list: {sports_list}")
+    df["sum_of_all_sports"] = df[sports_list].sum(axis=1)
+    print(f"df: \n{df}")
+    p.line(
+        y=df["sum_of_all_sports"],
+        x=df["date"],
+        line_width=1,
+        color="#403D39",
+    )
+    # from IPython import embed
+    # embed()
+    df["seven_days_trend"] = df["date"].groupby(pd.Grouper(key="sum_of_all_sports", freq="1D")).sum()
 
     # render zero hours properly
     p.yaxis.major_label_overrides = {0: "0h"}
