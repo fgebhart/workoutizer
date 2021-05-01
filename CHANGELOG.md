@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Prevent `unique constraint` sql error when importing activity files with same
   checksum but different name. Note, this happened only in rare situations, when
   initially importing multiple files, which are not known to workoutizer.
+* Removed and reduced unneeded logging from `fit collector`.
 
 ## [0.17.1](https://github.com/fgebhart/workoutizer/releases/tag/0.17.1) - 2021-04-20
 ### Changed

@@ -54,7 +54,7 @@ class FitCollector:
                         if files_are_same(fit, target_file):
                             log.debug(f"files {fit} and {target_file} are equal")
                             if self.delete_files_after_import:
-                                log.debug(f"deleting fit file from device: {fit}")
+                                log.debug(f"deleting fit file from device: {file_name}")
                                 os.remove(fit)
                         else:
                             log.warning(f"files {fit} and {target_file} are NOT equal after copying.")
@@ -103,7 +103,8 @@ def try_to_mount_device():
                 log.warning(f"could not mount device: {e}", exc_info=True)
                 return None
         else:
-            log.debug(f"no Garmin device found in 'lsusb' line: {line}")
+            # log.debug(f"no Garmin device found in 'lsusb' line: {line}")
+            pass
     if mount_output:
         if "Mounted" in mount_output:
             path_start = mount_output.find("at")
