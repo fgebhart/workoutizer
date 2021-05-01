@@ -11,10 +11,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   page in order to automatically import files from newly given path.
 * Added description on `Path to Traces Directory` in settings page when hovering over
   question mark icon in order to easily distinguish it from `Path to Garmin Device`.
+* Set default log level of django to `WARNING`. Django log level can also be changed
+  by setting the value of the `DJANGO_LOG_LEVEL` environment variable.
+* Avoid showing `None` in case of an activity having `None` calories. Show `-` instead.
 ### Fixed
 * Prevent `unique constraint` sql error when importing activity files with same
   checksum but different name. Note, this happened only in rare situations, when
   initially importing multiple files, which are not known to workoutizer.
+* Removed and reduced unneeded logging from `fit collector`.
 
 ## [0.17.1](https://github.com/fgebhart/workoutizer/releases/tag/0.17.1) - 2021-04-20
 ### Changed
