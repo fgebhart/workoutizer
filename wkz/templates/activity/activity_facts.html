@@ -78,7 +78,13 @@
                     <div class="col-7 col-md-8">
                         <div class="numbers">
                             <p class="card-category">Calories</p>
-                            <p class="card-title">{{ activity.trace_file.calories }} kcal<p>
+                            <p class="card-title">
+                                {% if activity.trace_file.calories %}
+                                    {{ activity.trace_file.calories }} kcal
+                                {% else %}
+                                    - kcal
+                                {% endif %}
+                            <p>
                         </div>
                     </div>
                 </div>
