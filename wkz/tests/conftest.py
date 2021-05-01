@@ -12,6 +12,7 @@ from wkz.file_importer import (
     copy_demo_fit_files_to_track_dir,
 )
 from wkz import models
+from wkz.apps import FileWatchdog
 
 
 @pytest.fixture
@@ -86,7 +87,7 @@ def tracks_in_tmpdir(tmpdir):
 
 
 @pytest.fixture
-def import_demo_data(db, tracks_in_tmpdir):
+def import_demo_data(disable_file_watchdog, db, tracks_in_tmpdir):
     prepare_import_of_demo_activities(models)
     assert models.Sport.objects.count() == 5
     assert models.Settings.objects.count() == 1
@@ -96,7 +97,7 @@ def import_demo_data(db, tracks_in_tmpdir):
 
 
 @pytest.fixture
-def import_one_activity(db, tracks_in_tmpdir):
+def import_one_activity(disable_file_watchdog, db, tracks_in_tmpdir):
     models.get_settings()
     assert models.Settings.objects.count() == 1
 
@@ -161,3 +162,12 @@ def insert_best_section(db, activity, insert_activity):
         return best_section
 
     return _create_section
+
+
+@pytest.fixture
+def disable_file_watchdog(monkeypatch):
+    # mock the FileWatchdog.watch method to disable watching
+    def dummy_watch(self):
+        return "foo"
+
+    monkeypatch.setattr(FileWatchdog, "watch", dummy_watch)

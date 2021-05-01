@@ -35,6 +35,7 @@ class FitCollector:
         )
         if activity_path:
             log.debug(f"found activity dir at: {activity_path}")
+            time.sleep(3)
             fits = [
                 os.path.join(root, name)
                 for root, dirs, files in os.walk(activity_path)
