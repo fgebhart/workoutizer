@@ -1,5 +1,10 @@
+import shutil
+from pathlib import Path
+
 from wkz import models
+from wkz.file_importer import copy_demo_fit_files_to_track_dir, import_activity_files
 from wkz.best_sections.generic import _activity_suitable_for_awards
+from workoutizer import settings as django_settings
 
 
 def test_import_of_demo_activities(import_demo_data, client):
@@ -141,3 +146,28 @@ def test__activity_evaluates_for_awards(insert_activity):
     sport.save()
     assert activity.sport.evaluates_for_awards is False
     assert _activity_suitable_for_awards(activity=activity) is False
+
+
+def test_avoid_unique_constraint_error(disable_file_watchdog, db, tmpdir, caplog):
+    target_dir = tmpdir.mkdir("foo")
+    settings = models.get_settings()
+    settings.path_to_trace_dir = target_dir
+    settings.save()
+    copy_demo_fit_files_to_track_dir(
+        source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
+        targe_dir=settings.path_to_trace_dir,
+        list_of_files_to_copy=["cycling_bad_schandau.fit"],
+    )
+
+    # create second file with same checksum but different name
+    shutil.copy(
+        Path(settings.path_to_trace_dir / "cycling_bad_schandau.fit"),
+        Path(settings.path_to_trace_dir / "cycling_bad_schandau2.fit"),
+    )
+
+    # in rare situations this lead to a unique constraint sql error because
+    # of md5sum already being present in db, check that this does not fail
+    import_activity_files(models, importing_demo_data=False)
+
+    # check that file importer warns about two files having the same checksum
+    assert "The following two files have the same checksum, you might want to remove one of them:" in caplog.text

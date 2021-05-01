@@ -79,9 +79,10 @@ def _run_file_importer(models, importing_demo_data: bool, reimporting: bool = Fa
 
 
 def _run_parser(models, trace_files: list, importing_demo_data: bool, reimporting: bool = False):
-    md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
+    files_in_db_counter = 0
     n = len(trace_files)
     for i, trace_file in enumerate(trace_files):
+        md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
         md5sum = calc_md5(trace_file)
         if md5sum not in md5sums_from_db:  # current file is not stored in db yet
             activity = _parse_and_save_to_model(
@@ -121,7 +122,10 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                     log.info(f"updated activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
                 else:
                     # file is in db and not supposed to reimport -> do nothing
+                    files_in_db_counter += 1
                     pass
+    if files_in_db_counter == n:
+        log.info("all trace files are imported to db already")
 
 
 def _parse_and_save_to_model(models, md5sum: str, trace_file, update_existing: bool, importing_demo_data: bool = False):
