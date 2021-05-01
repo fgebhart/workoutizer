@@ -13,7 +13,7 @@ from wkz.file_importer import (
 from wkz.best_sections.generic import _activity_suitable_for_awards
 
 
-def test_reimport_of_activities(db, tracks_in_tmpdir, client):
+def test_reimport_of_activities(disable_file_watchdog, db, tracks_in_tmpdir, client):
     """
     Test reimporter in following steps:
     1. import demo activities

@@ -7,7 +7,7 @@ import pandas as pd
 from fitparse import FitFile
 
 from django.conf import settings
-from tenacity import retry, wait_exponential, stop_after_attempt, before_log, after_log
+from tenacity import retry, wait_exponential, stop_after_attempt, after_log
 
 from wkz.file_helper.parser import Parser
 from wkz import configuration
@@ -18,7 +18,6 @@ log = logging.getLogger(__name__)
 @retry(
     wait=wait_exponential(multiplier=2, min=1, max=10),
     stop=stop_after_attempt(configuration.number_of_retries),
-    before=before_log(log, logging.DEBUG),
     after=after_log(log, logging.WARNING),
 )
 def _read_fit(path):

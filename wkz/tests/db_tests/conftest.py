@@ -10,7 +10,7 @@ from wkz import models
 
 
 @pytest.fixture
-def settings(db, tmp_path):
+def dummy_path_settings(db, tmp_path):
     settings = models.get_settings()
     settings.path_to_trace_dir = tmp_path / "dummy_path"
     settings.save()

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 * Added custom 500 error page to catch internal server errors.
+* Re-trigger FileWatchdog whenever `Path to Trace Directory` gets updated on settings
+  page in order to automatically import files from newly given path.
 
 ## [0.17.1](https://github.com/fgebhart/workoutizer/releases/tag/0.17.1) - 2021-04-20
 ### Changed

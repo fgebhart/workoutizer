@@ -18,7 +18,7 @@ def test_cli_version():
     assert output == f"{__version__}\n"
 
 
-def test_cli__init(db, tracks_in_tmpdir):
+def test_cli__init(disable_file_watchdog, db, tracks_in_tmpdir):
     cli._init(import_demo_activities=False)
     assert os.path.isdir(django_settings.WORKOUTIZER_DIR)
     assert len(models.Sport.objects.all()) == 0
@@ -32,7 +32,7 @@ def test_cli__init(db, tracks_in_tmpdir):
     assert len(models.Activity.objects.all()) > 1
 
 
-def test_cli__check__demo_data(db, tracks_in_tmpdir):
+def test_cli__check__demo_data(disable_file_watchdog, db, tracks_in_tmpdir):
     # initialized wkz with demo data and then run check
     cli._init(import_demo_activities=True)
     cli._check()

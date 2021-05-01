@@ -198,6 +198,8 @@ def test_retry_mechanism__failing(tmp_path, fit_parser, caplog):
     # now run fit_parser on faulty file and verify that retry mechanism is fired
     with pytest.raises(RetryError):
         fit_parser(fit)
+
     for n in range(configuration.number_of_retries):
-        assert f"Starting call to 'wkz.file_helper.fit_parser._read_fit', this is the {n+1}" in caplog.text
-        assert "Finished call to 'wkz.file_helper.fit_parser._read_fit' after" in caplog.text
+        assert "Finished call" in caplog.text
+        assert f"this was the {n+1}" in caplog.text
+        assert "time calling it." in caplog.text

@@ -5,7 +5,7 @@ import operator
 from wkz.apps import _start_device_watchdog, FileWatchdog
 from wkz.file_importer import copy_demo_fit_files_to_track_dir
 from wkz import models
-from wkz.tests.utils import delayed_condition
+from wkz.tests.utils import delayed_assertion
 
 
 def test__start_file_importer_watchdog_basic(transactional_db, tmp_path, test_data_dir, demo_data_dir, fit_file_a):
@@ -20,9 +20,6 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmp_path, test_da
     settings.path_to_trace_dir = trace_dir
     settings.save()
 
-    fw = FileWatchdog(models=models)
-    fw.watch()
-
     # put an activity fit file into the watched dir
     copy_demo_fit_files_to_track_dir(
         source_dir=demo_data_dir,
@@ -32,8 +29,8 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmp_path, test_da
     assert (Path(trace_dir) / fit_file_a).is_file()
 
     # watchdog should now have triggered the file imported and activity should be in db
-    assert delayed_condition(models.Activity.objects.count, operator.eq, 1)
-    assert delayed_condition(models.BestSection.objects.count, operator.gt, 0)
+    delayed_assertion(models.Activity.objects.count, operator.eq, 1)
+    delayed_assertion(models.BestSection.objects.count, operator.gt, 0)
     bs1 = models.BestSection.objects.count()
 
     # now put a activity GPX file into the watched dir
@@ -43,8 +40,8 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmp_path, test_da
         list_of_files_to_copy=["example.gpx"],
     )
 
-    assert delayed_condition(models.Activity.objects.count, operator.eq, 2)
-    assert delayed_condition(models.BestSection.objects.count, operator.gt, bs1)
+    delayed_assertion(models.Activity.objects.count, operator.eq, 2)
+    delayed_assertion(models.BestSection.objects.count, operator.gt, bs1)
     bs2 = models.BestSection.objects.count()
 
     # create a non fit/gpx file to verify it won't be imported
@@ -55,8 +52,8 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmp_path, test_da
     assert Path(dummy_file).is_file()
 
     # but assert that the number of activities and best sections did not increase
-    assert delayed_condition(models.Activity.objects.count, operator.eq, 2)
-    assert delayed_condition(models.BestSection.objects.count, operator.eq, bs2)
+    delayed_assertion(models.Activity.objects.count, operator.eq, 2)
+    delayed_assertion(models.BestSection.objects.count, operator.eq, bs2)
 
 
 def test_fake_device(db, fake_device, device_dir, activity_dir, fit_file):
@@ -140,14 +137,16 @@ def test__start_device_watchdog__collect_files(
 
     # now mount device which contains fit files
     device.mount()
+    assert (device.activity_path_on_device / fit_file_a).is_file()
+    assert (device.activity_path_on_device / fit_file_b).is_file()
 
     # verify the fit files are present on the mounted device
     assert (mount_path / device_dir / activity_dir / fit_file_a).is_file()
     assert (mount_path / device_dir / activity_dir / fit_file_b).is_file()
 
     # verify that the fit files are now present in the trace dir
-    assert delayed_condition((trace_dir / "garmin" / fit_file_a).is_file, operator.is_, True)
-    assert delayed_condition((trace_dir / "garmin" / fit_file_b).is_file, operator.is_, True)
+    delayed_assertion((trace_dir / "garmin" / fit_file_a).is_file, operator.is_, True)
+    delayed_assertion((trace_dir / "garmin" / fit_file_b).is_file, operator.is_, True)
 
 
 def test_device_and_file_importer_watchdog(
@@ -184,22 +183,20 @@ def test_device_and_file_importer_watchdog(
     assert (mount_path / device_dir / activity_dir / fit_file_b).is_file()
 
     # verify that the fit files are now present in the trace dir
-    assert delayed_condition((trace_dir / "garmin" / fit_file_a).is_file, operator.is_, True)
-    assert delayed_condition((trace_dir / "garmin" / fit_file_b).is_file, operator.is_, True)
+    delayed_assertion((trace_dir / "garmin" / fit_file_a).is_file, operator.is_, True)
+    delayed_assertion((trace_dir / "garmin" / fit_file_b).is_file, operator.is_, True)
 
     # check that the activities got imported
-    assert delayed_condition(models.Activity.objects.count, operator.eq, 2)
-    assert delayed_condition(models.BestSection.objects.count, operator.gt, 2)
+    delayed_assertion(models.Activity.objects.count, operator.eq, 2)
+    delayed_assertion(models.BestSection.objects.count, operator.gt, 2)
 
 
 def test_file_importer__with_path_being_changed(
-    settings, transactional_db, tmp_path, demo_data_dir, fit_file_a, fit_file_b
+    dummy_path_settings, transactional_db, tmp_path, demo_data_dir, fit_file_a, fit_file_b
 ):
     assert models.Activity.objects.count() == 0
     assert models.BestSection.objects.count() == 0
 
-    fw = FileWatchdog(models=models)
-    fw.watch()
     # assume we have two directories: an empty directory and one with activities
     empty_dir = tmp_path / "empty_dir"
     empty_dir.mkdir()
@@ -218,17 +215,18 @@ def test_file_importer__with_path_being_changed(
     assert any(dir_with_files.iterdir())  # dir_with_files contains a file
 
     # first, file watchdog is watching the empty dir (note, chaning settings will re-trigger watchdog)
-    settings.path_to_trace_dir = empty_dir
-    settings.save()
+    dummy_path_settings.path_to_trace_dir = empty_dir
+    dummy_path_settings.save()
 
     # since watchdog is watching empty dir, activity count should still be 0
-    assert delayed_condition(models.Activity.objects.count, operator.eq, 0)
+    delayed_assertion(models.Activity.objects.count, operator.eq, 0)
     # now change the settings path to point to the dir_with_files
-    settings.path_to_trace_dir = dir_with_files
-    settings.save()
+    dummy_path_settings.path_to_trace_dir = dir_with_files
+    dummy_path_settings.save()
 
-    # watchdog should automatically pick up the new path, start watching the new dir and find the given activity file
-    assert delayed_condition(models.Activity.objects.count, operator.eq, 1)
+    # watchdog should automatically pick up the new path, start watching the new dir, find the
+    # given activity file (even if it was added before starting to watch if) and import it
+    delayed_assertion(models.Activity.objects.count, operator.eq, 1)
 
     # now also add an activity file to the empty dir and check that watchdog does not get triggered
     copy_demo_fit_files_to_track_dir(
@@ -237,4 +235,4 @@ def test_file_importer__with_path_being_changed(
         list_of_files_to_copy=[fit_file_b],
     )
     time.sleep(3)
-    assert delayed_condition(models.Activity.objects.count, operator.ne, 2)
+    delayed_assertion(models.Activity.objects.count, operator.ne, 2)

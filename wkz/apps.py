@@ -75,9 +75,9 @@ class FileImporterHandler(FileSystemEventHandler):
 
     def run_activity_import(self):
         if not self.locked:
-            self.locked = False
-            import_activity_files(self.models, importing_demo_data=False)
             self.locked = True
+            import_activity_files(self.models, importing_demo_data=False)
+            self.locked = False
         else:
             log.debug("blocked FileImporterHandler from triggering another import process")
 
@@ -100,7 +100,7 @@ class FileWatchdog(metaclass=Singleton):
         path = settings.path_to_trace_dir
         if Path(path).is_dir():
             event_handler = FileImporterHandler(self.models)
-            # event_handler.run_activity_import()
+            event_handler.run_activity_import()
             self.watchdog.schedule(event_handler, path=path, recursive=True)
             self.watchdog.start()
             log.debug(f"started watchdog for incoming activity files in {path}")
