@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Set default log level of django to `WARNING`. Django log level can also be changed
   by setting the value of the `DJANGO_LOG_LEVEL` environment variable.
 * Avoid showing `None` in case of an activity having `None` calories. Show `-` instead.
+* Wrap retry around checksum calculation to remedy io errors.
 ### Fixed
 * Prevent `unique constraint` sql error when importing activity files with same
   checksum but different name. Note, this happened only in rare situations, when
