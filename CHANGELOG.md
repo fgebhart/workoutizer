@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added custom 500 error page to catch internal server errors.
 * Re-trigger FileWatchdog whenever `Path to Trace Directory` gets updated on settings
   page in order to automatically import files from newly given path.
+* Added description on `Path to Traces Directory` in settings page when hovering over
+  question mark icon in order to easily distinguish it from `Path to Garmin Device`.
 ### Fixed
 * Prevent `unique constraint` sql error when importing activity files with same
   checksum but different name. Note, this happened only in rare situations, when

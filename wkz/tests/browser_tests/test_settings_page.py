@@ -18,14 +18,26 @@ def test_settings_page__no_demo_activity(live_server, webdriver):
     input_labels = [link.text for link in webdriver.find_elements_by_class_name("col-md-4")]
     assert "Path to Traces Directory" in input_labels
     input_labels.remove("Path to Traces Directory")
-    assert "Path to Garmin Device " in input_labels
-    input_labels.remove("Path to Garmin Device ")
+    assert "Path to Garmin Device" in input_labels
+    input_labels.remove("Path to Garmin Device")
     assert "Delete fit Files after Copying" in input_labels
     input_labels.remove("Delete fit Files after Copying")
     assert "Reimport all Files" in input_labels
     input_labels.remove("Reimport all Files")
     # verify that the list is empty after remove all given input labels
     assert len(input_labels) == 0
+
+    question_hover = [
+        question.get_attribute("data-original-title")
+        for question in webdriver.find_elements(By.CLASS_NAME, "fa-question-circle")
+    ]
+    hover_text = ""
+    for text in question_hover:
+        hover_text = f"{hover_text} {text}"
+
+    assert "Enter path to a directory which both contains your activity files to be" in hover_text
+    assert "Enter the path to a directory in which your connected device shows up after" in hover_text
+    assert "Enable this setting to delete fit files from your Garmin device after a" in hover_text
 
     # verify no demo activity is present
     assert len(models.Activity.objects.filter(is_demo_activity=True)) == 0
