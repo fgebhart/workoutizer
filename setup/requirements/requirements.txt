@@ -72,10 +72,13 @@ six==1.15.0
     # via
     #   bokeh
     #   python-dateutil
+    #   tenacity
 sportgems==0.5.0
     # via -r setup/requirements/requirements.in
 sqlparse==0.4.1
     # via django
+tenacity==7.0.0
+    # via -r setup/requirements/requirements.in
 tornado==6.1
     # via bokeh
 urllib3==1.26.4

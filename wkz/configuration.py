@@ -79,3 +79,6 @@ climb_distances = best_sections[1]["distances"]
 
 # with respect to the table listing activities used both on dashboard and sport page
 number_of_rows_per_page_in_table = 40
+
+# number of retries to conduct in case of input/output errors when reading fit files
+number_of_retries = 5

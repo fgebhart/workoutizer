@@ -9,6 +9,14 @@ from wkz.file_importer import copy_demo_fit_files_to_track_dir
 from wkz import models
 
 
+@pytest.fixture
+def settings(db, tmp_path):
+    settings = models.get_settings()
+    settings.path_to_trace_dir = tmp_path / "dummy_path"
+    settings.save()
+    return settings
+
+
 class FakeDevice:
     def __init__(self, mount_path: LocalPath, device_dir, activity_dir: str, activity_files):
         self.mount_path = mount_path

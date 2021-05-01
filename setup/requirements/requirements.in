@@ -13,3 +13,4 @@ requests
 sportgems==0.5.0        # pinned to avoid unexpected issues because of interface not being stable yet
 watchdog
 luddite
+tenacity

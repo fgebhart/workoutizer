@@ -5,13 +5,24 @@ import datetime
 import pytz
 import pandas as pd
 from fitparse import FitFile
-from fitparse.utils import FitEOFError
+
 from django.conf import settings
+from tenacity import retry, wait_exponential, stop_after_attempt, before_log, after_log
 
 from wkz.file_helper.parser import Parser
 from wkz import configuration
 
 log = logging.getLogger(__name__)
+
+
+@retry(
+    wait=wait_exponential(multiplier=2, min=1, max=10),
+    stop=stop_after_attempt(configuration.number_of_retries),
+    before=before_log(log, logging.DEBUG),
+    after=after_log(log, logging.WARNING),
+)
+def _read_fit(path):
+    return FitFile(path)
 
 
 class FITParser(Parser):
@@ -21,10 +32,7 @@ class FITParser(Parser):
 
     def _parse_metadata(self):
         self.file_name = self.get_file_name_from_path(self.path_to_file)
-        try:
-            self.fit = FitFile(self.path_to_file)
-        except FitEOFError as e:
-            log.error(f"Error reading fit file {self.path_to_file}: {e}", exc_info=True)
+        self.fit = _read_fit(self.path_to_file)
 
     def _parse_records(self):
         for record in self.fit.get_messages():

@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.template.defaultfilters import slugify
 from colorfield.fields import ColorField
 from workoutizer import settings as django_settings
+from wkz.apps import FileWatchdog
 
 log = logging.getLogger(__name__)
 
@@ -180,6 +181,22 @@ class Settings(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    __original_path_to_trace_dir = None
+
+    def __init__(self, *args, **kwargs):
+        super(Settings, self).__init__(*args, **kwargs)
+        self.__original_path_to_trace_dir = self.path_to_trace_dir
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        super(Settings, self).save(force_insert, force_update, *args, **kwargs)
+        # whenever path_to_trace_dir changes, retrigger file watchdog
+        if self.path_to_trace_dir != self.__original_path_to_trace_dir:
+            from wkz import models
+
+            fw = FileWatchdog(models=models)
+            fw.watch()
+        self.__original_path_to_trace_dir = self.path_to_trace_dir
 
 
 def get_settings():

@@ -9,7 +9,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import pytest
 
 from wkz import models
-from wkz.tests.db_tests.test_file_watchdogs import condition
+from wkz.tests.utils import delayed_condition
 
 
 def test_sidebar(live_server, webdriver):
@@ -186,7 +186,7 @@ def test_custom_navbar_items(db, live_server, webdriver, import_one_activity):
     _assert_that_only_these_slugs_are_present(default_slugs + ["edit"])
 
     # activity page should have default slugs + edit + download
-    assert condition(models.Activity.objects.count, operator.eq, 1)
+    assert delayed_condition(models.Activity.objects.count, operator.eq, 1)
     pk = models.Activity.objects.get().pk
     webdriver.get(live_server.url + f"/activity/{pk}")
     _assert_that_only_these_slugs_are_present(default_slugs + ["edit", "download"])
