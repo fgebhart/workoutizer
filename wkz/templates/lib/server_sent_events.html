@@ -1,0 +1,42 @@
+{% load static %}
+<script src="{% static 'django_eventstream/json2.js' %}"></script>
+<script src="{% static 'django_eventstream/eventsource.min.js' %}"></script>
+<script src="{% static 'django_eventstream/reconnecting-eventsource.js' %}"></script>
+<script>
+  var logMessage = function (s) {
+    var outputDiv = document.getElementById('output');
+    outputDiv.innerHTML = outputDiv.innerHTML + s + '<br />';
+  };
+
+  var start = function () {
+    logMessage('connecting...');
+
+    var es = new ReconnectingEventSource('/events/');
+
+    es.onopen = function () {
+      logMessage('connected');
+    };
+
+    es.onerror = function () {
+      logMessage('connection error');
+    };
+
+    es.addEventListener('stream-reset', function (e) {
+      e = JSON.parse(e.data);
+      logMessage('stream reset: ' + JSON.stringify(e.channels));
+    }, false);
+
+    es.addEventListener('stream-error', function (e) {
+      // hard stop
+      es.close();
+      e = JSON.parse(e.data);
+      logMessage('stream error: ' + e.condition + ': ' + e.text);
+    }, false);
+
+    es.addEventListener('message', function (e) {
+      json = JSON.parse(e.data)
+      demo.showNotification(json.color, json.text);
+      // logMessage('message: ' + e.data);
+    }, false);
+  };
+</script>

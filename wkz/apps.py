@@ -6,6 +6,7 @@ from pathlib import Path
 import threading
 import time
 
+from django_eventstream import send_event
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from django.apps import AppConfig
@@ -104,8 +105,10 @@ class FileWatchdog(metaclass=Singleton):
             self.watchdog.schedule(event_handler, path=path, recursive=True)
             self.watchdog.start()
             log.debug(f"started watchdog for incoming activity files in {path}")
+            send_event("event", "message", {"text": "watchdog started.", "color": "green"})
         else:
             log.warning(f"Path to trace dir {path} does not exist. File Importer watchdog is disabled.")
+            send_event("event", "message", {"text": "invalid path.", "color": "red"})
 
     def _reinit_observer(self):
         if self.watchdog:

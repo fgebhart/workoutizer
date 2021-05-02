@@ -37,9 +37,12 @@ INSTALLED_APPS = [
     "wkz",
     "colorfield",
     "rest_framework",
+    "channels",
+    "django_eventstream",
 ]
 
 MIDDLEWARE = [
+    "django_grip.GripMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -69,6 +72,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "workoutizer.wsgi.application"
+ASGI_APPLICATION = "workoutizer.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
