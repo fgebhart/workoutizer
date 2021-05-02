@@ -6,7 +6,7 @@ from typing import List, Union
 from wkz.file_helper.gpx_parser import GPXParser
 from wkz.file_helper.fit_parser import FITParser
 from wkz.file_helper.auto_naming import get_automatic_name
-from wkz.tools.utils import sanitize, calc_md5, limit_string
+from wkz.tools.utils import sanitize, calc_md5, limit_string, sse
 from wkz.file_helper.initial_data_handler import (
     copy_demo_fit_files_to_track_dir,
     change_date_of_demo_activities,
@@ -81,10 +81,11 @@ def _run_file_importer(models, importing_demo_data: bool, reimporting: bool = Fa
 def _run_parser(models, trace_files: list, importing_demo_data: bool, reimporting: bool = False):
     files_in_db_counter = 0
     n = len(trace_files)
+    activities_created = []
     for i, trace_file in enumerate(trace_files):
         md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
         md5sum = calc_md5(trace_file)
-        if md5sum not in md5sums_from_db:  # current file is not stored in db yet
+        if md5sum not in md5sums_from_db:  # file is not stored in db yet
             activity = _parse_and_save_to_model(
                 models=models,
                 md5sum=md5sum,
@@ -92,6 +93,7 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                 update_existing=False,
                 importing_demo_data=importing_demo_data,
             )
+            activities_created.append(activity.name)
             log.info(f"created new activity: {activity.name} ({activity.date.date()}) ID: {activity.pk}")
         else:  # checksum is in db already
             file_name = trace_file.split("/")[-1]
@@ -107,7 +109,7 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                     f"{trace_file}\n"
                     f"{trace_file_path_instance.path_to_file}"
                 )
-            else:  # means file is already in db
+            else:  # file is already in db
                 if reimporting:
                     trace = models.Traces.objects.get(md5sum=md5sum)
                     activity = models.Activity.objects.get(trace_file=trace)
@@ -120,12 +122,24 @@ def _run_parser(models, trace_files: list, importing_demo_data: bool, reimportin
                         importing_demo_data=importing_demo_data,
                     )
                     log.info(f"updated activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
-                else:
-                    # file is in db and not supposed to reimport -> do nothing
+                else:  # file is in db and not supposed to reimport -> do nothing
                     files_in_db_counter += 1
                     pass
-    if files_in_db_counter == n:
-        log.info("all trace files are imported to db already")
+    # send info on results of import process
+    if n == 0:
+        settings = models.get_settings()
+        sse(f"File Import: No activity files found in '{settings.path_to_trace_dir}'.", "yellow")
+    elif files_in_db_counter == n:
+        sse(f"File Import: All {n} activity files are stored in db already.", "green")
+    elif reimporting:
+        sse(f"File Import: Re-imported {n} activity files.", "green")
+    elif activities_created:
+        new = ""
+        for activity in activities_created:
+            new = f"{new}\n - {activity}"
+        sse(f"File Import: Created {len(activities_created)} new activities:{new}", "green")
+    else:
+        sse(f"File Import: Imported {n-files_in_db_counter} activity files.", "green")
 
 
 def _parse_and_save_to_model(models, md5sum: str, trace_file, update_existing: bool, importing_demo_data: bool = False):

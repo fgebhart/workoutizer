@@ -13,7 +13,7 @@ from django.apps import AppConfig
 
 from wkz import configuration
 from wkz.tools.utils import Singleton
-from wkz.file_importer import import_activity_files
+from wkz.file_importer import _run_file_importer
 from wkz.file_helper.fit_collector import FitCollector
 from workoutizer import settings as django_settings
 
@@ -74,13 +74,14 @@ class FileImporterHandler(FileSystemEventHandler):
             log.debug("activity file was added, triggering file importer...")
             self.run_activity_import()
 
-    def run_activity_import(self):
+    def run_activity_import(self, force_overwrite=False):
         if not self.locked:
             self.locked = True
-            import_activity_files(self.models, importing_demo_data=False)
+            _run_file_importer(models=self.models, importing_demo_data=False, reimporting=force_overwrite)
             self.locked = False
         else:
             log.debug("blocked FileImporterHandler from triggering another import process")
+            send_event("event", "message", {"text": "Import is currently running - please wait...", "color": "yellow"})
 
 
 class FileWatchdog(metaclass=Singleton):
@@ -95,20 +96,17 @@ class FileWatchdog(metaclass=Singleton):
         self.models = models
         self.watchdog = None
 
-    def watch(self):
+    def watch(self, force_overwrite=False):
         self._reinit_observer()
         settings = self.models.get_settings()
         path = settings.path_to_trace_dir
         if Path(path).is_dir():
             event_handler = FileImporterHandler(self.models)
-            event_handler.run_activity_import()
+            event_handler.run_activity_import(force_overwrite)
             self.watchdog.schedule(event_handler, path=path, recursive=True)
             self.watchdog.start()
-            log.debug(f"started watchdog for incoming activity files in {path}")
-            send_event("event", "message", {"text": "watchdog started.", "color": "green"})
         else:
             log.warning(f"Path to trace dir {path} does not exist. File Importer watchdog is disabled.")
-            send_event("event", "message", {"text": "invalid path.", "color": "red"})
 
     def _reinit_observer(self):
         if self.watchdog:

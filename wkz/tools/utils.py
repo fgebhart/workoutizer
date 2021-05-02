@@ -4,6 +4,7 @@ import hashlib
 import datetime
 
 import pytz
+from django_eventstream import send_event
 from django.conf import settings
 
 log = logging.getLogger(__name__)
@@ -82,3 +83,9 @@ class Singleton(type):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
+
+
+def sse(text: str, color: str):
+    """Server Sent Event"""
+    log.debug(f"{text} [SSE]")
+    send_event("event", "message", {"text": text, "color": color})

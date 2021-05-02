@@ -2,6 +2,7 @@ import logging
 import json
 from typing import List, Union
 import datetime
+from pathlib import Path
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
@@ -10,18 +11,17 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Sum
-from multiprocessing import Process
 import pytz
 
 from wkz import models
 from wkz import forms
-from wkz.file_importer import reimport_activity_files
+from wkz.apps import FileWatchdog
 from wkz.plotting.plot_history import plot_history
 from wkz.plotting.plot_pie_chart import plot_pie_chart
 from wkz.plotting.plot_trend import plot_trend
 from wkz.gis.geo import GeoTrace, get_list_of_coordinates
 from wkz.tools.colors import lines_colors
-from wkz.tools.utils import cut_list_to_have_same_length
+from wkz.tools.utils import cut_list_to_have_same_length, sse
 from workoutizer import settings as django_settings
 from wkz import configuration
 from workoutizer import __version__
@@ -155,23 +155,35 @@ def settings_view(request):
     settings = models.get_settings()
     activities = models.Activity.objects.filter(is_demo_activity=True).count()
     form = forms.EditSettingsForm(request.POST or None, instance=settings)
-    if request.method == "POST":
-        if form.is_valid():
-            log.debug(f"got valid form: {form.cleaned_data}")
-            form.save()
-            messages.success(request, "Successfully saved Settings!")
-            return HttpResponseRedirect(reverse("settings"))
-        else:
-            log.warning(f"form invalid: {form.errors}")
     return render(
         request,
-        "lib/settings.html",
+        "settings/settings.html",
         {
             "sports": sports,
             "page_name": "Settings",
             "form": form,
             "settings": settings,
             "form_field_ids": get_all_form_field_ids(),
+            "delete_demos": True if activities else False,
+        },
+    )
+
+
+def settings_form(request):
+    settings = models.get_settings()
+    activities = models.Activity.objects.filter(is_demo_activity=True).count()
+    form = forms.EditSettingsForm(request.POST or None, instance=settings)
+    if request.method == "POST":
+        if form.is_valid():
+            log.debug(f"got valid form: {form.cleaned_data}")
+            form.save()
+        else:
+            log.warning(f"form invalid: {form.errors}")
+    return render(
+        request,
+        "settings/form.html",
+        {
+            "form": form,
             "delete_demos": True if activities else False,
         },
     )
@@ -243,18 +255,14 @@ def custom_500_view(request, exception=None):
 
 
 def reimport_activities(request):
-    messages.info(request, "Running reimport in background...")
-
-    reimporter = Process(
-        target=reimport_activity_files,
-        args=(models,),
-    )
-    reimporter.start()
-
-    if request.META.get("HTTP_REFERER"):
-        return redirect(request.META.get("HTTP_REFERER"))
+    settings = models.get_settings()
+    if Path(settings.path_to_trace_dir).is_dir():
+        sse(f"Started reimporting activities from '{settings.path_to_trace_dir}'...", "green")
+        fw = FileWatchdog(models=models)
+        fw.watch(force_overwrite=True)
     else:
-        return HttpResponseRedirect(reverse("settings"))
+        sse(f"'{settings.path_to_trace_dir}' is not a valid path.", "red")
+    return settings_form(request)
 
 
 def get_flat_list_of_pks_of_activities_in_top_awards(
