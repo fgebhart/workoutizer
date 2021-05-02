@@ -52,16 +52,7 @@ def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
     )
 
 
-# interfacing functions to either reimport or import activity files
-def reimport_activity_files(models):
-    _run_file_importer(models, importing_demo_data=False, reimporting=True)
-
-
-def import_activity_files(models, importing_demo_data: bool):
-    _run_file_importer(models, importing_demo_data=importing_demo_data, reimporting=False)
-
-
-def _run_file_importer(models, importing_demo_data: bool, reimporting: bool = False):
+def run_file_importer(models, importing_demo_data: bool, reimporting: bool = False):
     settings = models.get_settings()
     log.debug("triggered file importer")
     path = settings.path_to_trace_dir

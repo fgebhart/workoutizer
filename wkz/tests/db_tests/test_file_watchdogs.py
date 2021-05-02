@@ -12,7 +12,7 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmp_path, test_da
     assert models.Activity.objects.count() == 0
     assert models.BestSection.objects.count() == 0
 
-    # update path_to_trace_dir in db accordingly, since import_activity_files will read it from the db
+    # update path_to_trace_dir in db accordingly, since run_file_importer will read it from the db
     settings = models.get_settings()
     trace_dir = tmp_path / "trace_dir"
     trace_dir.mkdir()

@@ -7,7 +7,7 @@ from django.core.management import call_command
 
 from workoutizer import settings as django_settings
 from wkz.file_importer import (
-    import_activity_files,
+    run_file_importer,
     prepare_import_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
 )
@@ -92,7 +92,7 @@ def import_demo_data(disable_file_watchdog, db, tracks_in_tmpdir):
     assert models.Sport.objects.count() == 5
     assert models.Settings.objects.count() == 1
 
-    import_activity_files(models, importing_demo_data=True)
+    run_file_importer(models, importing_demo_data=True, reimporting=False)
     assert models.Activity.objects.count() > 1
 
 
@@ -107,7 +107,7 @@ def import_one_activity(disable_file_watchdog, db, tracks_in_tmpdir):
             targe_dir=models.get_settings().path_to_trace_dir,
             list_of_files_to_copy=[file_name],
         )
-        import_activity_files(models, importing_demo_data=False)
+        run_file_importer(models, importing_demo_data=False, reimporting=False)
         assert models.Activity.objects.count() == 1
 
     return _copy_activity
