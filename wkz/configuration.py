@@ -82,3 +82,6 @@ number_of_rows_per_page_in_table = 40
 
 # number of retries to conduct in case of input/output errors when reading fit files
 number_of_retries = 5
+
+# how many activities should be included in one server sent event message when importing/reimporting
+number_of_activities_in_bulk_progress_update = 5

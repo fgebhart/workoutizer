@@ -59,10 +59,7 @@ class FileImporter(metaclass=Singleton):
     def run_file_importer(self, models, importing_demo_data: bool, reimporting: bool = False):
         if not self.locked:
             self.locked = True
-            settings = models.get_settings()
-            sse(f"Start checking '{settings.path_to_trace_dir}' for new activities.", "green")
             self._run_parser(models, importing_demo_data, reimporting)
-
         else:
             sse("Importer is already running - please wait...", "yellow")
 
@@ -72,11 +69,12 @@ class FileImporter(metaclass=Singleton):
 
         # find activity files in directory
         trace_files = _get_all_files(path)
-        log.debug(f"found {len(trace_files)} files in trace dir: {path}")
-
         files_in_db_counter = 0
         n = len(trace_files)
+        additional_info = "Reimporting them..." if reimporting else "Checking for new files..."
+        sse(f"Found {n} activity files in '{settings.path_to_trace_dir}'. {additional_info}", "blue")
         activities_created = []
+        activities_updated = []
         for i, trace_file in enumerate(trace_files):
             md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
             md5sum = calc_md5(trace_file)
@@ -124,10 +122,16 @@ class FileImporter(metaclass=Singleton):
                             update_existing=True,
                             importing_demo_data=importing_demo_data,
                         )
+                        activities_updated.append(activity.name)
                         log.info(f"updated activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
                     else:  # file is in db and not supposed to reimport -> do nothing
                         files_in_db_counter += 1
                         pass
+            # send progress update
+            if len(activities_created) == configuration.number_of_activities_in_bulk_progress_update:
+                activities_created = _send_progress_update(activities_created, reimporting, remaining=n - (i + 1))
+            if len(activities_updated) == configuration.number_of_activities_in_bulk_progress_update:
+                activities_updated = _send_progress_update(activities_updated, reimporting, remaining=n - (i + 1))
         if importing_demo_data:
             demo_activities = models.Activity.objects.filter(is_demo_activity=True)
             change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
@@ -135,22 +139,39 @@ class FileImporter(metaclass=Singleton):
                 count=9, every_nth_day=3, activity_model=models.Activity, sport_model=models.Sport
             )
             log.info("finished inserting demo data")
+        # finish progress update
+        if activities_created:
+            _send_progress_update(activities_created, reimporting, 0)
+        if activities_updated:
+            _send_progress_update(activities_updated, reimporting, 0)
+
         # send info on results of import process
         if n == 0:
             settings = models.get_settings()
             sse(f"File Import: No activity files found in '{settings.path_to_trace_dir}'.", "yellow")
         elif files_in_db_counter == n:
-            sse(f"File Import: All {n} activity files are stored in db already.", "green")
+            sse(f"File Import: All {n} activity files are already present in workoutizer.", "green")
         elif reimporting:
             sse(f"Finished reimporting {n} activity files.", "green")
-        elif activities_created:
-            new = ""
-            for activity in activities_created:
-                new = f"{new}\n - {activity}"
-            sse(f"File Import: Created {len(activities_created)} new activities:{new}", "green")
         else:
-            sse(f"File Import: Imported {n-files_in_db_counter} activity files.", "green")
+            sse(f"Finished importing {n-files_in_db_counter} activity files.", "green")
         self.locked = False
+
+
+def _send_progress_update(activities: List[str], reimporting: bool, remaining: int) -> List:
+    msg = "<b>Progress Update</b> - "
+    if reimporting:
+        msg = f"{msg} Reimported {len(activities)} activity files:<br>"
+    else:
+        msg = f"{msg} Created {len(activities)} new activities:<br>"
+    msg = f"{msg} <ul>"
+    for activity_name in activities:
+        msg = f"{msg} <li>{activity_name}</li>"
+    msg = f"{msg} </ul>"
+    if remaining:
+        msg = f"{msg} {remaining} files remaining..."
+    sse(msg, "blue")
+    return []
 
 
 def _parse_and_save_to_model(models, md5sum: str, trace_file, update_existing: bool, importing_demo_data: bool = False):
