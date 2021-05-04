@@ -2,7 +2,6 @@ import logging
 import json
 from typing import List, Union
 import datetime
-from pathlib import Path
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
@@ -15,13 +14,12 @@ import pytz
 
 from wkz import models
 from wkz import forms
-from wkz.apps import FileWatchdog
 from wkz.plotting.plot_history import plot_history
 from wkz.plotting.plot_pie_chart import plot_pie_chart
 from wkz.plotting.plot_trend import plot_trend
 from wkz.gis.geo import GeoTrace, get_list_of_coordinates
 from wkz.tools.colors import lines_colors
-from wkz.tools.utils import cut_list_to_have_same_length, sse
+from wkz.tools.utils import cut_list_to_have_same_length
 from workoutizer import settings as django_settings
 from wkz import configuration
 from workoutizer import __version__
@@ -252,17 +250,6 @@ def custom_500_view(request, exception=None):
         template_name=template_name,
         context={"url": request.path, "sports": sports, "page_name": "Error 500", "form_field_ids": []},
     )
-
-
-def reimport_activities(request):
-    settings = models.get_settings()
-    if Path(settings.path_to_trace_dir).is_dir():
-        sse(f"Started reimporting activities from '{settings.path_to_trace_dir}'...", "green")
-        fw = FileWatchdog(models=models)
-        fw.watch(force_overwrite=True)
-    else:
-        sse(f"'{settings.path_to_trace_dir}' is not a valid path.", "red")
-    return settings_form(request)
 
 
 def get_flat_list_of_pks_of_activities_in_top_awards(

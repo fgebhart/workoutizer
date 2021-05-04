@@ -17,7 +17,6 @@ urlpatterns = [
     # Settings
     path("settings/", views.settings_view, name="settings"),
     path("settings/form", views.settings_form, name="settings-form"),
-    path("settings/reimport", views.reimport_activities, name="reimport"),
     path("settings/delete-demo-data/", activity_views.DemoActivityDeleteView.as_view(), name="delete-demo-data"),
     # Help
     path("help/", views.HelpView.as_view(), name="help"),
@@ -38,6 +37,7 @@ urlpatterns = [
     # Rest API endpoints
     path("mount-device/", api.mount_device_endpoint),
     path("stop/", api.stop_django_server),
+    path("reimport/", api.reimport_activities, name="reimport"),
     # events channel
     path("events/", include(django_eventstream.urls), {"channels": ["event"]}),
 ]

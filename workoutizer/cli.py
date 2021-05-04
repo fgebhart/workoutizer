@@ -150,10 +150,11 @@ def _init(import_demo_activities=False):
 
     if import_demo_activities:
         # import demo activities
-        from wkz.file_importer import run_file_importer, prepare_import_of_demo_activities
+        from wkz.file_importer import FileImporter, prepare_import_of_demo_activities
 
         prepare_import_of_demo_activities(models)
-        run_file_importer(models, importing_demo_data=True, reimporting=False)
+        importer = FileImporter()
+        importer.run_file_importer(models, importing_demo_data=True, reimporting=False)
         click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
@@ -197,9 +198,10 @@ def _reimport():
     _check()
 
     from wkz import models
-    from wkz.file_importer import run_file_importer
+    from wkz.file_importer import FileImporter
 
-    run_file_importer(models, importing_demo_data=False, reimporting=True)
+    importer = FileImporter()
+    importer.run_file_importer(models, importing_demo_data=False, reimporting=True)
 
 
 if __name__ == "__main__":

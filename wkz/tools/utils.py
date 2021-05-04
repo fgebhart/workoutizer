@@ -87,5 +87,5 @@ class Singleton(type):
 
 def sse(text: str, color: str):
     """Server Sent Event"""
-    log.debug(f"{text} [SSE]")
+    log.debug(text)
     send_event("event", "message", {"text": text, "color": color})

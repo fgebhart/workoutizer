@@ -11,13 +11,13 @@
     es.onopen = function () {
       console.log('connected');
       var cog = document.getElementById('settings-cog');
-      cog.style.color = "#6BD098";
+      cog.style.color = "#6BD098";  // green
     };
 
     es.onerror = function () {
       console.log('connection error');
       var cog = document.getElementById('settings-cog');
-      cog.style.color = "#F17E5D";
+      cog.style.color = "#F17E5D";  // red
     };
 
     es.addEventListener('stream-reset', function (e) {

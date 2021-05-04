@@ -200,7 +200,6 @@ class Settings(models.Model):
             from wkz import models
 
             if Path(self.path_to_trace_dir).is_dir():
-                sse(f"Started watching '{self.path_to_trace_dir}'.", "green")
                 fw = FileWatchdog(models=models)
                 fw.watch()
             else:

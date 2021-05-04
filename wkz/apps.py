@@ -6,14 +6,13 @@ from pathlib import Path
 import threading
 import time
 
-from django_eventstream import send_event
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from django.apps import AppConfig
 
 from wkz import configuration
 from wkz.tools.utils import Singleton
-from wkz.file_importer import run_file_importer
+from wkz.file_importer import FileImporter
 from wkz.file_helper.fit_collector import FitCollector
 from workoutizer import settings as django_settings
 
@@ -66,22 +65,13 @@ class FileImporterHandler(FileSystemEventHandler):
 
     def __init__(self, models):
         self.models = models
-        self.locked = False
         super().__init__()
 
     def on_created(self, event):
         if event.src_path.split(".")[-1] in configuration.supported_formats:
             log.debug("activity file was added, triggering file importer...")
-            self.run_activity_import()
-
-    def run_activity_import(self, force_overwrite=False):
-        if not self.locked:
-            self.locked = True
-            run_file_importer(models=self.models, importing_demo_data=False, reimporting=force_overwrite)
-            self.locked = False
-        else:
-            log.debug("blocked FileImporterHandler from triggering another import process")
-            send_event("event", "message", {"text": "Import is currently running - please wait...", "color": "yellow"})
+            importer = FileImporter()
+            importer.run_file_importer(self.models, importing_demo_data=False, reimporting=False)
 
 
 class FileWatchdog(metaclass=Singleton):
@@ -102,7 +92,8 @@ class FileWatchdog(metaclass=Singleton):
         path = settings.path_to_trace_dir
         if Path(path).is_dir():
             event_handler = FileImporterHandler(self.models)
-            event_handler.run_activity_import(force_overwrite)
+            importer = FileImporter()
+            importer.run_file_importer(self.models, importing_demo_data=False, reimporting=force_overwrite)
             self.watchdog.schedule(event_handler, path=path, recursive=True)
             self.watchdog.start()
         else:

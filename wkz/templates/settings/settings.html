@@ -7,7 +7,7 @@
             <div class="card-body">
                 {% if delete_demos %}
                     <div class="row">
-                        <label class="col-md-3 col-form-label text-right">
+                        <label class="col-md-4 col-form-label text-right">
                             Delete Demo Data&nbsp;
                             <i class="fas fa-question-circle" data-toggle="tooltip"
                                     data-placement="right"
@@ -15,7 +15,7 @@
 be prompted a list with the demo activities data prior to
 deletion. All non-demo activities are left untouched"></i>
                         </label>
-                        <div class="col-md-9">
+                        <div class="col-md-8">
                             <div class="form-group">
                                 <a href="{% url 'delete-demo-data' %}" id="delete-demo-data"
                                     class="btn btn-outline-secondary btn-sm"
