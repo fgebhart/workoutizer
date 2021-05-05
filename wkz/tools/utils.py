@@ -12,7 +12,6 @@ from tenacity import retry, wait_exponential, stop_after_attempt, after_log
 from wkz import configuration
 
 
-
 log = logging.getLogger(__name__)
 
 timestamp_format = "%Y-%m-%dT%H:%M:%SZ"
