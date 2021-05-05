@@ -79,11 +79,12 @@ def demo_data_dir():
 
 
 @pytest.fixture
-def tracks_in_tmpdir(tmpdir):
+def tracks_in_tmpdir(db, tmpdir):
     target_dir = tmpdir.mkdir("tracks")
     settings = models.get_settings()
     settings.path_to_trace_dir = target_dir
     settings.save()
+    return target_dir
 
 
 @pytest.fixture

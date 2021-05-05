@@ -71,8 +71,7 @@ class FileImporter(metaclass=Singleton):
         trace_files = _get_all_files(path)
         files_in_db_counter = 0
         n = len(trace_files)
-        additional_info = "Reimporting them..." if reimporting else "Checking for new files..."
-        sse(f"Found {n} activity files in '{settings.path_to_trace_dir}'. {additional_info}", "blue")
+        _send_initial_info(number_of_activities=n, path_to_trace_dir=path, reimporting=reimporting)
         activities_created = []
         activities_updated = []
         for i, trace_file in enumerate(trace_files):
@@ -147,15 +146,22 @@ class FileImporter(metaclass=Singleton):
 
         # send info on results of import process
         if n == 0:
-            settings = models.get_settings()
-            sse(f"File Import: No activity files found in '{settings.path_to_trace_dir}'.", "yellow")
+            pass  # info was already send via _send_initial_info
         elif files_in_db_counter == n:
-            sse(f"File Import: All {n} activity files are already present in workoutizer.", "green")
+            sse(f"All {n} activity files are already present in workoutizer.", "green")
         elif reimporting:
             sse(f"Finished reimporting {n} activity files.", "green")
         else:
             sse(f"Finished importing {n-files_in_db_counter} activity files.", "green")
         self.locked = False
+
+
+def _send_initial_info(number_of_activities: int, path_to_trace_dir: str, reimporting: bool):
+    if number_of_activities != 0:
+        additional_info = "Reimporting them..." if reimporting else "Checking for new files..."
+        sse(f"Found {number_of_activities} activity files in '{path_to_trace_dir}'. {additional_info}", "blue")
+    else:
+        sse(f"No activity files found in '{path_to_trace_dir}'.", "yellow")
 
 
 def _send_progress_update(activities: List[str], reimporting: bool, remaining: int) -> List:

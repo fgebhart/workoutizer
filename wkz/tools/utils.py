@@ -1,3 +1,4 @@
+import re
 import logging
 import socket
 import hashlib
@@ -9,6 +10,7 @@ from django.conf import settings
 from tenacity import retry, wait_exponential, stop_after_attempt, after_log
 
 from wkz import configuration
+
 
 
 log = logging.getLogger(__name__)
@@ -94,7 +96,13 @@ class Singleton(type):
         return cls._instances[cls]
 
 
+def clean_html(raw_html):
+    cleaner = re.compile("<.*?>")
+    cleantext = re.sub(cleaner, "", raw_html)
+    return cleantext
+
+
 def sse(text: str, color: str):
     """Server Sent Event"""
-    log.debug(text)
+    log.debug(clean_html(text))
     send_event("event", "message", {"text": text, "color": color})

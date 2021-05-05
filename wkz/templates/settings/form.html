@@ -6,7 +6,6 @@
     hx-trigger="change">
     {% load static %}
     {% csrf_token %}
-    {% include "lib/form_errors.html" %}
     <div class="row">
         <label class="col-md-4 col-form-label text-right">
             {{ form.path_to_trace_dir.label }}&nbsp;
