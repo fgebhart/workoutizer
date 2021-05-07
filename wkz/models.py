@@ -1,3 +1,4 @@
+from pathlib import Path
 import os
 import logging
 import datetime
@@ -6,8 +7,12 @@ from django.db import models
 from django.utils import timezone
 from django.template.defaultfilters import slugify
 from colorfield.fields import ColorField
+from django.db.utils import IntegrityError
+
 from workoutizer import settings as django_settings
 from wkz.apps import FileWatchdog
+from wkz.tools.utils import sse
+
 
 log = logging.getLogger(__name__)
 
@@ -78,7 +83,10 @@ class Traces(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.file_name = self.path_to_file.split("/")[-1]
-        super(Traces, self).save()
+        try:
+            super(Traces, self).save()
+        except IntegrityError as e:
+            log.warning(f"Trace file '{self.file_name}' is already stored in db: {e}")
 
 
 def default_sport(return_pk: bool = True):
@@ -187,16 +195,30 @@ class Settings(models.Model):
     def __init__(self, *args, **kwargs):
         super(Settings, self).__init__(*args, **kwargs)
         self.__original_path_to_trace_dir = self.path_to_trace_dir
+        self.__original_path_to_garmin_device = self.path_to_garmin_device
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         super(Settings, self).save(force_insert, force_update, *args, **kwargs)
-        # whenever path_to_trace_dir changes, retrigger file watchdog
+        # whenever a path changes, check if it is a valid dir and retrigger watchdog
         if self.path_to_trace_dir != self.__original_path_to_trace_dir:
             from wkz import models
 
-            fw = FileWatchdog(models=models)
-            fw.watch()
+            if Path(self.path_to_trace_dir).is_dir():
+                fw = FileWatchdog(models=models)
+                fw.watch()
+            else:
+                sse(f"'{self.path_to_trace_dir}' is not a valid path.", "red")
         self.__original_path_to_trace_dir = self.path_to_trace_dir
+
+        if self.path_to_garmin_device != self.__original_path_to_garmin_device:
+            from wkz import models
+
+            if Path(self.path_to_garmin_device).is_dir():
+                sse(f"Started watching for mounted device in '{self.path_to_garmin_device}'.", "green")
+                # retrigger device watchdog here
+            else:
+                sse(f"'{self.path_to_garmin_device}' is not a valid path.", "red")
+        self.__original_path_to_garmin_device = self.path_to_garmin_device
 
 
 def get_settings():

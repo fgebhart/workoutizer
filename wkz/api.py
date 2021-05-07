@@ -1,13 +1,18 @@
 import os
 import signal
 import logging
+from pathlib import Path
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.shortcuts import render
 from rest_framework import status
 import psutil
 
 from wkz.file_helper.fit_collector import try_to_mount_device
+from wkz.tools.utils import sse
+from wkz.file_importer import FileImporter
+from wkz import models
 
 
 log = logging.getLogger(__name__)
@@ -40,3 +45,15 @@ def stop_django_server(request):
     # lastely kill the parent process
     os.kill(pid, signal.SIGINT)
     return Response("stopped", status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+def reimport_activities(request):
+    template = "settings/reimport.html"
+    settings = models.get_settings()
+    if Path(settings.path_to_trace_dir).is_dir():
+        importer = FileImporter()
+        importer.run_file_importer(models, importing_demo_data=False, reimporting=True)
+    else:
+        sse(f"'{settings.path_to_trace_dir}' is not a valid path.", "red")
+    return render(request, template_name=template)

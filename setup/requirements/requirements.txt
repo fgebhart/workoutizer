@@ -5,22 +5,53 @@
 #    pip-compile setup/requirements/requirements.in
 #
 asgiref==3.3.4
-    # via django
+    # via
+    #   channels
+    #   daphne
+    #   django
+attrs==20.3.0
+    # via
+    #   automat
+    #   service-identity
+    #   twisted
+autobahn==21.3.1
+    # via daphne
+automat==20.2.0
+    # via twisted
 bokeh==1.4.0
     # via -r setup/requirements/requirements.in
 certifi==2020.12.5
     # via requests
+cffi==1.14.5
+    # via cryptography
+channels==3.0.3
+    # via -r setup/requirements/requirements.in
 chardet==4.0.0
     # via requests
 click==7.1.2
     # via -r setup/requirements/requirements.in
 coloredlogs==15.0
     # via -r setup/requirements/requirements.in
+constantly==15.1.0
+    # via twisted
+cryptography==3.4.7
+    # via
+    #   autobahn
+    #   pyopenssl
+    #   service-identity
+daphne==3.0.2
+    # via channels
 django-colorfield==0.4.1
     # via -r setup/requirements/requirements.in
+django-eventstream==4.1.0
+    # via -r setup/requirements/requirements.in
+django-grip==3.0.0
+    # via django-eventstream
 django==3.2
     # via
     #   -r setup/requirements/requirements.in
+    #   channels
+    #   django-grip
     #   djangorestframework
 djangorestframework==3.12.2
     # via -r setup/requirements/requirements.in
@@ -32,10 +63,23 @@ geopy==2.1.0
     # via -r setup/requirements/requirements.in
 gpxpy==1.4.2
     # via -r setup/requirements/requirements.in
+gripcontrol==4.1.0
+    # via
+    #   django-eventstream
+    #   django-grip
 humanfriendly==9.1
     # via coloredlogs
+hyperlink==21.0.0
+    # via
+    #   autobahn
+    #   twisted
 idna==2.10
-    # via requests
+    # via
+    #   hyperlink
+    #   requests
+    #   twisted
+incremental==21.3.0
+    # via twisted
 jinja2==2.11.3
     # via bokeh
 luddite==1.0.1
@@ -54,6 +98,25 @@ pillow==8.1.1
     # via bokeh
 psutil==5.8.0
     # via -r setup/requirements/requirements.in
+pubcontrol==3.1.0
+    # via
+    #   django-grip
+    #   gripcontrol
+pyasn1-modules==0.2.8
+    # via service-identity
+pyasn1==0.4.8
+    # via
+    #   pyasn1-modules
+    #   service-identity
+pycparser==2.20
+    # via cffi
+pyjwt==1.7.1
+    # via
+    #   django-eventstream
+    #   gripcontrol
+    #   pubcontrol
+pyopenssl==20.0.1
+    # via twisted
 pyparsing==2.4.7
     # via packaging
 python-dateutil==2.8.1
@@ -67,10 +130,19 @@ pytz==2021.1
 pyyaml==5.4.1
     # via bokeh
 requests==2.25.1
-    # via -r setup/requirements/requirements.in
+    # via
+    #   -r setup/requirements/requirements.in
+    #   pubcontrol
+service-identity==18.1.0
+    # via twisted
 six==1.15.0
     # via
+    #   automat
     #   bokeh
+    #   django-eventstream
+    #   django-grip
+    #   gripcontrol
+    #   pyopenssl
     #   python-dateutil
     #   tenacity
 sportgems==0.5.0
@@ -81,10 +153,20 @@ tenacity==7.0.0
     # via -r setup/requirements/requirements.in
 tornado==6.1
     # via bokeh
+twisted[tls]==21.2.0
+    # via daphne
+txaio==21.2.1
+    # via autobahn
 urllib3==1.26.4
     # via requests
 watchdog==2.0.0
     # via -r setup/requirements/requirements.in
+werkzeug==0.16.1
+    # via
+    #   django-eventstream
+    #   django-grip
+zope.interface==5.4.0
+    # via twisted
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

@@ -7,7 +7,7 @@ from django.core.management import call_command
 
 from workoutizer import settings as django_settings
 from wkz.file_importer import (
-    import_activity_files,
+    FileImporter,
     prepare_import_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
 )
@@ -79,11 +79,12 @@ def demo_data_dir():
 
 
 @pytest.fixture
-def tracks_in_tmpdir(tmpdir):
+def tracks_in_tmpdir(db, tmpdir):
     target_dir = tmpdir.mkdir("tracks")
     settings = models.get_settings()
     settings.path_to_trace_dir = target_dir
     settings.save()
+    return target_dir
 
 
 @pytest.fixture
@@ -92,22 +93,34 @@ def import_demo_data(disable_file_watchdog, db, tracks_in_tmpdir):
     assert models.Sport.objects.count() == 5
     assert models.Settings.objects.count() == 1
 
-    import_activity_files(models, importing_demo_data=True)
+    importer = FileImporter()
+    importer.run_file_importer(models, importing_demo_data=True, reimporting=False)
     assert models.Activity.objects.count() > 1
 
 
 @pytest.fixture
-def import_one_activity(disable_file_watchdog, db, tracks_in_tmpdir):
+def import_one_activity(disable_file_watchdog, db, tracks_in_tmpdir, test_data_dir, demo_data_dir):
     models.get_settings()
     assert models.Settings.objects.count() == 1
 
     def _copy_activity(file_name: str):
+        file_in_test_data_dir = os.path.join(test_data_dir, file_name)
+        file_in_demo_data_dir = os.path.join(demo_data_dir, file_name)
+        if os.path.isfile(file_in_test_data_dir):
+            source_dir = test_data_dir
+            path = file_in_test_data_dir
+        elif os.path.isfile(file_in_demo_data_dir):
+            source_dir = demo_data_dir
+            path = file_in_demo_data_dir
+        else:
+            raise FileNotFoundError(f"file {file_name} neither found in {test_data_dir} nor in {demo_data_dir}")
         copy_demo_fit_files_to_track_dir(
-            source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
+            source_dir=source_dir,
             targe_dir=models.get_settings().path_to_trace_dir,
-            list_of_files_to_copy=[file_name],
+            list_of_files_to_copy=[path],
         )
-        import_activity_files(models, importing_demo_data=False)
+        importer = FileImporter()
+        importer.run_file_importer(models, importing_demo_data=False, reimporting=False)
         assert models.Activity.objects.count() == 1
 
     return _copy_activity

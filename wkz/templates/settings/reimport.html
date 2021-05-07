@@ -1,0 +1,11 @@
+{% load static %}
+
+<div hx-indicator=".htmx-indicator" hx-target="this">
+    <button id="reimport-activities"
+        hx-post="{% url 'reimport' %}"
+        hx-swap="outerHTML"
+        class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-sync-alt"></i>&nbsp;&nbsp;
+        Reimport Files
+    </button>
+</div>

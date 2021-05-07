@@ -1,0 +1,40 @@
+{% load static %}
+<script src="{% static 'django_eventstream/json2.js' %}"></script>
+<script src="{% static 'django_eventstream/eventsource.min.js' %}"></script>
+<script src="{% static 'django_eventstream/reconnecting-eventsource.js' %}"></script>
+<script>
+  var start_sse = function () {
+    console.log('connecting...');
+
+    var es = new ReconnectingEventSource('/events/');
+
+    es.onopen = function () {
+      console.log('connected');
+      var cog = document.getElementById('settings-cog');
+      cog.style.color = "#6BD098";  // green
+    };
+
+    es.onerror = function () {
+      console.log('connection error');
+      var cog = document.getElementById('settings-cog');
+      cog.style.color = "#F17E5D";  // red
+    };
+
+    es.addEventListener('stream-reset', function (e) {
+      e = JSON.parse(e.data);
+      console.log('stream reset: ' + JSON.stringify(e.channels));
+    }, false);
+
+    es.addEventListener('stream-error', function (e) {
+      // hard stop
+      es.close();
+      e = JSON.parse(e.data);
+      console.log('stream error: ' + e.condition + ': ' + e.text);
+    }, false);
+
+    es.addEventListener('message', function (e) {
+      json = JSON.parse(e.data)
+      demo.showNotification(json.color, json.text);
+    }, false);
+  };
+</script>

@@ -53,4 +53,26 @@ demo = {
       });
     }
   },
+  showNotification: function(color, message) {
+    if (color == 'green') {
+      color = 2
+    } else if (color == 'red') {
+      color = 4
+    } else if (color == 'yellow') {
+      color = 3
+    } else {
+      color = 1   // blue
+    }
+    $.notify({
+      icon: "fas fa-bell",
+      message: message,
+    }, {
+      type: type[color],
+      timer: 8000,
+      placement: {
+        from: "bottom",
+        align: "right"
+      }
+    });
+  },
 };

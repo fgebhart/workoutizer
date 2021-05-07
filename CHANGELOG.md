@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Set default log level of django to `WARNING`. Django log level can also be changed
   by setting the value of the `DJANGO_LOG_LEVEL` environment variable.
 * Avoid showing `None` in case of an activity having `None` calories. Show `-` instead.
+* Enable `Server Sent Events (SSE)` to inform user on backend events. This allows for
+  progress updates during importing/reimporting and validates paths for their
+  existence on the machine workoutizer is running on.
+* The settings icon located in the top right corner is colored red in case the
+  connection to the server is broken and green in case it is established. Note that a
+  established connection is required in order to receive `SSEs`.
 * Wrap retry around checksum calculation to remedy io errors.
 ### Fixed
 * Prevent `unique constraint` sql error when importing activity files with same

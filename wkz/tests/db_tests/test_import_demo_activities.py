@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 
 from wkz import models
-from wkz.file_importer import copy_demo_fit_files_to_track_dir, import_activity_files
+from wkz.file_importer import copy_demo_fit_files_to_track_dir, FileImporter
 from wkz.best_sections.generic import _activity_suitable_for_awards
 from workoutizer import settings as django_settings
 
@@ -167,7 +167,8 @@ def test_avoid_unique_constraint_error(disable_file_watchdog, db, tmpdir, caplog
 
     # in rare situations this lead to a unique constraint sql error because
     # of md5sum already being present in db, check that this does not fail
-    import_activity_files(models, importing_demo_data=False)
+    importer = FileImporter()
+    importer.run_file_importer(models, importing_demo_data=False, reimporting=False)
 
     # check that file importer warns about two files having the same checksum
     assert "The following two files have the same checksum, you might want to remove one of them:" in caplog.text

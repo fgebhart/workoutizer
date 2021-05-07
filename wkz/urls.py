@@ -1,5 +1,6 @@
-from django.urls import path
+from django.urls import path, include
 from django.urls import re_path
+import django_eventstream
 
 from wkz import views
 from wkz import activity_views
@@ -15,7 +16,8 @@ urlpatterns = [
     path("activities_page/<slug:page>", views.get_bulk_of_rows_for_next_page, name="activities-page"),
     # Settings
     path("settings/", views.settings_view, name="settings"),
-    path("settings/reimport", views.reimport_activities, name="reimport"),
+    path("settings/form", views.settings_form, name="settings-form"),
+    path("settings/delete-demo-data/", activity_views.DemoActivityDeleteView.as_view(), name="delete-demo-data"),
     # Help
     path("help/", views.HelpView.as_view(), name="help"),
     # Activities
@@ -24,7 +26,6 @@ urlpatterns = [
     path("activity/<slug:activity_id>/download/", activity_views.download_activity, name="download-activity"),
     path("add-activity/", activity_views.add_activity_view, name="add-activity"),
     re_path(r"^activity/(?P<pk>\d+)/delete/$", activity_views.ActivityDeleteView.as_view(), name="delete-activity"),
-    path("delete-demo-data/", activity_views.DemoActivityDeleteView.as_view(), name="delete-demo-data"),
     # Sports
     path("sport/<slug:sports_name_slug>", sport_views.SportView.as_view(), name="sport"),
     path("sports/", sport_views.SportsView.as_view(), name="sports"),
@@ -36,6 +37,7 @@ urlpatterns = [
     # Rest API endpoints
     path("mount-device/", api.mount_device_endpoint),
     path("stop/", api.stop_django_server),
-    # test page for playground of new frontend
-    path("new-frontend/", views.new_frontend, name="new_frontend"),
+    path("reimport/", api.reimport_activities, name="reimport"),
+    # events channel
+    path("events/", include(django_eventstream.urls), {"channels": ["event"]}),
 ]

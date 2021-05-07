@@ -1,0 +1,34 @@
+{% extends 'lib/base.html' %}
+{% load static %}
+{% block body %}
+<div class="row">
+    <div class="col-md-10 mr-auto ml-auto">
+        <div class="card">
+            <div class="card-body">
+                {% if delete_demos %}
+                    <div class="row">
+                        <label class="col-md-4 col-form-label text-right">
+                            Delete Demo Data&nbsp;
+                            <i class="fas fa-question-circle" data-toggle="tooltip"
+                                    data-placement="right"
+                                    title="This will delete all initial demo activities. You will
+be prompted a list with the demo activities data prior to
+deletion. All non-demo activities are left untouched"></i>
+                        </label>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <a href="{% url 'delete-demo-data' %}" id="delete-demo-data"
+                                    class="btn btn-outline-secondary btn-sm"
+                                    type="submit"><i class="fas fa-trash-alt"></i>
+                                    &nbsp;&nbsp;Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% include "settings/form.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

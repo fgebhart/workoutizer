@@ -6,7 +6,7 @@ from typing import List, Union
 from wkz.file_helper.gpx_parser import GPXParser
 from wkz.file_helper.fit_parser import FITParser
 from wkz.file_helper.auto_naming import get_automatic_name
-from wkz.tools.utils import sanitize, calc_md5, limit_string
+from wkz.tools.utils import sanitize, calc_md5, limit_string, sse, Singleton
 from wkz.file_helper.initial_data_handler import (
     copy_demo_fit_files_to_track_dir,
     change_date_of_demo_activities,
@@ -52,80 +52,132 @@ def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
     )
 
 
-# interfacing functions to either reimport or import activity files
-def reimport_activity_files(models):
-    _run_file_importer(models, importing_demo_data=False, reimporting=True)
+class FileImporter(metaclass=Singleton):
+    def __init__(self):
+        self.locked = False
 
+    def run_file_importer(self, models, importing_demo_data: bool, reimporting: bool = False):
+        if not self.locked:
+            self.locked = True
+            self._run_parser(models, importing_demo_data, reimporting)
+        else:
+            sse("Importer is already running - please wait...", "yellow")
 
-def import_activity_files(models, importing_demo_data: bool):
-    _run_file_importer(models, importing_demo_data=importing_demo_data, reimporting=False)
+    def _run_parser(self, models, importing_demo_data: bool, reimporting: bool = False):
+        settings = models.get_settings()
+        path = settings.path_to_trace_dir
 
-
-def _run_file_importer(models, importing_demo_data: bool, reimporting: bool = False):
-    settings = models.get_settings()
-    log.debug("triggered file importer")
-    path = settings.path_to_trace_dir
-
-    # find activity files in directory
-    trace_files = _get_all_files(path)
-    log.debug(f"found {len(trace_files)} files in trace dir: {path}")
-
-    _run_parser(models, trace_files, importing_demo_data, reimporting)
-    if importing_demo_data:
-        demo_activities = models.Activity.objects.filter(is_demo_activity=True)
-        change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
-        insert_custom_demo_activities(count=9, every_nth_day=3, activity_model=models.Activity, sport_model=models.Sport)
-        log.info("finished inserting demo data")
-
-
-def _run_parser(models, trace_files: list, importing_demo_data: bool, reimporting: bool = False):
-    files_in_db_counter = 0
-    n = len(trace_files)
-    for i, trace_file in enumerate(trace_files):
-        md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
-        md5sum = calc_md5(trace_file)
-        if md5sum not in md5sums_from_db:  # current file is not stored in db yet
-            activity = _parse_and_save_to_model(
-                models=models,
-                md5sum=md5sum,
-                trace_file=trace_file,
-                update_existing=False,
-                importing_demo_data=importing_demo_data,
-            )
-            log.info(f"created new activity: {activity.name} ({activity.date.date()}) ID: {activity.pk}")
-        else:  # checksum is in db already
-            file_name = trace_file.split("/")[-1]
-            trace_file_path_instance = models.Traces.objects.get(md5sum=md5sum)
-            if trace_file_path_instance.file_name == file_name and trace_file_path_instance.path_to_file != trace_file:
-                log.debug(f"path of file: {trace_file_path_instance.path_to_file} has changed, updating to {trace_file}")
-                trace_file_path_instance.path_to_file = trace_file
-                trace_file_path_instance.save()
-            elif trace_file_path_instance.file_name != file_name and trace_file_path_instance.path_to_file != trace_file:
-                log.warning(
-                    f"The following two files have the same checksum, "
-                    f"you might want to remove one of them:\n"
-                    f"{trace_file}\n"
-                    f"{trace_file_path_instance.path_to_file}"
+        # find activity files in directory
+        trace_files = _get_all_files(path)
+        files_in_db_counter = 0
+        n = len(trace_files)
+        _send_initial_info(number_of_activities=n, path_to_trace_dir=path, reimporting=reimporting)
+        activities_created = []
+        activities_updated = []
+        for i, trace_file in enumerate(trace_files):
+            md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
+            md5sum = calc_md5(trace_file)
+            if md5sum not in md5sums_from_db:  # file is not stored in db yet
+                activity = _parse_and_save_to_model(
+                    models=models,
+                    md5sum=md5sum,
+                    trace_file=trace_file,
+                    update_existing=False,
+                    importing_demo_data=importing_demo_data,
                 )
-            else:  # means file is already in db
-                if reimporting:
-                    trace = models.Traces.objects.get(md5sum=md5sum)
-                    activity = models.Activity.objects.get(trace_file=trace)
-                    log.debug(f"reimporting activity '{activity.name}' (ID: {activity.pk}) ... ")
-                    activity = _parse_and_save_to_model(
-                        models=models,
-                        md5sum=md5sum,
-                        trace_file=trace_file,
-                        update_existing=True,
-                        importing_demo_data=importing_demo_data,
+                activities_created.append(activity.name)
+                log.info(f"created new activity: {activity.name} ({activity.date.date()}) ID: {activity.pk}")
+            else:  # checksum is in db already
+                file_name = trace_file.split("/")[-1]
+                trace_file_path_instance = models.Traces.objects.get(md5sum=md5sum)
+                if (
+                    trace_file_path_instance.file_name == file_name
+                    and trace_file_path_instance.path_to_file != trace_file
+                ):
+                    log.debug(
+                        f"path of file: {trace_file_path_instance.path_to_file} has changed, updating to {trace_file}"
                     )
-                    log.info(f"updated activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
-                else:
-                    # file is in db and not supposed to reimport -> do nothing
-                    files_in_db_counter += 1
-                    pass
-    if files_in_db_counter == n:
-        log.info("all trace files are imported to db already")
+                    trace_file_path_instance.path_to_file = trace_file
+                    trace_file_path_instance.save()
+                elif (
+                    trace_file_path_instance.file_name != file_name
+                    and trace_file_path_instance.path_to_file != trace_file
+                ):
+                    log.warning(
+                        f"The following two files have the same checksum, "
+                        f"you might want to remove one of them:\n"
+                        f"{trace_file}\n"
+                        f"{trace_file_path_instance.path_to_file}"
+                    )
+                else:  # file is already in db
+                    if reimporting:
+                        trace = models.Traces.objects.get(md5sum=md5sum)
+                        activity = models.Activity.objects.get(trace_file=trace)
+                        log.debug(f"reimporting activity '{activity.name}' (ID: {activity.pk}) ... ")
+                        activity = _parse_and_save_to_model(
+                            models=models,
+                            md5sum=md5sum,
+                            trace_file=trace_file,
+                            update_existing=True,
+                            importing_demo_data=importing_demo_data,
+                        )
+                        activities_updated.append(activity.name)
+                        log.info(f"updated activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
+                    else:  # file is in db and not supposed to reimport -> do nothing
+                        files_in_db_counter += 1
+                        pass
+            # send progress update
+            if len(activities_created) == configuration.number_of_activities_in_bulk_progress_update:
+                activities_created = _send_progress_update(activities_created, reimporting, remaining=n - (i + 1))
+            if len(activities_updated) == configuration.number_of_activities_in_bulk_progress_update:
+                activities_updated = _send_progress_update(activities_updated, reimporting, remaining=n - (i + 1))
+        if importing_demo_data:
+            demo_activities = models.Activity.objects.filter(is_demo_activity=True)
+            change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
+            insert_custom_demo_activities(
+                count=9, every_nth_day=3, activity_model=models.Activity, sport_model=models.Sport
+            )
+            log.info("finished inserting demo data")
+        # finish progress update
+        if activities_created:
+            _send_progress_update(activities_created, reimporting, 0)
+        if activities_updated:
+            _send_progress_update(activities_updated, reimporting, 0)
+
+        # send info on results of import process
+        if n == 0:
+            pass  # info was already send via _send_initial_info
+        elif files_in_db_counter == n:
+            sse(f"All {n} activity files are already present in workoutizer.", "green")
+        elif reimporting:
+            sse(f"Finished reimporting {n} activity files.", "green")
+        else:
+            sse(f"Finished importing {n-files_in_db_counter} activity files.", "green")
+        self.locked = False
+
+
+def _send_initial_info(number_of_activities: int, path_to_trace_dir: str, reimporting: bool):
+    if number_of_activities != 0:
+        additional_info = "Reimporting them..." if reimporting else "Checking for new files..."
+        sse(f"Found {number_of_activities} activity files in '{path_to_trace_dir}'. {additional_info}", "blue")
+    else:
+        sse(f"No activity files found in '{path_to_trace_dir}'.", "yellow")
+
+
+def _send_progress_update(activities: List[str], reimporting: bool, remaining: int) -> List:
+    msg = "<b>Progress Update</b> - "
+    if reimporting:
+        msg = f"{msg} Reimported {len(activities)} activity files:<br>"
+    else:
+        msg = f"{msg} Created {len(activities)} new activities:<br>"
+    msg = f"{msg} <ul>"
+    for activity_name in activities:
+        msg = f"{msg} <li>{activity_name}</li>"
+    msg = f"{msg} </ul>"
+    if remaining:
+        msg = f"{msg} {remaining} files remaining..."
+    sse(msg, "blue")
+    return []
 
 
 def _parse_and_save_to_model(models, md5sum: str, trace_file, update_existing: bool, importing_demo_data: bool = False):

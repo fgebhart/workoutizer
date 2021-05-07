@@ -10,12 +10,10 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Sum
-from multiprocessing import Process
 import pytz
 
 from wkz import models
 from wkz import forms
-from wkz.file_importer import reimport_activity_files
 from wkz.plotting.plot_history import plot_history
 from wkz.plotting.plot_pie_chart import plot_pie_chart
 from wkz.plotting.plot_trend import plot_trend
@@ -155,17 +153,9 @@ def settings_view(request):
     settings = models.get_settings()
     activities = models.Activity.objects.filter(is_demo_activity=True).count()
     form = forms.EditSettingsForm(request.POST or None, instance=settings)
-    if request.method == "POST":
-        if form.is_valid():
-            log.debug(f"got valid form: {form.cleaned_data}")
-            form.save()
-            messages.success(request, "Successfully saved Settings!")
-            return HttpResponseRedirect(reverse("settings"))
-        else:
-            log.warning(f"form invalid: {form.errors}")
     return render(
         request,
-        "lib/settings.html",
+        "settings/settings.html",
         {
             "sports": sports,
             "page_name": "Settings",
@@ -177,8 +167,24 @@ def settings_view(request):
     )
 
 
-def new_frontend(request):
-    return render(request, "dashboard_new.html")
+def settings_form(request):
+    settings = models.get_settings()
+    activities = models.Activity.objects.filter(is_demo_activity=True).count()
+    form = forms.EditSettingsForm(request.POST or None, instance=settings)
+    if request.method == "POST":
+        if form.is_valid():
+            log.debug(f"got valid form: {form.cleaned_data}")
+            form.save()
+        else:
+            log.warning(f"form invalid: {form.errors}")
+    return render(
+        request,
+        "settings/form.html",
+        {
+            "form": form,
+            "delete_demos": True if activities else False,
+        },
+    )
 
 
 class HelpView(WKZView):
@@ -244,21 +250,6 @@ def custom_500_view(request, exception=None):
         template_name=template_name,
         context={"url": request.path, "sports": sports, "page_name": "Error 500", "form_field_ids": []},
     )
-
-
-def reimport_activities(request):
-    messages.info(request, "Running reimport in background...")
-
-    reimporter = Process(
-        target=reimport_activity_files,
-        args=(models,),
-    )
-    reimporter.start()
-
-    if request.META.get("HTTP_REFERER"):
-        return redirect(request.META.get("HTTP_REFERER"))
-    else:
-        return HttpResponseRedirect(reverse("settings"))
 
 
 def get_flat_list_of_pks_of_activities_in_top_awards(

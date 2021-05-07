@@ -26,7 +26,7 @@ def test_dashboard_view(db, client):
 def test_settings_view(db, client):
     response = client.get(reverse("settings"))
     assert response.status_code == 200
-    assert "Save" in response.content.decode("UTF-8")
+    assert "Settings" in response.content.decode("UTF-8")
 
 
 def test_best_sections_view(db, client):
