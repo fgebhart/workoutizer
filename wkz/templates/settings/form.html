@@ -31,11 +31,7 @@ your activities. This might take a while.">
         </label>
         <div class="col-md-8">
             <div class="form-group">
-            <button id="reimport-activities" hx-post="{% url 'reimport' %}" hx-swap="afterend"
-                class="btn btn-outline-secondary btn-sm">
-                <i class="fas fa-sync-alt"></i>&nbsp;&nbsp;
-                Reimport Files
-            </button>
+                {% include "settings/reimport.html" %}
             </div>
         </div>
     </div>
@@ -57,7 +53,7 @@ a folder called 'Activity' containing .fit files.">
     <div class="row">
         <label class="col-md-4 col-form-label text-right">
             {{ form.delete_files_after_import.label }}&nbsp;
-            <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right"
+            <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="bottom"
                         title="Enable this option to delete fit files from your
 Garmin device after a successful import. The imported
 copy in 'Traces Directory' will stay untouched.">
@@ -76,7 +72,7 @@ copy in 'Traces Directory' will stay untouched.">
         <div class="col-md-5">
         </div>
         <div class="col-md-2">
-            <img class="htmx-indicator" src="{% static 'img/bars.svg'%}" width="50" />
+            <img class="htmx-indicator" id="loading-bar" src="{% static 'img/bars.svg'%}" width="50" />
         </div>
         <div class="col-md-5">
         </div>
