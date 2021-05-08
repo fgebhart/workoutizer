@@ -20,7 +20,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * The settings icon located in the top right corner is colored red in case the
   connection to the server is broken and green in case it is established. Note that a
   established connection is required in order to receive `SSEs`.
-* Wrap retry around checksum calculation to remedy io errors.
+* Wrap `retry` around checksum calculation to remedy io errors.
+### Changed
+* Catch fit file parsing errors to ensure to continue parsing other files in case only
+  one file is corrupted.
+* Reduce number of retries from 5 to 3 to speed-up importing multiple files.
 ### Fixed
 * Prevent `unique constraint` sql error when importing activity files with same
   checksum but different name. Note, this happened only in rare situations, when

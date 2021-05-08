@@ -11,7 +11,7 @@ from django.db.utils import IntegrityError
 
 from workoutizer import settings as django_settings
 from wkz.apps import FileWatchdog
-from wkz.tools.utils import sse
+from wkz.tools import sse
 
 
 log = logging.getLogger(__name__)
@@ -207,17 +207,17 @@ class Settings(models.Model):
                 fw = FileWatchdog(models=models)
                 fw.watch()
             else:
-                sse(f"'{self.path_to_trace_dir}' is not a valid path.", "red")
+                sse.send(f"'{self.path_to_trace_dir}' is not a valid path.", "red", "WARNING")
         self.__original_path_to_trace_dir = self.path_to_trace_dir
 
         if self.path_to_garmin_device != self.__original_path_to_garmin_device:
             from wkz import models
 
             if Path(self.path_to_garmin_device).is_dir():
-                sse(f"Started watching for mounted device in '{self.path_to_garmin_device}'.", "green")
+                sse.send(f"Started watching for mounted device in '{self.path_to_garmin_device}'.", "green")
                 # retrigger device watchdog here
             else:
-                sse(f"'{self.path_to_garmin_device}' is not a valid path.", "red")
+                sse.send(f"'{self.path_to_garmin_device}' is not a valid path.", "red", "WARNING")
         self.__original_path_to_garmin_device = self.path_to_garmin_device
 
 

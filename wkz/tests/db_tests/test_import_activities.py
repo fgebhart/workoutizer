@@ -172,3 +172,30 @@ def test_avoid_unique_constraint_error(disable_file_watchdog, db, tmpdir, caplog
 
     # check that file importer warns about two files having the same checksum
     assert "The following two files have the same checksum, you might want to remove one of them:" in caplog.text
+
+
+def test_import_corrupted_fit_file(disable_file_watchdog, tracks_in_tmpdir, caplog):
+    assert models.Activity.objects.count() == 0
+    settings = models.get_settings()
+
+    copy_demo_fit_files_to_track_dir(
+        source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
+        targe_dir=settings.path_to_trace_dir,
+        list_of_files_to_copy=["cycling_bad_schandau.fit"],
+    )
+
+    # create a corrupted fit file
+    fit = Path(settings.path_to_trace_dir) / "faulty.fit"
+    content = "no valid fit file content"
+    fit.write_text(content)
+    assert fit.read_text() == content
+
+    importer = FileImporter()
+    importer.run_file_importer(models, importing_demo_data=False, reimporting=False)
+
+    # one fit file should have been imported
+    assert models.Activity.objects.count() == 1
+
+    # but also an error was logged, however the execution should not have failed
+    assert "ERROR" in caplog.text
+    assert "Failed to parse fit file" in caplog.text

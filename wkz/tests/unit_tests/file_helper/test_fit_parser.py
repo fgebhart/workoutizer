@@ -4,7 +4,7 @@ import pytz
 import pytest
 from django.conf import settings
 import pandas as pd
-from tenacity import RetryError
+from fitparse.utils import FitHeaderError
 
 from wkz.file_helper.fit_parser import LapData, FITParser
 from wkz.best_sections.generic import GenericBestSection
@@ -196,10 +196,13 @@ def test_retry_mechanism__failing(tmp_path, fit_parser, caplog):
     assert fit.read_text() == content
 
     # now run fit_parser on faulty file and verify that retry mechanism is fired
-    with pytest.raises(RetryError):
+    with pytest.raises(FitHeaderError):
         fit_parser(fit)
 
     for n in range(configuration.number_of_retries):
-        assert "Finished call" in caplog.text
         assert f"this was the {n+1}" in caplog.text
-        assert "time calling it." in caplog.text
+
+    assert "Finished call" in caplog.text
+    assert "time calling it." in caplog.text
+    assert "Failed to parse fit file:" in caplog.text
+    assert "Got error: Invalid .FIT File Header" in caplog.text
