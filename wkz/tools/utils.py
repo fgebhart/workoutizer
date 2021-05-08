@@ -1,11 +1,9 @@
-import re
 import logging
 import socket
 import hashlib
 import datetime
 
 import pytz
-from django_eventstream import send_event
 from django.conf import settings
 from tenacity import retry, wait_exponential, stop_after_attempt, after_log
 
@@ -93,15 +91,3 @@ class Singleton(type):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
-
-
-def clean_html(raw_html):
-    cleaner = re.compile("<.*?>")
-    cleantext = re.sub(cleaner, "", raw_html)
-    return cleantext
-
-
-def sse(text: str, color: str):
-    """Server Sent Event"""
-    log.debug(clean_html(text))
-    send_event("event", "message", {"text": text, "color": color})

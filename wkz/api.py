@@ -10,7 +10,7 @@ from rest_framework import status
 import psutil
 
 from wkz.file_helper.fit_collector import try_to_mount_device
-from wkz.tools.utils import sse
+from wkz.tools import sse
 from wkz.file_importer import FileImporter
 from wkz import models
 
@@ -55,5 +55,5 @@ def reimport_activities(request):
         importer = FileImporter()
         importer.run_file_importer(models, importing_demo_data=False, reimporting=True)
     else:
-        sse(f"'{settings.path_to_trace_dir}' is not a valid path.", "red")
+        sse.send(f"'{settings.path_to_trace_dir}' is not a valid path.", "red")
     return render(request, template_name=template)
