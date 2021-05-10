@@ -27,6 +27,7 @@ RUN virtualenv -p python3.8 /tmp/venv
 RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workspaces/workoutizer/setup/requirements/dev-requirements.txt'
 RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workspaces/workoutizer/setup/requirements/requirements.txt'
 
+ENV SHELL /bin/zsh
 ENV WKZ_ENV='devel'
 ENV WKZ_LOG_LEVEL='DEBUG'
 

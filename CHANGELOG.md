@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Catch fit file parsing errors to ensure to continue parsing other files in case only
   one file is corrupted.
 * Reduce number of retries from 5 to 3 to speed-up importing multiple files.
+* Set `zsh` as default shell and remove `terminal.sh` docker entrypoint script.
 ### Fixed
 * Prevent `unique constraint` sql error when importing activity files with same
   checksum but different name. Note, this happened only in rare situations, when

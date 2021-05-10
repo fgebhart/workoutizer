@@ -13,11 +13,11 @@
 	"settings": { 
 		"python.pythonPath": "/tmp/venv/bin/python",
 		"python.terminal.activateEnvironment": true,
-		"terminal.integrated.shellArgs.linux": ["--init-file", ".vscode/terminal.sh"],
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
+		"ms-toolsai.jupyter",
 		"ms-python.python",
 		"eamodio.gitlens",
 		"alefragnani.bookmarks",
