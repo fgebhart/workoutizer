@@ -6,6 +6,9 @@ from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
 
 from workoutizer import settings as django_settings
+from wkz.file_importer import run_file_importer
+from wkz import api
+from wkz import models
 
 
 @pytest.fixture
@@ -29,3 +32,12 @@ def take_screenshot():
         webdriver.save_screenshot(str(path))
 
     return _take
+
+
+@pytest.fixture(scope="function", autouse=True)
+def reimport_sequentially(monkeypatch):
+    def reimport_sequentially(request):
+        run_file_importer(models, importing_demo_data=False, reimporting=True, as_huey_task=False)
+        return True
+
+    monkeypatch.setattr(api, "reimport_activities", reimport_sequentially)

@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   connection to the server is broken and green in case it is established. Note that a
   established connection is required in order to receive `SSEs`.
 * Wrap `retry` around checksum calculation to remedy io errors.
+* Use `huey` for queueing reimport & import tasks from within the settings page. Now
+  both file watchdog and device watchdog are triggered periodically every minute and
+  will be queued on huey to run concurrently.
 ### Changed
 * Catch fit file parsing errors to ensure to continue parsing other files in case only
   one file is corrupted.

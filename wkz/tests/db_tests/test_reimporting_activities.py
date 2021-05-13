@@ -7,12 +7,12 @@ from wkz import models
 from wkz import configuration
 from wkz.file_importer import (
     prepare_import_of_demo_activities,
-    FileImporter,
+    run_file_importer,
 )
 from wkz.best_sections.generic import _activity_suitable_for_awards
 
 
-def test_reimport_of_activities(disable_file_watchdog, db, tracks_in_tmpdir, client):
+def test_reimport_of_activities(db, tracks_in_tmpdir, client):
     """
     Test reimporter in following steps:
     1. import demo activities
@@ -33,8 +33,7 @@ def test_reimport_of_activities(disable_file_watchdog, db, tracks_in_tmpdir, cli
     assert len(models.Sport.objects.all()) == 5
     assert len(models.Settings.objects.all()) == 1
 
-    importer = FileImporter()
-    importer.run_file_importer(models, importing_demo_data=True, reimporting=False)
+    run_file_importer(models, importing_demo_data=True, reimporting=False, as_huey_task=False)
     all_activities = models.Activity.objects.all()
     assert len(all_activities) == 11
     assert len(models.Activity.objects.filter(sport__slug="swimming")) == 9
@@ -121,8 +120,7 @@ def test_reimport_of_activities(disable_file_watchdog, db, tracks_in_tmpdir, cli
     assert len(models.BestSection.objects.filter(activity=cycling.pk)) == 0
 
     # 3. trigger reimport to update values
-    importer = FileImporter()
-    importer.run_file_importer(models, importing_demo_data=False, reimporting=True)
+    run_file_importer(models, importing_demo_data=False, reimporting=True, as_huey_task=False)
 
     all_activities = models.Activity.objects.all()
     assert len(all_activities) == 11
@@ -187,8 +185,7 @@ def test_reimporting_of_best_sections(import_one_activity, kind):
     assert models.Activity.objects.count() == 1
     assert models.Settings.objects.count() == 1
 
-    importer = FileImporter()
-    importer.run_file_importer(models, importing_demo_data=False, reimporting=False)
+    run_file_importer(models, importing_demo_data=False, reimporting=False, as_huey_task=False)
     assert models.Activity.objects.count() == 1
 
     activity = models.Activity.objects.get()
@@ -231,8 +228,7 @@ def test_reimporting_of_best_sections(import_one_activity, kind):
     assert len(models.BestSection.objects.filter(activity=activity, kind=kind)) == orig_number_of_best_sections + 1
 
     # now trigger reimport to update modified values
-    importer = FileImporter()
-    importer.run_file_importer(models, importing_demo_data=False, reimporting=True)
+    run_file_importer(models, importing_demo_data=False, reimporting=True, as_huey_task=False)
 
     # check that dummy section was deleted because it is not present in the configured fastest sections
     assert len(models.BestSection.objects.filter(activity=activity, kind=kind)) == orig_number_of_best_sections
@@ -270,8 +266,7 @@ def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_acti
     assert _activity_suitable_for_awards(activity) is False
 
     # reimport activity
-    importer = FileImporter()
-    importer.run_file_importer(models, importing_demo_data=False, reimporting=True)
+    run_file_importer(models, importing_demo_data=False, reimporting=True, as_huey_task=False)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
@@ -287,8 +282,7 @@ def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_acti
     assert _activity_suitable_for_awards(activity) is True
 
     # reimport activity
-    importer = FileImporter()
-    importer.run_file_importer(models, importing_demo_data=False, reimporting=True)
+    run_file_importer(models, importing_demo_data=False, reimporting=True, as_huey_task=False)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
@@ -315,8 +309,7 @@ def test_reimport__not_evaluates_for_awards__changing_activity_flag(import_one_a
     assert _activity_suitable_for_awards(activity) is False
 
     # reimport activity
-    importer = FileImporter()
-    importer.run_file_importer(models, importing_demo_data=False, reimporting=True)
+    run_file_importer(models, importing_demo_data=False, reimporting=True, as_huey_task=False)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
@@ -331,8 +324,7 @@ def test_reimport__not_evaluates_for_awards__changing_activity_flag(import_one_a
     assert _activity_suitable_for_awards(activity) is True
 
     # reimport activity
-    importer = FileImporter()
-    importer.run_file_importer(models, importing_demo_data=False, reimporting=True)
+    run_file_importer(models, importing_demo_data=False, reimporting=True, as_huey_task=False)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()

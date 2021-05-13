@@ -1,18 +1,21 @@
 import shutil
 from py._path.local import LocalPath
 from typing import List
+from pathlib import Path
 
 import pytest
 
 from workoutizer import settings as django_settings
-from wkz.file_importer import copy_demo_fit_files_to_track_dir
+from wkz.file_importer import copy_demo_fit_files_to_track_dir, run_file_importer
 from wkz import models
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def dummy_path_settings(db, tmp_path):
-    settings = models.get_settings()
-    settings.path_to_trace_dir = tmp_path / "dummy_path"
+    print()
+    print("auto using dummy path fixture")
+    print()
+    settings = models.Settings(path_to_trace_dir=tmp_path / "dummy_path")
     settings.save()
     return settings
 
@@ -96,3 +99,15 @@ def device_dir():
 @pytest.fixture
 def activity_dir():
     return "Primary/GARMIN/Activity"
+
+
+@pytest.fixture(scope="function", autouse=True)
+def import_sequentially_on_setting_save(monkeypatch):
+    def import_sequentially(self, *args, **kwargs):
+        from wkz import models  # TODO remove?
+
+        super(models.Settings, self).save(*args, **kwargs)
+        if Path(self.path_to_trace_dir).is_dir():
+            run_file_importer(models, False, False, as_huey_task=False)
+
+    monkeypatch.setattr(models.Settings, "save", import_sequentially)

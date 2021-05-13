@@ -1,14 +1,16 @@
 import os
 import logging
 import json
-from typing import List, Union
+from typing import List, Union, Tuple
 
 from fitparse.utils import FitHeaderError, FitEOFError
+from huey.exceptions import HueyException
+from huey.contrib.djhuey import task
 
 from wkz.file_helper.gpx_parser import GPXParser
 from wkz.file_helper.fit_parser import FITParser
 from wkz.file_helper.auto_naming import get_automatic_name
-from wkz.tools.utils import sanitize, calc_md5, limit_string, Singleton
+from wkz.tools.utils import sanitize, calc_md5, limit_string
 from wkz.tools import sse
 from wkz.file_helper.initial_data_handler import (
     copy_demo_fit_files_to_track_dir,
@@ -55,92 +57,140 @@ def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
     )
 
 
-class FileImporter(metaclass=Singleton):
-    def __init__(self):
-        self.locked = False
+@task()
+def _import_single_file__huey(*args, **kwargs):
+    return _import_single_file(*args, **kwargs)
 
-    def run_file_importer(self, models, importing_demo_data: bool, reimporting: bool = False):
-        if not self.locked:
-            self.locked = True
-            self._run_parser(models, importing_demo_data, reimporting)
-        else:
-            sse.send("Importer is already running - please wait...", "yellow")
 
-    def _run_parser(self, models, importing_demo_data: bool, reimporting: bool = False):
-        settings = models.get_settings()
-        path = settings.path_to_trace_dir
-
-        activity_num_before = models.Activity.objects.count()
-        # find activity files in directory
-        trace_files = _get_all_files(path)
-        files_in_db_counter = 0
-        n = len(trace_files)
-        _send_initial_info(number_of_activities=n, path_to_trace_dir=path, reimporting=reimporting)
-        created = []
-        updated = []
-        failed = 0
-        for i, trace_file in enumerate(trace_files):
-            md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
-            md5sum = calc_md5(trace_file)
-            try:
-                if md5sum not in md5sums_from_db:  # file is not stored in db yet
-                    activity = _parse_and_save_to_model(
-                        models=models,
-                        md5sum=md5sum,
-                        trace_file=trace_file,
-                        update_existing=False,
-                        importing_demo_data=importing_demo_data,
-                    )
-                    created.append(activity.name)
-                    log.info(f"created new activity: {activity.name} ({activity.date.date()}) ID: {activity.pk}")
-                else:  # checksum is in db already
-                    file_name = trace_file.split("/")[-1]
-                    trace = models.Traces.objects.get(md5sum=md5sum)
-                    if trace.file_name == file_name and trace.path_to_file != trace_file:
-                        log.debug(f"path of file: {trace.path_to_file} has changed, updating to {trace_file}")
-                        trace.path_to_file = trace_file
-                        trace.save()
-                    elif trace.file_name != file_name and trace.path_to_file != trace_file:
-                        log.warning(
-                            f"The following two files have the same checksum, "
-                            f"you might want to remove one of them:\n"
-                            f"{trace_file}\n"
-                            f"{trace.path_to_file}"
-                        )
-                    else:  # file is already in db
-                        if reimporting:
-                            trace = models.Traces.objects.get(md5sum=md5sum)
-                            activity = models.Activity.objects.get(trace_file=trace)
-                            log.debug(f"reimporting activity '{activity.name}' (ID: {activity.pk}) ... ")
-                            activity = _parse_and_save_to_model(
-                                models=models,
-                                md5sum=md5sum,
-                                trace_file=trace_file,
-                                update_existing=True,
-                                importing_demo_data=importing_demo_data,
-                            )
-                            updated.append(activity.name)
-                            log.info(f"updated activity ({i+1}/{n}): '{activity.name}'. ID: {activity.pk}")
-                        else:  # file is in db and not supposed to reimport -> do nothing
-                            files_in_db_counter += 1
-                            pass
-            except (FitHeaderError, FitEOFError):
-                sse.send(f"<b>Error:</b> Could not parse fit file '{trace_file}'.", "red", "ERROR")
-                failed += 1
-            # send progress update
-            if len(created) == configuration.number_of_activities_in_bulk_progress_update:
-                created = _send_progress_update(created, reimporting, remaining=n - (i + 1))
-            if len(updated) == configuration.number_of_activities_in_bulk_progress_update:
-                updated = _send_progress_update(updated, reimporting, remaining=n - (i + 1))
-        if importing_demo_data:
-            demo_activities = models.Activity.objects.filter(is_demo_activity=True)
-            change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
-            insert_custom_demo_activities(
-                count=9, every_nth_day=3, activity_model=models.Activity, sport_model=models.Sport
+def _import_single_file(  # TODO add type hints
+    md5sum,
+    trace_file,
+    md5sums_from_db,
+    importing_demo_data,
+    models,
+    reimporting,
+    created,
+    updated,
+    duplicates,
+    reimported,
+    files_in_db_counter,
+    counter,
+    number_of_all_files,
+):
+    if md5sum not in md5sums_from_db:  # file is not stored in db yet
+        activity = _parse_and_save_to_model(
+            models=models,
+            md5sum=md5sum,
+            trace_file=trace_file,
+            update_existing=False,
+            importing_demo_data=importing_demo_data,
+        )
+        created.append(activity)
+        log.info(f"created new activity: {activity.name} ({activity.date.date()}) ID: {activity.pk}")
+    else:  # checksum is in db already
+        file_name = trace_file.split("/")[-1]
+        trace = models.Traces.objects.get(md5sum=md5sum)
+        if trace.file_name == file_name and trace.path_to_file != trace_file:
+            log.debug(f"path of file: {trace.path_to_file} has changed, updating to {trace_file}")
+            trace.path_to_file = trace_file
+            trace.save()
+        elif trace.file_name != file_name and trace.path_to_file != trace_file:
+            log.warning(
+                f"The following two files have the same checksum, "
+                f"you might want to remove one of them:\n"
+                f"{trace_file}\n"
+                f"{trace.path_to_file}"
             )
-            log.info("finished inserting demo data")
-        # finish progress update
-        _send_result_info(
+            duplicates.append((trace_file, trace.path_to_file))
+        else:  # file is already in db
+            if reimporting:
+                trace = models.Traces.objects.get(md5sum=md5sum)
+                activity = models.Activity.objects.get(trace_file=trace)
+                log.debug(f"reimporting activity '{activity.name}' (ID: {activity.pk}) ... ")
+                activity = _parse_and_save_to_model(
+                    models=models,
+                    md5sum=md5sum,
+                    trace_file=trace_file,
+                    update_existing=True,
+                    importing_demo_data=importing_demo_data,
+                )
+                updated.append(activity)
+                reimported += 1
+                log.info(f"updated activity ({counter+1}/{number_of_all_files}): '{activity.name}'. ID: {activity.pk}")
+            else:  # file is in db and not supposed to reimport -> do nothing
+                files_in_db_counter += 1
+                pass
+    return created, updated, reimported, files_in_db_counter, duplicates
+
+
+def run_file_importer(models, importing_demo_data: bool = False, reimporting: bool = False, as_huey_task: bool = True):
+    log.debug(
+        f"triggered file importer... "
+        f"(importing_demo_data: {importing_demo_data}, reimporting: {reimporting}, as_huey_task: {as_huey_task})"
+    )
+    _run_parser(models, importing_demo_data, reimporting, as_huey_task)
+
+
+def _run_parser(models, importing_demo_data: bool, reimporting: bool, run_as_huey_task: bool):
+    if run_as_huey_task:
+        import_func = _import_single_file__huey
+    else:
+        import_func = _import_single_file
+    settings = models.get_settings()
+    path = settings.path_to_trace_dir
+    log.debug(f"checking for new files in {path}")
+
+    activity_num_before = models.Activity.objects.count()
+    # find activity files in directory
+    trace_files = _get_all_files(path)
+    files_in_db_counter = 0
+    n = len(trace_files)
+    _send_initial_info(number_of_activities=n, path_to_trace_dir=path, reimporting=reimporting)
+    # TODO refactor the below, not all are needed to be initialized
+    duplicates = []
+    created = []
+    updated = []
+    failed = 0
+    reimported = 0
+    for i, trace_file in enumerate(trace_files):
+        md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
+        md5sum = calc_md5(trace_file)
+        try:
+            res = import_func(
+                md5sum,
+                trace_file,
+                md5sums_from_db,
+                importing_demo_data,
+                models,
+                reimporting,
+                created,
+                updated,
+                duplicates,
+                reimported,
+                files_in_db_counter,
+                i,
+                n,
+            )
+            if run_as_huey_task:
+                created, updated, reimported, files_in_db_counter, duplicates = res(blocking=True, timeout=10)
+        except (FitHeaderError, FitEOFError):
+            sse.send(f"<b>Error:</b> Could not parse fit file '{trace_file}'.", "red", "ERROR")
+            failed += 1
+        except HueyException as e:
+            sse.send("<b>Error:</b> Timeout waiting for huey task.", "red", "ERROR")
+            raise e
+        # send progress update
+        if len(created) == configuration.number_of_activities_in_bulk_progress_update:
+            created = _send_progress_update(created, reimporting, remaining=n - (i + 1))
+        if len(updated) == configuration.number_of_activities_in_bulk_progress_update:
+            updated = _send_progress_update(updated, reimporting, remaining=n - (i + 1))
+    if importing_demo_data:
+        demo_activities = models.Activity.objects.filter(is_demo_activity=True)
+        change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
+        insert_custom_demo_activities(count=9, every_nth_day=3, activity_model=models.Activity, sport_model=models.Sport)
+        log.info("finished inserting demo data")
+    if run_as_huey_task:
+        return _send_result_info(
             created_activities=created,
             updated_activities=updated,
             reimporting=reimporting,
@@ -148,10 +198,11 @@ class FileImporter(metaclass=Singleton):
             number_of_found_files=n,
             number_of_activities_before=activity_num_before,
             number_of_activities_after=models.Activity.objects.count(),
+            number_of_reimported_files=reimported,
             number_of_failed_imports=failed,
+            duplicates=duplicates,
             path_to_trace_dir=path,
         )
-        self.locked = False
 
 
 def _send_result_info(
@@ -162,7 +213,9 @@ def _send_result_info(
     number_of_found_files: int,
     number_of_activities_before: int,
     number_of_activities_after: int,
+    number_of_reimported_files: int,
     number_of_failed_imports: int,
+    duplicates: List[Tuple[str]],
     path_to_trace_dir: str,
 ):
     if number_of_found_files == 0:
@@ -185,8 +238,15 @@ def _send_result_info(
         sse.send(msg, "green")
         return
 
+    if duplicates:
+        dupes = "The following files appear to be the same: <ul>"
+        for duplicate in duplicates:
+            dupes = f"{dupes} <li>{duplicate[0]} and {duplicate[1]}</li>"
+        dupes = f"{dupes} </ul>"
+        sse.send(dupes, "yellow", "WARNING")
+
     if reimporting:
-        msg = f"{msg} Successfully reimported {len(updated_activities)} activity files"
+        msg = f"{msg} Successfully reimported {number_of_reimported_files} activity files"
 
     activity_num_imported = number_of_activities_after - number_of_activities_before
     if activity_num_imported:
@@ -206,15 +266,15 @@ def _send_initial_info(number_of_activities: int, path_to_trace_dir: str, reimpo
         sse.send(f"Found {number_of_activities} activity files in '{path_to_trace_dir}'. {additional_info}", "blue")
 
 
-def _send_progress_update(activities: List[str], reimporting: bool, remaining: int) -> List:
+def _send_progress_update(activities: List[object], reimporting: bool, remaining: int) -> List:
     msg = "<b>Progress Update</b> - "
     if reimporting:
         msg = f"{msg} Reimported {len(activities)} activity files:<br>"
     else:
         msg = f"{msg} Created {len(activities)} new activities:<br>"
     msg = f"{msg} <ul>"
-    for activity_name in activities:
-        msg = f"{msg} <li>{activity_name}</li>"
+    for activity in activities:
+        msg = f"{msg} <li>{activity.name} ({activity.date.date()})</li>"
     msg = f"{msg} </ul>"
     if remaining:
         msg = f"{msg} {remaining} files remaining..."

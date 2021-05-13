@@ -7,12 +7,11 @@ from django.core.management import call_command
 
 from workoutizer import settings as django_settings
 from wkz.file_importer import (
-    FileImporter,
+    run_file_importer,
     prepare_import_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
 )
 from wkz import models
-from wkz.apps import FileWatchdog
 
 
 @pytest.fixture
@@ -88,18 +87,17 @@ def tracks_in_tmpdir(db, tmpdir):
 
 
 @pytest.fixture
-def import_demo_data(disable_file_watchdog, db, tracks_in_tmpdir):
+def import_demo_data(db, tracks_in_tmpdir):
     prepare_import_of_demo_activities(models)
     assert models.Sport.objects.count() == 5
     assert models.Settings.objects.count() == 1
 
-    importer = FileImporter()
-    importer.run_file_importer(models, importing_demo_data=True, reimporting=False)
+    run_file_importer(models, importing_demo_data=True, reimporting=False, as_huey_task=False)
     assert models.Activity.objects.count() > 1
 
 
 @pytest.fixture
-def import_one_activity(disable_file_watchdog, db, tracks_in_tmpdir, test_data_dir, demo_data_dir):
+def import_one_activity(db, tracks_in_tmpdir, test_data_dir, demo_data_dir):
     models.get_settings()
     assert models.Settings.objects.count() == 1
 
@@ -119,8 +117,7 @@ def import_one_activity(disable_file_watchdog, db, tracks_in_tmpdir, test_data_d
             targe_dir=models.get_settings().path_to_trace_dir,
             list_of_files_to_copy=[path],
         )
-        importer = FileImporter()
-        importer.run_file_importer(models, importing_demo_data=False, reimporting=False)
+        run_file_importer(models, importing_demo_data=False, reimporting=False, as_huey_task=False)
         assert models.Activity.objects.count() == 1
 
     return _copy_activity
@@ -175,12 +172,3 @@ def insert_best_section(db, activity, insert_activity):
         return best_section
 
     return _create_section
-
-
-@pytest.fixture
-def disable_file_watchdog(monkeypatch):
-    # mock the FileWatchdog.watch method to disable watching
-    def dummy_watch(self):
-        return "foo"
-
-    monkeypatch.setattr(FileWatchdog, "watch", dummy_watch)
