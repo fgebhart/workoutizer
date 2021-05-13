@@ -22,3 +22,5 @@ selenium_ide/
 .DS_Store
 .coverage
 profiling/
+pytest-report.html
+assets/

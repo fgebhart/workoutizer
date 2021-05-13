@@ -28,6 +28,7 @@
 		"garytyler.darcula-pycharm",
 		"batisteo.vscode-django",
 		"akamud.vscode-theme-onedark",
+		"ritwickdey.liveserver",
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
