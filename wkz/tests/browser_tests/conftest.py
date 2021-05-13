@@ -37,7 +37,7 @@ def take_screenshot():
 @pytest.fixture(scope="function", autouse=True)
 def reimport_sequentially(monkeypatch):
     def reimport_sequentially(request):
-        run_file_importer(models, importing_demo_data=False, reimporting=True, as_huey_task=False)
+        run_file_importer(models, reimporting=True)
         return True
 
     monkeypatch.setattr(api, "reimport_activities", reimport_sequentially)

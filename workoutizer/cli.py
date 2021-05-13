@@ -41,31 +41,25 @@ def init(demo):
     _init(import_demo_activities=demo)
 
 
+def _is_main_run():
+    return os.environ.get("RUN_MAIN", None) != "true"
+
+
 @click.argument("url", default="")
 @click.command(
     help="Run workoutizer. Passing the local ip address and port is optionally. In case of no ip address "
     "being passed, it will be determined automatically. Usage, e.g.: 'wkz run 0.0.0.0:8000'."
 )
 def run(url):
-    huey_process = None
     if not url:
         if os.getenv("WKZ_ENV") == "devel":
             url = "127.0.0.1:8000"
         else:
             url = f"{get_local_ip_address()}:8000"
-    if os.environ.get("RUN_MAIN", None) != "true":
+    if _is_main_run():
         click.echo(f"using workoutizer home at {WORKOUTIZER_DIR}")
-        huey_process = _run_huey()
-    execute_from_command_line(["manage.py", "runserver", url, "--insecure"])
-    if huey_process:
-        click.echo("terminating huey process")
-        huey_process.terminate()
-
-
-# TODO refactor to be a context manager
-def _run_huey():
-    manage_py = Path(__file__).parent.parent / "manage.py"
-    return subprocess.Popen([sys.executable, manage_py, "run_huey"])
+    with HueyManager():
+        execute_from_command_line(["manage.py", "runserver", url, "--insecure"])
 
 
 @click.argument("cmd", nargs=1)
@@ -166,7 +160,7 @@ def _init(import_demo_activities=False):
         from wkz.file_importer import run_file_importer, prepare_import_of_demo_activities
 
         prepare_import_of_demo_activities(models)
-        run_file_importer(models, importing_demo_data=True, reimporting=False, as_huey_task=False)
+        run_file_importer(models, importing_demo_data=True)
         click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
@@ -212,4 +206,19 @@ def _reimport():
     from wkz import models
     from wkz.file_importer import run_file_importer
 
-    run_file_importer(models, importing_demo_data=False, reimporting=True, as_huey_task=False)
+    run_file_importer(models, reimporting=True)
+
+
+class HueyManager:
+    def __init__(self):
+        self.process = None
+
+    def __enter__(self):
+        if _is_main_run():
+            manage_py = Path(__file__).parent.parent / "manage.py"
+            self.process = subprocess.Popen([sys.executable, manage_py, "run_huey"])
+            return self.process
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if self.process:
+            self.process.terminate()

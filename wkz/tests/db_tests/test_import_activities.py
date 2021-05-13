@@ -167,7 +167,7 @@ def test_avoid_unique_constraint_error(db, tmpdir, caplog):
 
     # in rare situations this lead to a unique constraint sql error because
     # of md5sum already being present in db, check that this does not fail
-    run_file_importer(models, importing_demo_data=False, reimporting=False, as_huey_task=False)
+    run_file_importer(models)
 
     # check that file importer warns about two files having the same checksum
     assert "The following two files have the same checksum, you might want to remove one of them:" in caplog.text
@@ -189,7 +189,7 @@ def test_import_corrupted_fit_file(tracks_in_tmpdir, caplog):
     fit.write_text(content)
     assert fit.read_text() == content
 
-    run_file_importer(models, importing_demo_data=False, reimporting=False, as_huey_task=False)
+    run_file_importer(models)
 
     # one fit file should have been imported
     assert models.Activity.objects.count() == 1

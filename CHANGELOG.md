@@ -23,7 +23,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Wrap `retry` around checksum calculation to remedy io errors.
 * Use `huey` for queueing reimport & import tasks from within the settings page. Now
   both file watchdog and device watchdog are triggered periodically every minute and
-  will be queued on huey to run concurrently.
+  will be queued on huey to run independent of the django process.
+  It is also ensured that only one file importer is run at a time and thus fixes some
+  concurrency issues.
 ### Changed
 * Catch fit file parsing errors to ensure to continue parsing other files in case only
   one file is corrupted.

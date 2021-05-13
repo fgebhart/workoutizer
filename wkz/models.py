@@ -204,7 +204,7 @@ class Settings(models.Model):
             from wkz import models
 
             if Path(self.path_to_trace_dir).is_dir():
-                run_file_importer(models, False, False, as_huey_task=True)
+                run_file_importer(models, as_huey_task=True)
             else:
                 sse.send(f"'{self.path_to_trace_dir}' is not a valid path.", "red", "WARNING")
         self.__original_path_to_trace_dir = self.path_to_trace_dir

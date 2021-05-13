@@ -92,7 +92,7 @@ def import_demo_data(db, tracks_in_tmpdir):
     assert models.Sport.objects.count() == 5
     assert models.Settings.objects.count() == 1
 
-    run_file_importer(models, importing_demo_data=True, reimporting=False, as_huey_task=False)
+    run_file_importer(models, importing_demo_data=True)
     assert models.Activity.objects.count() > 1
 
 
@@ -117,7 +117,7 @@ def import_one_activity(db, tracks_in_tmpdir, test_data_dir, demo_data_dir):
             targe_dir=models.get_settings().path_to_trace_dir,
             list_of_files_to_copy=[path],
         )
-        run_file_importer(models, importing_demo_data=False, reimporting=False, as_huey_task=False)
+        run_file_importer(models)
         assert models.Activity.objects.count() == 1
 
     return _copy_activity

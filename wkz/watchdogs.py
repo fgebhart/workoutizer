@@ -14,7 +14,7 @@ def trigger_file_watchdog():
     log.debug("triggered periodic file importer...")
     settings = models.get_settings()
     if Path(settings.path_to_trace_dir).is_dir():
-        run_file_importer(models, importing_demo_data=False, reimporting=False, as_huey_task=False)
+        run_file_importer(models)
         log.debug("finished periodic file import.")
     else:
         log.warning(f"File Watchdog: {settings.path_to_trace_dir} is not a valid directory.")
