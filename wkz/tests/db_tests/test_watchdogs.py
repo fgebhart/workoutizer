@@ -3,6 +3,7 @@ from pathlib import Path
 import operator
 
 from lxml import etree
+import pytest
 
 from wkz.file_importer import copy_demo_fit_files_to_track_dir
 from wkz import models
@@ -10,7 +11,8 @@ from wkz.watchdogs import trigger_device_watchdog, trigger_file_watchdog
 from wkz.tests.utils import delayed_assertion
 
 
-def test__start_file_importer_watchdog_basic(transactional_db, tmp_path, test_data_dir, demo_data_dir, fit_file_a):
+@pytest.mark.noautofixt
+def test__start_file_importer_watchdog_basic(db, tmp_path, test_data_dir, demo_data_dir, fit_file_a):
     assert models.Activity.objects.count() == 0
     assert models.BestSection.objects.count() == 0
 
@@ -65,11 +67,12 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmp_path, test_da
     delayed_assertion(models.BestSection.objects.count, operator.eq, bs2)
 
 
+@pytest.mark.noautofixt
 def test_fake_device(db, fake_device, device_dir, activity_dir, fit_file):
     # initialize fake device
     device = fake_device(activity_files=[fit_file])
 
-    settings = models.get_settings()
+    settings = models.Settings.objects.get()
     mount_path = Path(settings.path_to_garmin_device)
     # once fake device is initialized, mount path should be available
     assert mount_path.is_dir()
@@ -100,6 +103,7 @@ def test_fake_device(db, fake_device, device_dir, activity_dir, fit_file):
     assert (mount_path / device_dir / activity_dir / fit_file).is_file()
 
 
+@pytest.mark.noautofixt
 def test__start_device_watchdog__missing_dir(db, caplog):
     invalid_dir = "/some/random/non_existent/path/"
 
@@ -111,6 +115,7 @@ def test__start_device_watchdog__missing_dir(db, caplog):
     assert f"Device Watchdog: {invalid_dir} is not a valid directory." in caplog.text
 
 
+@pytest.mark.noautofixt
 def test__start_file_importer_watchdog__missing_dir(db, caplog):
     invalid_dir = "/some/random/non_existent/path/"
 
@@ -122,8 +127,9 @@ def test__start_file_importer_watchdog__missing_dir(db, caplog):
     assert f"File Watchdog: {invalid_dir} is not a valid directory." in caplog.text
 
 
+@pytest.mark.noautofixt
 def test__start_device_watchdog__collect_files(
-    transactional_db, fake_device, device_dir, activity_dir, fit_file_a, fit_file_b, tmp_path
+    db, fake_device, device_dir, activity_dir, fit_file_a, fit_file_b, tmp_path
 ):
     # initialize fake device with two fit files
     device = fake_device(activity_files=[fit_file_a, fit_file_b])
@@ -160,6 +166,7 @@ def test__start_device_watchdog__collect_files(
     delayed_assertion((trace_dir / "garmin" / fit_file_b).is_file, operator.is_, True)
 
 
+@pytest.mark.noautofixt
 def test_device_and_file_importer_watchdog(
     db, tmpdir, test_data_dir, demo_data_dir, fake_device, device_dir, activity_dir, fit_file_a, fit_file_b
 ):
@@ -205,9 +212,12 @@ def test_device_and_file_importer_watchdog(
     delayed_assertion(models.BestSection.objects.count, operator.gt, 2)
 
 
+@pytest.mark.noautofixt
 def test_file_importer__with_path_being_changed(
-    dummy_path_settings, db, tmp_path, demo_data_dir, fit_file_a, fit_file_b
+    tmp_path, demo_data_dir, fit_file_a, fit_file_b, import_sequentially_on_setting_save
 ):
+    dummy_path_settings = models.Settings(path_to_trace_dir=tmp_path / "dummy_path")
+    dummy_path_settings.save()
     assert models.Activity.objects.count() == 0
     assert models.BestSection.objects.count() == 0
 

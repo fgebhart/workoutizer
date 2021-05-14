@@ -83,6 +83,7 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
         webdriver.find_element(By.ID, "delete-demo-data")
 
 
+@pytest.mark.noautofixt
 def test_settings_page__edit_and_submit_form(live_server, webdriver):
     # get settings and check that all values are at their default configuration
     settings = models.get_settings()
