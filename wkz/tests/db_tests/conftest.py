@@ -10,13 +10,6 @@ from wkz.file_importer import copy_demo_fit_files_to_track_dir, run_file_importe
 from wkz import models
 
 
-@pytest.fixture(autouse=True)
-def dummy_path_settings(db, tmp_path):
-    settings = models.Settings(path_to_trace_dir=tmp_path / "dummy_path")
-    settings.save()
-    return settings
-
-
 class FakeDevice:
     def __init__(self, mount_path: LocalPath, device_dir, activity_dir: str, activity_files):
         self.mount_path = mount_path
@@ -98,11 +91,11 @@ def activity_dir():
     return "Primary/GARMIN/Activity"
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture
 def import_sequentially_on_setting_save(monkeypatch):
     def import_sequentially(self, *args, **kwargs):
         super(models.Settings, self).save(*args, **kwargs)
         if Path(self.path_to_trace_dir).is_dir():
-            run_file_importer(models)
+            run_file_importer(models, as_huey_task=False)
 
     monkeypatch.setattr(models.Settings, "save", import_sequentially)

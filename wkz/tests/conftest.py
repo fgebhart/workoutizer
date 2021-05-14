@@ -77,17 +77,30 @@ def demo_data_dir():
     return django_settings.INITIAL_TRACE_DATA_DIR
 
 
-@pytest.fixture
-def tracks_in_tmpdir(db, tmpdir):
-    target_dir = tmpdir.mkdir("tracks")
-    settings = models.get_settings()
-    settings.path_to_trace_dir = target_dir
-    settings.save()
-    return target_dir
+@pytest.fixture(autouse=True)
+def ensure_path_to_traces_is_tmp(db, monkeypatch, tmp_path, request):
+    def get_dummy_settings(*args, **kwargs):
+        target_dir = tmp_path / "traces"
+        if models.Settings.objects.count() == 1:
+            settings = models.Settings.objects.get()
+            if settings.path_to_trace_dir == target_dir:
+                return settings
+
+        if models.Settings.objects.count() > 0:
+            models.Settings.objects.all().delete()
+        if not target_dir.is_dir():
+            target_dir.mkdir()
+        settings = models.Settings(path_to_trace_dir=target_dir)
+        settings.save()
+        return settings
+
+    if "noautofixt" in request.keywords:
+        return
+    monkeypatch.setattr(models, "get_settings", get_dummy_settings)
 
 
 @pytest.fixture
-def import_demo_data(db, tracks_in_tmpdir):
+def import_demo_data(db):
     prepare_import_of_demo_activities(models)
     assert models.Sport.objects.count() == 5
     assert models.Settings.objects.count() == 1
@@ -97,7 +110,7 @@ def import_demo_data(db, tracks_in_tmpdir):
 
 
 @pytest.fixture
-def import_one_activity(db, tracks_in_tmpdir, test_data_dir, demo_data_dir):
+def import_one_activity(db, test_data_dir, demo_data_dir):
     models.get_settings()
     assert models.Settings.objects.count() == 1
 

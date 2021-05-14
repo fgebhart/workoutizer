@@ -18,7 +18,7 @@ def test_cli_version():
     assert output == f"{__version__}\n"
 
 
-def test_cli__init(db, tracks_in_tmpdir):
+def test_cli__init(db):
     cli._init(import_demo_activities=False)
     assert os.path.isdir(django_settings.WORKOUTIZER_DIR)
     assert len(models.Sport.objects.all()) == 0
@@ -32,19 +32,19 @@ def test_cli__init(db, tracks_in_tmpdir):
     assert len(models.Activity.objects.all()) > 1
 
 
-def test_cli__check__demo_data(db, tracks_in_tmpdir):
+def test_cli__check__demo_data(db):
     # initialized wkz with demo data and then run check
     cli._init(import_demo_activities=True)
     cli._check()
 
 
-def test_cli__check__no_demo_data(db, tracks_in_tmpdir):
+def test_cli__check__no_demo_data(db):
     # initialized wkz without demo data and then run check
     cli._init(import_demo_activities=False)
     cli._check()
 
 
-def test_cli__check__not_initialized(db, tracks_in_tmpdir):
+def test_cli__check__not_initialized(db):
     # if wkz is not initialized expect to raise error - ensure to start with no preexisting db
     execute_from_command_line(["manage.py", "flush", "--noinput"])
     with pytest.raises(cli.NotInitializedError, match="ERROR: Make sure to execute 'wkz init' first"):
