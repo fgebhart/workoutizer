@@ -4,9 +4,9 @@ import operator
 
 from lxml import etree
 
-from wkz.apps import _start_device_watchdog, FileWatchdog
 from wkz.file_importer import copy_demo_fit_files_to_track_dir
 from wkz import models
+from wkz.watchdogs import trigger_device_watchdog, trigger_file_watchdog
 from wkz.tests.utils import delayed_assertion
 
 
@@ -30,6 +30,7 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmp_path, test_da
     )
     assert (Path(trace_dir) / fit_file_a).is_file()
 
+    trigger_file_watchdog()
     # watchdog should now have triggered the file imported and activity should be in db
     delayed_assertion(models.Activity.objects.count, operator.eq, 1)
     delayed_assertion(models.BestSection.objects.count, operator.gt, 0)
@@ -45,6 +46,8 @@ def test__start_file_importer_watchdog_basic(transactional_db, tmp_path, test_da
     assert path_to_gpx.is_file()
     # ensure file is a well-formed xml
     etree.parse(str(path_to_gpx))
+
+    trigger_file_watchdog()
 
     delayed_assertion(models.Activity.objects.count, operator.eq, 2)
     delayed_assertion(models.BestSection.objects.count, operator.gt, bs1)
@@ -104,8 +107,8 @@ def test__start_device_watchdog__missing_dir(db, caplog):
     settings.path_to_garmin_device = invalid_dir
     settings.save()
 
-    _start_device_watchdog(invalid_dir, settings.path_to_trace_dir, settings.delete_files_after_import)
-    assert f"Device mount path {invalid_dir} does not exist. Device watchdog is disabled." in caplog.text
+    trigger_device_watchdog()
+    assert f"Device Watchdog: {invalid_dir} is not a valid directory." in caplog.text
 
 
 def test__start_file_importer_watchdog__missing_dir(db, caplog):
@@ -115,9 +118,8 @@ def test__start_file_importer_watchdog__missing_dir(db, caplog):
     settings.path_to_trace_dir = invalid_dir
     settings.save()
 
-    fw = FileWatchdog(models=models)
-    fw.watch()
-    assert f"Path to trace dir {invalid_dir} does not exist. File Importer watchdog is disabled." in caplog.text
+    trigger_file_watchdog()
+    assert f"File Watchdog: {invalid_dir} is not a valid directory." in caplog.text
 
 
 def test__start_device_watchdog__collect_files(
@@ -130,6 +132,8 @@ def test__start_device_watchdog__collect_files(
     mount_path = Path(settings.path_to_garmin_device)
     trace_dir = tmp_path / "random_trace_dir"
     trace_dir.mkdir()
+    settings.path_to_trace_dir = trace_dir
+    settings.save()
 
     # verify mount path exists
     assert mount_path.is_dir()
@@ -138,11 +142,12 @@ def test__start_device_watchdog__collect_files(
     assert not (trace_dir / "garmin" / fit_file_a).is_file()
     assert not (trace_dir / "garmin" / fit_file_b).is_file()
 
-    # start device watch dog
-    _start_device_watchdog(mount_path, trace_dir, settings.delete_files_after_import)
-
     # now mount device which contains fit files
     device.mount()
+
+    # start device watch dog
+    trigger_device_watchdog()
+
     assert (device.activity_path_on_device / fit_file_a).is_file()
     assert (device.activity_path_on_device / fit_file_b).is_file()
 
@@ -156,7 +161,7 @@ def test__start_device_watchdog__collect_files(
 
 
 def test_device_and_file_importer_watchdog(
-    transactional_db, tmpdir, test_data_dir, demo_data_dir, fake_device, device_dir, activity_dir, fit_file_a, fit_file_b
+    db, tmpdir, test_data_dir, demo_data_dir, fake_device, device_dir, activity_dir, fit_file_a, fit_file_b
 ):
     assert models.Activity.objects.count() == 0
     assert models.BestSection.objects.count() == 0
@@ -166,6 +171,8 @@ def test_device_and_file_importer_watchdog(
     settings = models.get_settings()
     mount_path = Path(settings.path_to_garmin_device)
     trace_dir = Path(settings.path_to_trace_dir)
+    settings.path_to_trace_dir = trace_dir
+    settings.save()
 
     # verify mount path exists
     assert mount_path.is_dir()
@@ -174,15 +181,13 @@ def test_device_and_file_importer_watchdog(
     assert not (trace_dir / fit_file_a).is_file()
     assert not (trace_dir / fit_file_b).is_file()
 
-    # start watchdogs
-    _start_device_watchdog(mount_path, trace_dir, settings.delete_files_after_import)
-    fw = FileWatchdog(models=models)
-    fw.watch()
-
     # mounting the device will:
     #  1. trigger device watchdog to copy fit files to trace dir, what in turn will
     #  2. trigger file importer watchdog to import the fit files into workoutizer activities
     device.mount()
+
+    # start device watchdog
+    trigger_device_watchdog()
 
     # verify the fit files are present on the mounted device
     assert (mount_path / device_dir / activity_dir / fit_file_a).is_file()
@@ -192,13 +197,16 @@ def test_device_and_file_importer_watchdog(
     delayed_assertion((trace_dir / "garmin" / fit_file_a).is_file, operator.is_, True)
     delayed_assertion((trace_dir / "garmin" / fit_file_b).is_file, operator.is_, True)
 
+    # start file watchdog
+    trigger_file_watchdog()
+
     # check that the activities got imported
     delayed_assertion(models.Activity.objects.count, operator.eq, 2)
     delayed_assertion(models.BestSection.objects.count, operator.gt, 2)
 
 
 def test_file_importer__with_path_being_changed(
-    dummy_path_settings, transactional_db, tmp_path, demo_data_dir, fit_file_a, fit_file_b
+    dummy_path_settings, db, tmp_path, demo_data_dir, fit_file_a, fit_file_b
 ):
     assert models.Activity.objects.count() == 0
     assert models.BestSection.objects.count() == 0

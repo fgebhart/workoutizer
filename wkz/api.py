@@ -11,7 +11,7 @@ import psutil
 
 from wkz.file_helper.fit_collector import try_to_mount_device
 from wkz.tools import sse
-from wkz.file_importer import FileImporter
+from wkz.file_importer import run_file_importer
 from wkz import models
 
 
@@ -52,8 +52,7 @@ def reimport_activities(request):
     template = "settings/reimport.html"
     settings = models.get_settings()
     if Path(settings.path_to_trace_dir).is_dir():
-        importer = FileImporter()
-        importer.run_file_importer(models, importing_demo_data=False, reimporting=True)
+        run_file_importer(models, importing_demo_data=False, reimporting=True, as_huey_task=True)
     else:
         sse.send(f"'{settings.path_to_trace_dir}' is not a valid path.", "red")
     return render(request, template_name=template)

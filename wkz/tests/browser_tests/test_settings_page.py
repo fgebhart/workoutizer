@@ -134,7 +134,7 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
         assert settings.reimporter_updates_all is True
 
 
-def test_settings_page__reimport_activities(live_server, webdriver, import_one_activity, take_screenshot):
+def test_settings_page__reimport_activities(live_server, webdriver, import_one_activity):
     import_one_activity("cycling_bad_schandau.fit")
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()

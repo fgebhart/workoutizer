@@ -67,6 +67,8 @@ gripcontrol==4.1.0
     # via
     #   django-eventstream
     #   django-grip
+huey==2.3.2
+    # via -r setup/requirements/requirements.in
 humanfriendly==9.1
     # via coloredlogs
 hyperlink==21.0.0
@@ -159,8 +161,6 @@ txaio==21.2.1
     # via autobahn
 urllib3==1.26.4
     # via requests
-watchdog==2.0.0
-    # via -r setup/requirements/requirements.in
 werkzeug==0.16.1
     # via
     #   django-eventstream

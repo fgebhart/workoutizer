@@ -45,7 +45,7 @@ def _get_formatter_and_handler(path_to_log_dir: str, use_minimal_format: bool = 
     return logging_dict
 
 
-def get_logging_config(django_log_level: str, wkz_log_level: str, path_to_log_dir: str):
+def get_logging_config(django_log_level: str, wkz_log_level: str, huey_log_level: str, path_to_log_dir: str):
     logging_dict = _get_formatter_and_handler(path_to_log_dir=path_to_log_dir)
     logging_dict["loggers"] = {
         "django": {
@@ -55,6 +55,10 @@ def get_logging_config(django_log_level: str, wkz_log_level: str, path_to_log_di
         "wkz": {
             "handlers": ["console", "file"],
             "level": wkz_log_level,
+        },
+        "huey": {
+            "handlers": ["console", "file"],
+            "level": huey_log_level,
         },
     }
 

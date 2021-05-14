@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from huey import SqliteHuey
+
 from workoutizer.logger import get_logging_config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "channels",
     "django_eventstream",
+    "huey.contrib.djhuey",
 ]
 
 MIDDLEWARE = [
@@ -123,5 +126,8 @@ trace_line_opacity = 0.9
 LOGGING = get_logging_config(
     django_log_level=os.getenv("DJANGO_LOG_LEVEL", "WARNING"),
     wkz_log_level=os.getenv("WKZ_LOG_LEVEL", "INFO"),
+    huey_log_level=os.getenv("HUEY_LOG_LEVEL", "WARNING"),
     path_to_log_dir=WORKOUTIZER_DIR,
 )
+
+HUEY = SqliteHuey(filename="/tmp/demo.db")

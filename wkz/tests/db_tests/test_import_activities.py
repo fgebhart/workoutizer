@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 
 from wkz import models
-from wkz.file_importer import copy_demo_fit_files_to_track_dir, FileImporter
+from wkz.file_importer import copy_demo_fit_files_to_track_dir, run_file_importer
 from wkz.best_sections.generic import _activity_suitable_for_awards
 from workoutizer import settings as django_settings
 
@@ -148,7 +148,7 @@ def test__activity_evaluates_for_awards(insert_activity):
     assert _activity_suitable_for_awards(activity=activity) is False
 
 
-def test_avoid_unique_constraint_error(disable_file_watchdog, db, tmpdir, caplog):
+def test_avoid_unique_constraint_error(db, tmpdir, caplog):
     target_dir = tmpdir.mkdir("foo")
     settings = models.get_settings()
     settings.path_to_trace_dir = target_dir
@@ -167,14 +167,13 @@ def test_avoid_unique_constraint_error(disable_file_watchdog, db, tmpdir, caplog
 
     # in rare situations this lead to a unique constraint sql error because
     # of md5sum already being present in db, check that this does not fail
-    importer = FileImporter()
-    importer.run_file_importer(models, importing_demo_data=False, reimporting=False)
+    run_file_importer(models)
 
     # check that file importer warns about two files having the same checksum
     assert "The following two files have the same checksum, you might want to remove one of them:" in caplog.text
 
 
-def test_import_corrupted_fit_file(disable_file_watchdog, tracks_in_tmpdir, caplog):
+def test_import_corrupted_fit_file(tracks_in_tmpdir, caplog):
     assert models.Activity.objects.count() == 0
     settings = models.get_settings()
 
@@ -190,8 +189,7 @@ def test_import_corrupted_fit_file(disable_file_watchdog, tracks_in_tmpdir, capl
     fit.write_text(content)
     assert fit.read_text() == content
 
-    importer = FileImporter()
-    importer.run_file_importer(models, importing_demo_data=False, reimporting=False)
+    run_file_importer(models)
 
     # one fit file should have been imported
     assert models.Activity.objects.count() == 1

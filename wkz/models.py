@@ -10,7 +10,7 @@ from colorfield.fields import ColorField
 from django.db.utils import IntegrityError
 
 from workoutizer import settings as django_settings
-from wkz.apps import FileWatchdog
+from wkz.file_importer import run_file_importer
 from wkz.tools import sse
 
 
@@ -204,8 +204,7 @@ class Settings(models.Model):
             from wkz import models
 
             if Path(self.path_to_trace_dir).is_dir():
-                fw = FileWatchdog(models=models)
-                fw.watch()
+                run_file_importer(models, as_huey_task=True)
             else:
                 sse.send(f"'{self.path_to_trace_dir}' is not a valid path.", "red", "WARNING")
         self.__original_path_to_trace_dir = self.path_to_trace_dir
@@ -214,8 +213,7 @@ class Settings(models.Model):
             from wkz import models
 
             if Path(self.path_to_garmin_device).is_dir():
-                sse.send(f"Started watching for mounted device in '{self.path_to_garmin_device}'.", "green")
-                # retrigger device watchdog here
+                sse.send(f"Device watchdog now monitors '{self.path_to_garmin_device}'.", "green")
             else:
                 sse.send(f"'{self.path_to_garmin_device}' is not a valid path.", "red", "WARNING")
         self.__original_path_to_garmin_device = self.path_to_garmin_device
