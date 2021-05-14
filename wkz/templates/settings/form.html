@@ -6,6 +6,10 @@
     hx-trigger="change">
     {% load static %}
     {% csrf_token %}
+    <h4 class="card-title">Import Activities</h4>
+    <p>
+        Use the following settings to configure where your activity files should be stored.
+    </p>
     <div class="row">
         <label class="col-md-4 col-form-label text-right">
             {{ form.path_to_trace_dir.label }}&nbsp;
@@ -35,6 +39,10 @@ your activities. This might take a while.">
             </div>
         </div>
     </div>
+    <h4 class="card-title">Fetch Files from Device</h4>
+    <p>
+        Use the following settings to configure the path to your device, from which the activity files should be fetched.
+    </p>
     <div class="row">
         <label class="col-md-4 col-form-label text-right">
             {{ form.path_to_garmin_device.label }}&nbsp;
@@ -68,6 +76,7 @@ copy in 'Traces Directory' will stay untouched.">
             </div>
         </div>
     </div>
+    {% comment %} htmx indicator - loading bar {% endcomment %}
     <div class="row">
         <div class="col-md-5">
         </div>
