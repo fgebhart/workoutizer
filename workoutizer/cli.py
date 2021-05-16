@@ -215,8 +215,7 @@ class HueyManager:
 
     def __enter__(self):
         if _is_main_run():
-            manage_py = Path(__file__).parent.parent / "manage.py"
-            self.process = subprocess.Popen([sys.executable, manage_py, "run_huey"])
+            self.process = subprocess.Popen([sys.executable, "-m", "django", "run_huey"])
             return self.process
 
     def __exit__(self, exc_type, exc_value, exc_traceback):

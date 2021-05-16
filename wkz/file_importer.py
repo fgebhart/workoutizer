@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from fitparse.utils import FitHeaderError, FitEOFError
 from huey.exceptions import HueyException
 from huey.contrib.djhuey import task
+from django.db.utils import IntegrityError
 
 from wkz.file_helper.gpx_parser import GPXParser
 from wkz.file_helper.fit_parser import FITParser
@@ -85,8 +86,8 @@ def _import_single_file(
     reimporting: bool,
     import_progress_metadata: ImportProgressMetaData,
 ) -> ImportProgressMetaData:
-    try:
-        if md5sum not in md5sums_from_db:  # file is not stored in db yet
+    if md5sum not in md5sums_from_db:  # file is not stored in db yet
+        try:
             activity = _parse_and_save_to_model(
                 models=models,
                 md5sum=md5sum,
@@ -96,47 +97,75 @@ def _import_single_file(
             )
             import_progress_metadata.created.append(activity)
             log.info(f"created new activity: {activity.name} ({activity.date.date()}) ID: {activity.pk}")
-        else:  # checksum is in db already
-            file_name = trace_file.split("/")[-1]
-            trace = models.Traces.objects.get(md5sum=md5sum)
-            if trace.file_name == file_name and trace.path_to_file != trace_file:
-                log.debug(f"path of file: {trace.path_to_file} has changed, updating to {trace_file}")
-                trace.path_to_file = trace_file
-                trace.save()
-            elif trace.file_name != file_name and trace.path_to_file != trace_file:
-                log.warning(
-                    f"The following two files have the same checksum, "
-                    f"you might want to remove one of them:\n"
-                    f"{trace_file}\n"
-                    f"{trace.path_to_file}"
-                )
-                import_progress_metadata.duplicates.append((trace_file, trace.path_to_file))
-            else:  # file is already in db
-                if reimporting:
-                    trace = models.Traces.objects.get(md5sum=md5sum)
-                    activity = models.Activity.objects.get(trace_file=trace)
-                    log.debug(f"reimporting activity '{activity.name}' (ID: {activity.pk}) ... ")
-                    activity = _parse_and_save_to_model(
-                        models=models,
-                        md5sum=md5sum,
-                        trace_file=trace_file,
-                        update_existing=True,
-                        importing_demo_data=importing_demo_data,
-                    )
-                    import_progress_metadata.updated.append(activity)
-                    import_progress_metadata.files_reimported_cnt += 1
-                    log.info(
-                        f"updated activity "
-                        f"({import_progress_metadata.loop_index+1}/{import_progress_metadata.files_found_cnt}): "
-                        f"'{activity.name}'. ID: {activity.pk}"
-                    )
-                else:  # file is in db and not supposed to reimport -> do nothing
-                    import_progress_metadata.files_in_db_cnt += 1
-                    pass
-    except (FitHeaderError, FitEOFError):
-        import_progress_metadata.files_failed_cnt += 1
-        import_progress_metadata.failed_file = trace_file
+        except IntegrityError as e:
+            log.warning(f"file {trace_file} is present in db already: {e}")
+            _file_is_in_db_already_treatment(
+                trace_file=trace_file,
+                models=models,
+                md5sum=md5sum,
+                import_progress_metadata=import_progress_metadata,
+                importing_demo_data=importing_demo_data,
+                reimporting=reimporting,
+            )
+        except (FitHeaderError, FitEOFError):
+            import_progress_metadata.files_failed_cnt += 1
+            import_progress_metadata.failed_file = trace_file
+    else:  # checksum is in db already
+        _file_is_in_db_already_treatment(
+            trace_file=trace_file,
+            models=models,
+            md5sum=md5sum,
+            import_progress_metadata=import_progress_metadata,
+            importing_demo_data=importing_demo_data,
+            reimporting=reimporting,
+        )
     return import_progress_metadata
+
+
+def _file_is_in_db_already_treatment(
+    trace_file: str,
+    models,
+    md5sum: str,
+    import_progress_metadata: ImportProgressMetaData,
+    importing_demo_data: bool,
+    reimporting: bool,
+):
+    file_name = trace_file.split("/")[-1]
+    trace = models.Traces.objects.get(md5sum=md5sum)
+    if trace.file_name == file_name and trace.path_to_file != trace_file:
+        log.debug(f"path of file: {trace.path_to_file} has changed, updating to {trace_file}")
+        trace.path_to_file = trace_file
+        trace.save()
+    elif trace.file_name != file_name and trace.path_to_file != trace_file:
+        log.warning(
+            f"The following two files have the same checksum, "
+            f"you might want to remove one of them:\n"
+            f"{trace_file}\n"
+            f"{trace.path_to_file}"
+        )
+        import_progress_metadata.duplicates.append((trace_file, trace.path_to_file))
+        import_progress_metadata.files_in_db_cnt += 1
+    else:  # file is already in db
+        if reimporting:
+            trace = models.Traces.objects.get(md5sum=md5sum)
+            activity = models.Activity.objects.get(trace_file=trace)
+            log.debug(f"reimporting activity '{activity.name}' (ID: {activity.pk}) ... ")
+            activity = _parse_and_save_to_model(
+                models=models,
+                md5sum=md5sum,
+                trace_file=trace_file,
+                update_existing=True,
+                importing_demo_data=importing_demo_data,
+            )
+            import_progress_metadata.updated.append(activity)
+            import_progress_metadata.files_reimported_cnt += 1
+            log.info(
+                f"updated activity "
+                f"({import_progress_metadata.loop_index+1}/{import_progress_metadata.files_found_cnt}): "
+                f"'{activity.name}'. ID: {activity.pk}"
+            )
+        else:  # file is in db and not supposed to reimport -> do nothing
+            import_progress_metadata.files_in_db_cnt += 1
 
 
 def run_file_importer(models, importing_demo_data: bool = False, reimporting: bool = False, as_huey_task: bool = False):
@@ -163,8 +192,8 @@ def _run_parser(models, importing_demo_data: bool, reimporting: bool, run_as_hue
     md.files_found_cnt = len(trace_files)
     _send_initial_info(number_of_activities=md.files_found_cnt, path_to_trace_dir=path, reimporting=reimporting)
 
+    md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
     for i, trace_file in enumerate(trace_files):
-        md5sums_from_db = _get_md5sums_from_model(traces_model=models.Traces)
         md5sum = calc_md5(trace_file)
         md.loop_index = i
         try:
@@ -178,15 +207,25 @@ def _run_parser(models, importing_demo_data: bool, reimporting: bool, run_as_hue
                 import_progress_metadata=md,
             )
             if run_as_huey_task:
-                md = res(blocking=True, timeout=30)
-        except HueyException as e:
-            sse.send("<b>Error:</b> Timeout waiting for huey task.", "red", "ERROR")
-            raise e
+                md = res(blocking=True, timeout=configuration.huey_timeout)
+        except HueyException:
+            sse.send(
+                "<b>Error:</b> Timeout waiting for import progress. Either "
+                "increase the timeout or reduce your number of files.",
+                "red",
+                "ERROR",
+            )
         # send progress update
         if len(md.created) == configuration.number_of_activities_in_bulk_progress_update:
             md.created = _send_progress_update(md.created, reimporting, remaining=md.files_found_cnt - (i + 1))
         if len(md.updated) == configuration.number_of_activities_in_bulk_progress_update:
             md.updated = _send_progress_update(md.updated, reimporting, remaining=md.files_found_cnt - (i + 1))
+        if md.files_in_db_cnt % configuration.number_of_skipped_activities == 0:
+            sse.send(
+                f"<b>Progress Update</b> - Skipped {md.files_in_db_cnt} files, "
+                f"since they are already present in workoutizer.",
+                "blue",
+            )
         if md.failed_file:
             sse.send(f"<b>Error:</b> Could not parse fit file '{md.failed_file}'.", "red", "ERROR")
             md.failed_file = ""

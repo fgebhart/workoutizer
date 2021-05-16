@@ -85,3 +85,9 @@ number_of_retries = 3
 
 # how many activities should be included in one server sent event message when importing/reimporting
 number_of_activities_in_bulk_progress_update = 5
+
+# after how many skipped activities should a notification be sent
+number_of_skipped_activities = number_of_activities_in_bulk_progress_update * 10
+
+# time to wait for an huey task to finish in seconds
+huey_timeout = 30
