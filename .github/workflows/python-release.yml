@@ -20,9 +20,15 @@ jobs:
         pip install -r setup/requirements/dev-requirements.txt
         pip install -r setup/requirements/requirements.txt
         pip install -e . --no-deps
-    - name: Run Tests
+    - name: Run Unit Tests
       run: |
-        pytest wkz/tests -v -n2
+        pytest wkz/tests/unit_tests -vv -n2
+    - name: Run DB Tests
+      run: |
+        pytest wkz/tests/db_tests -vv -n2
+    - name: Run Browser Tests
+      run: |
+        pytest wkz/tests/browser_tests -vv -n2
 
   build:
     name: Build, Check & Release
