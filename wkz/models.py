@@ -7,7 +7,6 @@ from django.db import models
 from django.utils import timezone
 from django.template.defaultfilters import slugify
 from colorfield.fields import ColorField
-from django.db.utils import IntegrityError
 
 from workoutizer import settings as django_settings
 from wkz.file_importer import run_file_importer
@@ -83,10 +82,7 @@ class Traces(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.file_name = self.path_to_file.split("/")[-1]
-        try:
-            super(Traces, self).save()
-        except IntegrityError as e:
-            log.warning(f"Trace file '{self.file_name}' is already stored in db: {e}")
+        super(Traces, self).save()
 
 
 def default_sport(return_pk: bool = True):

@@ -94,9 +94,8 @@ def ensure_path_to_traces_is_tmp(db, monkeypatch, tmp_path, request):
         settings.save()
         return settings
 
-    if "noautofixt" in request.keywords:
-        return
-    monkeypatch.setattr(models, "get_settings", get_dummy_settings)
+    if "no_autouse" not in request.keywords:
+        monkeypatch.setattr(models, "get_settings", get_dummy_settings)
 
 
 @pytest.fixture

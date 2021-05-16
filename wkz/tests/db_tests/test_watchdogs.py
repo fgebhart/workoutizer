@@ -11,7 +11,7 @@ from wkz.watchdogs import trigger_device_watchdog, trigger_file_watchdog
 from wkz.tests.utils import delayed_assertion
 
 
-@pytest.mark.noautofixt
+@pytest.mark.no_autouse
 def test__start_file_importer_watchdog_basic(db, tmp_path, test_data_dir, demo_data_dir, fit_file_a):
     assert models.Activity.objects.count() == 0
     assert models.BestSection.objects.count() == 0
@@ -67,7 +67,7 @@ def test__start_file_importer_watchdog_basic(db, tmp_path, test_data_dir, demo_d
     delayed_assertion(models.BestSection.objects.count, operator.eq, bs2)
 
 
-@pytest.mark.noautofixt
+@pytest.mark.no_autouse
 def test_fake_device(db, fake_device, device_dir, activity_dir, fit_file):
     # initialize fake device
     device = fake_device(activity_files=[fit_file])
@@ -103,7 +103,7 @@ def test_fake_device(db, fake_device, device_dir, activity_dir, fit_file):
     assert (mount_path / device_dir / activity_dir / fit_file).is_file()
 
 
-@pytest.mark.noautofixt
+@pytest.mark.no_autouse
 def test__start_device_watchdog__missing_dir(db, caplog):
     invalid_dir = "/some/random/non_existent/path/"
 
@@ -115,7 +115,7 @@ def test__start_device_watchdog__missing_dir(db, caplog):
     assert f"Device Watchdog: {invalid_dir} is not a valid directory." in caplog.text
 
 
-@pytest.mark.noautofixt
+@pytest.mark.no_autouse
 def test__start_file_importer_watchdog__missing_dir(db, caplog):
     invalid_dir = "/some/random/non_existent/path/"
 
@@ -127,7 +127,7 @@ def test__start_file_importer_watchdog__missing_dir(db, caplog):
     assert f"File Watchdog: {invalid_dir} is not a valid directory." in caplog.text
 
 
-@pytest.mark.noautofixt
+@pytest.mark.no_autouse
 def test__start_device_watchdog__collect_files(
     db, fake_device, device_dir, activity_dir, fit_file_a, fit_file_b, tmp_path
 ):
@@ -166,7 +166,7 @@ def test__start_device_watchdog__collect_files(
     delayed_assertion((trace_dir / "garmin" / fit_file_b).is_file, operator.is_, True)
 
 
-@pytest.mark.noautofixt
+@pytest.mark.no_autouse
 def test_device_and_file_importer_watchdog(
     db, tmpdir, test_data_dir, demo_data_dir, fake_device, device_dir, activity_dir, fit_file_a, fit_file_b
 ):
@@ -212,7 +212,7 @@ def test_device_and_file_importer_watchdog(
     delayed_assertion(models.BestSection.objects.count, operator.gt, 2)
 
 
-@pytest.mark.noautofixt
+@pytest.mark.no_autouse
 def test_file_importer__with_path_being_changed(
     tmp_path, demo_data_dir, fit_file_a, fit_file_b, import_sequentially_on_setting_save
 ):

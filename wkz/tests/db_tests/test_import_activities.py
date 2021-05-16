@@ -148,7 +148,7 @@ def test__activity_evaluates_for_awards(insert_activity):
     assert _activity_suitable_for_awards(activity=activity) is False
 
 
-def test_avoid_unique_constraint_error(db, tmpdir, caplog):
+def test_avoid_unique_constraint_error(transactional_db, tmpdir, caplog):
     settings = models.get_settings()
     copy_demo_fit_files_to_track_dir(
         source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
