@@ -1,3 +1,5 @@
+import datetime
+
 from selenium.webdriver.common.by import By
 from django.urls import reverse
 
@@ -48,3 +50,9 @@ def test_help_page(live_server, webdriver):
 
     assert "Toggle Sidebar" in table_data
     assert "[" in table_data
+
+    # check that "made with love" text is present
+    assert (
+        f"© {datetime.datetime.now().date().year}, made with by Fabian Gebhart"
+        in webdriver.find_element(By.CLASS_NAME, "credits").text
+    )

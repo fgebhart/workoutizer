@@ -1,3 +1,4 @@
+import datetime
 import operator
 
 from django.urls import reverse
@@ -48,6 +49,12 @@ def test_settings_page__no_demo_activity(live_server, webdriver):
     # no delete demo data button present
     with pytest.raises(NoSuchElementException):
         webdriver.find_element(By.ID, "delete-demo-data")
+
+    # check that "made with love" text is present
+    assert (
+        f"© {datetime.datetime.now().date().year}, made with by Fabian Gebhart"
+        in webdriver.find_element(By.CLASS_NAME, "credits").text
+    )
 
 
 def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_server, webdriver):

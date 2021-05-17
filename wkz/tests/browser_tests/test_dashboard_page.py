@@ -2,6 +2,9 @@ from django.urls import reverse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
+
+import pytest
 
 from wkz import configuration
 from wkz import models
@@ -113,6 +116,10 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
             expected_num_of_trophies += 1
 
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == expected_num_of_trophies
+
+    # check that "made with love" text is not present
+    with pytest.raises(NoSuchElementException):
+        webdriver.find_element(By.CLASS_NAME, "credits")
 
 
 def test_dashboard__infinite_scroll(live_server, webdriver, insert_activity):
