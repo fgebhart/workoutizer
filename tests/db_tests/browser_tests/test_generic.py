@@ -9,7 +9,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import pytest
 
 from wkz import models
-from wkz.tests.utils import delayed_assertion
+from tests.utils import delayed_assertion
 
 
 def test_sidebar(live_server, webdriver):

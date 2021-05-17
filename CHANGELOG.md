@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
 * Show "made with ❤️" in footer only on settings and help page.
+* Moved `tests` folder from `workoutizer/wkz/tests/` to `workoutizer/tests` root folder.
+* Run all tests together in github actions `Test` and `Release` pipeline.
 
 ## [0.18.0](https://github.com/fgebhart/workoutizer/releases/tag/0.18.0) - 2021-05-16
 ### Added

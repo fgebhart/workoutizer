@@ -70,7 +70,7 @@ and then start workoutizer in docker using the convenience script:
 It might take a while to build the image, run the container and initialize workoutizer. Once up and running, run the
 tests with
 ```
-pytest wkz/tests/ -n4
+pytest tests/ -n4
 ```
 Once this was successful you are good to go.
 

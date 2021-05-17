@@ -6,8 +6,8 @@ tracks/*.gpx
 tracks/*.fit
 .pytest_cache/
 *.sqlite3
-wkz/tests/data/tested_data/*.gpx
-wkz/tests/data/tested_data/*.fit
+tests/data/tested_data/*.gpx
+tests/data/tested_data/*.fit
 dist/
 build/
 *.egg-info
