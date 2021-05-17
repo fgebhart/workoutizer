@@ -7,13 +7,15 @@
                     <li><a href="https://github.com/fgebhart/workoutizer/issues" target="_blank">Report an Issue</a></li>
                 </ul>
             </nav>
-            <div class="credits ml-auto">
-                <span class="copyright">
-                    © <script>
-                        document.write(new Date().getFullYear())
-                    </script>, made with <i class="fa fa-heart heart"></i> by <a class="simple-text" href="https://github.com/fgebhart">Fabian Gebhart</a>
-                </span>
-            </div>
+            {% if page_name == "Settings" or page_name == "Help" %}
+                <div class="credits ml-auto">
+                    <span class="copyright">
+                        © <script>
+                            document.write(new Date().getFullYear())
+                        </script>, made with <i class="fa fa-heart heart"></i> by <a class="simple-text" href="https://github.com/fgebhart">Fabian Gebhart</a>
+                    </span>
+                </div>
+            {% endif %}
         </div>
     </div>
 </footer>
