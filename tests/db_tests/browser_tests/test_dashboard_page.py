@@ -122,7 +122,7 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
         webdriver.find_element(By.CLASS_NAME, "credits")
 
 
-def test_dashboard__infinite_scroll(live_server, webdriver, insert_activity):
+def test_dashboard__infinite_scroll(tracks_in_tmpdir, live_server, webdriver, insert_activity):
     rows_per_page = configuration.number_of_rows_per_page_in_table
     # insert more activities than the currently configured value of rows
     # per page in order to be  able to trigger the htmx ajax request

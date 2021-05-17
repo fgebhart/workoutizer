@@ -49,20 +49,10 @@ jobs:
         pip install -r setup/requirements/dev-requirements.txt
         pip install -e .
 
-    - name: Run Unit Tests
+    - name: Run Tests
       if: always()
       run: |
-        pytest wkz/tests/unit_tests -vv -n2
-
-    - name: Run DB Tests
-      if: always()
-      run: |
-        pytest wkz/tests/db_tests -vv -n2
-
-    - name: Run Browser Tests
-      if: always()
-      run: |
-        pytest wkz/tests/browser_tests -vv -n2
+        pytest tests/ -vv -n2
 
     - name: Init
       if: always()

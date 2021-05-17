@@ -1,17 +1,14 @@
-import time
 from pathlib import Path
 import operator
 
 from lxml import etree
-import pytest
 
 from wkz.file_importer import copy_demo_fit_files_to_track_dir
 from wkz import models
 from wkz.watchdogs import trigger_device_watchdog, trigger_file_watchdog
-from wkz.tests.utils import delayed_assertion
+from tests.utils import delayed_assertion
 
 
-@pytest.mark.no_autouse
 def test__start_file_importer_watchdog_basic(db, tmp_path, test_data_dir, demo_data_dir, fit_file_a):
     assert models.Activity.objects.count() == 0
     assert models.BestSection.objects.count() == 0
@@ -67,7 +64,6 @@ def test__start_file_importer_watchdog_basic(db, tmp_path, test_data_dir, demo_d
     delayed_assertion(models.BestSection.objects.count, operator.eq, bs2)
 
 
-@pytest.mark.no_autouse
 def test_fake_device(db, fake_device, device_dir, activity_dir, fit_file):
     # initialize fake device
     device = fake_device(activity_files=[fit_file])
@@ -103,7 +99,6 @@ def test_fake_device(db, fake_device, device_dir, activity_dir, fit_file):
     assert (mount_path / device_dir / activity_dir / fit_file).is_file()
 
 
-@pytest.mark.no_autouse
 def test__start_device_watchdog__missing_dir(db, caplog):
     invalid_dir = "/some/random/non_existent/path/"
 
@@ -115,7 +110,6 @@ def test__start_device_watchdog__missing_dir(db, caplog):
     assert f"Device Watchdog: {invalid_dir} is not a valid directory." in caplog.text
 
 
-@pytest.mark.no_autouse
 def test__start_file_importer_watchdog__missing_dir(db, caplog):
     invalid_dir = "/some/random/non_existent/path/"
 
@@ -127,7 +121,6 @@ def test__start_file_importer_watchdog__missing_dir(db, caplog):
     assert f"File Watchdog: {invalid_dir} is not a valid directory." in caplog.text
 
 
-@pytest.mark.no_autouse
 def test__start_device_watchdog__collect_files(
     db, fake_device, device_dir, activity_dir, fit_file_a, fit_file_b, tmp_path
 ):
@@ -166,7 +159,6 @@ def test__start_device_watchdog__collect_files(
     delayed_assertion((trace_dir / "garmin" / fit_file_b).is_file, operator.is_, True)
 
 
-@pytest.mark.no_autouse
 def test_device_and_file_importer_watchdog(
     db, tmpdir, test_data_dir, demo_data_dir, fake_device, device_dir, activity_dir, fit_file_a, fit_file_b
 ):
@@ -210,53 +202,3 @@ def test_device_and_file_importer_watchdog(
     # check that the activities got imported
     delayed_assertion(models.Activity.objects.count, operator.eq, 2)
     delayed_assertion(models.BestSection.objects.count, operator.gt, 2)
-
-
-@pytest.mark.no_autouse
-def test_file_importer__with_path_being_changed(
-    tmp_path, demo_data_dir, fit_file_a, fit_file_b, import_sequentially_on_setting_save
-):
-    dummy_path_settings = models.Settings(path_to_trace_dir=tmp_path / "dummy_path")
-    dummy_path_settings.save()
-    assert models.Activity.objects.count() == 0
-    assert models.BestSection.objects.count() == 0
-
-    # assume we have two directories: an empty directory and one with activities
-    empty_dir = tmp_path / "empty_dir"
-    empty_dir.mkdir()
-    assert empty_dir.is_dir()
-    assert not any(empty_dir.iterdir())  # = no file in empty dir
-
-    dir_with_files = tmp_path / "dir_with_files"
-    dir_with_files.mkdir()
-    assert dir_with_files.is_dir()
-    copy_demo_fit_files_to_track_dir(
-        source_dir=demo_data_dir,
-        targe_dir=dir_with_files,
-        list_of_files_to_copy=[fit_file_a],
-    )
-    assert (Path(dir_with_files) / fit_file_a).is_file()
-    assert any(dir_with_files.iterdir())  # dir_with_files contains a file
-
-    # first, file watchdog is watching the empty dir (note, chaning settings will re-trigger watchdog)
-    dummy_path_settings.path_to_trace_dir = empty_dir
-    dummy_path_settings.save()
-
-    # since watchdog is watching empty dir, activity count should still be 0
-    delayed_assertion(models.Activity.objects.count, operator.eq, 0)
-    # now change the settings path to point to the dir_with_files
-    dummy_path_settings.path_to_trace_dir = dir_with_files
-    dummy_path_settings.save()
-
-    # watchdog should automatically pick up the new path, start watching the new dir, find the
-    # given activity file (even if it was added before starting to watch if) and import it
-    delayed_assertion(models.Activity.objects.count, operator.eq, 1)
-
-    # now also add an activity file to the empty dir and check that watchdog does not get triggered
-    copy_demo_fit_files_to_track_dir(
-        source_dir=demo_data_dir,
-        targe_dir=empty_dir,
-        list_of_files_to_copy=[fit_file_b],
-    )
-    time.sleep(3)
-    delayed_assertion(models.Activity.objects.count, operator.ne, 2)

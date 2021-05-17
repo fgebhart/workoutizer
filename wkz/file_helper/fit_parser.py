@@ -37,7 +37,7 @@ class FITParser(Parser):
             self.fit = _read_fit(self.path_to_file)
         except FitHeaderError as e:
             log.error(
-                f"Failed to parse fit file: '{self.path_to_file}'. File could"
+                f"Failed to parse fit file: '{self.path_to_file}'. File could "
                 f"either be corrupted or does not comply with the fit standard. \n"
                 f"Got error: {e}"
             )

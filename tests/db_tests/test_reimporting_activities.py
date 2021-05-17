@@ -12,7 +12,7 @@ from wkz.file_importer import (
 from wkz.best_sections.generic import _activity_suitable_for_awards
 
 
-def test_reimport_of_activities(db, client):
+def test_reimport_of_activities(tracks_in_tmpdir, client):
     """
     Test reimporter in following steps:
     1. import demo activities
@@ -332,3 +332,25 @@ def test_reimport__not_evaluates_for_awards__changing_activity_flag(import_one_a
 
     # check that best sections got removed
     assert models.BestSection.objects.filter(activity=activity).count() > 0
+
+
+def test_run_file_importer__reimporting(tmp_path, import_one_activity):
+    import_one_activity("cycling_bad_schandau.fit")
+    assert models.Activity.objects.count() == 1
+    activity = models.Activity.objects.get()
+    original_distance = activity.distance
+
+    # change some values
+    activity.name = "Foo"
+    activity.distance = 999.9
+    activity.save()
+
+    activity = models.Activity.objects.get()
+    assert activity.name == "Foo"
+
+    run_file_importer(models, reimporting=True)
+
+    # the name should not have changed during reimporting
+    assert models.Activity.objects.filter(name="Foo").count() == 1
+    # the distance however should have been reverted to the original value
+    assert models.Activity.objects.filter(distance=original_distance).count() == 1

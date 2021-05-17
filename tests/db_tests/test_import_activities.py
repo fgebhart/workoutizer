@@ -148,7 +148,7 @@ def test__activity_evaluates_for_awards(insert_activity):
     assert _activity_suitable_for_awards(activity=activity) is False
 
 
-def test_avoid_unique_constraint_error(transactional_db, tmpdir, caplog):
+def test_avoid_unique_constraint_error(tracks_in_tmpdir, transactional_db, caplog):
     settings = models.get_settings()
     copy_demo_fit_files_to_track_dir(
         source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
@@ -158,8 +158,8 @@ def test_avoid_unique_constraint_error(transactional_db, tmpdir, caplog):
 
     # create second file with same checksum but different name
     shutil.copy(
-        Path(settings.path_to_trace_dir / "cycling_bad_schandau.fit"),
-        Path(settings.path_to_trace_dir / "cycling_bad_schandau2.fit"),
+        Path(settings.path_to_trace_dir) / "cycling_bad_schandau.fit",
+        Path(settings.path_to_trace_dir) / "cycling_bad_schandau2.fit",
     )
 
     # in rare situations this lead to a unique constraint sql error because
@@ -170,7 +170,7 @@ def test_avoid_unique_constraint_error(transactional_db, tmpdir, caplog):
     assert "The following two files have the same checksum, you might want to remove one of them:" in caplog.text
 
 
-def test_import_corrupted_fit_file(caplog):
+def test_import_corrupted_fit_file(tracks_in_tmpdir, caplog):
     assert models.Activity.objects.count() == 0
     settings = models.get_settings()
 
