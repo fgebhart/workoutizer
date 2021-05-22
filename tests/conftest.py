@@ -27,3 +27,18 @@ def keep_tracks_dir_clean():
         assert num_before == num_after
     else:
         yield
+
+
+@pytest.fixture
+def fit_file():
+    return "2019-09-14-17-22-05.fit"
+
+
+@pytest.fixture
+def fit_file_a():
+    return "2019-09-18-16-02-35.fit"
+
+
+@pytest.fixture
+def fit_file_b():
+    return "2019-09-25-16-15-53.fit"

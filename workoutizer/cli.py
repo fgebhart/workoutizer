@@ -157,10 +157,11 @@ def _init(import_demo_activities=False):
 
     if import_demo_activities:
         # import demo activities
-        from wkz.file_importer import run_file_importer, prepare_import_of_demo_activities
+        from wkz.file_importer import prepare_import_of_demo_activities
+        from wkz.file_importer__dask import run_importer__dask
 
         prepare_import_of_demo_activities(models)
-        run_file_importer(models, importing_demo_data=True)
+        run_importer__dask(models, importing_demo_data=True)
         click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
@@ -204,9 +205,9 @@ def _reimport():
     _check()
 
     from wkz import models
-    from wkz.file_importer import run_file_importer
+    from wkz.file_importer__dask import run_importer__dask
 
-    run_file_importer(models, reimporting=True)
+    run_importer__dask(models, reimporting=True)
 
 
 class HueyManager:

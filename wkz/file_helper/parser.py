@@ -17,10 +17,11 @@ log = logging.getLogger(__name__)
 
 
 class Parser:
-    def __init__(self, path_to_file):
+    def __init__(self, path_to_file: str, md5sum: str):
         # basic activity info
         self.path_to_file = path_to_file
         self.file_name = None
+        self.md5sum = md5sum
         self.sport = None
         self.date = None
         self.duration = datetime.timedelta(minutes=0)
@@ -95,7 +96,7 @@ class Parser:
     def get_file_created_datetime(self):
         self.date = datetime.datetime.fromtimestamp(os.path.getctime(self.path_to_file)).date()
 
-    def get_file_name_from_path(self, path):
+    def get_file_name_from_path(self, path: str):
         return path.split("/")[-1]
 
     def get_best_sections(self):

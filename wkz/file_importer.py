@@ -1,6 +1,7 @@
 import os
 import logging
 import json
+from pathlib import Path
 from typing import List, Union, Tuple
 from dataclasses import dataclass, field
 
@@ -26,6 +27,7 @@ from workoutizer import settings as django_settings
 
 
 log = logging.getLogger(__name__)
+
 
 sport_naming_map = {
     "Jogging": ["jogging", "running"],
@@ -80,7 +82,7 @@ class ImportProgressMetaData:
 def _import_single_file(
     models,
     md5sum: str,
-    trace_file: str,
+    trace_file: Path,
     md5sums_from_db: List[str],
     importing_demo_data: bool,
     reimporting: bool,
@@ -315,9 +317,11 @@ def _send_progress_update(activities: List[object], reimporting: bool, remaining
     return []
 
 
-def _parse_and_save_to_model(models, md5sum: str, trace_file, update_existing: bool, importing_demo_data: bool = False):
+def _parse_and_save_to_model(
+    models, md5sum: str, trace_file: Path, update_existing: bool, importing_demo_data: bool = False
+):
     # run actual file parser
-    parser = _parse_data(trace_file)
+    parser = _parse_data(trace_file, md5sum)
     # save trace data to model
     trace_file_object = _save_trace_to_model(
         traces_model=models.Traces,
@@ -532,19 +536,18 @@ def _convert_list_attributes_to_json(parser):
 
 
 def _get_md5sums_from_model(traces_model) -> List[str]:
-    md5sums_from_db = list(traces_model.objects.all())
-    md5sums_from_db = [m.md5sum for m in md5sums_from_db]
-    return md5sums_from_db
+    return list(traces_model.objects.all().values_list("md5sum", flat=True))
 
 
-def _parse_data(file) -> Union[FITParser, GPXParser]:
+def _parse_data(file: Path, md5sum: str) -> Union[FITParser, GPXParser]:
+    file = str(file)
     log.debug(f"importing file {file} ...")
     if file.endswith(".gpx"):
         log.debug("parsing GPX file ...")
-        parser = GPXParser(path_to_file=file)
+        parser = GPXParser(path_to_file=file, md5sum=md5sum)
     elif file.endswith(".fit"):
         log.debug("parsing FIT file ...")
-        parser = FITParser(path_to_file=file)
+        parser = FITParser(path_to_file=file, md5sum=md5sum)
     else:
         log.error(f"file type: {file} unknown")
         raise NotImplementedError(
@@ -552,12 +555,13 @@ def _parse_data(file) -> Union[FITParser, GPXParser]:
         )
     # parse best sections
     parser.get_best_sections()
+    log.debug(f"finished parsing file {file}.")
     return parser
 
 
-def _get_all_files(path) -> List[str]:
+def _get_all_files(path: Path) -> List[Path]:
     trace_files = [
-        os.path.join(root, name)
+        Path(os.path.join(root, name))
         for root, dirs, files in os.walk(path)
         for name in files
         if name.endswith(tuple(configuration.supported_formats))

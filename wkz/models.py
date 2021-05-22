@@ -9,7 +9,7 @@ from django.template.defaultfilters import slugify
 from colorfield.fields import ColorField
 
 from workoutizer import settings as django_settings
-from wkz.file_importer import run_file_importer
+from wkz.file_importer__dask import run_importer__dask
 from wkz.tools import sse
 
 
@@ -200,7 +200,7 @@ class Settings(models.Model):
             from wkz import models
 
             if Path(self.path_to_trace_dir).is_dir():
-                run_file_importer(models, as_huey_task=True)
+                run_importer__dask(models)
             else:
                 sse.send(f"'{self.path_to_trace_dir}' is not a valid path.", "red", "WARNING")
         self.__original_path_to_trace_dir = self.path_to_trace_dir

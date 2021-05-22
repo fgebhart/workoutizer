@@ -11,7 +11,7 @@ import psutil
 
 from wkz.file_helper.fit_collector import try_to_mount_device
 from wkz.tools import sse
-from wkz.file_importer import run_file_importer
+from wkz.file_importer__dask import run_importer__dask
 from wkz import models
 
 
@@ -51,8 +51,9 @@ def stop_django_server(request):
 def reimport_activities(request):
     template = "settings/reimport.html"
     settings = models.get_settings()
-    if Path(settings.path_to_trace_dir).is_dir():
-        run_file_importer(models, importing_demo_data=False, reimporting=True, as_huey_task=True)
+    path_to_traces = settings.path_to_trace_dir
+    if Path(path_to_traces).is_dir():
+        run_importer__dask(models, importing_demo_data=False, reimporting=True)
     else:
-        sse.send(f"'{settings.path_to_trace_dir}' is not a valid path.", "red")
+        sse.send(f"'{path_to_traces}' is not a valid path.", "red")
     return render(request, template_name=template)

@@ -14,9 +14,9 @@ def fit_parser(test_data_dir, demo_data_dir):
         file_in_test_data_dir = os.path.join(test_data_dir, path)
         file_in_demo_data_dir = os.path.join(demo_data_dir, path)
         if os.path.isfile(file_in_test_data_dir):
-            return FITParser(path_to_file=file_in_test_data_dir)
+            return FITParser(path_to_file=file_in_test_data_dir, md5sum=None)
         elif os.path.isfile(file_in_demo_data_dir):
-            return FITParser(path_to_file=file_in_demo_data_dir)
+            return FITParser(path_to_file=file_in_demo_data_dir, md5sum=None)
         else:
             raise FileNotFoundError(f"file {path} neither found in {test_data_dir} nor in {demo_data_dir}")
 
@@ -28,7 +28,7 @@ def gpx_parser(test_data_dir):
     test_file_path = os.path.join(test_data_dir, "example.gpx")
 
     def _pass_path(path=test_file_path):
-        return GPXParser(path_to_file=path)
+        return GPXParser(path_to_file=path, md5sum="foo")
 
     return _pass_path
 

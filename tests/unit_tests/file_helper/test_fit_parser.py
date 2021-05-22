@@ -204,5 +204,3 @@ def test_retry_mechanism__failing(tmp_path, fit_parser, caplog):
 
     assert "Finished call" in caplog.text
     assert "time calling it." in caplog.text
-    assert "Failed to parse fit file:" in caplog.text
-    assert "Got error: Invalid .FIT File Header" in caplog.text
