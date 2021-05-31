@@ -25,7 +25,7 @@ def test_custom_400_page(live_server, webdriver):
 
 
 def test_custom_500_page(live_server, webdriver, monkeypatch):
-    # mock the DashboardView.get method to provoke a 500 error
+    # mock the DashboardView.get method to provoke a 500 error, get() should return a rendered html, not a string
     def faulty_get_func(self, request):
         return "dummy-string"
 

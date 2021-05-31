@@ -87,7 +87,9 @@ number_of_retries = 3
 number_of_activities_in_bulk_progress_update = 5
 
 # after how many skipped activities should a notification be sent
-number_of_skipped_activities = number_of_activities_in_bulk_progress_update * 10
+number_of_skipped_activities = (
+    number_of_activities_in_bulk_progress_update * 10
+)  # TODO make use of this when importing with dask
 
 # time to wait for an huey task to finish in seconds
 huey_timeout = 30

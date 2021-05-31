@@ -1,11 +1,10 @@
-from typing import List
+from typing import List, Union
 import logging
 from pathlib import Path
 from types import ModuleType
 
 import dask
 from dask.delayed import Delayed
-from django.db.utils import IntegrityError
 from fitparse.utils import FitHeaderError, FitEOFError
 
 from wkz.file_importer import (
@@ -18,9 +17,10 @@ from wkz.file_importer import (
     _save_best_sections_to_model,
     change_date_of_demo_activities,
     insert_custom_demo_activities,
-    ImportProgressMetaData,
+    _send_initial_info,
 )
 from wkz.tools.utils import calc_md5
+from wkz import configuration
 from wkz.tools import sse
 from wkz.file_helper.parser import Parser
 
@@ -31,7 +31,9 @@ log = logging.getLogger(__name__)
 def _parse_single_file(
     path_to_file: Path,
     md5sum: str,
-) -> Parser:
+    path_to_traces: Path,
+    inform_about_nth_file_updated: Union[int, None] = None,
+) -> Union[Parser, None]:
     """
     Parses a single file and returns the results as a Parser object. This function does
     not access the database.
@@ -43,15 +45,17 @@ def _parse_single_file(
 
     Returns
     -------
-    Parser
-        Parser object containing the payload data of the parsed file
+    Union[Parser, None]
+        Parser object containing the payload data of the parsed file or None in case parsing fails.
     """
     try:
         parsed_data = _parse_data(str(path_to_file), md5sum)
+        if inform_about_nth_file_updated:
+            sse.send(f"<b>Progress Update:</b> parsed {inform_about_nth_file_updated} file(s).", "blue", "DEBUG")
         return parsed_data
     except (FitHeaderError, FitEOFError):
         sse.send(
-            f"Failed to parse fit file: '{path_to_file}'. File could either be "
+            f"Failed to parse fit file <code>{path_to_file.relative_to(path_to_traces)}</code>. File could either be "
             f"corrupted or does not comply with the fit standard.",
             "red",
             "ERROR",
@@ -60,18 +64,30 @@ def _parse_single_file(
 
 def _parse_all_files(path_to_traces: Path, md5sums_from_db: List[str], reimporting: bool = False) -> List[Delayed]:
     trace_files = _get_all_files(path_to_traces)
+    _send_initial_info(len(trace_files), path_to_traces, reimporting)
     if not trace_files:
-        sse.send(f"No activity files found in '{path_to_traces}'.", "yellow", "WARNING")
+        sse.send(f"No activity files found in {path_to_traces}.", "yellow", "WARNING")
     tasks = []
-    for trace in trace_files:
+    seen_md5sums = {}
+    for i, trace in enumerate(trace_files):
+        inform_about_nth_file = None
+        if (i + 1) % configuration.number_of_activities_in_bulk_progress_update == 0:
+            inform_about_nth_file = configuration.number_of_activities_in_bulk_progress_update
         md5sum = calc_md5(trace)
-        if md5sum in md5sums_from_db:
-            if not reimporting:
-                sse.send(f"File '{trace.relative_to(path_to_traces)}' is in db already.", "yellow", "WARNING")
+        if md5sum not in seen_md5sums.keys():  # file was not seen yet
+            if reimporting:  # add to tasks in case of reimport anyway
+                tasks.append(dask.delayed(_parse_single_file)(trace, md5sum, path_to_traces, inform_about_nth_file))
             else:
-                tasks.append(dask.delayed(_parse_single_file)(trace, md5sum))
+                if md5sum not in md5sums_from_db:  # not reimporting and not in db -> add to tasks
+                    tasks.append(dask.delayed(_parse_single_file)(trace, md5sum, path_to_traces, inform_about_nth_file))
+            seen_md5sums[md5sum] = trace
         else:
-            tasks.append(dask.delayed(_parse_single_file)(trace, md5sum))
+            msg = (
+                f"The following two files have the same checksum, you might want to remove one of them:<ul>"
+                f"<li><code>{Path(trace).relative_to(path_to_traces)}</code> and</li>"
+                f"<li><code>{Path(seen_md5sums[md5sum]).relative_to(path_to_traces)}</code></li></ul>"
+            )
+            sse.send(msg, "yellow", "WARNING")
     return tasks
 
 
@@ -121,28 +137,28 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
     # compute all tasks in parallel
     all_parsed_files = dask.compute(delayed_tasks)[0]
 
-    md = ImportProgressMetaData()
-    md.files_found_cnt = len(all_parsed_files)
+    # remove Nones from list
+    all_parsed_files = [f for f in all_parsed_files if f]
+
     # save activity data to db sequentially
-    for parsed_file in all_parsed_files:
-        if parsed_file:
-            try:
-                _save_single_parsed_file_to_db(
-                    parsed_file, models, importing_demo_data=importing_demo_data, update_existing=reimporting
-                )
-            except IntegrityError:
-                trace = models.Traces.objects.get(md5sum=parsed_file.md5sum)
-                sse.send(
-                    f"The following two files have the same checksum, "
-                    f"you might want to remove one of them:\n<ul>"
-                    f"<li>{parsed_file.path_to_file}</li>"
-                    f"<li>{trace.path_to_file}</li></ul>",
-                    "yellow",
-                    "WARNING",
-                )
+    if all_parsed_files:
+        sse.send(f"<b>Progress Update:</b> Saving data of {len(all_parsed_files)} file(s) to db.", "blue", "DEBUG")
+        for parsed_file in all_parsed_files:
+            _save_single_parsed_file_to_db(
+                parsed_file, models, importing_demo_data=importing_demo_data, update_existing=reimporting
+            )
     if importing_demo_data:
         demo_activities = models.Activity.objects.filter(is_demo_activity=True)
         change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
         insert_custom_demo_activities(count=9, every_nth_day=3, activity_model=models.Activity, sport_model=models.Sport)
         log.info("finished inserting demo data")
+    _send_result_info(len(all_parsed_files), reimporting)
     log.debug("finished file import")
+
+
+def _send_result_info(number_of_updated: int, reimporting: bool):
+    if reimporting:
+        msg = f"<b>Finished Reimport:</b> Updated data of {number_of_updated} file(s)."
+    else:
+        msg = f"<b>Finished File Import:</b> Imported {number_of_updated} new file(s)."
+    sse.send(msg, "green", "INFO")

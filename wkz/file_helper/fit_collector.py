@@ -61,7 +61,7 @@ class FitCollector:
                 if no_file_was_copied:
                     log.info("No new file found.")
             else:
-                log.warning(f"Could not find any activity fit files at {activity_path}")
+                log.debug(f"Could not find any activity fit files at {activity_path}")
         else:
             log.warning(f"No directory named {self.activity_dir_name} found in path {self.path_to_garmin_device}")
 

@@ -229,7 +229,7 @@ def _run_parser(models, importing_demo_data: bool, reimporting: bool, run_as_hue
                 "blue",
             )
         if md.failed_file:
-            sse.send(f"<b>Error:</b> Could not parse fit file '{md.failed_file}'.", "red", "ERROR")
+            sse.send(f"<b>Error:</b> Could not parse fit file {md.failed_file}.", "red", "ERROR")
             md.failed_file = ""
     if importing_demo_data:
         demo_activities = models.Activity.objects.filter(is_demo_activity=True)
@@ -242,7 +242,6 @@ def _run_parser(models, importing_demo_data: bool, reimporting: bool, run_as_hue
             reimporting=reimporting,
             number_of_activities_before=activity_num_before,
             number_of_activities_after=models.Activity.objects.count(),
-            path_to_trace_dir=path,
         )
 
 
@@ -251,12 +250,7 @@ def _send_result_info(
     reimporting: bool,
     number_of_activities_before: int,
     number_of_activities_after: int,
-    path_to_trace_dir: str,
 ):
-    if import_progress_metadata.files_found_cnt == 0:
-        sse.send(f"No activity files found in '{path_to_trace_dir}'.", "yellow", "WARNING")
-        return
-
     # finish up progress update
     if import_progress_metadata.created:
         _send_progress_update(import_progress_metadata.created, reimporting, 0)
@@ -296,9 +290,18 @@ def _send_result_info(
 
 
 def _send_initial_info(number_of_activities: int, path_to_trace_dir: str, reimporting: bool):
-    if number_of_activities != 0:
-        additional_info = "Reimporting them..." if reimporting else "Checking for new files..."
-        sse.send(f"Found {number_of_activities} activity files in '{path_to_trace_dir}'. {additional_info}", "blue")
+    if reimporting:
+        what_is_done = "Reimport"
+    else:
+        what_is_done = "File Import"
+    if number_of_activities > 0:
+        sse.send(
+            f"<b>{what_is_done} started:</b> Found {number_of_activities} activity files in "
+            f"<code>{path_to_trace_dir}</code>. Please wait.",
+            "blue",
+        )
+    else:
+        sse.send(f"No new activity files found in <code>{path_to_trace_dir}</code>.", "green")
 
 
 def _send_progress_update(activities: List[object], reimporting: bool, remaining: int) -> List:

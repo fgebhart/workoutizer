@@ -16,7 +16,7 @@ from wkz import models
 
 def test__parse_single_file(demo_data_dir, fit_file):
     path = Path(demo_data_dir) / fit_file
-    payload = _parse_single_file(path, "foo")
+    payload = _parse_single_file(path, "foo", demo_data_dir)
     assert isinstance(payload, Parser)
 
     # check core values which should have been changed
