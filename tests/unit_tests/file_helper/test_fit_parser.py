@@ -8,7 +8,6 @@ from fitparse.utils import FitHeaderError
 
 from wkz.file_helper.fit_parser import LapData, FITParser
 from wkz.best_sections.generic import GenericBestSection
-from wkz import configuration
 
 
 tz = pytz.timezone(settings.TIME_ZONE)
@@ -188,19 +187,13 @@ def test__set_avg_values(fit_parser, monkeypatch):
     assert p.avg_temperature == 26.91
 
 
-def test_retry_mechanism__failing(tmp_path, fit_parser, caplog):
+def test_faulty_fit_file(tmp_path, fit_parser):
     # create a faulty fit file
     fit = tmp_path / "faulty.fit"
     content = "no valid fit file content"
     fit.write_text(content)
     assert fit.read_text() == content
 
-    # now run fit_parser on faulty file and verify that retry mechanism is fired
+    # now run fit_parser on faulty file and verify that FitHeaderError is raised
     with pytest.raises(FitHeaderError):
         fit_parser(fit)
-
-    for n in range(configuration.number_of_retries):
-        assert f"this was the {n+1}" in caplog.text
-
-    assert "Finished call" in caplog.text
-    assert "time calling it." in caplog.text

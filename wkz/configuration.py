@@ -80,16 +80,8 @@ climb_distances = best_sections[1]["distances"]
 # with respect to the table listing activities used both on dashboard and sport page
 number_of_rows_per_page_in_table = 40
 
-# number of retries to conduct in case of input/output errors when reading fit files
-number_of_retries = 3
-
 # how many activities should be included in one server sent event message when importing/reimporting
-number_of_activities_in_bulk_progress_update = 5
-
-# after how many skipped activities should a notification be sent
-number_of_skipped_activities = (
-    number_of_activities_in_bulk_progress_update * 10
-)  # TODO make use of this when importing with dask
+number_of_activities_in_bulk_progress_update = 10
 
 # time to wait for an huey task to finish in seconds
 huey_timeout = 30

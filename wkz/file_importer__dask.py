@@ -51,9 +51,12 @@ def _parse_single_file(
     try:
         parsed_data = _parse_data(str(path_to_file), md5sum)
         if inform_about_nth_file_updated:
-            sse.send(f"<b>Progress Update:</b> parsed {inform_about_nth_file_updated} file(s).", "blue", "DEBUG")
+            sse.send(f"<b>Progress Update:</b> Parsed {inform_about_nth_file_updated} file(s).", "blue", "DEBUG")
         return parsed_data
-    except (FitHeaderError, FitEOFError):
+    except (FitHeaderError, FitEOFError, AttributeError):
+        # FitHeaderError and FitEOFError is used to catch corrupted fit files (e.g. non-fit files having a .fit ending).
+        # AttributeError is raised in case of e.g. wahoo files, which are currently not supported by fitparse,
+        # see https://github.com/dtcooper/python-fitparse/issues/121.
         sse.send(
             f"Failed to parse fit file <code>{path_to_file.relative_to(path_to_traces)}</code>. File could either be "
             f"corrupted or does not comply with the fit standard.",
@@ -65,8 +68,6 @@ def _parse_single_file(
 def _parse_all_files(path_to_traces: Path, md5sums_from_db: List[str], reimporting: bool = False) -> List[Delayed]:
     trace_files = _get_all_files(path_to_traces)
     _send_initial_info(len(trace_files), path_to_traces, reimporting)
-    if not trace_files:
-        sse.send(f"No activity files found in {path_to_traces}.", "yellow", "WARNING")
     tasks = []
     seen_md5sums = {}
     for i, trace in enumerate(trace_files):
@@ -140,10 +141,12 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
     # remove Nones from list
     all_parsed_files = [f for f in all_parsed_files if f]
 
-    # save activity data to db sequentially
+    # save activity data to db sequentially in order to avoid "database is locked" issues
     if all_parsed_files:
         sse.send(f"<b>Progress Update:</b> Saving data of {len(all_parsed_files)} file(s) to db.", "blue", "DEBUG")
-        for parsed_file in all_parsed_files:
+        for i, parsed_file in enumerate(all_parsed_files):
+            if (i + 1) % configuration.number_of_activities_in_bulk_progress_update == 0:
+                sse.send(f"<b>Progress Update:</b> Saved data of {i + 1} files to db.", "blue", "DEBUG")
             _save_single_parsed_file_to_db(
                 parsed_file, models, importing_demo_data=importing_demo_data, update_existing=reimporting
             )
