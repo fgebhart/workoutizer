@@ -19,19 +19,19 @@ autobahn==21.3.1
 automat==20.2.0
     # via twisted
 bokeh==1.4.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 certifi==2020.12.5
     # via requests
 cffi==1.14.5
     # via cryptography
 channels==3.0.3
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 chardet==4.0.0
     # via requests
 click==7.1.2
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 coloredlogs==15.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 constantly==15.1.0
     # via twisted
 cryptography==3.4.7
@@ -42,33 +42,33 @@ cryptography==3.4.7
 daphne==3.0.2
     # via channels
 django-colorfield==0.4.1
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 django-eventstream==4.1.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 django-grip==3.0.0
     # via django-eventstream
-django==3.2
+django==3.2.1
     # via
-    #   -r setup/requirements/requirements.in
+    #   -r requirements.in
     #   channels
     #   django-grip
     #   djangorestframework
 djangorestframework==3.12.2
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 fitparse==1.1.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 geographiclib==1.50
     # via geopy
 geopy==2.1.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 gpxpy==1.4.2
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 gripcontrol==4.1.0
     # via
     #   django-eventstream
     #   django-grip
 huey==2.3.2
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 humanfriendly==9.1
     # via coloredlogs
 hyperlink==21.0.0
@@ -85,7 +85,7 @@ incremental==21.3.0
 jinja2==2.11.3
     # via bokeh
 luddite==1.0.1
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 markupsafe==1.1.1
     # via jinja2
 numpy==1.20.1
@@ -95,11 +95,11 @@ numpy==1.20.1
 packaging==20.9
     # via bokeh
 pandas==1.2.2
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 pillow==8.1.1
     # via bokeh
 psutil==5.8.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 pubcontrol==3.1.0
     # via
     #   django-grip
@@ -133,7 +133,7 @@ pyyaml==5.4.1
     # via bokeh
 requests==2.25.1
     # via
-    #   -r setup/requirements/requirements.in
+    #   -r requirements.in
     #   pubcontrol
 service-identity==18.1.0
     # via twisted
@@ -148,11 +148,11 @@ six==1.15.0
     #   python-dateutil
     #   tenacity
 sportgems==0.5.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 sqlparse==0.4.1
     # via django
 tenacity==7.0.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 tornado==6.1
     # via bokeh
 twisted[tls]==21.2.0
