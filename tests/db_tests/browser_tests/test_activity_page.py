@@ -12,7 +12,7 @@ import pytest
 from wkz import models
 
 
-def test_activity_page__complete(import_one_activity, live_server, webdriver):
+def test_activity_page__complete__fit(import_one_activity, live_server, webdriver):
     import_one_activity("cycling_bad_schandau.fit")
 
     activity = models.Activity.objects.get()
@@ -20,9 +20,6 @@ def test_activity_page__complete(import_one_activity, live_server, webdriver):
     webdriver.get(live_server.url + f"/activity/{pk}")
 
     table_header = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
-    # assert "  Duration:  4:59 h" in table_header
-    # assert "  Distance:  44.96 km" in table_header
-    # assert "  Calories:  1044 kcal" in table_header
     assert "#" in table_header
     assert "TIME" in table_header
     assert "DISTANCE" in table_header
@@ -112,6 +109,76 @@ def test_activity_page__complete(import_one_activity, live_server, webdriver):
     # check that bokeh plots are available
     assert webdriver.find_element_by_class_name("bk-root").text == "Show Laps"
     assert len(webdriver.find_elements_by_class_name("bk-canvas")) == 3
+
+
+def test_activity_page__complete__gpx(import_one_activity, live_server, webdriver):
+    import_one_activity("cycling_walchensee.gpx")
+
+    activity = models.Activity.objects.get()
+    pk = activity.pk
+    webdriver.get(live_server.url + f"/activity/{pk}")
+
+    # check summary facts
+    card_category = [cell.text for cell in webdriver.find_elements_by_class_name("card-category")]
+    assert "Date" in card_category
+    assert "Distance" in card_category
+    assert "Duration" in card_category
+    assert "Calories" in card_category
+    card_title = [cell.text for cell in webdriver.find_elements_by_class_name("card-title")]
+    assert "3h 32m" in card_title
+    assert "82.6 km" in card_title
+    assert "- kcal" in card_title
+    assert "28. May 21" in card_title
+
+    table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+    # best sections
+    assert "  1km" in table_data
+    assert "  2km" in table_data
+    assert "  3km" in table_data
+    assert "  5km" in table_data
+    assert "  10km" in table_data
+    assert "51.3 km/h" in table_data
+    assert "49.9 km/h" in table_data
+
+    assert webdriver.find_element_by_class_name("navbar-brand").text == "Early Morning Cycling In Kochel Am See"
+
+    # check card titles
+    assert "Fastest Sections  " in card_title
+    assert "Best Climb Sections  " in card_title
+
+    links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
+    assert "WORKOUTIZER" in links
+    assert "DASHBOARD" in links
+    assert "AWARDS" in links
+    assert "SPORTS" in links
+    assert "ADD SPORT" in links
+    assert "+" in links
+    assert "−" in links
+    assert "Leaflet" in links
+    assert "OpenStreetMap" in links
+
+    spans = [a.text for a in webdriver.find_elements_by_tag_name("span")]
+    assert "Streets" in spans
+    assert "Topo" in spans
+    assert "Terrain" in spans
+    assert "Satellite" in spans
+
+    # check that icons are present
+    assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-fire")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-road")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-calendar-alt")) > 0
+
+    # check that map is displayed
+    assert (
+        webdriver.find_element_by_id("leaflet_map").text
+        == "Streets\nTopo\nTerrain\nSatellite\n+\n−\n10 km\nLeaflet | Map data: © OpenStreetMap"
+    )
+
+    # check that only one bokeh plot is available
+    assert len(webdriver.find_elements_by_class_name("bk-canvas")) == 1
 
 
 def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_sport):
