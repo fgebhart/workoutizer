@@ -463,5 +463,8 @@ def _send_result_info(number_of_updated: int, reimporting: bool):
     if reimporting:
         msg = f"<b>Finished Reimport:</b> Updated data of {number_of_updated} file(s)."
     else:
-        msg = f"<b>Finished File Import:</b> Imported {number_of_updated} new file(s)."
+        if number_of_updated == 0:
+            msg = "<b>Finished File Import:</b> No new files found."
+        else:
+            msg = f"<b>Finished File Import:</b> Imported {number_of_updated} new file(s)."
     sse.send(msg, "green", "INFO")
