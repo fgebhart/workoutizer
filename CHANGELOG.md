@@ -5,11 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+* add `gpx` file to demo activities
 ### Changed
 * Show "made with ❤️" in footer only on settings and help page.
 * Moved `tests` folder from `workoutizer/wkz/tests/` to `workoutizer/tests` root folder.
 * Run all tests together in github actions `Test` and `Release` pipeline.
-* add `gpx` file to demo activities
 * ensure activity leaflet map has always height of > 400 pixels 
 
 ## [0.18.0](https://github.com/fgebhart/workoutizer/releases/tag/0.18.0) - 2021-05-16

@@ -21,8 +21,10 @@ uploading all your sensitive health data to some 3rd party cloud.
 * Add as many different sports as you want
 
 
-## Getting Started
+## Status
+Workoutizer is still in a somewhat experimental phase (thus < v1). Things might change a lot from one version to another. However, I'm happy to receive bug reports and feedback 🙂
 
+## Getting Started
 Install workoutizer using pip
 ```
 pip install workoutizer
