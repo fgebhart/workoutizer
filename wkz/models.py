@@ -9,7 +9,7 @@ from django.template.defaultfilters import slugify
 from colorfield.fields import ColorField
 
 from workoutizer import settings as django_settings
-from wkz.file_importer__dask import run_importer__dask
+from wkz.file_importer import run_importer__dask
 from wkz.tools import sse
 
 

@@ -8,7 +8,7 @@ from wkz import configuration
 from wkz.file_importer import (
     prepare_import_of_demo_activities,
 )
-from wkz.file_importer__dask import run_importer__dask
+from wkz.file_importer import run_importer__dask
 from wkz.best_sections.generic import _activity_suitable_for_awards
 
 

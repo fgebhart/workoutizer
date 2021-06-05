@@ -3,7 +3,7 @@ import os
 import logging
 
 from wkz.file_helper.fit_collector import FitCollector
-from wkz.file_importer__dask import run_importer__dask
+from wkz.file_importer import run_importer__dask
 from wkz import models
 
 

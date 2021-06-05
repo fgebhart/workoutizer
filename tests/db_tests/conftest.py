@@ -13,7 +13,7 @@ from wkz.file_importer import (
     prepare_import_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
 )
-from wkz.file_importer__dask import run_importer__dask
+from wkz.file_importer import run_importer__dask
 from wkz import models
 
 

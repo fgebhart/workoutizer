@@ -3,7 +3,7 @@ from pathlib import Path
 
 from wkz import models
 from wkz.file_importer import copy_demo_fit_files_to_track_dir
-from wkz.file_importer__dask import run_importer__dask
+from wkz.file_importer import run_importer__dask
 from wkz.best_sections.generic import _activity_suitable_for_awards
 from workoutizer import settings as django_settings
 
