@@ -196,3 +196,37 @@ def test_import_corrupted_fit_file(tracks_in_tmpdir, caplog):
     # but also an error was logged, however the execution should not have failed
     assert "ERROR" in caplog.text
     assert "Failed to parse fit file" in caplog.text
+
+
+def test_run_importer__single_file(db, demo_data_dir, tmpdir, fit_file):
+    assert models.Activity.objects.count() == 0
+    settings = models.get_settings()
+    settings.path_to_trace_dir = tmpdir
+    settings.save()
+
+    # test on empty dir
+    run_importer__dask(models)
+    assert models.Activity.objects.count() == 0
+
+    # test on dir with one file
+    activity_file = Path(demo_data_dir) / fit_file
+    shutil.copy2(activity_file, tmpdir)
+    run_importer__dask(models)
+    assert models.Activity.objects.count() == 1
+
+
+def test_run_importer__three_files(db, demo_data_dir, tmpdir, fit_file, fit_file_a, fit_file_b):
+    assert models.Activity.objects.count() == 0
+    settings = models.get_settings()
+    settings.path_to_trace_dir = tmpdir
+    settings.save()
+
+    # test on dir with one file
+    activity_file_1 = Path(demo_data_dir) / fit_file
+    shutil.copy2(activity_file_1, tmpdir)
+    activity_file_2 = Path(demo_data_dir) / fit_file_a
+    shutil.copy2(activity_file_2, tmpdir)
+    activity_file_3 = Path(demo_data_dir) / fit_file_b
+    shutil.copy2(activity_file_3, tmpdir)
+    run_importer__dask(models)
+    assert models.Activity.objects.count() == 3
