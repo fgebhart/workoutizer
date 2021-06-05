@@ -6,6 +6,7 @@ tracks/*.gpx
 tracks/*.fit
 .pytest_cache/
 *.sqlite3
+*.sqlite3-journal
 tests/data/tested_data/*.gpx
 tests/data/tested_data/*.fit
 dist/

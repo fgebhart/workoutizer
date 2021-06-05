@@ -43,7 +43,7 @@ class ActivityView(MapView):
             script_time_series, div_time_series, number_of_plots = plot_time_series(activity)
             activity_context["script_time_series"] = script_time_series
             activity_context["div_time_series"] = div_time_series
-            activity_context["map_height"] = number_of_plots * 120 + 40
+            activity_context["map_height"] = _get_map_height(number_of_plots)
         laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
         if laps:
             activity_context["laps"] = laps
@@ -57,6 +57,14 @@ class ActivityView(MapView):
             )
             activity_context["evaluates_for_awards"] = True
         return render(request, self.template_name, {**context, **activity_context})
+
+
+def _get_map_height(number_of_plots: int) -> int:
+    height = number_of_plots * 120 + 40
+    if height < 400:
+        return 400
+    else:
+        return height
 
 
 def add_activity_view(request):

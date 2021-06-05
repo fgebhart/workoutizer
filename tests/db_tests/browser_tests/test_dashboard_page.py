@@ -56,7 +56,7 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     assert "Swimming" in table_data
     assert "Noon Cycling in Bad Schandau" in table_data
     assert "Noon Cycling in Hinterzarten" in table_data
-    assert "Noon Cycling in Dahn" in table_data
+    assert "Early Morning Cycling in Kochel am See" in table_data
     assert "Noon Hiking in Aftersteg" in table_data
     assert "Noon Hiking in Kornau" in table_data
 

@@ -38,12 +38,12 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Jogging in Heidelberg" in links
     assert "Noon Cycling in Hinterzarten" in links
     assert "Noon Cycling in Bad Schandau" in links
-    assert "Noon Cycling in Dahn" in links
+    assert "Early Morning Cycling in Kochel am See" in links
 
     table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
     assert "Noon Cycling in Bad Schandau" in table_data
     assert "Noon Cycling in Hinterzarten" in table_data
-    assert "Noon Cycling in Dahn" in table_data
+    assert "Early Morning Cycling in Kochel am See" in table_data
     assert "Noon Jogging in Heidelberg" in table_data
     assert "Noon Jogging in Mirow" in table_data
     assert "42.2 km/h" in table_data
