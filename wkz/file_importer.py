@@ -61,14 +61,10 @@ def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
     )
 
 
-def _send_initial_info(number_of_activities: int, path_to_trace_dir: str, reimporting: bool):
-    if reimporting:
-        what_is_done = "Reimport"
-    else:
-        what_is_done = "File Import"
+def _send_initial_info(number_of_activities: int, path_to_trace_dir: str):
     if number_of_activities > 0:
         sse.send(
-            f"<b>{what_is_done} started:</b> Found {number_of_activities} activity files in "
+            f"<b>File Import started:</b> Found {number_of_activities} activity files in "
             f"<code>{path_to_trace_dir}</code>. Please wait.",
             "blue",
         )
@@ -300,7 +296,7 @@ def _get_md5sums_from_model(traces_model) -> List[str]:
 
 def _parse_data(file: Path, md5sum: str) -> Union[FITParser, GPXParser]:
     file = str(file)
-    log.debug(f"importing file {file} ...")
+    log.info(f"importing {file} ...")
     if file.endswith(".gpx"):
         log.debug("parsing GPX file ...")
         parser = GPXParser(path_to_file=file, md5sum=md5sum)
@@ -367,7 +363,7 @@ def _parse_single_file(
 
 def _parse_all_files(path_to_traces: Path, md5sums_from_db: List[str], reimporting: bool = False) -> List[Delayed]:
     trace_files = _get_all_files(path_to_traces)
-    _send_initial_info(len(trace_files), path_to_traces, reimporting)
+    _send_initial_info(len(trace_files), path_to_traces)
     tasks = []
     seen_md5sums = {}
     for i, trace in enumerate(trace_files):
@@ -443,10 +439,10 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
 
     # save activity data to db sequentially in order to avoid "database is locked" issues
     if all_parsed_files:
-        sse.send(f"<b>Progress Update:</b> Saving data of {len(all_parsed_files)} file(s) to db.", "blue", "DEBUG")
+        sse.send(f"<b>Progress Update:</b> Saving data of {len(all_parsed_files)} file(s) to db...", "blue", "INFO")
         for i, parsed_file in enumerate(all_parsed_files):
             if (i + 1) % configuration.number_of_activities_in_bulk_progress_update == 0:
-                sse.send(f"<b>Progress Update:</b> Saved data of {i + 1} files to db.", "blue", "DEBUG")
+                sse.send(f"<b>Progress Update:</b> Saved data of {i + 1} files to db.", "blue", "INFO")
             _save_single_parsed_file_to_db(
                 parsed_file, models, importing_demo_data=importing_demo_data, update_existing=reimporting
             )
@@ -455,16 +451,13 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
         change_date_of_demo_activities(every_nth_day=3, activities=demo_activities)
         insert_custom_demo_activities(count=9, every_nth_day=3, activity_model=models.Activity, sport_model=models.Sport)
         log.info("finished inserting demo data")
-    _send_result_info(len(all_parsed_files), reimporting)
+    _send_result_info(len(all_parsed_files))
     log.debug("finished file import")
 
 
-def _send_result_info(number_of_updated: int, reimporting: bool):
-    if reimporting:
-        msg = f"<b>Finished Reimport:</b> Updated data of {number_of_updated} file(s)."
+def _send_result_info(number_of_updated: int):
+    if number_of_updated == 0:
+        msg = "<b>Finished File Import:</b> No new files found."
     else:
-        if number_of_updated == 0:
-            msg = "<b>Finished File Import:</b> No new files found."
-        else:
-            msg = f"<b>Finished File Import:</b> Imported {number_of_updated} new file(s)."
-    sse.send(msg, "green", "INFO")
+        msg = f"<b>Finished File Import:</b> Imported {number_of_updated} new file(s)."
+    sse.send(msg, "green", "DEBUG")

@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Moved `tests` folder from `workoutizer/wkz/tests/` to `workoutizer/tests` root folder.
 * Run all tests together in github actions `Test` and `Release` pipeline.
 * Ensure activity leaflet map has always height of > 400 pixels
+### Removed
+* Removed `reimport` button/functionality from settings page in order to avoid threads
+  from interfering when accessing sqlite db.
 
 ## [0.18.0](https://github.com/fgebhart/workoutizer/releases/tag/0.18.0) - 2021-05-16
 ### Added

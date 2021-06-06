@@ -3,8 +3,6 @@ import operator
 
 from django.urls import reverse
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import pytest
 
@@ -27,8 +25,8 @@ def test_settings_page__no_demo_activity(live_server, webdriver):
     input_labels.remove("Path to Garmin Device ")
     assert "Delete fit Files after Copying  " in input_labels
     input_labels.remove("Delete fit Files after Copying  ")
-    assert "Reimport all Files " in input_labels
-    input_labels.remove("Reimport all Files ")
+    # reimport got removed, assert it is not present
+    assert "Reimport all Files " not in input_labels
     # verify that the list is empty after remove all given input labels
     assert len(input_labels) == 0
 
@@ -140,31 +138,6 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     with pytest.raises(AttributeError):
         assert settings.reimporter_updates_all is True
 
-
-def test_settings_page__reimport_activities(live_server, webdriver, import_one_activity):
-    import_one_activity("cycling_bad_schandau.fit")
-    assert models.Activity.objects.count() == 1
-    activity = models.Activity.objects.get()
-    original_distance = activity.distance
-
-    # change some values
-    activity.name = "Foo"
-    activity.distance = 999.9
-    activity.save()
-
-    activity = models.Activity.objects.get()
-    assert activity.name == "Foo"
-
-    webdriver.get(live_server.url + reverse("settings"))
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Settings"
-
-    # trigger reimport
-    webdriver.find_element(By.ID, "reimport-activities").click()
-
-    # check that loading bar image is present
-    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "loading-bar")))
-
-    # the name should not have changed during reimporting
-    delayed_assertion(models.Activity.objects.filter(name="Foo").count, operator.eq, 1)
-    # the distance however should have been reverted to the original value
-    delayed_assertion(models.Activity.objects.filter(distance=original_distance).count, operator.eq, 1)
+    # reimport button got removed from settings page
+    with pytest.raises(NoSuchElementException):
+        webdriver.find_element(By.ID, "reimport-activities").click()
