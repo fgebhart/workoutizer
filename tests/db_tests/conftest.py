@@ -9,7 +9,7 @@ import pytz
 from django.core.management import call_command
 
 from workoutizer import settings as django_settings
-from wkz.file_importer import (
+from wkz.demo import (
     prepare_import_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
 )

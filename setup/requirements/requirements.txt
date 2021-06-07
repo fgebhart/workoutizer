@@ -29,9 +29,13 @@ channels==3.0.3
 chardet==4.0.0
     # via requests
 click==7.1.2
-    # via -r setup/requirements/requirements.in
+    # via
+    #   -r setup/requirements/requirements.in
+    #   distributed
 cloudpickle==1.6.0
-    # via dask
+    # via
+    #   dask
+    #   distributed
 coloredlogs==15.0
     # via -r setup/requirements/requirements.in
 constantly==15.1.0
@@ -43,8 +47,12 @@ cryptography==3.4.7
     #   service-identity
 daphne==3.0.2
     # via channels
-dask==2021.5.0
-    # via -r setup/requirements/requirements.in
+dask[distributed]==2021.05.0
+    # via
+    #   -r setup/requirements/requirements.in
+    #   distributed
+distributed==2021.05.0
+    # via dask
 django-colorfield==0.4.1
     # via -r setup/requirements/requirements.in
 django-eventstream==4.1.0
@@ -73,6 +81,8 @@ gripcontrol==4.1.0
     # via
     #   django-eventstream
     #   django-grip
+heapdict==1.0.1
+    # via zict
 huey==2.3.2
     # via -r setup/requirements/requirements.in
 humanfriendly==9.1
@@ -96,6 +106,8 @@ luddite==1.0.1
     # via -r setup/requirements/requirements.in
 markupsafe==1.1.1
     # via jinja2
+msgpack==1.0.2
+    # via distributed
 numpy==1.20.1
     # via
     #   bokeh
@@ -109,7 +121,9 @@ partd==1.2.0
 pillow==8.1.1
     # via bokeh
 psutil==5.8.0
-    # via -r setup/requirements/requirements.in
+    # via
+    #   -r setup/requirements/requirements.in
+    #   distributed
 pubcontrol==3.1.0
     # via
     #   django-grip
@@ -143,6 +157,7 @@ pyyaml==5.4.1
     # via
     #   bokeh
     #   dask
+    #   distributed
 requests==2.25.1
     # via
     #   -r setup/requirements/requirements.in
@@ -159,18 +174,25 @@ six==1.15.0
     #   pyopenssl
     #   python-dateutil
     #   tenacity
+sortedcontainers==2.4.0
+    # via distributed
 sportgems==0.5.0
     # via -r setup/requirements/requirements.in
 sqlparse==0.4.1
     # via django
+tblib==1.7.0
+    # via distributed
 tenacity==7.0.0
     # via -r setup/requirements/requirements.in
 toolz==0.11.1
     # via
     #   dask
+    #   distributed
     #   partd
 tornado==6.1
-    # via bokeh
+    # via
+    #   bokeh
+    #   distributed
 twisted[tls]==21.2.0
     # via daphne
 txaio==21.2.1
@@ -181,6 +203,8 @@ werkzeug==0.16.1
     # via
     #   django-eventstream
     #   django-grip
+zict==2.0.0
+    # via distributed
 zope.interface==5.4.0
     # via twisted
 

@@ -4,7 +4,7 @@ import datetime
 import pytz
 
 from wkz import models
-from wkz.file_helper.initial_data_handler import (
+from wkz.demo import (
     change_date_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
     insert_custom_demo_activities,

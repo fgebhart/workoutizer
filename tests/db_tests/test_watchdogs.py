@@ -4,7 +4,7 @@ import operator
 
 from lxml import etree
 
-from wkz.file_importer import copy_demo_fit_files_to_track_dir
+from wkz.demo import copy_demo_fit_files_to_track_dir
 from wkz import models
 from wkz.watchdogs import trigger_device_watchdog, trigger_file_watchdog
 from tests.utils import delayed_assertion

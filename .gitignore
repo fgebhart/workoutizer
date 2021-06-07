@@ -25,3 +25,4 @@ selenium_ide/
 profiling/
 pytest-report.html
 assets/
+dask-worker-space/
