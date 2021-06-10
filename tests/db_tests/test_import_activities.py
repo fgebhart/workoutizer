@@ -5,6 +5,7 @@ from wkz import models
 from wkz.demo import copy_demo_fit_files_to_track_dir
 from wkz.file_importer import run_importer__dask
 from wkz.best_sections.generic import _activity_suitable_for_awards
+from wkz.tools.utils import calc_md5
 from workoutizer import settings as django_settings
 
 
@@ -230,3 +231,26 @@ def test_run_importer__three_files(db, demo_data_dir, tmpdir, fit_file, fit_file
     shutil.copy2(activity_file_3, tmpdir)
     run_importer__dask(models)
     assert models.Activity.objects.count() == 3
+
+
+def test_run_importer__warns_about_duplicate_files(db, demo_data_dir, tracks_in_tmpdir, caplog):
+    assert models.Activity.objects.count() == 0
+    settings = models.get_settings()
+
+    # copy the same file two times into two different files (with same checksum)
+    file_a = Path(settings.path_to_trace_dir) / "a.fit"
+    file_b = Path(settings.path_to_trace_dir) / "b.fit"
+    source_file = Path(demo_data_dir) / "cycling_bad_schandau.fit"
+    shutil.copy(source_file, file_a)
+    shutil.copy(source_file, file_b)
+
+    assert calc_md5(file_a) == calc_md5(file_b)
+
+    # now run file importer and verify that a proper warning is logged
+    run_importer__dask(models)
+
+    assert "WARNING" in caplog.text
+    assert (
+        f"The following two files have the same checksum, you might want to remove one of them:{file_b} and {file_a}"
+        in caplog.text
+    )

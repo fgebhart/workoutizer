@@ -81,7 +81,7 @@ climb_distances = best_sections[1]["distances"]
 number_of_rows_per_page_in_table = 40
 
 # how many activities should be included in one server sent event message when importing/reimporting
-number_of_activities_in_progress_update = 10
+num_activities_in_progress_update = 5
 
 # time to wait for an huey task to finish in seconds
 huey_timeout = 30

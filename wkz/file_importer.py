@@ -1,13 +1,14 @@
 import os
 import logging
 import json
+import datetime
 from pathlib import Path
-from typing import List, Union
+from typing import List, Union, Dict, Tuple
 from types import ModuleType
 
 from fitparse.utils import FitHeaderError, FitEOFError
 from django.db import models
-from dask.distributed import Client, as_completed
+from dask.distributed import Client, as_completed, performance_report
 
 from wkz.file_helper.parser import Parser
 from wkz.file_helper.gpx_parser import GPXParser
@@ -43,17 +44,6 @@ sport_naming_map = {
     "Yoga": ["yoga", "yogi"],
     "Workout": ["training"],
 }
-
-
-def _send_initial_info(number_of_activities: int, path_to_trace_dir: str):
-    if number_of_activities > 0:
-        sse.send(
-            f"<b>File Import started:</b> Found {number_of_activities} activity files in "
-            f"<code>{path_to_trace_dir}</code>. Please wait.",
-            "blue",
-        )
-    else:
-        sse.send(f"No new activity files found in <code>{path_to_trace_dir}</code>.", "green")
 
 
 def _save_laps_to_model(lap_model, laps: list, trace_instance, update_existing: bool):
@@ -312,6 +302,7 @@ def _parse_single_file(
 def _save_single_parsed_file_to_db(
     parsed_file: Parser, models: ModuleType, importing_demo_data: bool, update_existing: bool
 ) -> None:
+    log.info(f"saving data of file {parsed_file.file_name} to db...")
     # save trace data to model
     trace_file_object = _save_trace_to_model(
         traces_model=models.Traces,
@@ -347,16 +338,16 @@ def _save_single_parsed_file_to_db(
 
 def _check_and_parse_file(
     path_to_file: Path, path_to_traces: Path, md5sums_from_db: List[str], reimporting: bool
-) -> Union[Parser, None]:
+) -> Tuple[str, Path, Union[Parser, None]]:
     if reimporting:
         md5sum = calc_md5(path_to_file)
-        return _parse_single_file(path_to_file, path_to_traces, md5sum)
+        return md5sum, path_to_file, _parse_single_file(path_to_file, path_to_traces, md5sum)
     else:
         md5sum = calc_md5(path_to_file)
         if md5sum not in md5sums_from_db:
-            return _parse_single_file(path_to_file, path_to_traces, md5sum)
+            return md5sum, path_to_file, _parse_single_file(path_to_file, path_to_traces, md5sum)
         else:
-            return None
+            return md5sum, path_to_file, None
 
 
 def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, reimporting: bool = False) -> None:
@@ -364,38 +355,57 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
     log.debug(f"triggered file importer on path: {path_to_traces}")
 
     trace_files = _get_all_files(path_to_traces)
+    _send_initial_info(len(trace_files), path_to_traces)
     md5sums_from_db = _get_md5sums_from_model(models.Traces)
 
-    _send_initial_info(len(trace_files), path_to_traces)
-
-    client = Client(processes=False, dashboard_address=None)
-    with client:
-        distributed_results = client.map(
-            _check_and_parse_file,
-            trace_files,
-            path_to_traces=path_to_traces,
-            md5sums_from_db=md5sums_from_db,
-            reimporting=reimporting,
-        )
-
-        num = 0
-        for future in as_completed(distributed_results):
-            parsed_file = future.result()
-            # save parsed file to db, in case it is not None (due to failed parsing) and it is not present in db already
-            if parsed_file and _should_be_written_to_db(parsed_file, models.Traces, reimporting):
-                _save_single_parsed_file_to_db(parsed_file, models, importing_demo_data, reimporting)
-                num += 1
-            if (num + 1) % configuration.number_of_activities_in_progress_update == 0:
-                sse.send(
-                    f"<b>Progress Update:</b> Parsed {configuration.number_of_activities_in_progress_update} file(s).",
-                    "blue",
-                    "DEBUG",
+    num = 0
+    seen_md5sums = {}
+    if trace_files:
+        client = Client(processes=False)
+        with client:
+            with performance_report(f"{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M')}_dask_report.html"):
+                distributed_results = client.map(
+                    _check_and_parse_file,
+                    trace_files,
+                    path_to_traces=path_to_traces,
+                    md5sums_from_db=md5sums_from_db,
+                    reimporting=reimporting,
                 )
+
+                # loop over futures in a sequential fashion to store data to sqlite db sequentially
+                for future in as_completed(distributed_results):
+                    md5sum, path_to_file, parsed_file = future.result()
+                    # keep track of the seen md5sums and their file path
+                    seen_md5sums = _keep_track_of_md5sums_and_warn_about_duplicates(seen_md5sums, path_to_file, md5sum)
+                    # check if result is not None (due to failed parsing)
+                    if parsed_file:
+                        # write parsed file to db if it does not exist yet, or in case of reimporting (=overwriting)
+                        if _should_be_written_to_db(parsed_file, models.Traces, reimporting):
+                            _save_single_parsed_file_to_db(parsed_file, models, importing_demo_data, reimporting)
+                            num += 1
+                    if (num + 1) % configuration.num_activities_in_progress_update == 0:
+                        msg = f"<b>Progress Update:</b> Imported {num + 1} files."
+                        sse.send(msg, "blue", "DEBUG")
     _send_result_info(num)
 
     if importing_demo_data:
         finalize_demo_activity_insertion(models)
     log.debug("finished file import.")
+
+
+def _keep_track_of_md5sums_and_warn_about_duplicates(
+    seen_md5sums: Dict[str, Path], path_to_file: Path, md5sum: str
+) -> Dict[str, Path]:
+    if md5sum in seen_md5sums.keys():
+        msg = (
+            f"The following two files have the same checksum, you might want to remove one of them:<ul>"
+            f"<li><code>{path_to_file}</code> and </li>"
+            f"<li><code>{seen_md5sums[md5sum]}</code></li></ul>"
+        )
+        sse.send(msg, "yellow", "WARNING")
+    else:
+        seen_md5sums[md5sum] = path_to_file
+    return seen_md5sums
 
 
 def _should_be_written_to_db(parsed_file: Parser, traces_model: models.Model, reimporting: bool) -> bool:
@@ -406,7 +416,7 @@ def _should_be_written_to_db(parsed_file: Parser, traces_model: models.Model, re
             existing_trace = traces_model.objects.get(md5sum=parsed_file.md5sum)
             msg = (
                 f"The following two files have the same checksum, you might want to remove one of them:<ul>"
-                f"<li><code>{existing_trace.path_to_file}</code> and</li>"
+                f"<li><code>{existing_trace.path_to_file}</code> and </li>"
                 f"<li><code>{parsed_file.path_to_file}</code></li></ul>"
             )
             sse.send(msg, "yellow", "WARNING")
@@ -417,7 +427,15 @@ def _should_be_written_to_db(parsed_file: Parser, traces_model: models.Model, re
 
 def _send_result_info(number_of_updated: int) -> None:
     if number_of_updated == 0:
-        msg = "<b>Finished File Import:</b> No new files found."
+        msg = "<b>Finished File Import:</b> No new files imported."
     else:
         msg = f"<b>Finished File Import:</b> Imported {number_of_updated} new file(s)."
     sse.send(msg, "green", "DEBUG")
+
+
+def _send_initial_info(number_of_activities: int, path_to_trace_dir: str):
+    sse.send(
+        f"<b>File Import started:</b> Found {number_of_activities} activity files in "
+        f"<code>{path_to_trace_dir}</code>. Please wait.",
+        "blue",
+    )
