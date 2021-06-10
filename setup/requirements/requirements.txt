@@ -19,25 +19,25 @@ autobahn==21.3.1
 automat==20.2.0
     # via twisted
 bokeh==1.4.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 certifi==2020.12.5
     # via requests
 cffi==1.14.5
     # via cryptography
 channels==3.0.3
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 chardet==4.0.0
     # via requests
 click==7.1.2
     # via
-    #   -r setup/requirements/requirements.in
+    #   -r requirements.in
     #   distributed
 cloudpickle==1.6.0
     # via
     #   dask
     #   distributed
 coloredlogs==15.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 constantly==15.1.0
     # via twisted
 cryptography==3.4.7
@@ -49,34 +49,34 @@ daphne==3.0.2
     # via channels
 dask[distributed]==2021.05.0
     # via
-    #   -r setup/requirements/requirements.in
+    #   -r requirements.in
     #   distributed
 distributed==2021.05.0
     # via dask
 django-colorfield==0.4.1
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 django-eventstream==4.1.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 django-grip==3.0.0
     # via django-eventstream
 django==3.2
     # via
-    #   -r setup/requirements/requirements.in
+    #   -r requirements.in
     #   channels
     #   django-grip
     #   djangorestframework
 djangorestframework==3.12.2
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 fitparse==1.1.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 fsspec==2021.5.0
     # via dask
 geographiclib==1.50
     # via geopy
 geopy==2.1.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 gpxpy==1.4.2
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 gripcontrol==4.1.0
     # via
     #   django-eventstream
@@ -84,7 +84,7 @@ gripcontrol==4.1.0
 heapdict==1.0.1
     # via zict
 huey==2.3.2
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 humanfriendly==9.1
     # via coloredlogs
 hyperlink==21.0.0
@@ -103,7 +103,7 @@ jinja2==2.11.3
 locket==0.2.1
     # via partd
 luddite==1.0.1
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 markupsafe==1.1.1
     # via jinja2
 msgpack==1.0.2
@@ -115,14 +115,14 @@ numpy==1.20.1
 packaging==20.9
     # via bokeh
 pandas==1.2.2
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 partd==1.2.0
     # via dask
 pillow==8.1.1
     # via bokeh
 psutil==5.8.0
     # via
-    #   -r setup/requirements/requirements.in
+    #   -r requirements.in
     #   distributed
 pubcontrol==3.1.0
     # via
@@ -160,7 +160,7 @@ pyyaml==5.4.1
     #   distributed
 requests==2.25.1
     # via
-    #   -r setup/requirements/requirements.in
+    #   -r requirements.in
     #   pubcontrol
 service-identity==18.1.0
     # via twisted
@@ -177,13 +177,13 @@ six==1.15.0
 sortedcontainers==2.4.0
     # via distributed
 sportgems==0.5.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 sqlparse==0.4.1
     # via django
 tblib==1.7.0
     # via distributed
 tenacity==7.0.0
-    # via -r setup/requirements/requirements.in
+    # via -r requirements.in
 toolz==0.11.1
     # via
     #   dask
@@ -197,7 +197,7 @@ twisted[tls]==21.2.0
     # via daphne
 txaio==21.2.1
     # via autobahn
-urllib3==1.26.4
+urllib3==1.26.5
     # via requests
 werkzeug==0.16.1
     # via
