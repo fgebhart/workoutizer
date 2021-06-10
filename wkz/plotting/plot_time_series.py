@@ -10,7 +10,7 @@ from bokeh.layouts import column, gridplot
 import pandas as pd
 
 from django.conf import settings
-from wkz.configuration import attributes_to_create_time_series_plot_for
+from wkz import configuration as cfg
 from wkz import models
 
 
@@ -72,14 +72,16 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
     plots = []
     lap_lines = []
 
-    timestamps = pd.to_datetime(pd.Series(json.loads(attributes["timestamps_list"]), dtype=float), unit="s")
+    timestamps = pd.to_datetime(
+        pd.Series(json.loads(attributes["timestamps_list"]), dtype=float).iloc[:: cfg.every_nth_value], unit="s"
+    )
     x_axis = pd.to_datetime(timestamps).dt.tz_localize("utc").dt.tz_convert(settings.TIME_ZONE)
     x_axis = x_axis - x_axis.min()
 
     box_zoom_tool = BoxZoomTool(dimensions="width")
     for attribute, values in attributes.items():
-        if attribute in attributes_to_create_time_series_plot_for:
-            values = pd.Series(json.loads(values), dtype=float)
+        if attribute in cfg.attributes_to_create_time_series_plot_for:
+            values = pd.Series(json.loads(values), dtype=float).iloc[:: cfg.every_nth_value]
             if values.any():
                 attribute = attribute.replace("_list", "")
 

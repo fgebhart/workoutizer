@@ -4,7 +4,7 @@ from pathlib import Path
 from wkz import models
 from wkz.demo import copy_demo_fit_files_to_track_dir
 from wkz.file_importer import run_importer__dask
-from wkz.best_sections.generic import _activity_suitable_for_awards
+from wkz.best_sections.generic import activity_suitable_for_awards
 from wkz.tools.utils import calc_md5
 from workoutizer import settings as django_settings
 
@@ -47,7 +47,7 @@ def test_import_of_demo_activities(import_demo_data, client):
         # each individual activity is set to True
         assert h.evaluates_for_awards is True
         # and thus at the end the activity evaluates to False
-        assert _activity_suitable_for_awards(h) is False
+        assert activity_suitable_for_awards(h) is False
 
     # verify that best sections got parsed and imported
     best_sections_cnt = models.BestSection.objects.count()
@@ -85,7 +85,7 @@ def test_import_of_activities__not_evaluates_for_awards(import_one_activity):
     activity = models.Activity.objects.get()
     assert activity.sport.evaluates_for_awards is False
     assert activity.evaluates_for_awards is True
-    assert _activity_suitable_for_awards(activity) is False
+    assert activity_suitable_for_awards(activity) is False
 
     # best sections got saved
     assert models.BestSection.objects.filter(activity=activity).count() > 0
@@ -112,7 +112,7 @@ def test_import_of_activities__evaluates_for_awards(import_one_activity):
     activity = models.Activity.objects.get()
     assert activity.sport.evaluates_for_awards is True
     assert activity.evaluates_for_awards is True
-    assert _activity_suitable_for_awards(activity) is True
+    assert activity_suitable_for_awards(activity) is True
 
     # some best sections got saved
     assert models.BestSection.objects.filter(activity=activity).count() > 0
@@ -123,13 +123,13 @@ def test__activity_evaluates_for_awards(insert_activity):
     activity = insert_activity(name="dummy-1", evaluates_for_awards=True)
     assert activity.evaluates_for_awards is True
     assert activity.sport.evaluates_for_awards is True
-    assert _activity_suitable_for_awards(activity=activity) is True
+    assert activity_suitable_for_awards(activity=activity) is True
 
     # in case only activity is not suitable, function should return False
     activity = insert_activity(name="dummy-2", evaluates_for_awards=False)
     assert activity.evaluates_for_awards is False
     assert activity.sport.evaluates_for_awards is True
-    assert _activity_suitable_for_awards(activity=activity) is False
+    assert activity_suitable_for_awards(activity=activity) is False
 
     # in case only sport is not suitable, function should return False
     activity = insert_activity(name="dummy", evaluates_for_awards=True)
@@ -138,7 +138,7 @@ def test__activity_evaluates_for_awards(insert_activity):
     sport.evaluates_for_awards = False
     sport.save()
     assert activity.sport.evaluates_for_awards is False
-    assert _activity_suitable_for_awards(activity=activity) is False
+    assert activity_suitable_for_awards(activity=activity) is False
 
     # in case both sport and activity are not suitable, function should also return False
     activity = insert_activity(name="dummy", evaluates_for_awards=False)
@@ -147,7 +147,7 @@ def test__activity_evaluates_for_awards(insert_activity):
     sport.evaluates_for_awards = False
     sport.save()
     assert activity.sport.evaluates_for_awards is False
-    assert _activity_suitable_for_awards(activity=activity) is False
+    assert activity_suitable_for_awards(activity=activity) is False
 
 
 def test_avoid_unique_constraint_error(tracks_in_tmpdir, transactional_db, caplog):

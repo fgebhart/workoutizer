@@ -88,22 +88,18 @@ def test_get_list_of_coordinates__empty_data():
 
 
 def test_get_list_of_coordinates__dummy_data():
-    lon = [48.1234, 49.2345]
-    lat = [9.4567, 10.5678]
+    lon = [48.1, 48.2, 48.3, 48.4, 48.5, 48.6, 48.7, 48.8, 48.9, 49.0, 49.1]
+    lat = [9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 10.0, 10.1, 10.2, 10.3]
     coordinates = get_list_of_coordinates(lon, lat)
 
-    assert coordinates == [(48.1234, 9.4567), (49.2345, 10.5678)]
+    # note that because of configuration.every_nth_value only every nth value will be used
+    assert coordinates == [(48.1, 9.3), (48.6, 9.8), (49.1, 10.3)]
 
 
 def test_get_list_of_coordinates__data_with_gaps():
-    lon = [None, 48.1234, None, 49.2345, None]
-    lat = [None, 9.4567, None, 10.5678, None]
+    lon = [None, 48.1234, None, 49.2345, None, 49.2345]
+    lat = [None, 9.4567, None, 10.5678, None, 11.2345]
     coordinates = get_list_of_coordinates(lon, lat)
 
-    assert coordinates == [
-        (48.1234, 9.4567),
-        (48.1234, 9.4567),
-        (48.1234, 9.4567),
-        (49.2345, 10.5678),
-        (49.2345, 10.5678),
-    ]
+    # note that because of configuration.every_nth_value only every nth value will be used
+    assert coordinates == [(49.2345, 11.2345), (49.2345, 11.2345)]
