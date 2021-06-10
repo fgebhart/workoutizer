@@ -56,8 +56,8 @@
     var fastest_sections = {{ fastest_sections | get_best_sections_list | safe }};
     var fastestSectionGroup = L.layerGroup();
     for (let i = 0; i < fastest_sections.length; i++) {
-        const section_start = fastest_sections[i][0];
-        const section_end = fastest_sections[i][1];
+        const section_start = fastest_sections[i][0] / "{{ settings.every_nth_value }}";
+        const section_end = fastest_sections[i][1] / "{{ settings.every_nth_value }}";
 
         var section = coordinates.slice(section_start, section_end);
         // add section to trace group
@@ -72,8 +72,8 @@
     var climb_sections = {{ climb_sections | get_best_sections_list | safe }};
     var climbSectionGroup = L.layerGroup();
     for (let i = 0; i < climb_sections.length; i++) {
-        const section_start = climb_sections[i][0];
-        const section_end = climb_sections[i][1];
+        const section_start = climb_sections[i][0] / "{{ settings.every_nth_value }}";
+        const section_end = climb_sections[i][1] / "{{ settings.every_nth_value }}";
 
         var section = coordinates.slice(section_start, section_end);
         // add section to trace group
@@ -167,7 +167,7 @@
     }
 
     let fastest_layers = fastestSectionGroup.getLayers();
-    // function to be called by fastest_sections_table.html when hovering over rows of fastest sections
+    // function to be called by velocity_sections_table.html when hovering over rows of fastest sections
     function render_fastest_sections(index) {
         let selected_section = fastest_layers[index];
         selected_section.setStyle({"color": "yellow"});

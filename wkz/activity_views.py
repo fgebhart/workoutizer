@@ -18,8 +18,8 @@ from wkz.models import Sport, Activity, Lap, BestSection
 from wkz.forms import AddActivityForm, EditActivityForm, DATETIMEPICKER_FORMAT
 from wkz.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wkz.plotting.plot_time_series import plot_time_series
-from wkz.best_sections.generic import _activity_suitable_for_awards
-from wkz import configuration
+from wkz.best_sections.generic import activity_suitable_for_awards
+from wkz import configuration as cfg
 
 log = logging.getLogger(__name__)
 
@@ -30,6 +30,9 @@ class ActivityView(MapView):
     def get(self, request, activity_id):
         activity = Activity.objects.get(id=activity_id)
         context = super(ActivityView, self).get(request=request, list_of_activities=[activity])
+        settings = context["settings"]
+        setattr(settings, "every_nth_value", cfg.every_nth_value)
+        context["settings"] = settings
         activity_context = {
             "sports": Sport.objects.all().order_by("name"),
             "activity": activity,
@@ -48,12 +51,12 @@ class ActivityView(MapView):
         if laps:
             activity_context["laps"] = laps
         activity_context["evaluates_for_awards"] = False
-        if _activity_suitable_for_awards(activity):
+        if activity_suitable_for_awards(activity):
             activity_context["top_fastest_awards"] = get_top_awards_for_one_sport(
-                sport=activity.sport, top_score=configuration.rank_limit, kinds=["fastest"]
+                sport=activity.sport, top_score=cfg.rank_limit, kinds=["fastest"]
             )
             activity_context["top_climb_awards"] = get_top_awards_for_one_sport(
-                sport=activity.sport, top_score=configuration.rank_limit, kinds=["climb"]
+                sport=activity.sport, top_score=cfg.rank_limit, kinds=["climb"]
             )
             activity_context["evaluates_for_awards"] = True
         return render(request, self.template_name, {**context, **activity_context})

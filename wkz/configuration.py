@@ -85,3 +85,6 @@ num_activities_in_progress_update = 5
 
 # time to wait for an huey task to finish in seconds
 huey_timeout = 30
+
+# reduce number of data points for activity view in order speed up page load
+every_nth_value = 5

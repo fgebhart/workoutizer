@@ -7,6 +7,8 @@ from geopy.geocoders import Nominatim
 from geopy.point import Point
 import pandas as pd
 
+from wkz import configuration as cfg
+
 
 log = logging.getLogger(__name__)
 
@@ -82,7 +84,7 @@ def get_location_name(coordinate: Tuple[float, float]) -> str:
 def get_list_of_coordinates(list_of_lon: List[float], list_of_lat: List[float]) -> List[Tuple[float]]:
     return list(
         zip(
-            list(pd.Series(list_of_lon, dtype="float64").ffill().bfill()),
-            list(pd.Series(list_of_lat, dtype="float64").ffill().bfill()),
+            list(pd.Series(list_of_lon, dtype="float64").iloc[:: cfg.every_nth_value].ffill().bfill()),
+            list(pd.Series(list_of_lat, dtype="float64").iloc[:: cfg.every_nth_value].ffill().bfill()),
         )
     )

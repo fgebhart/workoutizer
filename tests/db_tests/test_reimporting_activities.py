@@ -7,7 +7,7 @@ from wkz import models
 from wkz import configuration
 from wkz.demo import prepare_import_of_demo_activities
 from wkz.file_importer import run_importer__dask
-from wkz.best_sections.generic import _activity_suitable_for_awards
+from wkz.best_sections.generic import activity_suitable_for_awards
 
 
 def test_reimport_of_activities(tracks_in_tmpdir, client):
@@ -254,21 +254,21 @@ def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_acti
     # verify activity is suitable for best sections
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
-    assert _activity_suitable_for_awards(activity) is True
+    assert activity_suitable_for_awards(activity) is True
     assert models.BestSection.objects.filter(activity=activity).count() > 0
 
     # change sport flag for evaluates_for_awards to False
     sport = activity.sport
     sport.evaluates_for_awards = False
     sport.save()
-    assert _activity_suitable_for_awards(activity) is False
+    assert activity_suitable_for_awards(activity) is False
 
     # reimport activity
     run_importer__dask(models, reimporting=True)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
-    assert _activity_suitable_for_awards(activity) is False
+    assert activity_suitable_for_awards(activity) is False
 
     # check that best sections did not get removed
     assert models.BestSection.objects.filter(activity=activity).count() > 0
@@ -277,14 +277,14 @@ def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_acti
     sport = activity.sport
     sport.evaluates_for_awards = True
     sport.save()
-    assert _activity_suitable_for_awards(activity) is True
+    assert activity_suitable_for_awards(activity) is True
 
     # reimport activity
     run_importer__dask(models, reimporting=True)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
-    assert _activity_suitable_for_awards(activity) is True
+    assert activity_suitable_for_awards(activity) is True
 
     # check that best sections got removed
     assert models.BestSection.objects.filter(activity=activity).count() > 0
@@ -298,20 +298,20 @@ def test_reimport__not_evaluates_for_awards__changing_activity_flag(import_one_a
     # verify activity is suitable for best sections
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
-    assert _activity_suitable_for_awards(activity) is True
+    assert activity_suitable_for_awards(activity) is True
     assert models.BestSection.objects.filter(activity=activity).count() > 0
 
     # change activity flag for evaluates_for_awards to False
     activity.evaluates_for_awards = False
     activity.save()
-    assert _activity_suitable_for_awards(activity) is False
+    assert activity_suitable_for_awards(activity) is False
 
     # reimport activity
     run_importer__dask(models, reimporting=True)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
-    assert _activity_suitable_for_awards(activity) is False
+    assert activity_suitable_for_awards(activity) is False
 
     # check that best sections did not get removed
     assert models.BestSection.objects.filter(activity=activity).count() > 0
@@ -319,14 +319,14 @@ def test_reimport__not_evaluates_for_awards__changing_activity_flag(import_one_a
     # now change everything back and verify that the best sections get saved to db again by reimporting
     activity.evaluates_for_awards = True
     activity.save()
-    assert _activity_suitable_for_awards(activity) is True
+    assert activity_suitable_for_awards(activity) is True
 
     # reimport activity
     run_importer__dask(models, reimporting=True)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
-    assert _activity_suitable_for_awards(activity) is True
+    assert activity_suitable_for_awards(activity) is True
 
     # check that best sections got removed
     assert models.BestSection.objects.filter(activity=activity).count() > 0

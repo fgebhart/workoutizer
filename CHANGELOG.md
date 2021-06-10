@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Add `gpx` file to demo activities.
 * Use [dask](https://docs.dask.org/en/) to parse activity files in parallel to speed
   up file import / reimport.
+* reduce number of data points of tracked activities by only selecting every 5th value
+  (configurable) in order to speed up activity page load.
 ### Changed
 * Show "made with ❤️" in footer only on settings and help page.
 * Moved `tests` folder from `workoutizer/wkz/tests/` to `workoutizer/tests` root folder.
