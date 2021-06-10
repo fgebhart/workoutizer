@@ -197,7 +197,7 @@ twisted[tls]==21.2.0
     # via daphne
 txaio==21.2.1
     # via autobahn
-urllib3==1.26.4
+urllib3==1.26.5
     # via requests
 werkzeug==0.16.1
     # via
