@@ -59,7 +59,7 @@ django-eventstream==4.1.0
     # via -r requirements.in
 django-grip==3.0.0
     # via django-eventstream
-django==3.2.2
+django==3.2.4
     # via
     #   -r requirements.in
     #   channels
