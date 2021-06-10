@@ -80,26 +80,6 @@ def activity(db, sport, trace_file):
     return activity
 
 
-def ensure_path_to_traces_is_tmp(db, monkeypatch, tmp_path, request):
-    def get_dummy_settings(*args, **kwargs):
-        target_dir = tmp_path / "traces"
-        if models.Settings.objects.count() == 1:
-            settings = models.Settings.objects.get()
-            if settings.path_to_trace_dir == target_dir:
-                return settings
-
-        if models.Settings.objects.count() > 0:
-            models.Settings.objects.all().delete()
-        if not target_dir.is_dir():
-            target_dir.mkdir()
-        settings = models.Settings(path_to_trace_dir=target_dir)
-        settings.save()
-        return settings
-
-    if "no_autouse" not in request.keywords:  # TODO is this still needed?
-        monkeypatch.setattr(models, "get_settings", get_dummy_settings)
-
-
 @pytest.fixture
 def import_demo_data(tracks_in_tmpdir):
     prepare_import_of_demo_activities(models)

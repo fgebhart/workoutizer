@@ -1,14 +1,13 @@
 import os
 import logging
 import json
-import datetime
 from pathlib import Path
 from typing import List, Union, Dict, Tuple
 from types import ModuleType
 
 from fitparse.utils import FitHeaderError, FitEOFError
-from django.db import models
-from dask.distributed import Client, as_completed, performance_report
+from django.db.models import Model
+from dask.distributed import Client, as_completed
 
 from wkz.file_helper.parser import Parser
 from wkz.file_helper.gpx_parser import GPXParser
@@ -363,29 +362,28 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
     if trace_files:
         client = Client(processes=False)
         with client:
-            with performance_report(f"{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M')}_dask_report.html"):
-                distributed_results = client.map(
-                    _check_and_parse_file,
-                    trace_files,
-                    path_to_traces=path_to_traces,
-                    md5sums_from_db=md5sums_from_db,
-                    reimporting=reimporting,
-                )
+            distributed_results = client.map(
+                _check_and_parse_file,
+                trace_files,
+                path_to_traces=path_to_traces,
+                md5sums_from_db=md5sums_from_db,
+                reimporting=reimporting,
+            )
 
-                # loop over futures in a sequential fashion to store data to sqlite db sequentially
-                for future in as_completed(distributed_results):
-                    md5sum, path_to_file, parsed_file = future.result()
-                    # keep track of the seen md5sums and their file path
-                    seen_md5sums = _keep_track_of_md5sums_and_warn_about_duplicates(seen_md5sums, path_to_file, md5sum)
-                    # check if result is not None (due to failed parsing)
-                    if parsed_file:
-                        # write parsed file to db if it does not exist yet, or in case of reimporting (=overwriting)
-                        if _should_be_written_to_db(parsed_file, models.Traces, reimporting):
-                            _save_single_parsed_file_to_db(parsed_file, models, importing_demo_data, reimporting)
-                            num += 1
-                    if (num + 1) % configuration.num_activities_in_progress_update == 0:
-                        msg = f"<b>Progress Update:</b> Imported {num + 1} files."
-                        sse.send(msg, "blue", "DEBUG")
+            # loop over futures in a sequential fashion to store data to sqlite db sequentially
+            for future in as_completed(distributed_results):
+                md5sum, path_to_file, parsed_file = future.result()
+                # keep track of the seen md5sums and their file path
+                seen_md5sums = _keep_track_of_md5sums_and_warn_about_duplicates(seen_md5sums, path_to_file, md5sum)
+                # check if result is not None (due to failed parsing)
+                if parsed_file:
+                    # write parsed file to db if it does not exist yet, or in case of reimporting (=overwriting)
+                    if _should_be_written_to_db(parsed_file, models.Traces, reimporting):
+                        _save_single_parsed_file_to_db(parsed_file, models, importing_demo_data, reimporting)
+                        num += 1
+                if (num + 1) % configuration.num_activities_in_progress_update == 0:
+                    msg = f"<b>Progress Update:</b> Imported {num + 1} files."
+                    sse.send(msg, "blue", "DEBUG")
     _send_result_info(num)
 
     if importing_demo_data:
@@ -408,7 +406,7 @@ def _keep_track_of_md5sums_and_warn_about_duplicates(
     return seen_md5sums
 
 
-def _should_be_written_to_db(parsed_file: Parser, traces_model: models.Model, reimporting: bool) -> bool:
+def _should_be_written_to_db(parsed_file: Parser, traces_model: Model, reimporting: bool) -> bool:
     if reimporting:
         return True
     else:

@@ -242,9 +242,10 @@ def custom_400_view(request, exception=None):
 
 def custom_500_view(request, exception=None):
     sports = models.Sport.objects.all().order_by("name")
-
+    msg = f"Error while loading {request.path}"
+    log.error(msg)
     template_name = "lib/500.html"
-    messages.error(request, f"Error while loading {request.path}")
+    messages.error(request, msg)
     return render(
         request,
         template_name=template_name,

@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed
 * Removed `reimport` button/functionality from settings page in order to avoid threads
   from interfering when accessing sqlite db.
+* Removed retries around fit file reading and md5sum calculation, turned out that the
+  io errors were caused by a too long usb cable...
 
 ## [0.18.0](https://github.com/fgebhart/workoutizer/releases/tag/0.18.0) - 2021-05-16
 ### Added
