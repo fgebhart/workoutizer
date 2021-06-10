@@ -5,9 +5,6 @@ import datetime
 
 import pytz
 from django.conf import settings
-from tenacity import retry, wait_exponential, stop_after_attempt, after_log
-
-from wkz import configuration
 
 
 log = logging.getLogger(__name__)
@@ -19,11 +16,6 @@ def sanitize(text):
     return str(text).lower().replace(" ", "-").replace("/", "-")
 
 
-@retry(
-    wait=wait_exponential(multiplier=2, min=1, max=10),
-    stop=stop_after_attempt(configuration.number_of_retries),
-    after=after_log(log, logging.WARNING),
-)
 def calc_md5(file) -> str:
     hash_md5 = hashlib.md5()
     with open(file, "rb") as f:

@@ -3,7 +3,7 @@ import os
 import logging
 
 from wkz.file_helper.fit_collector import FitCollector
-from wkz.file_importer import run_file_importer
+from wkz.file_importer import run_importer__dask
 from wkz import models
 
 
@@ -14,7 +14,7 @@ def trigger_file_watchdog():
     log.debug("triggered periodic file importer...")
     settings = models.get_settings()
     if Path(settings.path_to_trace_dir).is_dir():
-        run_file_importer(models)
+        run_importer__dask(models)
         log.debug("finished periodic file import.")
     else:
         log.warning(f"File Watchdog: {settings.path_to_trace_dir} is not a valid directory.")
@@ -37,7 +37,7 @@ def _watch_for_device(path_to_garmin_device: str, path_to_trace_dir: str, delete
         sub_dirs = os.listdir(path_to_garmin_device)
         if len(sub_dirs) == 1 and not device_mounted:
             device_mounted = True
-            log.info(f"New device got mounted at {path_to_garmin_device}, triggering fit collector...")
+            log.info(f"Found mounted device at {path_to_garmin_device}, triggering fit collector...")
             fit_collector = FitCollector(
                 path_to_garmin_device=path_to_garmin_device,
                 target_location=path_to_trace_dir,

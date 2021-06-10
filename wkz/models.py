@@ -9,7 +9,7 @@ from django.template.defaultfilters import slugify
 from colorfield.fields import ColorField
 
 from workoutizer import settings as django_settings
-from wkz.file_importer import run_file_importer
+from wkz.file_importer import run_importer__dask
 from wkz.tools import sse
 
 
@@ -200,18 +200,18 @@ class Settings(models.Model):
             from wkz import models
 
             if Path(self.path_to_trace_dir).is_dir():
-                run_file_importer(models, as_huey_task=True)
+                run_importer__dask(models)
             else:
-                sse.send(f"'{self.path_to_trace_dir}' is not a valid path.", "red", "WARNING")
+                sse.send(f"<code>{self.path_to_trace_dir}</code> is not a valid path.", "red", "WARNING")
         self.__original_path_to_trace_dir = self.path_to_trace_dir
 
         if self.path_to_garmin_device != self.__original_path_to_garmin_device:
             from wkz import models
 
             if Path(self.path_to_garmin_device).is_dir():
-                sse.send(f"Device watchdog now monitors '{self.path_to_garmin_device}'.", "green")
+                sse.send(f"<b>Device watchdog</b> now monitors <code>{self.path_to_garmin_device}</code>.", "green")
             else:
-                sse.send(f"'{self.path_to_garmin_device}' is not a valid path.", "red", "WARNING")
+                sse.send(f"<code>{self.path_to_garmin_device}</code> is not a valid path.", "red", "WARNING")
         self.__original_path_to_garmin_device = self.path_to_garmin_device
 
 

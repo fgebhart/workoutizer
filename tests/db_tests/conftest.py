@@ -2,7 +2,6 @@ import os
 import datetime
 import shutil
 from py._path.local import LocalPath
-from pathlib import Path
 from typing import List
 
 import pytest
@@ -10,11 +9,11 @@ import pytz
 from django.core.management import call_command
 
 from workoutizer import settings as django_settings
-from wkz.file_importer import (
-    run_file_importer,
+from wkz.demo import (
     prepare_import_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
 )
+from wkz.file_importer import run_importer__dask
 from wkz import models
 
 
@@ -81,33 +80,13 @@ def activity(db, sport, trace_file):
     return activity
 
 
-def ensure_path_to_traces_is_tmp(db, monkeypatch, tmp_path, request):
-    def get_dummy_settings(*args, **kwargs):
-        target_dir = tmp_path / "traces"
-        if models.Settings.objects.count() == 1:
-            settings = models.Settings.objects.get()
-            if settings.path_to_trace_dir == target_dir:
-                return settings
-
-        if models.Settings.objects.count() > 0:
-            models.Settings.objects.all().delete()
-        if not target_dir.is_dir():
-            target_dir.mkdir()
-        settings = models.Settings(path_to_trace_dir=target_dir)
-        settings.save()
-        return settings
-
-    if "no_autouse" not in request.keywords:
-        monkeypatch.setattr(models, "get_settings", get_dummy_settings)
-
-
 @pytest.fixture
 def import_demo_data(tracks_in_tmpdir):
     prepare_import_of_demo_activities(models)
     assert models.Sport.objects.count() == 5
     assert models.Settings.objects.count() == 1
 
-    run_file_importer(models, importing_demo_data=True)
+    run_importer__dask(models, importing_demo_data=True)
     assert models.Activity.objects.count() > 1
 
 
@@ -132,7 +111,7 @@ def import_one_activity(tracks_in_tmpdir, test_data_dir, demo_data_dir):
             targe_dir=models.get_settings().path_to_trace_dir,
             list_of_files_to_copy=[path],
         )
-        run_file_importer(models)
+        run_importer__dask(models)
         assert models.Activity.objects.count() == 1
 
     return _copy_activity
@@ -246,21 +225,6 @@ def fake_device(tmp_path, device_dir, activity_dir):
 
 
 @pytest.fixture
-def fit_file():
-    return "2019-09-14-17-22-05.fit"
-
-
-@pytest.fixture
-def fit_file_a():
-    return "2019-09-18-16-02-35.fit"
-
-
-@pytest.fixture
-def fit_file_b():
-    return "2019-09-25-16-15-53.fit"
-
-
-@pytest.fixture
 def device_dir():
     return "mtp:host_DEVICE"
 
@@ -268,13 +232,3 @@ def device_dir():
 @pytest.fixture
 def activity_dir():
     return "Primary/GARMIN/Activity"
-
-
-@pytest.fixture
-def import_sequentially_on_setting_save(monkeypatch):
-    def import_sequentially(self, *args, **kwargs):
-        super(models.Settings, self).save(*args, **kwargs)
-        if Path(self.path_to_trace_dir).is_dir():
-            run_file_importer(models, as_huey_task=False)
-
-    monkeypatch.setattr(models.Settings, "save", import_sequentially)

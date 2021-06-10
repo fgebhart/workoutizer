@@ -1,12 +1,10 @@
 from tenacity import retry, wait_exponential, stop_after_attempt
 
-from wkz import configuration
-
 
 @retry(
     reraise=True,
     wait=wait_exponential(multiplier=3, min=1, max=5),
-    stop=stop_after_attempt(configuration.number_of_retries),
+    stop=stop_after_attempt(3),
 )
 def delayed_assertion(func, operator, right):
     """

@@ -37,7 +37,6 @@ urlpatterns = [
     # Rest API endpoints
     path("mount-device/", api.mount_device_endpoint),
     path("stop/", api.stop_django_server),
-    path("reimport/", api.reimport_activities, name="reimport"),
     # events channel
     path("events/", include(django_eventstream.urls), {"channels": ["event"]}),
 ]

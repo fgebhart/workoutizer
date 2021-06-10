@@ -2,8 +2,10 @@ import shutil
 from pathlib import Path
 
 from wkz import models
-from wkz.file_importer import copy_demo_fit_files_to_track_dir, run_file_importer
+from wkz.demo import copy_demo_fit_files_to_track_dir
+from wkz.file_importer import run_importer__dask
 from wkz.best_sections.generic import _activity_suitable_for_awards
+from wkz.tools.utils import calc_md5
 from workoutizer import settings as django_settings
 
 
@@ -164,7 +166,7 @@ def test_avoid_unique_constraint_error(tracks_in_tmpdir, transactional_db, caplo
 
     # in rare situations this lead to a unique constraint sql error because
     # of md5sum already being present in db, check that this does not fail
-    run_file_importer(models)
+    run_importer__dask(models)
 
     # check that file importer warns about two files having the same checksum
     assert "The following two files have the same checksum, you might want to remove one of them:" in caplog.text
@@ -186,7 +188,8 @@ def test_import_corrupted_fit_file(tracks_in_tmpdir, caplog):
     fit.write_text(content)
     assert fit.read_text() == content
 
-    run_file_importer(models)
+    # importer should not fail
+    run_importer__dask(models)
 
     # one fit file should have been imported
     assert models.Activity.objects.count() == 1
@@ -194,3 +197,60 @@ def test_import_corrupted_fit_file(tracks_in_tmpdir, caplog):
     # but also an error was logged, however the execution should not have failed
     assert "ERROR" in caplog.text
     assert "Failed to parse fit file" in caplog.text
+
+
+def test_run_importer__single_file(db, demo_data_dir, tmpdir, fit_file):
+    assert models.Activity.objects.count() == 0
+    settings = models.get_settings()
+    settings.path_to_trace_dir = tmpdir
+    settings.save()
+
+    # test on empty dir
+    run_importer__dask(models)
+    assert models.Activity.objects.count() == 0
+
+    # test on dir with one file
+    activity_file = Path(demo_data_dir) / fit_file
+    shutil.copy2(activity_file, tmpdir)
+    run_importer__dask(models)
+    assert models.Activity.objects.count() == 1
+
+
+def test_run_importer__three_files(db, demo_data_dir, tmpdir, fit_file, fit_file_a, fit_file_b):
+    assert models.Activity.objects.count() == 0
+    settings = models.get_settings()
+    settings.path_to_trace_dir = tmpdir
+    settings.save()
+
+    # test on dir with one file
+    activity_file_1 = Path(demo_data_dir) / fit_file
+    shutil.copy2(activity_file_1, tmpdir)
+    activity_file_2 = Path(demo_data_dir) / fit_file_a
+    shutil.copy2(activity_file_2, tmpdir)
+    activity_file_3 = Path(demo_data_dir) / fit_file_b
+    shutil.copy2(activity_file_3, tmpdir)
+    run_importer__dask(models)
+    assert models.Activity.objects.count() == 3
+
+
+def test_run_importer__warns_about_duplicate_files(db, demo_data_dir, tracks_in_tmpdir, caplog):
+    assert models.Activity.objects.count() == 0
+    settings = models.get_settings()
+
+    # copy the same file two times into two different files (with same checksum)
+    file_a = Path(settings.path_to_trace_dir) / "a.fit"
+    file_b = Path(settings.path_to_trace_dir) / "b.fit"
+    source_file = Path(demo_data_dir) / "cycling_bad_schandau.fit"
+    shutil.copy(source_file, file_a)
+    shutil.copy(source_file, file_b)
+
+    assert calc_md5(file_a) == calc_md5(file_b)
+
+    # now run file importer and verify that a proper warning is logged
+    run_importer__dask(models)
+
+    assert "WARNING" in caplog.text
+    assert (
+        f"The following two files have the same checksum, you might want to remove one of them:{file_b} and {file_a}"
+        in caplog.text
+    )

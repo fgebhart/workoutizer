@@ -10,8 +10,8 @@ log = logging.getLogger(__name__)
 
 
 class GPXParser(Parser):
-    def __init__(self, path_to_file):
-        super(GPXParser, self).__init__(path_to_file)
+    def __init__(self, path_to_file: str, md5sum: str):
+        super(GPXParser, self).__init__(path_to_file, md5sum)
         self.gpx = None
 
     def _parse_metadata(self):

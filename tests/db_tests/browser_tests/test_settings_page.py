@@ -25,8 +25,8 @@ def test_settings_page__no_demo_activity(live_server, webdriver):
     input_labels.remove("Path to Garmin Device ")
     assert "Delete fit Files after Copying  " in input_labels
     input_labels.remove("Delete fit Files after Copying  ")
-    assert "Reimport all Files " in input_labels
-    input_labels.remove("Reimport all Files ")
+    # reimport got removed, assert it is not present
+    assert "Reimport all Files " not in input_labels
     # verify that the list is empty after remove all given input labels
     assert len(input_labels) == 0
 
@@ -137,3 +137,7 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     # this attribute got removed, so verifying that is does no longer exist
     with pytest.raises(AttributeError):
         assert settings.reimporter_updates_all is True
+
+    # reimport button got removed from settings page
+    with pytest.raises(NoSuchElementException):
+        webdriver.find_element(By.ID, "reimport-activities").click()

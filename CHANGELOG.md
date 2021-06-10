@@ -6,12 +6,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-* add `gpx` file to demo activities
+* Add `gpx` file to demo activities.
+* Use [dask](https://docs.dask.org/en/) to parse activity files in parallel to speed
+  up file import / reimport.
 ### Changed
 * Show "made with ❤️" in footer only on settings and help page.
 * Moved `tests` folder from `workoutizer/wkz/tests/` to `workoutizer/tests` root folder.
 * Run all tests together in github actions `Test` and `Release` pipeline.
-* ensure activity leaflet map has always height of > 400 pixels 
+* Ensure activity leaflet map has always height of > 400 pixels
+### Removed
+* Removed `reimport` button/functionality from settings page in order to avoid threads
+  from interfering when accessing sqlite db.
+* Removed retries around fit file reading and md5sum calculation, turned out that the
+  io errors were caused by a too long usb cable...
 
 ## [0.18.0](https://github.com/fgebhart/workoutizer/releases/tag/0.18.0) - 2021-05-16
 ### Added
