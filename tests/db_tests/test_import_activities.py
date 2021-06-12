@@ -1,5 +1,9 @@
+import datetime
 import shutil
+import json
 from pathlib import Path
+
+import pytz
 
 from wkz import models
 from wkz.demo import copy_demo_fit_files_to_track_dir
@@ -7,6 +11,68 @@ from wkz.file_importer import run_importer__dask
 from wkz.best_sections.generic import activity_suitable_for_awards
 from wkz.tools.utils import calc_md5
 from workoutizer import settings as django_settings
+
+
+def test_activity_data_in_db_after_import(import_one_activity):
+    """
+    This test corresponds to tests.unit_tests.file_helper.test_fit_parser.test__parse_records
+    but checks the integration with the database and the django model fields.
+    """
+
+    assert models.Activity.objects.count() == 0
+    import_one_activity("example.fit")
+    assert models.Activity.objects.count() == 1
+
+    a = models.Activity.objects.get()
+
+    assert a.sport.slug == "unknown"
+    assert a.distance == 5.84
+    assert a.duration == datetime.timedelta(seconds=3164)
+    assert a.date == datetime.datetime(2019, 9, 14, 15, 22, tzinfo=pytz.UTC)
+    assert a.trace_file.avg_heart_rate == 130
+    assert a.trace_file.avg_speed == 1.845
+    assert a.trace_file.avg_cadence == 64
+    assert a.trace_file.avg_temperature == 27
+    assert a.trace_file.calories == 432
+    assert a.trace_file.aerobic_training_effect == 2.7
+    assert a.trace_file.anaerobic_training_effect == 0.3
+    # check lengths of list attributes
+    assert len(json.loads(a.trace_file.heart_rate_list)) == 1224
+    assert len(json.loads(a.trace_file.altitude_list)) == 1224
+    assert len(json.loads(a.trace_file.latitude_list)) == 1224
+    assert len(json.loads(a.trace_file.longitude_list)) == 1224
+    assert len(json.loads(a.trace_file.distance_list)) == 1224
+    assert len(json.loads(a.trace_file.cadence_list)) == 1224
+    assert len(json.loads(a.trace_file.temperature_list)) == 1224
+    assert len(json.loads(a.trace_file.speed_list)) == 1224
+    assert len(json.loads(a.trace_file.timestamps_list)) == 1224
+    # sanity check to see if element in list attributes
+    assert 1.605 in json.loads(a.trace_file.speed_list)
+    assert 8.697221484035255 in json.loads(a.trace_file.longitude_list)
+    assert 49.40601873211563 in json.loads(a.trace_file.latitude_list)
+    assert 1.6 in json.loads(a.trace_file.distance_list)
+    assert 248.9 in json.loads(a.trace_file.altitude_list)
+    assert 99 in json.loads(a.trace_file.heart_rate_list)
+    assert 61 in json.loads(a.trace_file.cadence_list)
+    assert 31 in json.loads(a.trace_file.temperature_list)
+    assert 1568467325.0 in json.loads(a.trace_file.timestamps_list)
+    # check laps
+    laps = models.Lap.objects.filter(trace=a.trace_file)
+    assert len(laps) == 7
+    lap = laps[3]
+    assert lap.start_time == datetime.datetime(2019, 9, 14, 14, 56, 48, tzinfo=pytz.UTC)
+    assert lap.end_time == datetime.datetime(2019, 9, 14, 15, 3, 23, tzinfo=pytz.UTC)
+    assert lap.distance == 1000.0
+    assert lap.start_lat == 49.39987546764315
+    assert lap.start_long == 8.704907605424525
+    assert lap.end_lat == 49.405560996383436
+    assert lap.end_long == 8.702977923676373
+    assert lap.trigger == "distance"
+    assert lap.speed == 2.52
+    assert lap.label is None
+    # check total ascent/descent
+    assert a.trace_file.total_ascent == 234
+    assert a.trace_file.total_descent == 233
 
 
 def test_import_of_demo_activities(import_demo_data, client):

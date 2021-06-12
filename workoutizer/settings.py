@@ -25,7 +25,7 @@ STATIC_URL = "/static/"
 # however, as long as workoutizer is only used locally this is not an issue
 SECRET_KEY = "h#ppx^(%ya18qrm+hgzf-vxr^t=r57k_65_hr73f^-n)@qc9as"
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 

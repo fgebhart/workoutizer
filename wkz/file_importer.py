@@ -212,6 +212,9 @@ def _save_trace_to_model(traces_model, md5sum: str, parser, trace_file, update_e
             # training effect
             aerobic_training_effect=parser.aerobic_training_effect,
             anaerobic_training_effect=parser.anaerobic_training_effect,
+            # ascent/descent
+            total_ascent=parser.total_ascent,
+            total_descent=parser.total_descent,
             # timestamps
             timestamps_list=parser.timestamps_list,
         )

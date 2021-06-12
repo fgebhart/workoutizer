@@ -25,6 +25,8 @@ class FITParser(Parser):
     def _parse_records(self):
         for record in self.fit.get_messages():
             record = record.get_values()
+            # print(record)
+
             # parse laps
             if record.get("event") == "lap":
                 lap = _parse_lap_data(record)
@@ -78,6 +80,12 @@ class FITParser(Parser):
             avg_temperature = record.get("avg_temperature")
             if avg_temperature:
                 self.avg_temperature = avg_temperature
+            total_ascent = record.get("total_ascent")
+            if total_ascent:
+                self.total_ascent = total_ascent
+            total_descent = record.get("total_descent")
+            if total_descent:
+                self.total_descent = total_descent
 
         log.debug(f"found date: {self.date}")
         log.debug(f"found number of coordinates: {len(self.longitude_list)}")
@@ -90,6 +98,7 @@ class FITParser(Parser):
         log.debug(f"found avg_cadence: {self.avg_cadence} steps/min")
         log.debug(f"found avg_temperature: {self.avg_temperature} Celsius")
         log.debug(f"found number of laps: {len(self.laps)}")
+        log.debug(f"found total ascent: {self.total_ascent} and descent: {self.total_descent}")
 
     def _save_data_to_dataframe(self):
         df = pd.DataFrame(

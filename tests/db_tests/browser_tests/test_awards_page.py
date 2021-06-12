@@ -3,7 +3,7 @@ from django.urls import reverse
 from selenium.webdriver.common.by import By
 
 from wkz import models
-from wkz import configuration
+from wkz import configuration as cfg
 
 
 def test_awards_page__complete(import_demo_data, live_server, webdriver):
@@ -110,12 +110,12 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     assert "SPEED  " in th
 
     fastest_top_awards = []
-    for distance in configuration.fastest_distances:
+    for distance in cfg.fastest_distances:
         awards = models.BestSection.objects.filter(
             distance=distance,
             activity__evaluates_for_awards=True,
             kind="fastest",
-        ).order_by("-max_value")[: configuration.rank_limit]
+        ).order_by("-max_value")[: cfg.rank_limit]
         fastest_top_awards += list(awards)
 
     # get table content
@@ -135,7 +135,7 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
         assert date in td
 
     # now check the same for the climb awards, first go to climb tab
-    webdriver.find_element(By.LINK_TEXT, "Climb Awards").click()
+    webdriver.find_element(By.LINK_TEXT, "Best Climb Section").click()
 
     th = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
     assert "RANK" in th
@@ -145,12 +145,12 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     assert "CLIMB  " in th
 
     climb_top_awards = []
-    for distance in configuration.climb_distances:
+    for distance in cfg.climb_distances:
         awards = models.BestSection.objects.filter(
             distance=distance,
             activity__evaluates_for_awards=True,
             kind="climb",
-        ).order_by("-max_value")[: configuration.rank_limit]
+        ).order_by("-max_value")[: cfg.rank_limit]
         climb_top_awards += list(awards)
 
     # get table content
@@ -167,4 +167,42 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
 
     max_value = [f"{round(award.max_value, 2)} m/min" for award in climb_top_awards]
     for value in max_value:
+        assert value in td
+
+    # now check the same for the total ascent awards, first go to total ascent tab
+    webdriver.find_element(By.LINK_TEXT, "Total Ascent").click()
+
+    th = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
+    assert "RANK" in th
+    assert "DATE" in th
+    assert "ACTIVITY" in th
+    assert "TOTAL ASCENT  " in th
+
+    ascent_top_awards = []
+    sports = [sport for sport in models.Sport.objects.filter(evaluates_for_awards=True).exclude(name="unknown")]
+    for sport in sports:
+        activities = (
+            models.Activity.objects.filter(
+                sport=sport,
+                evaluates_for_awards=True,
+            )
+            .exclude(trace_file__total_ascent=None)
+            .order_by("-trace_file__total_ascent")[: cfg.rank_limit]
+        )
+        ascent_top_awards += list(activities)
+
+    # get table content
+    td = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+
+    # verify that these activities are present in the table content
+    activity_names = [activity.name for activity in ascent_top_awards]
+    for name in activity_names:
+        assert name in td
+
+    activity_dates = [activity.date.date().strftime("%b %d, %Y") for activity in ascent_top_awards]
+    for date in activity_dates:
+        assert date in td
+
+    top_total_ascent_values = [f"{activity.trace_file.total_ascent} m" for activity in ascent_top_awards]
+    for value in top_total_ascent_values:
         assert value in td

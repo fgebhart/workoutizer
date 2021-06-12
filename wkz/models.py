@@ -76,6 +76,9 @@ class Traces(models.Model):
     anaerobic_training_effect = models.FloatField(blank=True, null=True)
     # timestamps
     timestamps_list = models.CharField(max_length=10000000000, default="[]")
+    # total ascent/descent
+    total_ascent = models.IntegerField(null=True, blank=True)
+    total_descent = models.IntegerField(null=True, blank=True)
     # other
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

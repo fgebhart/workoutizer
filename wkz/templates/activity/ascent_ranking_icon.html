@@ -1,0 +1,15 @@
+<td>
+    {% if ascent_awards_ranking == 1 %}
+        <i class="fas fa-trophy" data-toggle="tooltip" data-placement="bottom"
+            title="1st Place in Total Ascent in {{ activity.sport.name }}"
+            style="color: gold;"></i>
+    {% elif ascent_awards_ranking == 2 %}
+        <i class="fas fa-trophy" data-toggle="tooltip" data-placement="bottom"
+            title="2nd Place in Total Ascent in {{ activity.sport.name }}"
+            style="color: silver;"></i>
+    {% elif ascent_awards_ranking == 3 %}
+        <i class="fas fa-trophy" data-toggle="tooltip" data-placement="bottom"
+            title="3rd Place in Total Ascent in {{ activity.sport.name }}"
+            style="color: burlywood;"></i>
+    {% endif %}
+</td>

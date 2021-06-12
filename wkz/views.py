@@ -21,7 +21,7 @@ from wkz.gis.geo import GeoTrace, get_list_of_coordinates
 from wkz.tools.colors import lines_colors
 from wkz.tools.utils import cut_list_to_have_same_length
 from workoutizer import settings as django_settings
-from wkz import configuration
+from wkz import configuration as cfg
 from workoutizer import __version__
 
 
@@ -253,9 +253,7 @@ def custom_500_view(request, exception=None):
     )
 
 
-def get_flat_list_of_pks_of_activities_in_top_awards(
-    top_score: int, filter_on_sport: Union[None, str] = None
-) -> List[int]:
+def get_flat_list_of_pks_of_activities_in_top_awards(filter_on_sport: Union[None, str] = None) -> List[int]:
     top_award_pks = []
     if filter_on_sport:
         sport_slugs = [filter_on_sport]
@@ -264,15 +262,25 @@ def get_flat_list_of_pks_of_activities_in_top_awards(
             sport.slug for sport in models.Sport.objects.filter(evaluates_for_awards=True).exclude(name="unknown")
         ]
     for sport in sport_slugs:
-        for bs in configuration.best_sections:
+        for bs in cfg.best_sections:
             for distance in bs["distances"]:
                 top_awards = models.BestSection.objects.filter(
                     activity__sport__slug=sport,
                     activity__evaluates_for_awards=True,
                     kind=bs["kind"],
                     distance=distance,
-                ).order_by("-max_value")[:top_score]
+                ).order_by("-max_value")[: cfg.rank_limit]
                 top_award_pks += [award.activity.pk for award in top_awards]
+        # also add pks of best total ascent activities
+        top_ascent_awards = (
+            models.Activity.objects.filter(
+                sport__slug=sport,
+                evaluates_for_awards=True,
+            )
+            .exclude(trace_file__total_ascent=None)
+            .order_by("-trace_file__total_ascent")[: cfg.rank_limit]
+        )
+        top_award_pks += [activity.pk for activity in top_ascent_awards]
     return list(set(top_award_pks))
 
 
@@ -285,7 +293,7 @@ def get_bulk_of_rows_for_next_page(request, page: str):
         sport_slug = current_url.split("/")[-1]
 
     activities, is_last_page = fetch_row_data_for_page(page_nr=page, sport_slug=sport_slug)
-    top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit)
+    top_awards = get_flat_list_of_pks_of_activities_in_top_awards()
 
     return render(
         request,
@@ -295,7 +303,7 @@ def get_bulk_of_rows_for_next_page(request, page: str):
 
 
 def fetch_row_data_for_page(page_nr: int, sport_slug=None):
-    number_of_rows = configuration.number_of_rows_per_page_in_table
+    number_of_rows = cfg.number_of_rows_per_page_in_table
     start = page_nr * number_of_rows
     end = (page_nr + 1) * number_of_rows
     log.debug(f"fetching activity data for table page {page_nr}")

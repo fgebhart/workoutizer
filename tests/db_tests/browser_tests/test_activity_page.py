@@ -64,6 +64,8 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert "1:46:15" in table_data
     assert "11423" in table_data
     assert "09:18" in table_data
+    assert "447 m" in table_data  # total ascent
+    assert "451 m" in table_data  # total descent
 
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Noon Cycling In Bad Schandau"
 
@@ -74,6 +76,7 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert "Pace" in card_title
     assert "Temperature" in card_title
     assert "Laps" in card_title
+    assert "Elevation" in card_title
 
     links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
     assert "WORKOUTIZER" in links
@@ -99,6 +102,8 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
     assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
     assert len(webdriver.find_elements_by_class_name("fa-calendar-alt")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-arrow-down")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-arrow-up")) > 0
 
     # check that map is displayed
     assert (

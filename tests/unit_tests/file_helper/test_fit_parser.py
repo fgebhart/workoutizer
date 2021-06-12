@@ -65,6 +65,9 @@ def test__parse_records(fit_parser):
         trigger="distance",
         speed=2.15,
     )
+    # check total ascent/descent
+    assert p.total_ascent == 234
+    assert p.total_descent == 233
 
 
 def test_set_min_max_values(fit_parser, monkeypatch):

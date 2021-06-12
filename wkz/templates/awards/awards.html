@@ -9,13 +9,19 @@
                     <li class="nav-item">
                         <a class="nav-link active" data-toggle="tab" href="#fastest" role="tablist">
                             <i class="fas fa-tachometer-alt"></i>
-                            &nbsp;Fastest Awards
+                            &nbsp;Fastest Section
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#climb" role="tablist">
                             <i class="fas fa-mountain"></i>
-                            &nbsp;Climb Awards
+                            &nbsp;Best Climb Section
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#ascent" role="tablist">
+                            <i class="fas fa-arrow-up"></i>
+                            &nbsp;Total Ascent
                         </a>
                     </li>
                 </ul>
@@ -43,6 +49,20 @@
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         {% include "awards/climb_table.html" %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div id="ascent" class="container tab-pane fade"><br>
+                        {% for sport, top_award in top_ascent_awards.items %}
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">{{ sport }}&nbsp;&nbsp;<a href="/sport/{{ sport.slug }}"><i class="fas fa-{{ sport.icon }}" style="color: {{ sport.color }};"></i></a></h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        {% include "awards/ascent_table.html" %}
                                     </div>
                                 </div>
                             </div>

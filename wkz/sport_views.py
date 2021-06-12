@@ -77,7 +77,7 @@ class SportView(MapView, PlotView):
             context["activities_selected_for_plot"] = False
         map_context = super(SportView, self).get(request=request, list_of_activities=activities)
         if sport.evaluates_for_awards:
-            top_awards = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit, sports_name_slug)
+            top_awards = get_flat_list_of_pks_of_activities_in_top_awards(sports_name_slug)
             context["top_awards"] = top_awards
         try:
             sport = model_to_dict(models.Sport.objects.get(slug=sports_name_slug))
