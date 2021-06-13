@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+Placeholder section for new and unreleased changes.
+
+## [0.19.0](https://github.com/fgebhart/workoutizer/releases/tag/0.19.0) - 2021-06-13
+Note, when upgrading to this version you need to run `wkz reimport` in order to parse
+and display the additional data fields added in this release.
 ### Added
 * Add `gpx` file to demo activities.
 * Use [dask](https://docs.dask.org/en/) to parse activity files in parallel to speed
