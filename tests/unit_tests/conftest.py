@@ -7,7 +7,7 @@ from wkz.file_helper.gpx_parser import GPXParser
 
 
 @pytest.fixture
-def fit_parser(test_data_dir, demo_data_dir):
+def fit_parser(test_data_dir, demo_data_dir) -> FITParser:
     test_file_path = "example.fit"
 
     def _pass_path(path=test_file_path):

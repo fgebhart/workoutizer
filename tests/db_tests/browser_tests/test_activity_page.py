@@ -7,6 +7,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
+import pytz
 import pytest
 
 from wkz import models
@@ -64,6 +65,8 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert "1:46:15" in table_data
     assert "11423" in table_data
     assert "09:18" in table_data
+    assert "447 m" in table_data  # total ascent
+    assert "451 m" in table_data  # total descent
 
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Noon Cycling In Bad Schandau"
 
@@ -74,6 +77,7 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert "Pace" in card_title
     assert "Temperature" in card_title
     assert "Laps" in card_title
+    assert "Elevation" in card_title
 
     links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
     assert "WORKOUTIZER" in links
@@ -99,6 +103,8 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
     assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
     assert len(webdriver.find_elements_by_class_name("fa-calendar-alt")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-arrow-down")) > 0
+    assert len(webdriver.find_elements_by_class_name("fa-arrow-up")) > 0
 
     # check that map is displayed
     assert (
@@ -490,3 +496,52 @@ def test_activity_page__missing_attributes(import_one_activity, live_server, web
     assert "Trainings Effect" in headings
     assert "Heart Rate" in headings
     assert "Cadence" in headings
+
+
+def test_trophy_icon_for_awarded_activity_is_displayed_correctly(db, live_server, webdriver):
+    assert models.Activity.objects.count() == 0
+
+    # add activity
+    sport = models.Sport.objects.create(name="Swimming", slug="swimming", icon="swimmer", color="#51CBCE")
+    activity = models.Activity.objects.create(
+        name="Foo",
+        sport=sport,
+        date=datetime.datetime(2020, 1, 1, 15, 30, 0, tzinfo=pytz.UTC),
+        duration=datetime.timedelta(0, 3600),
+    )
+
+    activity_url = live_server.url + f"/activity/{activity.pk}"
+    webdriver.get(activity_url)
+    # neither best sections nor total ascent is available, thus we expect 0 trophies on the activity page
+    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 0
+
+    # add total ascent to activity
+    trace = models.Traces.objects.create(
+        path_to_file="dummy/path",
+        file_name="foo.baa",
+        md5sum="1a2b3c4d5e",
+        total_ascent=500,
+        total_descent=501,
+    )
+    activity.trace_file = trace
+    activity.save()
+
+    webdriver.get(activity_url)
+    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 1
+
+    trophy = webdriver.find_element_by_class_name("fa-trophy")
+    gold = "rgb(255, 215, 0)"
+    assert trophy.value_of_css_property("color") == gold
+
+    # add best sections
+    models.BestSection.objects.create(
+        activity=activity,
+        kind="fastest",
+        distance=1000,
+        start=42,
+        end=128,
+        max_value=123.45,
+    )
+    webdriver.get(activity_url)
+    # since the title of the "fastest section" card will also contain an additional trophy, we now expect 3
+    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 3

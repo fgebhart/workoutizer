@@ -1,3 +1,5 @@
+import datetime
+
 from django.urls import reverse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -5,9 +7,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 
 import pytest
+import pytz
 
 from wkz import configuration
 from wkz import models
+from wkz.views import get_flat_list_of_pks_of_activities_in_top_awards
 
 
 def test_dashboard_page_accessible(live_server, webdriver):
@@ -146,3 +150,85 @@ def test_dashboard__infinite_scroll(tracks_in_tmpdir, live_server, webdriver, in
     # again check number of table rows
     table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
     assert len(table_rows) + 1 == nr_of_inserted_activities
+
+
+def test_trophy_icon_for_awarded_activities_in_table_are_displayed_correctly(db, live_server, webdriver):
+    assert models.Activity.objects.count() == 0
+
+    # add a few activities
+    sport = models.Sport.objects.create(name="Swimming", slug="swimming", icon="swimmer", color="#51CBCE")
+    activity_1 = models.Activity.objects.create(
+        name="Activity 1",
+        sport=sport,
+        date=datetime.datetime(2020, 1, 1, 15, 30, 0, tzinfo=pytz.UTC),
+        duration=datetime.timedelta(0, 3600),
+    )
+    activity_2 = models.Activity.objects.create(
+        name="Activity 2",
+        sport=sport,
+        date=datetime.datetime(2020, 1, 2, 15, 30, 0, tzinfo=pytz.UTC),
+        duration=datetime.timedelta(0, 3600),
+    )
+    activity_3 = models.Activity.objects.create(
+        name="Activity 3",
+        sport=sport,
+        date=datetime.datetime(2020, 1, 3, 15, 30, 0, tzinfo=pytz.UTC),
+        duration=datetime.timedelta(0, 3600),
+    )
+    assert models.Sport.objects.count() == 1
+    assert models.Activity.objects.count() == 3
+
+    # verify no trophies are present by now
+    webdriver.get(live_server.url + reverse("home"))
+    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 0
+
+    # check that activities are already displayed in the table
+    td = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+    assert activity_1.name in td
+    assert activity_2.name in td
+    assert activity_3.name in td
+
+    assert get_flat_list_of_pks_of_activities_in_top_awards() == []
+
+    # now add best sections to activity 1 ...
+    models.BestSection.objects.create(
+        activity=activity_1,
+        kind="fastest",
+        distance=1000,
+        start=42,
+        end=128,
+        max_value=123.45,
+    )
+    webdriver.get(live_server.url + reverse("home"))
+    # ... and verify that 1 trophy is present
+    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 1
+    assert get_flat_list_of_pks_of_activities_in_top_awards() == [activity_1.pk]
+
+    # add best section to activity 2 ...
+    models.BestSection.objects.create(
+        activity=activity_2,
+        kind="fastest",
+        distance=5000,
+        start=43,
+        end=129,
+        max_value=99.99,
+    )
+    webdriver.get(live_server.url + reverse("home"))
+    # ... and verify that 2 trophies are present
+    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 2
+    assert get_flat_list_of_pks_of_activities_in_top_awards() == [activity_1.pk, activity_2.pk]
+
+    # also add total ascent value to activity 3...
+    trace = models.Traces.objects.create(
+        path_to_file="dummy/path",
+        file_name="foo.baa",
+        md5sum="1a2b3c4d5e",
+        total_ascent=500,
+        total_descent=501,
+    )
+    activity_3.trace_file = trace
+    activity_3.save()
+    webdriver.get(live_server.url + reverse("home"))
+    # ... and verify that 3 trophies are present
+    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 3
+    assert get_flat_list_of_pks_of_activities_in_top_awards() == [activity_1.pk, activity_2.pk, activity_3.pk]

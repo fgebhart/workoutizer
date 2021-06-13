@@ -6,7 +6,6 @@ import numpy as np
 from django.urls import reverse
 
 from wkz import models
-from wkz import configuration
 from wkz.views import get_flat_list_of_pks_of_activities_in_top_awards, get_summary_of_all_activities
 from workoutizer import settings as django_settings
 
@@ -47,7 +46,7 @@ def test_activity_view__no_activity(db, client):
 
 
 def test_get_flat_list_of_pks_of_activities_in_top_awards(db, import_demo_data):
-    result_pks = get_flat_list_of_pks_of_activities_in_top_awards(configuration.rank_limit)
+    result_pks = get_flat_list_of_pks_of_activities_in_top_awards()
     assert len(result_pks) == 7
     assert len(np.unique(result_pks)) == 7
 

@@ -1,0 +1,41 @@
+{% load filters %}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Date</th>
+            <th>Activity</th>
+            <th>Total Ascent&nbsp;&nbsp;
+                <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="top" title="{{ info_text.ascent }}">
+                </i>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for activity in top_award %}
+        <tr>
+            {% if forloop.counter == 1 %}
+                <td><i class="fas fa-trophy" style="color: gold;" data-toggle="tooltip" data-placement="bottom"
+                        title="1st Place"></i></td>
+            {% elif forloop.counter == 2 %}
+                <td><i class="fas fa-trophy" style="color: silver;" data-toggle="tooltip" data-placement="bottom"
+                        title="2nd Place"></i></td>
+            {% elif forloop.counter == 3 %}
+                <td><i class="fas fa-trophy" style="color: burlywood;" data-toggle="tooltip" data-placement="bottom"
+                        title="3rd Place"></i></td>
+            {% else %}
+                <td>{{ forloop.counter }}</td>
+            {% endif %}
+            <td>
+                {{ activity.date|date:"M d, Y" }}
+            </td>
+            <td class="limit">
+                <a href="/activity/{{ activity.pk }}">{{ activity.name }}</a>
+            </td>
+            <td>
+                {{ activity.trace_file.total_ascent }} m
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

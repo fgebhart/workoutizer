@@ -54,6 +54,33 @@
         </div>
     {% endif %}
 
+    {% if activity.trace_file.total_ascent and activity.trace_file.total_descent %}
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Elevation</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-borderless text-muted table-sm">
+                        <tr data-toggle="tooltip" data-placement="left" title="Total Ascent">
+                            <td><i class="fas fa-arrow-up" style="color: grey"></i><small style="color: grey"> up</small>
+                            </td>
+                            <td>{{ activity.trace_file.total_ascent }} m</td>
+                            {% if evaluates_for_awards %}
+                                {% include "activity/ascent_ranking_icon.html" %}
+                            {% endif %}
+                        </tr>
+                        <tr data-toggle="tooltip" data-placement="left" title="Total Descent">
+                            <td><i class="fas fa-arrow-down" style="color: grey"></i><small style="color: grey"> down</small>
+                            </td>
+                            <td>{{ activity.trace_file.total_descent }} m</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
     {% if activity.trace_file.avg_speed and activity.trace_file.max_speed %}
         <div class="col">
             <div class="card">

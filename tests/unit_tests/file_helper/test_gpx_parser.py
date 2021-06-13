@@ -10,12 +10,14 @@ def test__parse_metadata(gpx_parser):
     assert parser.file_name == "example.gpx"
 
 
-def test__get_sport_duration_distance(gpx_parser):
+def test_gpx_parser__get_data(gpx_parser):
     parser = gpx_parser()
     assert parser.sport == "running"
     assert parser.duration == datetime.timedelta(seconds=1502)
     assert parser.distance == 4.3
     assert parser.date == datetime.datetime(2019, 7, 12, 17, 5, 36, tzinfo=SimpleTZ("Z"))
+    assert parser.total_ascent is None
+    assert parser.total_descent is None
 
 
 def test_get_date_from_metadata(gpx_parser, test_data_dir):

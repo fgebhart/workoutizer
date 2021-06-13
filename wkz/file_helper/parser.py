@@ -60,6 +60,9 @@ class Parser:
         # training effect
         self.aerobic_training_effect = None  # float()
         self.anaerobic_training_effect = None  # float()
+        # total ascent/descent
+        self.total_ascent = None  # int
+        self.total_descent = None  # int
         # timestamps
         self.timestamps_list = []
         # lists

@@ -13,7 +13,7 @@ import pytz
 
 from workoutizer import settings as django_settings
 from wkz.views import MapView, get_all_form_field_ids
-from wkz.awards_views import get_top_awards_for_one_sport
+from wkz.awards_views import get_top_awards_for_one_sport, get_ascent_ranking_of_activity
 from wkz.models import Sport, Activity, Lap, BestSection
 from wkz.forms import AddActivityForm, EditActivityForm, DATETIMEPICKER_FORMAT
 from wkz.file_helper.gpx_exporter import save_activity_to_gpx_file
@@ -58,6 +58,7 @@ class ActivityView(MapView):
             activity_context["top_climb_awards"] = get_top_awards_for_one_sport(
                 sport=activity.sport, top_score=cfg.rank_limit, kinds=["climb"]
             )
+            activity_context["ascent_awards_ranking"] = get_ascent_ranking_of_activity(activity)
             activity_context["evaluates_for_awards"] = True
         return render(request, self.template_name, {**context, **activity_context})
 
