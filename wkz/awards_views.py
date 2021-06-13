@@ -9,7 +9,7 @@ from wkz.views import WKZView
 
 awards_info_texts = {
     "general": (
-        f"This page lists the top {cfg.rank_limit} activities in the respective sections. Both individual "
+        f"This page lists the top {cfg.rank_limit} activities in the respective category. Both individual "
         "activities and entire sports can be disabled for awards."
     ),
     "fastest": (

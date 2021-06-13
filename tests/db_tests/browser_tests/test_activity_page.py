@@ -498,7 +498,7 @@ def test_activity_page__missing_attributes(import_one_activity, live_server, web
     assert "Cadence" in headings
 
 
-def test_trophy_icon_for_awarded_activity_is_displayed_correctly(db, live_server, webdriver, take_screenshot):
+def test_trophy_icon_for_awarded_activity_is_displayed_correctly(db, live_server, webdriver):
     assert models.Activity.objects.count() == 0
 
     # add activity
@@ -543,6 +543,5 @@ def test_trophy_icon_for_awarded_activity_is_displayed_correctly(db, live_server
         max_value=123.45,
     )
     webdriver.get(activity_url)
-    take_screenshot(webdriver, "trophies_activity_page")
     # since the title of the "fastest section" card will also contain an additional trophy, we now expect 3
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 3
