@@ -1,11 +1,8 @@
 import logging
 import os
-import time
 import shutil
 import subprocess
 from typing import Union, List
-
-from wkz.tools.utils import files_are_same
 
 
 log = logging.getLogger(__name__)
@@ -35,7 +32,6 @@ class FitCollector:
         )
         if activity_path:
             log.debug(f"found activity dir at: {activity_path}")
-            time.sleep(3)
             fits = [
                 os.path.join(root, name)
                 for root, dirs, files in os.walk(activity_path)
@@ -51,13 +47,9 @@ class FitCollector:
                         shutil.copy(fit, target_file)
                         log.info(f"copied file: {target_file}")
                         no_file_was_copied = False
-                        if files_are_same(fit, target_file):
-                            log.debug(f"files {fit} and {target_file} are equal")
-                            if self.delete_files_after_import:
-                                log.debug(f"deleting fit file from device: {file_name}")
-                                os.remove(fit)
-                        else:
-                            log.warning(f"files {fit} and {target_file} are NOT equal after copying.")
+                        if self.delete_files_after_import:
+                            os.remove(fit)
+                            log.debug(f"deleted fit file from device: {file_name}")
                 if no_file_was_copied:
                     log.info("No new file found.")
             else:
@@ -86,7 +78,6 @@ def _find_activity_sub_dir_in_path(name_of_dir: str, path: str, depth: int = 3) 
 
 def try_to_mount_device():
     log.debug("trying to mount device...")
-    time.sleep(3)
     lsusb_output = subprocess.check_output("lsusb")
     split = str(lsusb_output).split("\\n")
     mount_output = None
