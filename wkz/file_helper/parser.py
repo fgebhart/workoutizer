@@ -1,17 +1,16 @@
-import os
 import datetime
 import logging
+import os
 from typing import List
-
-from wkz import configuration
 
 from sportgems import (
     DistanceTooSmallException,
-    TooFewDataPointsException,
-    NoSectionFoundException,
     InconsistentLengthException,
+    NoSectionFoundException,
+    TooFewDataPointsException,
 )
 
+from wkz import configuration
 
 log = logging.getLogger(__name__)
 

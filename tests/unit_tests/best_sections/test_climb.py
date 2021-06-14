@@ -1,10 +1,10 @@
 import math
 
-from sportgems import find_best_climb_section, DistanceTooSmallException
 import pytest
+from sportgems import DistanceTooSmallException, find_best_climb_section
 
-from wkz.best_sections.climb import get_best_climb_section
 from wkz import configuration
+from wkz.best_sections.climb import get_best_climb_section
 
 
 def test_sportgems_climb_interface__dummy_data():

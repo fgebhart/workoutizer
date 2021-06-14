@@ -2,17 +2,22 @@ import json
 from itertools import combinations
 from typing import List, Tuple
 
-from bokeh.plotting import figure
-from bokeh.embed import components
-from bokeh.models import CheckboxButtonGroup, CustomJS, HoverTool, CrosshairTool, BoxZoomTool
-from bokeh.models.formatters import DatetimeTickFormatter
-from bokeh.layouts import column, gridplot
 import pandas as pd
-
+from bokeh.embed import components
+from bokeh.layouts import column, gridplot
+from bokeh.models import (
+    BoxZoomTool,
+    CheckboxButtonGroup,
+    CrosshairTool,
+    CustomJS,
+    HoverTool,
+)
+from bokeh.models.formatters import DatetimeTickFormatter
+from bokeh.plotting import figure
 from django.conf import settings
+
 from wkz import configuration as cfg
 from wkz import models
-
 
 plot_matrix = {
     "temperature": {

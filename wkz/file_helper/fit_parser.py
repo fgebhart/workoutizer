@@ -1,14 +1,14 @@
-from dataclasses import dataclass
-import logging
 import datetime
+import logging
+from dataclasses import dataclass
 
-import pytz
 import pandas as pd
-from fitparse import FitFile
+import pytz
 from django.conf import settings
+from fitparse import FitFile
 
-from wkz.file_helper.parser import Parser
 from wkz import configuration
+from wkz.file_helper.parser import Parser
 
 log = logging.getLogger(__name__)
 

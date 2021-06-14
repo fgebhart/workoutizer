@@ -1,13 +1,12 @@
 import datetime
 
-from django.urls import reverse
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 import pytz
+from django.urls import reverse
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
-from wkz import models
-from wkz import configuration
+from wkz import configuration, models
 
 
 def test_all_sports_page_accessible(live_server, webdriver):

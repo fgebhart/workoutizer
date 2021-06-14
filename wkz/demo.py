@@ -1,11 +1,11 @@
 import datetime
-import shutil
 import logging
 import os
+import shutil
+from types import ModuleType
 
 import pytz
 from django.db import models
-from types import ModuleType
 
 from workoutizer import settings as django_settings
 

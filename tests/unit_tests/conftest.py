@@ -1,8 +1,9 @@
 import os
+
 import pytest
 
-from wkz.file_helper.gpx_exporter import gpx_header
 from wkz.file_helper.fit_parser import FITParser
+from wkz.file_helper.gpx_exporter import gpx_header
 from wkz.file_helper.gpx_parser import GPXParser
 
 

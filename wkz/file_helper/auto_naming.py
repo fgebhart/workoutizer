@@ -1,6 +1,6 @@
-from typing import Union
 import datetime
 import json
+from typing import Union
 
 import pandas as pd
 

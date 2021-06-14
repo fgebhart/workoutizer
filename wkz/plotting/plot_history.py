@@ -1,14 +1,13 @@
-import logging
 import datetime
+import logging
 
 import pandas as pd
-from bokeh.plotting import figure
-from bokeh.models import BoxZoomTool
-from bokeh.embed import components
 import pytz
-
-from django.utils import timezone
+from bokeh.embed import components
+from bokeh.models import BoxZoomTool
+from bokeh.plotting import figure
 from django.conf import settings
+from django.utils import timezone
 
 log = logging.getLogger(__name__)
 

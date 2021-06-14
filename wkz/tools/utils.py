@@ -1,7 +1,7 @@
+import datetime
+import hashlib
 import logging
 import socket
-import hashlib
-import datetime
 
 
 log = logging.getLogger(__name__)

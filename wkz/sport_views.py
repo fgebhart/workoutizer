@@ -1,26 +1,25 @@
 import logging
 
 import pandas as pd
-from django.shortcuts import render
-from django.views.generic import View, DeleteView
-from django.http import Http404, HttpResponseRedirect
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
-from django.contrib import messages
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse
+from django.views.generic import DeleteView, View
 
+from wkz import configuration, models
+from wkz.forms import AddSportsForm
+from wkz.plotting.plot_history import plot_history
+from wkz.tools.utils import remove_microseconds
 from wkz.views import (
     MapView,
     PlotView,
-    get_summary_of_all_activities,
     get_all_form_field_ids,
     get_flat_list_of_pks_of_activities_in_top_awards,
+    get_summary_of_all_activities,
 )
-from wkz import models
-from wkz.forms import AddSportsForm
-from wkz.plotting.plot_history import plot_history
-from wkz import configuration
-from wkz.tools.utils import remove_microseconds
 
 log = logging.getLogger(__name__)
 

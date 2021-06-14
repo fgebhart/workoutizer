@@ -1,15 +1,19 @@
 import operator
 
-from django.urls import reverse
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import ElementNotInteractableException, NoSuchElementException, WebDriverException
-from selenium.webdriver.common.action_chains import ActionChains
 import pytest
+from django.urls import reverse
+from selenium.common.exceptions import (
+    ElementNotInteractableException,
+    NoSuchElementException,
+    WebDriverException,
+)
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
-from wkz import models
 from tests.utils import delayed_assertion
+from wkz import models
 
 
 def test_sidebar(live_server, webdriver):

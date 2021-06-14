@@ -1,7 +1,7 @@
 import datetime
 
-from selenium.webdriver.common.by import By
 from django.urls import reverse
+from selenium.webdriver.common.by import By
 
 from workoutizer.__init__ import __version__
 

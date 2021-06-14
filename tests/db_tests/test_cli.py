@@ -1,12 +1,11 @@
 import os
 import subprocess
 
-from django.core.management import execute_from_command_line
 import pytest
+from django.core.management import execute_from_command_line
 
 from wkz import models
-from workoutizer import cli
-from workoutizer import __version__
+from workoutizer import __version__, cli
 from workoutizer import settings as django_settings
 
 
