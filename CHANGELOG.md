@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
 * Made the extension of fit files to be imported case insensetive
+### Fixed
+* Ensure to close dask cluster after its usage to avoid running multiples, which
+  caused a memory leak.
 
 ## [0.19.0](https://github.com/fgebhart/workoutizer/releases/tag/0.19.0) - 2021-06-13
 Note, when upgrading to this version you need to run `wkz reimport` in order to parse
