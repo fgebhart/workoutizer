@@ -1,14 +1,13 @@
 import logging
 from dataclasses import dataclass
+from math import acos, cos, pi, sin
 from typing import List, Tuple
-from math import pi, sin, cos, acos
 
+import pandas as pd
 from geopy.geocoders import Nominatim
 from geopy.point import Point
-import pandas as pd
 
 from wkz import configuration as cfg
-
 
 log = logging.getLogger(__name__)
 

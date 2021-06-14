@@ -1,9 +1,8 @@
 from django.urls import reverse
-
 from selenium.webdriver.common.by import By
 
-from wkz import models
 from wkz import configuration as cfg
+from wkz import models
 
 
 def test_awards_page__complete(import_demo_data, live_server, webdriver):

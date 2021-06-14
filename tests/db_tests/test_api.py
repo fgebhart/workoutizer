@@ -1,11 +1,11 @@
 import os
 import subprocess
 
-from rest_framework.test import APIClient
 import pytest
+from rest_framework.test import APIClient
 
-from wkz.file_helper import fit_collector
 from wkz import models
+from wkz.file_helper import fit_collector
 
 
 @pytest.fixture

@@ -1,6 +1,5 @@
-from wkz.best_sections.fastest import get_fastest_section
 from wkz.best_sections.climb import get_best_climb_section
-
+from wkz.best_sections.fastest import get_fastest_section
 
 # supported for parsing
 supported_formats = {"gpx", "fit"}

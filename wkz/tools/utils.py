@@ -1,11 +1,10 @@
+import datetime
+import hashlib
 import logging
 import socket
-import hashlib
-import datetime
 
 import pytz
 from django.conf import settings
-
 
 log = logging.getLogger(__name__)
 

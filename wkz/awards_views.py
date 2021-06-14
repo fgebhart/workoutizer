@@ -1,11 +1,10 @@
-from typing import List, Dict, Union
+from typing import Dict, List, Union
 
 from django.shortcuts import render
 
-from wkz import models
 from wkz import configuration as cfg
+from wkz import models
 from wkz.views import WKZView
-
 
 awards_info_texts = {
     "general": (

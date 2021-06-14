@@ -3,8 +3,8 @@ import logging
 import gpxpy
 import gpxpy.gpx
 
-from wkz.gis.geo import get_total_distance_of_trace
 from wkz.file_helper.parser import Parser
+from wkz.gis.geo import get_total_distance_of_trace
 
 log = logging.getLogger(__name__)
 

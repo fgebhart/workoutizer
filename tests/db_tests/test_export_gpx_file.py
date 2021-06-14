@@ -1,4 +1,5 @@
 import os
+
 from lxml import etree
 
 from wkz.file_helper.gpx_exporter import save_activity_to_gpx_file

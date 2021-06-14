@@ -1,10 +1,10 @@
 import math
 
-from sportgems import find_fastest_section, DistanceTooSmallException
 import pytest
+from sportgems import DistanceTooSmallException, find_fastest_section
 
-from wkz.best_sections.fastest import get_fastest_section
 from wkz import configuration
+from wkz.best_sections.fastest import get_fastest_section
 
 
 def test_sportgems_fastest_interface__dummy_data():

@@ -1,24 +1,23 @@
-import os
-import logging
 import json
+import logging
+import os
 from pathlib import Path
-from typing import List, Union, Dict, Tuple
 from types import ModuleType
+from typing import Dict, List, Tuple, Union
 
-from fitparse.utils import FitHeaderError, FitEOFError
-from django.db.models import Model
 from dask.distributed import Client, as_completed
+from django.db.models import Model
+from fitparse.utils import FitEOFError, FitHeaderError
 
-from wkz.file_helper.parser import Parser
-from wkz.file_helper.gpx_parser import GPXParser
-from wkz.file_helper.fit_parser import FITParser
-from wkz.file_helper.auto_naming import get_automatic_name
-from wkz.tools.utils import sanitize, calc_md5, limit_string
-from wkz.tools import sse
-from wkz.demo import finalize_demo_activity_insertion
-from wkz.best_sections.generic import GenericBestSection
 from wkz import configuration
-
+from wkz.best_sections.generic import GenericBestSection
+from wkz.demo import finalize_demo_activity_insertion
+from wkz.file_helper.auto_naming import get_automatic_name
+from wkz.file_helper.fit_parser import FITParser
+from wkz.file_helper.gpx_parser import GPXParser
+from wkz.file_helper.parser import Parser
+from wkz.tools import sse
+from wkz.tools.utils import calc_md5, limit_string, sanitize
 
 log = logging.getLogger(__name__)
 

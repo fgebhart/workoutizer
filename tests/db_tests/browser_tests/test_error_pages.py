@@ -1,7 +1,7 @@
-from django.urls import reverse
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
 import pytest
+from django.urls import reverse
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 
 from wkz.views import DashboardView
 

@@ -1,12 +1,15 @@
 import datetime
 
-import pytz
-import pytest
 import numpy as np
+import pytest
+import pytz
 from django.urls import reverse
 
 from wkz import models
-from wkz.views import get_flat_list_of_pks_of_activities_in_top_awards, get_summary_of_all_activities
+from wkz.views import (
+    get_flat_list_of_pks_of_activities_in_top_awards,
+    get_summary_of_all_activities,
+)
 from workoutizer import settings as django_settings
 
 

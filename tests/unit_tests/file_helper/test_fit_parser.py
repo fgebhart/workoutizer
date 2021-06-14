@@ -1,14 +1,13 @@
 import datetime
 
-import pytz
-import pytest
-from django.conf import settings
 import pandas as pd
+import pytest
+import pytz
+from django.conf import settings
 from fitparse.utils import FitHeaderError
 
-from wkz.file_helper.fit_parser import LapData, FITParser
 from wkz.best_sections.generic import GenericBestSection
-
+from wkz.file_helper.fit_parser import FITParser, LapData
 
 tz = pytz.timezone(settings.TIME_ZONE)
 

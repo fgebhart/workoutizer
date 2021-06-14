@@ -2,11 +2,11 @@ import os
 import shutil
 
 from wkz.tools.utils import (
-    sanitize,
     cut_list_to_have_same_length,
-    limit_string,
-    get_local_ip_address,
     files_are_same,
+    get_local_ip_address,
+    limit_string,
+    sanitize,
 )
 
 

@@ -1,14 +1,14 @@
 import datetime
 import operator
 
+import pytest
 from django.urls import reverse
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-import pytest
 
-from workoutizer import settings as django_settings
 from tests.utils import delayed_assertion
 from wkz import models
+from workoutizer import settings as django_settings
 
 
 def test_settings_page__no_demo_activity(live_server, webdriver):

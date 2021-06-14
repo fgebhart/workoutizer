@@ -1,12 +1,11 @@
 import logging
 import os
-import time
 import shutil
 import subprocess
-from typing import Union, List
+import time
+from typing import List, Union
 
 from wkz.tools.utils import files_are_same
-
 
 log = logging.getLogger(__name__)
 

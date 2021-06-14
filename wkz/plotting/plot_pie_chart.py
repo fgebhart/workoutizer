@@ -2,9 +2,9 @@ import logging
 from math import pi
 
 import pandas as pd
-from bokeh.transform import cumsum
 from bokeh.embed import components
 from bokeh.plotting import figure
+from bokeh.transform import cumsum
 
 log = logging.getLogger(__name__)
 

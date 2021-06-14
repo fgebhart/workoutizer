@@ -1,16 +1,14 @@
 import datetime
 
-from django.urls import reverse
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException
-
 import pytest
 import pytz
+from django.urls import reverse
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
-from wkz import configuration
-from wkz import models
+from wkz import configuration, models
 from wkz.views import get_flat_list_of_pks_of_activities_in_top_awards
 
 
