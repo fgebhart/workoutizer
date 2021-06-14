@@ -326,7 +326,7 @@ def test_import_files_with_upper_case_ending(db, demo_data_dir, tracks_in_tmpdir
     assert models.Activity.objects.count() == 0
     settings = models.get_settings()
 
-    # copy the same file two times into two different files (with same checksum)
+    # copy two activity files to have upper case file endings
     fit_file = Path(settings.path_to_trace_dir) / "test_fit.FIT"
     gpx_file = Path(settings.path_to_trace_dir) / "test_gpx.GPX"
     source_fit = Path(demo_data_dir) / "cycling_bad_schandau.fit"
