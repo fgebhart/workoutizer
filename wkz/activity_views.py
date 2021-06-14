@@ -1,25 +1,27 @@
-import os
-import logging
 import datetime
+import logging
+import os
 
-from django.shortcuts import render
-from django.views.generic import DeleteView
-from django.http import HttpResponseRedirect
-from django.contrib import messages
-from django.http import HttpResponse, Http404
-from django.urls import reverse
-from django.forms import modelformset_factory
 import pytz
+from django.contrib import messages
+from django.forms import modelformset_factory
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+from django.views.generic import DeleteView
 
-from workoutizer import settings as django_settings
-from wkz.views import MapView, get_all_form_field_ids
-from wkz.awards_views import get_top_awards_for_one_sport, get_ascent_ranking_of_activity
-from wkz.models import Sport, Activity, Lap, BestSection
-from wkz.forms import AddActivityForm, EditActivityForm, DATETIMEPICKER_FORMAT
-from wkz.file_helper.gpx_exporter import save_activity_to_gpx_file
-from wkz.plotting.plot_time_series import plot_time_series
-from wkz.best_sections.generic import activity_suitable_for_awards
 from wkz import configuration as cfg
+from wkz.awards_views import (
+    get_ascent_ranking_of_activity,
+    get_top_awards_for_one_sport,
+)
+from wkz.best_sections.generic import activity_suitable_for_awards
+from wkz.file_helper.gpx_exporter import save_activity_to_gpx_file
+from wkz.forms import DATETIMEPICKER_FORMAT, AddActivityForm, EditActivityForm
+from wkz.models import Activity, BestSection, Lap, Sport
+from wkz.plotting.plot_time_series import plot_time_series
+from wkz.views import MapView, get_all_form_field_ids
+from workoutizer import settings as django_settings
 
 log = logging.getLogger(__name__)
 

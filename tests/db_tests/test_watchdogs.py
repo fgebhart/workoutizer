@@ -1,13 +1,13 @@
+import operator
 import time
 from pathlib import Path
-import operator
 
 from lxml import etree
 
-from wkz.demo import copy_demo_fit_files_to_track_dir
-from wkz import models
-from wkz.watchdogs import trigger_device_watchdog, trigger_file_watchdog
 from tests.utils import delayed_assertion
+from wkz import models
+from wkz.demo import copy_demo_fit_files_to_track_dir
+from wkz.watchdogs import trigger_device_watchdog, trigger_file_watchdog
 
 
 def test__start_file_importer_watchdog_basic(db, tmp_path, test_data_dir, demo_data_dir, fit_file_a):

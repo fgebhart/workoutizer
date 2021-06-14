@@ -1,13 +1,7 @@
-from django.urls import path, include
-from django.urls import re_path
 import django_eventstream
+from django.urls import include, path, re_path
 
-from wkz import views
-from wkz import activity_views
-from wkz import sport_views
-from wkz import awards_views
-from wkz import api
-
+from wkz import activity_views, api, awards_views, sport_views, views
 
 urlpatterns = [
     # home Dashboard

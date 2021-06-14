@@ -1,14 +1,13 @@
+import logging
 import os
 import signal
-import logging
 
+import psutil
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
-import psutil
 
 from wkz.file_helper.fit_collector import try_to_mount_device
-
 
 log = logging.getLogger(__name__)
 

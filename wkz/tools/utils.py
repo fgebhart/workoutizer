@@ -1,10 +1,7 @@
+import datetime
+import hashlib
 import logging
 import socket
-import hashlib
-import datetime
-
-import pytz
-from django.conf import settings
 
 
 log = logging.getLogger(__name__)
@@ -43,12 +40,6 @@ def cut_list_to_have_same_length(list1, list2, mode="cut beginning", modify_only
     return list1, list2
 
 
-def timestamp_to_local_time(timestamp: int):
-    return pytz.utc.localize(datetime.datetime.fromtimestamp(timestamp), is_dst=False).astimezone(
-        pytz.timezone(settings.TIME_ZONE)
-    )
-
-
 def remove_microseconds(delta):
     return delta - datetime.timedelta(microseconds=delta.microseconds)
 
@@ -67,19 +58,3 @@ def get_local_ip_address() -> str:
     ip_address = s.getsockname()[0]
     s.close()
     return ip_address
-
-
-def files_are_same(file_a: str, file_b: str) -> bool:
-    if calc_md5(file_a) == calc_md5(file_b):
-        return True
-    else:
-        return False
-
-
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]

@@ -1,6 +1,6 @@
 import datetime
 
-from wkz.forms import EditSettingsForm, AddSportsForm, AddActivityForm, EditActivityForm
+from wkz.forms import AddActivityForm, AddSportsForm, EditActivityForm, EditSettingsForm
 
 
 def test_edit_settings_form():

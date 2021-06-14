@@ -1,7 +1,8 @@
-import os
 import datetime
+import os
 
 from gpxpy.gpxfield import SimpleTZ
+
 from wkz.best_sections.generic import GenericBestSection
 
 

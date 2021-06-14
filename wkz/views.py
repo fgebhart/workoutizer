@@ -1,29 +1,27 @@
-import logging
-import json
-from typing import List, Union
 import datetime
+import json
+import logging
+from typing import List, Union
 
-from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
-from django.views.generic import View
+import pytz
 from django.contrib import messages
+from django.db.models import Sum
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.db.models import Sum
-import pytz
+from django.views.generic import View
 
-from wkz import models
-from wkz import forms
+from wkz import configuration as cfg
+from wkz import forms, models
+from wkz.gis.geo import GeoTrace, get_list_of_coordinates
 from wkz.plotting.plot_history import plot_history
 from wkz.plotting.plot_pie_chart import plot_pie_chart
 from wkz.plotting.plot_trend import plot_trend
-from wkz.gis.geo import GeoTrace, get_list_of_coordinates
 from wkz.tools.colors import lines_colors
 from wkz.tools.utils import cut_list_to_have_same_length
-from workoutizer import settings as django_settings
-from wkz import configuration as cfg
 from workoutizer import __version__
-
+from workoutizer import settings as django_settings
 
 log = logging.getLogger(__name__)
 

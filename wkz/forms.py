@@ -1,7 +1,6 @@
 from django import forms
 
-from wkz.models import Sport, Activity, Settings
-
+from wkz.models import Activity, Settings, Sport
 
 DATETIMEPICKER_FORMAT = "%m/%d/%Y %I:%M %p"
 

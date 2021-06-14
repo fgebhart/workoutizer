@@ -1,5 +1,7 @@
 import os
+
 import setuptools
+
 from workoutizer import __version__
 
 with open("Readme.md", "r") as fh:

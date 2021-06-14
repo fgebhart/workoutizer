@@ -1,6 +1,5 @@
 import datetime
 
-
 from wkz.file_helper.gpx_exporter import _build_gpx, _fill_list_of_timestamps
 
 

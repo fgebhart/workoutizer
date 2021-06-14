@@ -1,4 +1,7 @@
-from wkz.file_helper.fit_collector import _find_activity_sub_dir_in_path
+from pathlib import Path
+import shutil
+
+from wkz.file_helper.fit_collector import _find_activity_sub_dir_in_path, FitCollector
 
 
 def test__find_activity_sub_dir_in_path(tmp_path):
@@ -32,3 +35,49 @@ def test__find_activity_sub_dir_in_path(tmp_path):
     d = tmp_path / "mtp:something" / "GARMIN" / "Primary" / "Activity"
     d.mkdir(parents=True)
     assert _find_activity_sub_dir_in_path(name_of_dir="Activity", path=tmp_path, depth=4) == str(d)
+
+
+def test_deleting_fit_files_after_coying(tmp_path, demo_data_dir):
+    # path to garmin device
+    garmin = tmp_path / "garmin"
+    garmin.mkdir()
+
+    # activity dir on device
+    activity = garmin / "Activity"
+    activity.mkdir()
+
+    # path to target activity dir
+    target = tmp_path / "target"
+    target.mkdir()
+
+    # copy file from demo data dir to activity dir "on device"
+    fit_file_1 = Path(activity) / "test_fit.fit"
+    source_fit_1 = Path(demo_data_dir) / "cycling_bad_schandau.fit"
+    shutil.copy(source_fit_1, fit_file_1)
+
+    assert fit_file_1.is_file()
+
+    # first collect fit file without deleting source file
+    fit_collector = FitCollector(garmin, target, delete_files_after_import=False)
+    fit_collector.copy_fit_files()
+
+    # verify fit file got copied
+    assert (target / "garmin" / "test_fit.fit").is_file()
+
+    # file "on device" did not get deleted
+    assert (activity / "test_fit.fit").is_file()
+
+    fit_file_2 = Path(activity) / "test_fit_2.fit"
+    source_fit_2 = Path(demo_data_dir) / "2020-08-28-11-57-10.fit"
+    shutil.copy(source_fit_2, fit_file_2)
+    assert fit_file_2.is_file()
+
+    # now collect it with deleting it
+    fit_collector = FitCollector(garmin, target, delete_files_after_import=True)
+    fit_collector.copy_fit_files()
+
+    # verify fit file got copied
+    assert (target / "garmin" / "test_fit_2.fit").is_file()
+
+    # file "on device" got deleted
+    assert not (activity / "test_fit_2.fit").is_file()

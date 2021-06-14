@@ -4,10 +4,10 @@ import pytest
 
 from wkz.gis.geo import (
     add_elevation_data_to_coordinates,
-    get_total_distance_of_trace,
-    get_location_name,
-    get_list_of_coordinates,
     calculate_distance_between_points,
+    get_list_of_coordinates,
+    get_location_name,
+    get_total_distance_of_trace,
 )
 
 

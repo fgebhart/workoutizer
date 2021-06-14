@@ -1,20 +1,17 @@
-import os
 import datetime
+import os
 import shutil
-from py._path.local import LocalPath
 from typing import List
 
 import pytest
 import pytz
 from django.core.management import call_command
+from py._path.local import LocalPath
 
-from workoutizer import settings as django_settings
-from wkz.demo import (
-    prepare_import_of_demo_activities,
-    copy_demo_fit_files_to_track_dir,
-)
-from wkz.file_importer import run_importer__dask
 from wkz import models
+from wkz.demo import copy_demo_fit_files_to_track_dir, prepare_import_of_demo_activities
+from wkz.file_importer import run_importer__dask
+from workoutizer import settings as django_settings
 
 
 @pytest.fixture

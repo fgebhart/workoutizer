@@ -1,13 +1,12 @@
 import datetime
 
-import pytz
 import pytest
+import pytz
 
-from wkz import models
-from wkz import configuration
+from wkz import configuration, models
+from wkz.best_sections.generic import activity_suitable_for_awards
 from wkz.demo import prepare_import_of_demo_activities
 from wkz.file_importer import run_importer__dask
-from wkz.best_sections.generic import activity_suitable_for_awards
 
 
 def test_reimport_of_activities(tracks_in_tmpdir, client):

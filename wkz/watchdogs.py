@@ -1,21 +1,18 @@
-from pathlib import Path
-import os
 import logging
+import os
+from pathlib import Path
 
+from wkz import models
 from wkz.file_helper.fit_collector import FitCollector
 from wkz.file_importer import run_importer__dask
-from wkz import models
-
 
 log = logging.getLogger(__name__)
 
 
 def trigger_file_watchdog():
-    log.debug("triggered periodic file importer...")
     settings = models.get_settings()
     if Path(settings.path_to_trace_dir).is_dir():
         run_importer__dask(models)
-        log.debug("finished periodic file import.")
     else:
         log.warning(f"File Watchdog: {settings.path_to_trace_dir} is not a valid directory.")
 

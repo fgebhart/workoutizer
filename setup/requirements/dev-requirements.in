@@ -1,5 +1,6 @@
 black
 flake8
+isort
 IPython
 lxml>=4.6.3
 pip-tools

@@ -1,24 +1,23 @@
-import os
-import logging
 import json
+import logging
+import os
 from pathlib import Path
-from typing import List, Union, Dict, Tuple
 from types import ModuleType
+from typing import Dict, List, Tuple, Union
 
-from fitparse.utils import FitHeaderError, FitEOFError
-from django.db.models import Model
 from dask.distributed import Client, as_completed
+from django.db.models import Model
+from fitparse.utils import FitEOFError, FitHeaderError
 
-from wkz.file_helper.parser import Parser
-from wkz.file_helper.gpx_parser import GPXParser
-from wkz.file_helper.fit_parser import FITParser
-from wkz.file_helper.auto_naming import get_automatic_name
-from wkz.tools.utils import sanitize, calc_md5, limit_string
-from wkz.tools import sse
-from wkz.demo import finalize_demo_activity_insertion
-from wkz.best_sections.generic import GenericBestSection
 from wkz import configuration
-
+from wkz.best_sections.generic import GenericBestSection
+from wkz.demo import finalize_demo_activity_insertion
+from wkz.file_helper.auto_naming import get_automatic_name
+from wkz.file_helper.fit_parser import FITParser
+from wkz.file_helper.gpx_parser import GPXParser
+from wkz.file_helper.parser import Parser
+from wkz.tools import sse
+from wkz.tools.utils import calc_md5, limit_string, sanitize
 
 log = logging.getLogger(__name__)
 
@@ -304,7 +303,7 @@ def _parse_single_file(
 def _save_single_parsed_file_to_db(
     parsed_file: Parser, models: ModuleType, importing_demo_data: bool, update_existing: bool
 ) -> None:
-    log.info(f"saving data of file {parsed_file.file_name} to db...")
+    log.debug(f"saving data of file {parsed_file.file_name} to db...")
     # save trace data to model
     trace_file_object = _save_trace_to_model(
         traces_model=models.Traces,
@@ -373,8 +372,9 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
                 reimporting=reimporting,
             )
 
+            total_num = len(trace_files)
             # loop over futures in a sequential fashion to store data to sqlite db sequentially
-            for future in as_completed(distributed_results):
+            for i, future in enumerate(as_completed(distributed_results)):
                 md5sum, path_to_file, parsed_file = future.result()
                 # keep track of the seen md5sums and their file path
                 seen_md5sums = _keep_track_of_md5sums_and_warn_about_duplicates(seen_md5sums, path_to_file, md5sum)
@@ -383,6 +383,7 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
                     # write parsed file to db if it does not exist yet, or in case of reimporting (=overwriting)
                     if _should_be_written_to_db(parsed_file, models.Traces, reimporting):
                         _save_single_parsed_file_to_db(parsed_file, models, importing_demo_data, reimporting)
+                        log.info(f"saved activity {i+1}/{total_num} to db")
                         num += 1
                 if (num + 1) % configuration.num_activities_in_progress_update == 0:
                     msg = f"<b>Progress Update:</b> Imported {num + 1} files."
@@ -391,7 +392,6 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
 
     if importing_demo_data:
         finalize_demo_activity_insertion(models)
-    log.debug("finished file import.")
 
 
 def _keep_track_of_md5sums_and_warn_about_duplicates(

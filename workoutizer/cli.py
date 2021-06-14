@@ -4,15 +4,14 @@ import sys
 from pathlib import Path
 
 import click
-import requests
 import luddite
+import requests
 from django.core.management import execute_from_command_line
 from django.db.utils import OperationalError
 
-from workoutizer.settings import WORKOUTIZER_DIR, WORKOUTIZER_DB_PATH, TRACKS_DIR
-from workoutizer import __version__
 from wkz.tools.utils import get_local_ip_address
-
+from workoutizer import __version__
+from workoutizer.settings import TRACKS_DIR, WORKOUTIZER_DB_PATH, WORKOUTIZER_DIR
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
 

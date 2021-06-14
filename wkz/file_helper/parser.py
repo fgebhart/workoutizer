@@ -1,17 +1,16 @@
-import os
 import datetime
 import logging
+import os
 from typing import List
-
-from wkz import configuration
 
 from sportgems import (
     DistanceTooSmallException,
-    TooFewDataPointsException,
-    NoSectionFoundException,
     InconsistentLengthException,
+    NoSectionFoundException,
+    TooFewDataPointsException,
 )
 
+from wkz import configuration
 
 log = logging.getLogger(__name__)
 
@@ -120,7 +119,7 @@ class Parser:
                         InconsistentLengthException,
                     ) as e:
                         # catching some of the sportgems customs exceptions and logging it
-                        log.warning(f"Could not find fastest section. Sportgems error: {e}")
+                        log.debug(f"Could not find requested section. Sportgems error: {e}")
                         # however some are not caught and should actually be raised,
                         # e.g NoSectionFoundException and InvalidDesiredDistanceException
 

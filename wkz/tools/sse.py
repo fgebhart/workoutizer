@@ -1,8 +1,7 @@
-import re
 import logging
+import re
 
 from django_eventstream import send_event
-
 
 log = logging.getLogger(__name__)
 

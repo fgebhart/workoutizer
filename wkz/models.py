@@ -1,17 +1,16 @@
-from pathlib import Path
-import os
-import logging
 import datetime
+import logging
+import os
+from pathlib import Path
 
-from django.db import models
-from django.utils import timezone
-from django.template.defaultfilters import slugify
 from colorfield.fields import ColorField
+from django.db import models
+from django.template.defaultfilters import slugify
+from django.utils import timezone
 
-from workoutizer import settings as django_settings
 from wkz.file_importer import run_importer__dask
 from wkz.tools import sse
-
+from workoutizer import settings as django_settings
 
 log = logging.getLogger(__name__)
 
