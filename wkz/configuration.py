@@ -87,3 +87,9 @@ huey_timeout = 30
 
 # reduce number of data points for activity view in order speed up page load
 every_nth_value = 5
+
+# interval in minutes for periodic file import import
+file_importer_interval = 1
+
+# interval in minutes for periodic file collector
+file_collector_interval = file_importer_interval
