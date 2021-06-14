@@ -96,7 +96,7 @@ def test_collecting_fit_files_with_upper_case_ending(tmp_path, demo_data_dir):
     target = tmp_path / "target"
     target.mkdir()
 
-    # copy the same file two times into two different files (with same checksum)
+    # copy demo fit file and use upper case file ending
     fit_file = Path(activity) / "test_fit.FIT"
     source_fit = Path(demo_data_dir) / "cycling_bad_schandau.fit"
     shutil.copy(source_fit, fit_file)
