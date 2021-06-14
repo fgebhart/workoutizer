@@ -234,11 +234,11 @@ def _get_md5sums_from_model(traces_model) -> List[str]:
 
 def _parse_data(file: Path, md5sum: str) -> Union[FITParser, GPXParser]:
     file = str(file)
-    log.debug(f"importing {file} ...")
-    if file.endswith(".gpx"):
+    log.info(f"importing {file} ...")
+    if file.lower().endswith(".gpx"):
         log.debug("parsing GPX file ...")
         parser = GPXParser(path_to_file=file, md5sum=md5sum)
-    elif file.endswith(".fit"):
+    elif file.lower().endswith(".fit"):
         log.debug("parsing FIT file ...")
         parser = FITParser(path_to_file=file, md5sum=md5sum)
     else:
@@ -257,7 +257,7 @@ def _get_all_files(path: Path) -> List[Path]:
         Path(os.path.join(root, name))
         for root, dirs, files in os.walk(path)
         for name in files
-        if name.endswith(tuple(configuration.supported_formats))
+        if name.lower().endswith(tuple(configuration.supported_formats))
     ]
     return trace_files
 

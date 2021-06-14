@@ -37,7 +37,8 @@ class FitCollector:
                 os.path.join(root, name)
                 for root, dirs, files in os.walk(activity_path)
                 for name in files
-                if name.endswith(".fit")
+                # Some devices genereate file named .FIT, other .fit
+                if name.lower().endswith(".fit")
             ]
             if fits:
                 no_file_was_copied = True
