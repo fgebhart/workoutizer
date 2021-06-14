@@ -1,7 +1,7 @@
-from pathlib import Path
 import shutil
+from pathlib import Path
 
-from wkz.file_helper.fit_collector import _find_activity_sub_dir_in_path, FitCollector
+from wkz.file_helper.fit_collector import FitCollector, _find_activity_sub_dir_in_path
 
 
 def test__find_activity_sub_dir_in_path(tmp_path):
@@ -81,3 +81,30 @@ def test_deleting_fit_files_after_coying(tmp_path, demo_data_dir):
 
     # file "on device" got deleted
     assert not (activity / "test_fit_2.fit").is_file()
+
+
+def test_collecting_fit_files_with_upper_case_ending(tmp_path, demo_data_dir):
+    # path to garmin device
+    garmin = tmp_path / "garmin"
+    garmin.mkdir()
+
+    # activity dir on device
+    activity = garmin / "Activity"
+    activity.mkdir()
+
+    # path to target activity dir
+    target = tmp_path / "target"
+    target.mkdir()
+
+    # copy demo fit file and use upper case file ending
+    fit_file = Path(activity) / "test_fit.FIT"
+    source_fit = Path(demo_data_dir) / "cycling_bad_schandau.fit"
+    shutil.copy(source_fit, fit_file)
+
+    assert fit_file.is_file()
+
+    fit_collector = FitCollector(garmin, target)
+    fit_collector.copy_fit_files()
+
+    # verify fit file got copied
+    assert (target / "garmin" / "test_fit.FIT").is_file()

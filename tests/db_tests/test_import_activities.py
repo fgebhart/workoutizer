@@ -320,3 +320,24 @@ def test_run_importer__warns_about_duplicate_files(db, demo_data_dir, tracks_in_
         f"The following two files have the same checksum, you might want to remove one of them:{file_b} and {file_a}"
         in caplog.text
     )
+
+
+def test_import_files_with_upper_case_ending(db, demo_data_dir, tracks_in_tmpdir):
+    assert models.Activity.objects.count() == 0
+    settings = models.get_settings()
+
+    # copy two activity files to have upper case file endings
+    fit_file = Path(settings.path_to_trace_dir) / "test_fit.FIT"
+    gpx_file = Path(settings.path_to_trace_dir) / "test_gpx.GPX"
+    source_fit = Path(demo_data_dir) / "cycling_bad_schandau.fit"
+    source_gpx = Path(demo_data_dir) / "cycling_walchensee.gpx"
+    shutil.copy(source_fit, fit_file)
+    shutil.copy(source_gpx, gpx_file)
+
+    assert fit_file.is_file()
+    assert gpx_file.is_file()
+
+    # now run file importer and check that files get imported
+    run_importer__dask(models)
+
+    assert models.Activity.objects.count() == 2
