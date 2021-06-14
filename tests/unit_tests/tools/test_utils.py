@@ -1,9 +1,5 @@
-import os
-import shutil
-
 from wkz.tools.utils import (
     cut_list_to_have_same_length,
-    files_are_same,
     get_local_ip_address,
     limit_string,
     sanitize,
@@ -47,17 +43,3 @@ def test__get_local_ip_address():
     assert type(ip_address) == str
     assert len(ip_address) >= 8
     assert "." in ip_address
-
-
-def test_files_are_same(tmpdir, test_data_dir):
-    # copy a file to temp dir for comparison
-    file_a = os.path.join(test_data_dir, "example.fit")
-    file_b = os.path.join(tmpdir, "example.fit")
-    shutil.copy2(src=file_a, dst=file_b)
-
-    # files are the same
-    assert files_are_same(file_a, file_b) is True
-
-    file_c = os.path.join(test_data_dir, "example.gpx")
-    # files are not the same
-    assert files_are_same(file_a, file_c) is False
