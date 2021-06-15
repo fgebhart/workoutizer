@@ -52,7 +52,7 @@ def _is_main_run():
 def run(url):
     if not url:
         if os.getenv("WKZ_ENV") == "devel":
-            url = "127.0.0.1:8000"
+            url = "0.0.0.0:8000"
         else:
             url = f"{get_local_ip_address()}:8000"
     if _is_main_run():
