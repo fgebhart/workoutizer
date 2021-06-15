@@ -4,6 +4,7 @@ docker build . -t wkz
 docker run \
   --name workoutizer \
   --rm \
+  -p 8000:8000 \
   -it \
   -v $(pwd):/wkz \
   wkz \

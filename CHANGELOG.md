@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+* Port-forwarding added when using the `run_docker.sh` script
 ### Changed
 * Made the extension of fit files to be imported case insensetive
 ### Fixed
