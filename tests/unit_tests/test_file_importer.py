@@ -3,12 +3,14 @@ from pathlib import Path
 
 from wkz.file_helper.parser import Parser
 from wkz.file_importer import (
+    _all_files_in_db_already,
     _convert_list_attributes_to_json,
     _get_all_files,
     _map_sport_name,
     _parse_single_file,
     sport_naming_map,
 )
+from wkz.tools.utils import calc_md5
 
 
 def test_map_sport_name():
@@ -50,3 +52,23 @@ def test__parse_single_file(demo_data_dir, fit_file):
     assert payload.md5sum == "foo"
     assert payload.sport is not None
     assert payload.duration != datetime.timedelta(minutes=0)
+
+
+def test__all_files_in_db_already(demo_data_dir):
+    all_files = list(Path(demo_data_dir).iterdir())
+    assert _all_files_in_db_already(all_files, []) is False
+
+    # get all md5sums of existing files
+    md5sums_from_db = []
+    for trace in all_files:
+        md5sums_from_db.append(calc_md5(trace))
+
+    assert _all_files_in_db_already(all_files, md5sums_from_db) is True
+
+    # remove only one md5sum and verify that result is False
+    fewer_md5sums = md5sums_from_db[:-1]
+    assert _all_files_in_db_already(all_files, fewer_md5sums) is False
+
+    # remove one file (thus db all md5sums of existing files plus one) and verify result is True
+    fewer_files = all_files[:-1]
+    assert _all_files_in_db_already(fewer_files, md5sums_from_db) is True

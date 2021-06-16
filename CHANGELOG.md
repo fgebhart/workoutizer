@@ -6,12 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-* Port-forwarding added when using the `run_docker.sh` script
+* Port-forwarding added when using the `run_docker.sh` script.
 ### Changed
-* Made the extension of fit files to be imported case insensetive
+* Made the extension of fit files to be imported case insensitive.
 ### Fixed
-* Ensure to close dask cluster after its usage to avoid running multiples, which
-  caused a memory leak.
+* Applied initial check to file importing process, which skips running a dask cluster
+  in case all existing files are preset in the db already. TODO
 
 ## [0.19.0](https://github.com/fgebhart/workoutizer/releases/tag/0.19.0) - 2021-06-13
 Note, when upgrading to this version you need to run `wkz reimport` in order to parse

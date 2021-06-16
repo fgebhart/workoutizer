@@ -214,7 +214,7 @@ def test_trophy_icon_for_awarded_activities_in_table_are_displayed_correctly(db,
     webdriver.get(live_server.url + reverse("home"))
     # ... and verify that 2 trophies are present
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 2
-    assert get_flat_list_of_pks_of_activities_in_top_awards() == [activity_1.pk, activity_2.pk]
+    assert set(get_flat_list_of_pks_of_activities_in_top_awards()) == {activity_1.pk, activity_2.pk}
 
     # also add total ascent value to activity 3...
     trace = models.Traces.objects.create(

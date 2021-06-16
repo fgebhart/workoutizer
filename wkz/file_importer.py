@@ -5,9 +5,9 @@ from pathlib import Path
 from types import ModuleType
 from typing import Dict, List, Tuple, Union
 
-from dask.distributed import Client, as_completed, LocalCluster
+from dask.distributed import Client, as_completed
 from django.db.models import Model
-from fitparse.utils import FitHeaderError, FitEOFError
+from fitparse.utils import FitEOFError, FitHeaderError
 
 from wkz import configuration
 from wkz.best_sections.generic import GenericBestSection
@@ -359,38 +359,51 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
     _send_initial_info(len(trace_files), path_to_traces)
     md5sums_from_db = _get_md5sums_from_model(models.Traces)
 
+    # check whether all files are in db already or if a single new file was added
+    if _all_files_in_db_already(trace_files, md5sums_from_db) and not reimporting:
+        return
+
     num = 0
     seen_md5sums = {}
     if trace_files:
-        with LocalCluster(processes=False) as cluster:
-            with Client(cluster) as client:
-                distributed_results = client.map(
-                    _check_and_parse_file,
-                    trace_files,
-                    path_to_traces=path_to_traces,
-                    md5sums_from_db=md5sums_from_db,
-                    reimporting=reimporting,
-                )
-                total_num = len(trace_files)
-                # loop over futures in a sequential fashion to store data to sqlite db sequentially
-                for i, future in enumerate(as_completed(distributed_results)):
-                    md5sum, path_to_file, parsed_file = future.result()
-                    # keep track of the seen md5sums and their file path
-                    seen_md5sums = _keep_track_of_md5sums_and_warn_about_duplicates(seen_md5sums, path_to_file, md5sum)
-                    # check if result is not None (due to failed parsing)
-                    if parsed_file:
-                        # write parsed file to db if it does not exist yet, or in case of reimporting (=overwriting)
-                        if _should_be_written_to_db(parsed_file, models.Traces, reimporting):
-                            _save_single_parsed_file_to_db(parsed_file, models, importing_demo_data, reimporting)
-                            log.info(f"saved activity {i+1}/{total_num} to db")
-                            num += 1
-                    if (num + 1) % configuration.num_activities_in_progress_update == 0:
-                        msg = f"<b>Progress Update:</b> Imported {num + 1} files."
-                        sse.send(msg, "blue", "DEBUG")
+        with Client(processes=False) as client:
+            distributed_results = client.map(
+                _check_and_parse_file,
+                trace_files,
+                path_to_traces=path_to_traces,
+                md5sums_from_db=md5sums_from_db,
+                reimporting=reimporting,
+            )
+            total_num = len(trace_files)
+            # loop over futures in a sequential fashion to store data to sqlite db sequentially
+            for i, future in enumerate(as_completed(distributed_results)):
+                md5sum, path_to_file, parsed_file = future.result()
+                # keep track of the seen md5sums and their file path
+                seen_md5sums = _keep_track_of_md5sums_and_warn_about_duplicates(seen_md5sums, path_to_file, md5sum)
+                # check if result is not None (due to failed parsing)
+                if parsed_file:
+                    # write parsed file to db if it does not exist yet, or in case of reimporting (=overwriting)
+                    if _should_be_written_to_db(parsed_file, models.Traces, reimporting):
+                        _save_single_parsed_file_to_db(parsed_file, models, importing_demo_data, reimporting)
+                        log.info(f"saved activity {i+1}/{total_num} to db")
+                        num += 1
+                if (num + 1) % configuration.num_activities_in_progress_update == 0:
+                    msg = f"<b>Progress Update:</b> Imported {num + 1} files."
+                    sse.send(msg, "blue", "DEBUG")
     _send_result_info(num)
 
     if importing_demo_data:
         finalize_demo_activity_insertion(models)
+
+
+def _all_files_in_db_already(trace_files: List[Path], md5sums_from_db: List[str]) -> bool:
+    md5sums_from_files = []
+    for trace in trace_files:
+        md5sums_from_files.append(calc_md5(trace))
+    if set(md5sums_from_db) >= set(md5sums_from_files):
+        return True
+    else:
+        return False
 
 
 def _keep_track_of_md5sums_and_warn_about_duplicates(
