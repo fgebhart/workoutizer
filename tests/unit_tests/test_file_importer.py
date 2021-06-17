@@ -1,9 +1,12 @@
 import datetime
 from pathlib import Path
 
+import pytest
+
 from wkz.file_helper.parser import Parser
 from wkz.file_importer import (
     _all_files_in_db_already,
+    _check_and_parse_file,
     _convert_list_attributes_to_json,
     _get_all_files,
     _map_sport_name,
@@ -72,3 +75,23 @@ def test__all_files_in_db_already(demo_data_dir):
     # remove one file (thus db all md5sums of existing files plus one) and verify result is True
     fewer_files = all_files[:-1]
     assert _all_files_in_db_already(fewer_files, md5sums_from_db) is True
+
+
+@pytest.mark.parametrize("reimporting", (False, True))
+def test__check_and_parse_file(demo_data_dir, reimporting):
+    trace = Path(demo_data_dir) / "2019-09-18-16-02-35.fit"
+
+    # file md5sum is not in db
+    md5sums_from_db = []
+    md5sum, path_to_file, parsed_file = _check_and_parse_file(trace, demo_data_dir, md5sums_from_db, reimporting)
+    assert isinstance(md5sum, str)
+    assert isinstance(path_to_file, Path)
+    assert isinstance(parsed_file, Parser)
+
+    if not reimporting:
+        # file md5sum is in db
+        md5sums_from_db = [calc_md5(trace)]
+        md5sum, path_to_file, parsed_file = _check_and_parse_file(trace, demo_data_dir, md5sums_from_db, reimporting)
+        assert isinstance(md5sum, str)
+        assert isinstance(path_to_file, Path)
+        assert parsed_file is None

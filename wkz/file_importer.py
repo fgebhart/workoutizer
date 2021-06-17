@@ -358,15 +358,16 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
     trace_files = _get_all_files(path_to_traces)
     _send_initial_info(len(trace_files), path_to_traces)
     md5sums_from_db = _get_md5sums_from_model(models.Traces)
+    num = 0
 
     # check whether all files are in db already or if a single new file was added
     if _all_files_in_db_already(trace_files, md5sums_from_db) and not reimporting:
+        _send_result_info(num)
         return
 
-    num = 0
     seen_md5sums = {}
     if trace_files:
-        with Client(processes=False) as client:
+        with Client(processes=False, threads_per_worker=1, n_workers=2) as client:
             distributed_results = client.map(
                 _check_and_parse_file,
                 trace_files,
