@@ -367,7 +367,7 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
 
     seen_md5sums = {}
     if trace_files:
-        with Client(processes=False, threads_per_worker=1, n_workers=2) as client:
+        with Client(processes=False, threads_per_worker=1, n_workers=1) as client:
             distributed_results = client.map(
                 _check_and_parse_file,
                 trace_files,
