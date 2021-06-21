@@ -30,6 +30,7 @@ RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workspaces/wo
 ENV SHELL /bin/zsh
 ENV WKZ_ENV='devel'
 ENV WKZ_LOG_LEVEL='DEBUG'
+ENV PYTHONBREAKPOINT=ipdb.set_trace
 
 EXPOSE 8000
 
@@ -37,6 +38,6 @@ COPY . /workspaces/workoutizer
 WORKDIR /workspaces/workoutizer
 
 # set convenience alias
-RUN echo 'alias run_all_tests="pytest tests -v -n4 --html=pytest-report.html"' >> ~/.zshrc
+RUN echo 'alias run_all_tests="pytest tests -v -n auto --html=pytest-report.html"' >> ~/.zshrc
 
 RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -e . --no-deps --disable-pip-version-check'

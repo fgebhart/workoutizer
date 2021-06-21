@@ -1,2 +1,6 @@
 .git/
 venv/
+spike/
+selenium_ide/
+static/
+dask-worker-space/
