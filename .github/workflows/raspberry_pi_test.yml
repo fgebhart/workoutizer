@@ -1,0 +1,48 @@
+
+name: Setup on Raspberry Pi
+
+on: [pull_request]
+
+jobs:
+  armv7_job:
+    runs-on: ubuntu-latest
+    name: Test on armv7
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - uses: uraimo/run-on-arch-action@v2.0.5
+        name: Install and run workoutizer
+        with:
+          arch: armv7
+          distro: buster
+          
+          install: |
+            echo "---- installing apt packages ----"
+            apt-get update -q -y
+            apt-get install -q -y python3 \
+                                  python3-pip \
+                                  python3-dev \
+                                  build-essential \
+                                  libssl-dev \
+                                  libffi-dev \
+                                  libatlas-base-dev \
+                                  libopenjp2-7 \
+                                  libopenjp2-7-dev \
+                                  libopenjp2-tools \
+                                  libgl1-mesa-glx \
+
+          run: |
+            echo "---- installing pip dependencies ----"
+
+            echo '[global]
+            extra-index-url=https://www.piwheels.org/simple' > /etc/pip.conf
+
+            echo "inserted piwheels index to pip.conf"
+            cat /etc/pip.conf
+
+            pip3 install -e .
+
+            echo "---- initializing wkz ----"
+            wkz init --demo
+
+            echo "---- checking wkz ----"
+            wkz check

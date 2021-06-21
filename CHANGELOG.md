@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 * Port-forwarding added when using the `run_docker.sh` script.
+* Added support for Python3.7 and armv7 architecture to simplify the installation on
+  Raspberry Pi - which is based on debian buster which itself comes with Python3.7,
+  currently.
 ### Changed
 * Made the extension of fit files to be imported case insensitive.
 ### Fixed

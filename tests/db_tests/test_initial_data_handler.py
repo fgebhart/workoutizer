@@ -25,7 +25,7 @@ def test_insert_demo_sports_to_model(db, flush_db):
 def test_copy_demo_fit_files_to_track_dir__all(tmpdir, demo_data_dir):
     # copy demo data to tested data dir
     src = demo_data_dir
-    copy_demo_fit_files_to_track_dir(src, tmpdir, list_of_files_to_copy=[])
+    copy_demo_fit_files_to_track_dir(str(src), str(tmpdir), list_of_files_to_copy=[])
     assert os.path.isfile(os.path.join(tmpdir, "hike_with_coordinates_muggenbrunn.fit"))
     number_of_files_in_dir = len([name for name in os.listdir(tmpdir) if os.path.isfile(os.path.join(tmpdir, name))])
     assert number_of_files_in_dir == 10
