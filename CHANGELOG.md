@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+Placeholder section for unreleased changes.
+
+## [0.20.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.20.0) - 2021-06-21
 ### Added
 * Port-forwarding added when using the `run_docker.sh` script.
 * Added support for Python3.7 and armv7 architecture to simplify the installation on
@@ -20,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   worker timeout when running `wkz init --demo`
   ([#160](https://github.com/fgebhart/workoutizer/issues/160)).
 
-## [0.19.0](https://github.com/fgebhart/workoutizer/releases/tag/0.19.0) - 2021-06-13
+## [0.19.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.19.0) - 2021-06-13
 Note, when upgrading to this version you need to run `wkz reimport` in order to parse
 and display the additional data fields added in this release.
 ### Added
@@ -44,7 +47,7 @@ and display the additional data fields added in this release.
 * Removed retries around fit file reading and md5sum calculation, turned out that the
   io errors were caused by a too long usb cable...
 
-## [0.18.0](https://github.com/fgebhart/workoutizer/releases/tag/0.18.0) - 2021-05-16
+## [0.18.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.18.0) - 2021-05-16
 ### Added
 * Added custom 500 error page to catch internal server errors.
 * Re-trigger FileWatchdog whenever `Path to Trace Directory` gets updated on settings
@@ -77,7 +80,7 @@ and display the additional data fields added in this release.
   initially importing multiple files, which are not known to workoutizer.
 * Removed and reduced unneeded logging from `fit collector`.
 
-## [0.17.1](https://github.com/fgebhart/workoutizer/releases/tag/0.17.1) - 2021-04-20
+## [0.17.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.17.1) - 2021-04-20
 ### Changed
 * Setting `Debug` mode to `False` to handle HTTP errors with redirecting to home
 * always show number of selected days as either days or years on dashboard
@@ -88,7 +91,7 @@ and display the additional data fields added in this release.
 ### Fixed
 * fix incorrect displaying of colors in "Sport Distribution" pie chart
 
-## [0.17.0](https://github.com/fgebhart/workoutizer/releases/tag/0.17.0) - 2021-04-18
+## [0.17.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.17.0) - 2021-04-18
 ### Changed
 * Migrate to new frontend: Paper Dashboard 🎉
 * Introduce 7-days sport and activity trend given as hours per 7 days.
@@ -97,7 +100,7 @@ and display the additional data fields added in this release.
 [this guide](https://odwyer.software/blog/how-to-rename-an-existing-django-application) if you have trouble renaming your
  existing django app)
 
-## [0.16.0](https://github.com/fgebhart/workoutizer/releases/tag/0.16.0) - 2021-04-03
+## [0.16.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.16.0) - 2021-04-03
 ### Changed
 * upgrade `sportgems` to avoid spikes in speed in situation with poor gps signal. Requires `reimport`.
 * remove obsolete zooming feature of best sections activity html tables.
@@ -106,19 +109,19 @@ and display the additional data fields added in this release.
 * Increase max size for log files to 5MB.
 * Set log level for logging to file to WARNING.
 
-## [0.15.1](https://github.com/fgebhart/workoutizer/releases/tag/0.15.1) - 2021-03-25
+## [0.15.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.15.1) - 2021-03-25
 ### Changed
 * Also catch `InconsistentLengthException` when parsing best sections with `sportgems` since some `gpx` activities might
   come with different data array lengths.
 * Always run initial activity import when triggering `wkz run` to ensure all activities get imported in case of any files
   have been added since the last run.
 
-## [0.15.0](https://github.com/fgebhart/workoutizer/releases/tag/0.15.0) - 2021-03-21
+## [0.15.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.15.0) - 2021-03-21
 ### Added
 * Parse best climb sections from activity files using [sportgems](https://github.com/fgebhart/sportgems) and integrate it
   into awards and activity page (next to fastest sections).
 
-## [0.14.0](https://github.com/fgebhart/workoutizer/releases/tag/0.14.0) - 2021-03-15
+## [0.14.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.14.0) - 2021-03-15
 ### Changed
 * #94:  Decoupling fit file collecting (copying files from device) from mounting device. The mount endpoint now only
         mounts the device. An additional watchdog was added which monitors whether a device was mounted and triggers the
