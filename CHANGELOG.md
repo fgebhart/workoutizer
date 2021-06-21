@@ -13,8 +13,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Apply initial check to file importing process, which skips running a dask cluster
   in case all existing files are preset in the db already. This should fix a memory
   leak.
-* Set `processes=False` for dask client to fix worker timeout when running
-  `wkz init --demo` ([#160](https://github.com/fgebhart/workoutizer/issues/160)).
+* Set `processes=False` for dask client and only use scheduler with one worker to fix
+  worker timeout when running `wkz init --demo`
+  ([#160](https://github.com/fgebhart/workoutizer/issues/160)).
 
 ## [0.19.0](https://github.com/fgebhart/workoutizer/releases/tag/0.19.0) - 2021-06-13
 Note, when upgrading to this version you need to run `wkz reimport` in order to parse
