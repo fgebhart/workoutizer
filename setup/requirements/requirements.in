@@ -12,7 +12,7 @@ huey
 pandas
 psutil
 requests
-sportgems==0.5.0        # pinned to avoid unexpected issues because of interface not being stable yet
+sportgems==0.6.0        # pinned to avoid unexpected issues because of interface not being stable yet
 luddite
 tenacity
 django-eventstream
