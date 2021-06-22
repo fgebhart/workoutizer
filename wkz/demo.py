@@ -18,7 +18,7 @@ sport_data = {
     "color": ["#6BD098", "#51CBCE", "#FCC468", "#F17E5D"],
     "icon": ["hiking", "swimmer", "bicycle", "running"],
     "slug": ["hiking", "swimming", "cycling", "jogging"],
-    "evaluates_for_awards": [False, True, True, True],
+    "evaluates_for_awards": [False, False, True, True],
 }
 
 
