@@ -234,7 +234,7 @@ def _get_md5sums_from_model(traces_model) -> List[str]:
 
 def _parse_data(file: Path, md5sum: str) -> Union[FITParser, GPXParser]:
     file = str(file)
-    log.info(f"importing {file} ...")
+    log.debug(f"importing {file} ...")
     if file.lower().endswith(".gpx"):
         log.debug("parsing GPX file ...")
         parser = GPXParser(path_to_file=file, md5sum=md5sum)
@@ -391,6 +391,10 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
                 if (num + 1) % configuration.num_activities_in_progress_update == 0:
                     msg = f"<b>Progress Update:</b> Imported {num + 1} files."
                     sse.send(msg, "blue", "DEBUG")
+
+                # remove current element of list after saving it to db in order to avoid piling up memory
+                distributed_results.remove(distributed_results[i])
+                distributed_results.insert(i, None)
     _send_result_info(num)
 
     if importing_demo_data:

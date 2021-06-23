@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-Placeholder section for unreleased changes.
+### Fixed
+* Remove temporary payload from parsing files during reimport. This avoids piling up
+  memory in case of reimporting many files.
 
 ## [0.20.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.20.0) - 2021-06-21
 ### Added
