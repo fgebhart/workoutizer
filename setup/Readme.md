@@ -10,6 +10,24 @@ Note: The below instructions have been tested on a Raspberry Pi 4 Model B runnin
 also work on a variety of other Pis and OS combinations, but I recommend to use the latest versions of both.
 
 
+## Install Apt Packages
+
+The following packages are required and need to be installed:
+```
+sudo apt update && sudo apt install -y gvfs \
+        gvfs-fuse \
+        gvfs-bin \
+        gvfs-backends \
+        ifuse \
+        libblas-dev \
+        liblapack-dev \
+        python-dev \
+        libatlas-base-dev \
+        libopenjp2-7 \
+        virtualenv
+```
+
+
 ## Preparation & Installation
 
 Create virtual environment and activate it:
@@ -21,21 +39,6 @@ Install workoutizer
 pip install workoutizer
 ```
 
-## Install Apt Packages
-
-The following packages are required and need to be installed:
-```
-apt update && install -y gvfs \
-        gvfs-fuse \
-        gvfs-bin \
-        gvfs-backends \
-        ifuse
-        libblas-dev \
-        liblapack-dev \
-        python-dev \
-        libatlas-base-dev \
-        libopenjp2-7
-```
 
 ## Configuring your Device
 
