@@ -1,5 +1,6 @@
 {
     "python.pythonPath": "/tmp/venv/bin/python3.8",
+    "python.testing.pytestPath": "/tmp/venv/bin/pytest",
     "python.linting.flake8Enabled": true,
     "python.linting.flake8Path": "/tmp/venv/bin/flake8",
     "python.linting.enabled": true,

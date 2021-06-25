@@ -29,6 +29,7 @@
 		"batisteo.vscode-django",
 		"akamud.vscode-theme-onedark",
 		"ritwickdey.liveserver",
+		"reverbc.vscode-pytest",
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
