@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+Placeholder for unreleased changes.
+
+## [0.20.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.20.1) - 2021-06-25
 ### Changed
 * Updated the url to releases on help page to now point to the changelog on github.
 ### Fixed
