@@ -362,7 +362,7 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
 
     # check whether all files are in db already or if a single new file was added
     if _all_files_in_db_already(trace_files, md5sums_from_db) and not reimporting:
-        _send_result_info(num)
+        _send_result_info(num, reimporting)
         return
 
     seen_md5sums = {}
@@ -398,7 +398,7 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
                 # also release memory of the worker
                 future.release()
 
-    _send_result_info(num)
+    _send_result_info(num, reimporting)
 
     if importing_demo_data:
         finalize_demo_activity_insertion(models)
@@ -446,12 +446,15 @@ def _should_be_written_to_db(parsed_file: Parser, traces_model: Model, reimporti
             return True
 
 
-def _send_result_info(number_of_updated: int) -> None:
+def _send_result_info(number_of_updated: int, reimporting: bool) -> None:
     if number_of_updated == 0:
         msg = "<b>Finished File Import:</b> No new files imported."
     else:
         msg = f"<b>Finished File Import:</b> Imported {number_of_updated} new file(s)."
-    sse.send(msg, "green", "INFO")
+    if reimporting:
+        sse.send(msg, "green", "INFO")
+    else:
+        sse.send(msg, "green", "DEBUG")
 
 
 def _send_initial_info(number_of_activities: int, path_to_trace_dir: str):
