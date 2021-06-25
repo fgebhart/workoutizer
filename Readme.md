@@ -1,30 +1,38 @@
 # Workoutizer
+
 [![PyPI](https://badge.fury.io/py/workoutizer.svg)](https://badge.fury.io/py/workoutizer) [![Python](https://img.shields.io/pypi/pyversions/workoutizer.svg?style=plastic)](https://badge.fury.io/py/workoutizer) [![Build Status](https://github.com/fgebhart/workoutizer/workflows/Test/badge.svg)](https://github.com/fgebhart/workoutizer/actions?query=workflow%3ATest) [![Setup on Raspberry Pi](https://github.com/fgebhart/workoutizer/actions/workflows/raspberry_pi_test.yml/badge.svg)](https://github.com/fgebhart/workoutizer/actions/workflows/raspberry_pi_test.yml) [![Coverage Badge](https://raw.githubusercontent.com/fgebhart/workoutizer/master/.github/badges/coverage.svg)](https://raw.githubusercontent.com/fgebhart/workoutizer/master/.github/badges/coverage.svg) [![Downloads](https://img.shields.io/pypi/dm/workoutizer.svg?label=Pypi%20downloads)](https://pypi.org/project/workoutizer/)
 
-The Workoutizer is a simple web application for organizing your workouts and sports activities. It is designed to work
+Workoutizer is a simple web application for organizing your workouts and sports activities. It is designed to work
 locally on any UNIX-like system running Python.
 
 Track your activities to get an overview of your overall training, similar to platforms like
 [strava](https://www.strava.com/) or [garmin connect](https://connect.garmin.com/) - but without
 uploading all your sensitive health data to some 3rd party cloud.
 
+
 ## Features
+
 * Automatic import of Garmin `.fit` files and `.gpx` files
 * Automatic naming of activities based on daytime, sport and geo location
 * Render your activity gps data on different OSM maps
 * Plot your activity specific data e.g. heart rate, pace, temperature, cadence and altitude
 * Integrate laps into both plots and maps
 * Connected plots and map via mouse hovering
-* Find sections with highest speed and max altitude gain using [sportgems](https://github.com/fgebhart/sportgems) and highlight on map
+* Find sections with highest speed and max altitude gain using [sportgems](https://github.com/fgebhart/sportgems) and
+  highlight on map
 * Add untracked activities manually via the GUI
 * Export activities as `.gpx` files
 * Add as many different sports as you want
 
 
 ## Status
-Workoutizer is still in a somewhat experimental phase (thus < v1). Things might change a lot from one version to another. However, I'm happy to receive bug reports and feedback 🙂
+
+Workoutizer is still in a somewhat experimental phase. Things might change a lot from one version to another. However,
+I'm happy to receive bug reports and feedback.
+
 
 ## Getting Started
+
 Install workoutizer using pip
 ```
 pip install workoutizer
@@ -41,6 +49,7 @@ See the help description of the CLI with `wkz --help` and subcommands, e.g.: `wk
 In case you want to run workoutizer on a Raspberry Pi in your local network, follow the 
 [Raspberry Pi setup instructions](https://github.com/fgebhart/workoutizer/tree/master/setup).
 
+
 ## Gallery 
 
  Dashboard             |  Sport Page
@@ -51,39 +60,16 @@ In case you want to run workoutizer on a Raspberry Pi in your local network, fol
 :-------------------------:|:-------------------------:
 ![](https://i.imgur.com/FnVFz9P.png)  |  ![](https://i.imgur.com/zp8iQcm.png)
 
+
 ## Changelog
 
-See the [Changelog](https://github.com/fgebhart/workoutizer/blob/main/CHANGELOG.md).
+See [Changelog](https://github.com/fgebhart/workoutizer/blob/main/CHANGELOG.md).
+
 
 ## Contributing
 
-Contributions are welcome! Feel free to pick an [open issue](https://github.com/fgebhart/workoutizer/issues), open up 
-a pull request or file a new issue.
+Contributions are welcome - check out the [Contribution Guidelines](https://github.com/fgebhart/workoutizer/blob/main/CONTRIBUTING.md).
 
-For local development I recommend to run the development docker container. First clone the repo:
-```
-git clone git@github.com:fgebhart/workoutizer.git
-cd workoutizer
-```
-and then start workoutizer in docker using the convenience script:
-```
-./run_docker.sh
-```
-It might take a while to build the image, run the container and initialize workoutizer. Once up and running, run the
-tests with
-```
-pytest tests/ -n4
-```
-Once this was successful you are good to go.
-
-In order to run workoutizer use the `wkz` cli. If not done yet, run `wkz init` (optionally with `--demo`):
-```
-wkz run
-```
-In case you encounter any issues in the setup process, please open an issue.
-
-Note: If you are using VS-Code you might want to open the folder of this repo in a remote container directly using the
-Remote - Containers extension.
 
 ## Thanks
 
