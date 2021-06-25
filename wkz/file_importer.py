@@ -395,6 +395,9 @@ def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, re
                 # remove current element of list after saving it to db in order to avoid piling up memory
                 distributed_results.remove(distributed_results[i])
                 distributed_results.insert(i, None)
+                # also release memory of the worker
+                future.release()
+
     _send_result_info(num)
 
     if importing_demo_data:
@@ -448,7 +451,7 @@ def _send_result_info(number_of_updated: int) -> None:
         msg = "<b>Finished File Import:</b> No new files imported."
     else:
         msg = f"<b>Finished File Import:</b> Imported {number_of_updated} new file(s)."
-    sse.send(msg, "green", "DEBUG")
+    sse.send(msg, "green", "INFO")
 
 
 def _send_initial_info(number_of_activities: int, path_to_trace_dir: str):
