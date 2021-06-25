@@ -61,6 +61,7 @@ Please follow these steps when committing to the repo:
    - `CLN`: Code cleanup
    - `DEP`: Upgrading dependencies
    - `DEV`: Enhancements to the development environment
+   - `RFC`: Refactoring
 
 
 ## Changelog
