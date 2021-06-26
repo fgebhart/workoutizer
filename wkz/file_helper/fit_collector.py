@@ -90,6 +90,7 @@ def try_to_mount_device():
             device_start = line.find("Device") + 7
             dev = line[device_start : device_start + 3]
             (type, path) = _find_device_type(bus, dev)
+            log.debug(f"device type is {type}")
             if type == "MTP":
                 try:
                     mount_output = _mount_device_using_gio(bus, dev)
@@ -114,7 +115,7 @@ def try_to_mount_device():
         else:
             log.warning("could not mount device")
     else:
-        log.warning("Found Garmin device, but could not mount it.")
+        log.warning(f"Found Garmin device, but could not mount it. {mount_output}")
 
 
 def _mount_device_using_gio(bus: str, dev: str) -> str:
@@ -123,10 +124,10 @@ def _mount_device_using_gio(bus: str, dev: str) -> str:
 def _mount_device_using_pmount(dev: str) -> str:
     return subprocess.check_output(["pmount", dev, "garmin"]).decode("utf-8")
 
-def _find_device_type(bus: str, dev: str) -> Tuple:
+def _find_device_type(bus: str, dev: str):
     log.debug("Looking up type of device")
     device_tree = pyudev.Context()
-    usb_devices = context.list_devices(subsystem="usb").match_property('DEVNAME',f"/dev/bus/usb/{bus}/{dev}")
+    usb_devices = device_tree.list_devices(subsystem="usb").match_property('DEVNAME',f"/dev/bus/usb/{bus}/{dev}")
     for device in usb_devices:
         if str(device.get("ID_MTP_DEVICE")) == str(1):
             log.debug("Device is an MTP device")
@@ -134,6 +135,7 @@ def _find_device_type(bus: str, dev: str) -> Tuple:
         else:
             log.debug("Device is block device")
             (model_id, vendor_id) = device.get("ID_MODEL_ID"), device.get("ID_VENDOR_ID")
+            block_devices = device_tree.list_devices(subsystem="block").match_property("ID_MODEL_ID", model_id)
+            for device in block_devices:
+                return ("BLOCK",(device.get("DEVNAME")))
 
-            block_devices = context.list_devices(subsystem="block").match_property("ID_MODEL_ID", model_id)
-            return ("BLOCK",(device.get("DEVNAME")))
