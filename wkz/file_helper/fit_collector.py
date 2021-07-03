@@ -90,7 +90,7 @@ def try_to_mount_device():
             device_start = line.find("Device") + 7
             dev = line[device_start : device_start + 3]
             (type, path) = _find_device_type(bus, dev)
-            log.debug(f"device type is {type} with {path[0]}")
+            log.debug(f"device type is {type} with {path}")
             if type == "MTP":
                 mount_output = _mount_device_using_gio(path)
             elif type == "BLOCK":
