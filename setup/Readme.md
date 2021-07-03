@@ -24,7 +24,8 @@ sudo apt update && sudo apt install -y gvfs \
         python-dev \
         libatlas-base-dev \
         libopenjp2-7 \
-        virtualenv
+        virtualenv \
+        pmount
 ```
 
 
