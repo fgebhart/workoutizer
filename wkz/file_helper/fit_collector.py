@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 import subprocess
-from typing import List, Union
+from typing import List, Union, Tuple
 import pyudev
 
 log = logging.getLogger(__name__)
@@ -92,20 +92,9 @@ def try_to_mount_device():
             (type, path) = _find_device_type(bus, dev)
             log.debug(f"device type is {type} with {path[0]}")
             if type == "MTP":
-                try:
-                    mount_output = _mount_device_using_gio(bus, dev)
-                except subprocess.CalledProcessError as e:
-                    log.warning(f"could not mount device: {e}", exc_info=True)
-                    return None
+                mount_output = _mount_device_using_gio(path)
             elif type == "BLOCK":
-                try:
-                    _mount_device_using_pmount(path[0])
-                except subprocess.CalledProcessError as e:
-                    log.warning(f"could not mount device: {e}", exc_info=True)
-                    return None
-                else:
-                    mount_output = "Mounted at /media/garmin"
-                    return mount_output
+                mount_output = _mount_device_using_pmount(path)
         else:
             # log.debug(f"no Garmin device found in 'lsusb' line: {line}")
             pass
@@ -121,24 +110,25 @@ def try_to_mount_device():
         log.warning(f"Found Garmin device, but could not mount it. {mount_output}")
 
 
-def _mount_device_using_gio(bus: str, dev: str) -> str:
-    return subprocess.check_output(["gio", "mount", "-d", f"/dev/bus/usb/{bus}/{dev}"]).decode("utf-8")
+def _mount_device_using_gio(dev: str) -> str:
+    return subprocess.check_output(["gio", "mount", "-d", dev]).decode("utf-8")
 
 def _mount_device_using_pmount(dev: str) -> str:
-    return subprocess.check_output(["pmount", dev, "garmin"]).decode("utf-8")
+    subprocess.check_output(["pmount", dev, "garmin"]).decode("utf-8")
+    return "Mounted at /media/garmin"
 
-def _find_device_type(bus: str, dev: str):
+def _find_device_type(bus: str, dev: str) -> Tuple[str, str]:
     log.debug("Looking up type of device")
     device_tree = pyudev.Context()
     usb_devices = device_tree.list_devices(subsystem="usb").match_property('DEVNAME',f"/dev/bus/usb/{bus}/{dev}")
     for device in usb_devices:
         if str(device.get("ID_MTP_DEVICE")) == str(1):
             log.debug("Device is an MTP device")
-            return ("MTP",[bus, dev])
+            return ("MTP",f"/dev/bus/usb/{bus}/{dev}")
         else:
             log.debug("Device is block device")
             (model_id, vendor_id) = device.get("ID_MODEL_ID"), device.get("ID_VENDOR_ID")
             block_devices = device_tree.list_devices(subsystem="block").match_property("ID_MODEL_ID", model_id)
             for device in block_devices:
-                return ("BLOCK",[device.get("DEVNAME")])
+                return ("BLOCK",device.get("DEVNAME"))
 
