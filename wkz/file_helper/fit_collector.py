@@ -113,22 +113,23 @@ def try_to_mount_device():
 def _mount_device_using_gio(dev: str) -> str:
     return subprocess.check_output(["gio", "mount", "-d", dev]).decode("utf-8")
 
+
 def _mount_device_using_pmount(dev: str) -> str:
     subprocess.check_output(["pmount", dev, "garmin"]).decode("utf-8")
     return "Mounted at /media/garmin"
 
+
 def _find_device_type(bus: str, dev: str) -> Tuple[str, str]:
     log.debug("Looking up type of device")
     device_tree = pyudev.Context()
-    usb_devices = device_tree.list_devices(subsystem="usb").match_property('DEVNAME',f"/dev/bus/usb/{bus}/{dev}")
+    usb_devices = device_tree.list_devices(subsystem="usb").match_property('DEVNAME', f"/dev/bus/usb/{bus}/{dev}")
     for device in usb_devices:
         if str(device.get("ID_MTP_DEVICE")) == str(1):
             log.debug("Device is an MTP device")
-            return ("MTP",f"/dev/bus/usb/{bus}/{dev}")
+            return ("MTP", f"/dev/bus/usb/{bus}/{dev}")
         else:
             log.debug("Device is block device")
             (model_id, vendor_id) = device.get("ID_MODEL_ID"), device.get("ID_VENDOR_ID")
             block_devices = device_tree.list_devices(subsystem="block").match_property("ID_MODEL_ID", model_id)
             for device in block_devices:
-                return ("BLOCK",device.get("DEVNAME"))
-
+                return ("BLOCK", device.get("DEVNAME"))
