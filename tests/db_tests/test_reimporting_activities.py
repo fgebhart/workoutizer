@@ -1,4 +1,6 @@
 import datetime
+import shutil
+from pathlib import Path
 
 import pytest
 import pytz
@@ -20,10 +22,11 @@ def test_reimport_of_activities(tracks_in_tmpdir, client):
     """
 
     # 1. import one cycling and one hiking activities
+    activity_1 = "hike_with_coordinates_muggenbrunn.fit"
     prepare_import_of_demo_activities(
         models,
         list_of_files_to_copy=[
-            "hike_with_coordinates_muggenbrunn.fit",
+            activity_1,
             "cycling_bad_schandau.fit",
         ],
     )
@@ -116,6 +119,20 @@ def test_reimport_of_activities(tracks_in_tmpdir, client):
 
     assert len(models.BestSection.objects.filter(activity=cycling.pk)) == 0
 
+    # move activity file to new dir to ensure path got changed
+    path_to_traces = Path(tracks_in_tmpdir.path_to_trace_dir)
+    new_dir = path_to_traces / "new_dir"
+    new_dir.mkdir()
+    assert new_dir.is_dir()
+    old_path = path_to_traces / activity_1
+    assert hiking.trace_file.path_to_file == str(old_path)
+    new_path = new_dir / activity_1
+    assert old_path.is_file()
+    assert new_path.is_file() is False
+    shutil.move(old_path, new_path)
+    assert old_path.is_file() is False
+    assert new_path.is_file()
+
     # 3. trigger reimport to update values
     run_importer__dask(models, reimporting=True)
 
@@ -140,6 +157,9 @@ def test_reimport_of_activities(tracks_in_tmpdir, client):
     )
     assert updated_hiking_fastest_sections.start == orig_1km_fastest_start
     assert updated_hiking_fastest_sections.max_value == orig_1km_velocity
+
+    # verify that the path to trace file got updated
+    assert updated_hiking.trace_file.path_to_file == str(new_path)
 
     updated_hiking_climb_sections = models.BestSection.objects.get(
         activity=updated_hiking.pk, distance=200, kind="climb"

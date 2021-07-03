@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 import shutil
+from dataclasses import dataclass
 from distutils.dir_util import copy_tree
 from types import ModuleType
 
@@ -13,25 +14,33 @@ from workoutizer import settings as django_settings
 log = logging.getLogger(__name__)
 
 
-sport_data = {
-    "name": ["Hiking", "Swimming", "Cycling", "Jogging"],
-    "color": ["#6BD098", "#51CBCE", "#FCC468", "#F17E5D"],
-    "icon": ["hiking", "swimmer", "bicycle", "running"],
-    "slug": ["hiking", "swimming", "cycling", "jogging"],
-    "evaluates_for_awards": [False, False, True, True],
-}
+@dataclass
+class Sport:
+    name: str
+    color: str
+    icon: str
+    slug: str
+    evaluates_for_awards: bool
+
+
+hiking = Sport("Hiking", "#6BD098", "hiking", "hiking", False)
+swimming = Sport("Swimming", "#51CBCE", "swimmer", "swimming", False)
+cycling = Sport("Cycling", "#FCC468", "bicycle", "cycling", True)
+jogging = Sport("Jogging", "#F17E5D", "running", "jogging", True)
+demo_sports = [hiking, swimming, cycling, jogging]
 
 
 def insert_demo_sports_to_model(models):
-    # also insert default unknown sport
+    # insert default unknown sport
     models.default_sport()
-    for i in range(len(sport_data["name"])):
+    # insert all other demo sports
+    for sport in demo_sports:
         models.Sport.objects.get_or_create(
-            name=sport_data.get("name")[i],
-            color=sport_data.get("color")[i],
-            icon=sport_data.get("icon")[i],
-            slug=sport_data.get("slug")[i],
-            evaluates_for_awards=sport_data.get("evaluates_for_awards")[i],
+            name=sport.name,
+            color=sport.color,
+            icon=sport.icon,
+            slug=sport.slug,
+            evaluates_for_awards=sport.evaluates_for_awards,
         )
 
 
@@ -54,7 +63,9 @@ def change_date_of_demo_activities(every_nth_day: int, activities: models.QueryS
 
 def insert_custom_demo_activities(count: int, every_nth_day: int, activity_model, sport_model):
     today = datetime.datetime.now(pytz.timezone(django_settings.TIME_ZONE))
-    sport = sport_model.objects.get_or_create(name="Swimming", slug="swimming", icon="swimmer", color="#51CBCE")
+    sport = sport_model.objects.get_or_create(
+        name=swimming.name, slug=swimming.slug, icon=swimming.icon, color=swimming.color
+    )
     for i in range(count):
         activity = activity_model(
             name="Swimming",
