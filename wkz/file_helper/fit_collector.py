@@ -2,7 +2,8 @@ import logging
 import os
 import shutil
 import subprocess
-from typing import List, Union, Tuple
+from typing import List, Tuple, Union
+
 import pyudev
 
 log = logging.getLogger(__name__)
@@ -110,12 +111,12 @@ def try_to_mount_device():
         log.warning(f"Found Garmin device, but could not mount it. {mount_output}")
 
 
-def _mount_device_using_gio(dev: str) -> str:
-    return subprocess.check_output(["gio", "mount", "-d", dev]).decode("utf-8")
+def _mount_device_using_gio(path: str) -> str:
+    return subprocess.check_output(["gio", "mount", "-d", path]).decode("utf-8")
 
 
-def _mount_device_using_pmount(dev: str) -> str:
-    subprocess.check_output(["pmount", dev, "garmin"]).decode("utf-8")
+def _mount_device_using_pmount(path: str) -> str:
+    subprocess.check_output(["pmount", path, "garmin"]).decode("utf-8")
     return "Mounted at /media/garmin"
 
 
