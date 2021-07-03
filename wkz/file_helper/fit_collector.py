@@ -122,7 +122,7 @@ def _mount_device_using_pmount(dev: str) -> str:
 def _find_device_type(bus: str, dev: str) -> Tuple[str, str]:
     log.debug("Looking up type of device")
     device_tree = pyudev.Context()
-    usb_devices = device_tree.list_devices(subsystem="usb").match_property('DEVNAME', f"/dev/bus/usb/{bus}/{dev}")
+    usb_devices = device_tree.list_devices(subsystem="usb").match_property("DEVNAME", f"/dev/bus/usb/{bus}/{dev}")
     for device in usb_devices:
         if str(device.get("ID_MTP_DEVICE")) == str(1):
             log.debug("Device is an MTP device")
