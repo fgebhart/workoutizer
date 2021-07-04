@@ -178,6 +178,7 @@ class FakeDevice:
         if not self.mounted:
             print("mounting fake device...")
             self.activity_path_on_device.mkdir(parents=True)
+            os.mknod(f"{self.mount_path}/AUTORUN.INF")
             if self.activity_files:
                 # copy activity files into activity dir
                 copy_demo_fit_files_to_track_dir(
@@ -190,7 +191,7 @@ class FakeDevice:
     def unmount(self):
         if self.mounted:
             print("unmounting fake device...")
-            shutil.rmtree(self.device_path)
+            shutil.rmtree(self.mount_path)
             self.mounted = False
 
 
