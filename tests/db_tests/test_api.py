@@ -57,10 +57,16 @@ def test_mount_device__success(db, monkeypatch, tmpdir, client):
     monkeypatch.setattr(fit_collector, "try_to_mount_device", try_to_mount_device)
 
     # mock output of actual mounting command
-    def mount(bus, dev):
+    def mount(path):
         return "Mounted"
 
     monkeypatch.setattr(fit_collector, "_mount_device_using_gio", mount)
+
+    # mock output of _find_device_type
+    def _find_device_type(bus, dev):
+        return ("MTP", "/dev/bus/usb/001/002")
+
+    monkeypatch.setattr(fit_collector, "_find_device_type", _find_device_type)
 
     # create directory to import the fit files from
     fake_device_dir = os.path.join(tmpdir, "mtp:host/Primary/GARMIN/Activity/")
