@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 * Add support for mounting devices which identify as block device.
+### Changed
+* When looking for activities on device allow files next to device dir.
 
 ## [0.20.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.20.1) - 2021-06-25
 ### Changed
