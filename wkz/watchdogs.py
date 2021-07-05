@@ -29,11 +29,12 @@ def trigger_device_watchdog():
 
 
 def _watch_for_device(path_to_garmin_device: str, path_to_trace_dir: str, delete_files_after_import: bool):
-    device_mounted = False
     if Path(path_to_garmin_device).is_dir():
-        sub_dirs = os.listdir(path_to_garmin_device)
-        if len(sub_dirs) == 1 and not device_mounted:
-            device_mounted = True
+        sub_dirs = []
+        for filename in os.listdir(path_to_garmin_device):
+            if (Path(path_to_garmin_device) / filename).is_dir():
+                sub_dirs.append(sub_dirs)
+        if len(sub_dirs) > 0:
             log.info(f"Found mounted device at {path_to_garmin_device}, triggering fit collector...")
             fit_collector = FitCollector(
                 path_to_garmin_device=path_to_garmin_device,
@@ -41,7 +42,5 @@ def _watch_for_device(path_to_garmin_device: str, path_to_trace_dir: str, delete
                 delete_files_after_import=delete_files_after_import,
             )
             fit_collector.copy_fit_files()
-        elif len(sub_dirs) == 0:
-            device_mounted = False
     else:
         log.warning(f"Device Watchdog: {path_to_garmin_device} is not a valid directory.")
