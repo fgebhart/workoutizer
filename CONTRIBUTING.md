@@ -37,12 +37,18 @@ If you are using VS-Code I suggest to open this repo in a remote container direc
 ## Pre-commit Hooks
 
 Several style checking tools (e.g. `black`, `flake8`, `isort`) are configured to run prior to each commit to ensure a
-consistent coding style. It is also possible to manually trigger the hook 
+consistent coding style. It is also possible to manually trigger the hook
 ```
 pre-commit run
 ```
 Using the pre-commit hooks is recommended, because the ci pipeline will also check if your changes comply with the
 configured style and fail if not.
+If you are developing from within a docker container (preferred way), you might want to manually activate the pre-commit 
+hooks with
+```
+pre-commit install
+```
+in order to apply the checks prior to committing.
 
 
 ## Commit Messages
@@ -62,6 +68,7 @@ Please follow these steps when committing to the repo:
    - `DEP`: Upgrading dependencies
    - `DEV`: Enhancements to the development environment
    - `RFC`: Refactoring
+   - `CI`: Github Actions CI pipeline
 
 
 ## Changelog
