@@ -171,6 +171,7 @@ class FakeDevice:
         self.device_path = self.mount_path / device_dir
         self.activity_path_on_device = self.device_path / activity_dir
         self.auto_run_file = self.mount_path / "AUTORUN.INF"
+        self.extra_directory_path_on_device = self.mount_path / "random_extra_dir"
         self.mounted = False
         self.activity_files = activity_files
 
@@ -179,6 +180,7 @@ class FakeDevice:
         if not self.mounted:
             print("mounting fake device...")
             self.activity_path_on_device.mkdir(parents=True)
+            self.extra_directory_path_on_device.mkdir()
             self.auto_run_file.write_text("EMPTY")
             if self.activity_files:
                 # copy activity files into activity dir

@@ -78,6 +78,7 @@ def test_fake_device(db, fake_device, device_dir, activity_dir, fit_file):
     device.mount()
 
     assert (mount_path / "AUTORUN.INF").is_file()
+    assert (mount_path / "random_extra_dir").is_dir()
     assert (mount_path / device_dir).is_dir()
     assert (mount_path / device_dir / activity_dir).is_dir()
     assert (mount_path / device_dir / activity_dir / fit_file).is_file()
