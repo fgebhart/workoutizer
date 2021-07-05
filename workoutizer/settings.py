@@ -130,4 +130,4 @@ LOGGING = get_logging_config(
     path_to_log_dir=WORKOUTIZER_DIR,
 )
 
-HUEY = SqliteHuey(filename="/tmp/demo.db")
+HUEY = SqliteHuey(filename="/tmp/huey.db")

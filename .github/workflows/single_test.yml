@@ -1,0 +1,48 @@
+
+name: Push Test
+
+on: [push]
+
+jobs:
+  formatting:
+    name: Formatting
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: black formatting
+      run: |
+        python -m pip install --upgrade pip
+        pip install black
+        black --check .
+    - name: flake8 formatting
+      if: always()
+      run: |
+        pip install flake8
+        flake8 .
+
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: Install dependencies
+      run: |
+        pip install -r setup/requirements/dev-requirements.txt
+        pip install -e .
+
+    - name: Run Tests
+      run: |
+        pytest tests/ -vv -n2

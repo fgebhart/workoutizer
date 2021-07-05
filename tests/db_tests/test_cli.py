@@ -65,3 +65,35 @@ def test_cli__reimport(import_one_activity):
 
     activity = models.Activity.objects.get()
     assert activity.distance == orig_distance
+
+
+def test__check_for_update(monkeypatch):
+    # mock pypi version to be lower than the current version
+    pypi_version = "0.0.1"
+
+    def mocked_get_version_pypi(pkg):
+        return pypi_version
+
+    monkeypatch.setattr(cli.luddite, "get_version_pypi", mocked_get_version_pypi)
+
+    assert cli._check_for_update() is False
+
+    # mock pypi version to equal the current version
+    pypi_version = __version__
+
+    def mocked_get_version_pypi(pkg):
+        return pypi_version
+
+    monkeypatch.setattr(cli.luddite, "get_version_pypi", mocked_get_version_pypi)
+
+    assert cli._check_for_update() is False
+
+    # mock pypi version to be larger than the current version
+    pypi_version = "9999.9999.9999"
+
+    def mocked_get_version_pypi(pkg):
+        return pypi_version
+
+    monkeypatch.setattr(cli.luddite, "get_version_pypi", mocked_get_version_pypi)
+
+    assert cli._check_for_update() is True

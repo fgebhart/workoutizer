@@ -2,8 +2,6 @@ import os
 
 import setuptools
 
-from workoutizer import __version__
-
 with open("Readme.md", "r") as fh:
     long_description = fh.read()
 
@@ -18,8 +16,8 @@ def requirements_from_txt(path_to_txt):
 setuptools.setup(
     name="workoutizer",
     author="Fabian Gebhart",
-    version=__version__,
-    setup_requires=["setuptools_scm"],
+    version_config=True,
+    setup_requires=["setuptools_scm", "setuptools-git-versioning"],
     install_requires=requirements_from_txt("requirements.txt"),
     include_package_data=True,
     description="🏋️ Browser based Sport and Workout Organizer 🏃‍♀️",
@@ -35,8 +33,8 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Framework :: Django",
-        "Framework :: Django :: 2.2",
         "Framework :: Django :: 3.0",
+        "Framework :: Django :: 3.2",
     ],
     python_requires=">=3.7",
     extras_require={

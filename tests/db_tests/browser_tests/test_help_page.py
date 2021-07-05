@@ -3,7 +3,7 @@ import datetime
 from django.urls import reverse
 from selenium.webdriver.common.by import By
 
-from workoutizer.__init__ import __version__
+from workoutizer import __version__
 
 
 def test_help_page(live_server, webdriver):
@@ -14,7 +14,7 @@ def test_help_page(live_server, webdriver):
 
     # check version card
     assert "Version" in card_title
-    assert webdriver.find_element(By.CLASS_NAME, "badge").text == __version__
+    assert webdriver.find_element(By.CLASS_NAME, "badge").text.lower() == __version__.lower()
 
     # check source code card
     hrefs = [a.get_attribute("href") for a in webdriver.find_elements_by_tag_name("a")]
