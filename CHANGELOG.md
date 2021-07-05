@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 * Add support for mounting devices which identify as block device.
+* Add `check-for-update` command to `wkz` CLI.
 ### Fixed
 * Test for mounting devices fails sometimes, because it was not ready for block device mounting.
 
