@@ -33,7 +33,7 @@ def _watch_for_device(path_to_garmin_device: str, path_to_trace_dir: str, delete
     if Path(path_to_garmin_device).is_dir():
         sub_dirs = []
         for filename in os.listdir(path_to_garmin_device):
-            if Path(os.path.join(path_to_garmin_device, filename)).is_dir():
+            if (Path(path_to_garmin_device) / filename).is_dir():
                 sub_dirs.append(sub_dirs)
         if len(sub_dirs) == 1 and not device_mounted:
             device_mounted = True
