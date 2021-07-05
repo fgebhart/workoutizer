@@ -36,7 +36,7 @@ def wkz():
     help="Mandatory command to initialize workoutizer. This fetches the static files, creates the database, "
     "applies the required migrations and inserts the demo activities."
 )
-def init(demo):
+def init(demo: bool):
     _init(import_demo_activities=demo)
 
 
@@ -70,9 +70,14 @@ def manage(cmd):
     execute_from_command_line(["manage.py"] + cmd.split(" "))
 
 
-@click.command(help="Check for a newer version and install if there is any.")
+@click.command(help="Upgrade workoutizer to newer version, if there is any.")
 def upgrade():
     _upgrade()
+
+
+@click.command(help="Check if a new version is available.")
+def check_for_update():
+    _check_for_update()
 
 
 @click.command(help="Stop a running workoutizer instance.")
@@ -96,6 +101,7 @@ wkz.add_command(init)
 wkz.add_command(run)
 wkz.add_command(manage)
 wkz.add_command(check)
+wkz.add_command(check_for_update)
 wkz.add_command(reimport)
 
 
@@ -115,6 +121,24 @@ def _upgrade():
         click.echo(f"Successfully upgraded from {current_version} to {latest_version}")
 
 
+def _check_for_update() -> bool:
+    pypi_version = luddite.get_version_pypi("workoutizer")
+    from workoutizer import __version__ as current_version
+
+    if pypi_version > current_version:
+        click.echo(f"Newer version available: {pypi_version}. You are running: {current_version}")
+        return True
+    elif pypi_version == current_version:
+        click.echo(f"No update available. You are running the latest version: {pypi_version}")
+        return False
+    else:  # current_version > pypi_version
+        click.echo(
+            f"Your installed version ({current_version}) seems to be greater"
+            f"than the latest version on pypi ({pypi_version})."
+        )
+        return False
+
+
 def _build_home() -> None:
     if Path(WORKOUTIZER_DIR).is_dir():
         if Path(TRACKS_DIR).is_dir():
@@ -127,7 +151,7 @@ def _build_home() -> None:
         Path(TRACKS_DIR).mkdir(exist_ok=True)
 
 
-def _init(import_demo_activities=False):
+def _init(import_demo_activities: bool = False):
     _build_home()
     if Path(WORKOUTIZER_DB_PATH).is_file():
         execute_from_command_line(["manage.py", "check"])
@@ -164,7 +188,7 @@ def _init(import_demo_activities=False):
         click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
-def _pip_install(package, upgrade: bool = False):
+def _pip_install(package: str, upgrade: bool = False) -> None:
     if upgrade:
         subprocess.check_call([sys.executable, "-m", "pip", "install", package, "--upgrade"])
     else:
