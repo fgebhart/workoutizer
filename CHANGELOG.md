@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * When looking for activities on device allow files next to device dir.
 ### Fixed
 * Test for mounting devices fails sometimes, because it was not ready for block device mounting.
+* Fix reading package version of already installed workoutizer package.
 
 ## [0.20.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.20.1) - 2021-06-25
 ### Changed
