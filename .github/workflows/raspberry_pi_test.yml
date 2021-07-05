@@ -1,7 +1,10 @@
 
 name: Setup on Raspberry Pi
 
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches: main
 
 jobs:
   armv7_job:
