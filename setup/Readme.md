@@ -94,7 +94,10 @@ wkz run
 
 ## Background
 
-Whenever you connect your Garmin device to your Raspberry Pi, workoutizer will automatically mount the device using
-`udev`. Since it is mounted as a [gvfs](https://en.wikipedia.org/wiki/GVfs) device, the file system of your device will
+Whenever you connect your Garmin device to your Raspberry Pi, workoutizer will automatically mount the device. Workoutizer currently supports devices with MTP and Block modes. Some devices support both modes, some only one. 
+
+The MTP devices are mounted using `udev`. Since it is mounted as a [gvfs](https://en.wikipedia.org/wiki/GVfs) device, the file system of your device will
 be mounted at `/run/user/1000/gvfs/...`. This is the default location for Raspbian and workoutizer will look for your
 device in this location as default.
+
+The Block devices are mounted using `pmount`, the file system is found at `/media/garmin`. You should configure this location under `Fetch Files from Device` under the setting from workoutizer.
