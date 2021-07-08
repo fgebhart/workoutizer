@@ -9,7 +9,6 @@ import pytest
 from packaging import version
 from pytest_venv import VirtualEnvironment
 
-from workoutizer import __version__ as current_version
 from workoutizer import settings as django_settings
 from workoutizer.settings import BASE_DIR
 
@@ -24,6 +23,8 @@ def _add_wkz_bin(venv: VirtualEnvironment) -> VirtualEnvironment:
 
 @pytest.fixture(scope="function")
 def build_wheel() -> Path:
+    from workoutizer import __version__ as current_version
+
     # build wheel
     subprocess.check_output([sys.executable, "setup.py", "bdist_wheel"])
     # get path and yield it
@@ -60,11 +61,15 @@ def _replace_string_in_file(path: Path, orig: str, new: str) -> None:
 def _mock_version(venv: VirtualEnvironment, version: str) -> None:
     # get path to installed init module to mock version
     init_path = Path(venv.path) / "lib" / f"python{sys.version[:3]}" / "site-packages" / "workoutizer" / "__init__.py"
+    print(f"mocking version in file: {init_path}")
     _replace_string_in_file(init_path, 'pkg_resources.require("workoutizer")[0].version', f"'{version}'")
 
 
 def test_upgrade_current_to_latest_pypi_version(venv_with_current_wkz):
+    from workoutizer import __version__ as current_version
+
     wkz = venv_with_current_wkz.wkz
+    print(f"venv path: {wkz}")
     subprocess.check_output([wkz, "init"])
     installed_version = subprocess.check_output([wkz, "-v"]).decode("utf-8").replace("\n", "")
 
@@ -105,7 +110,11 @@ def test_upgrade_current_to_latest_pypi_version(venv_with_current_wkz):
 
 
 def test_upgrade_latest_pypi_to_current_version(venv_with_latest_pypi_wkz, build_wheel):
+    from workoutizer import __version__ as current_version
+
     wkz = venv_with_latest_pypi_wkz.wkz
+    print(f"venv path: {wkz}")
+
     subprocess.check_output([wkz, "init", "--demo"])
     installed_version = subprocess.check_output([wkz, "-v"]).decode("utf-8").replace("\n", "")
     pypi_version = luddite.get_version_pypi("workoutizer")
