@@ -106,19 +106,16 @@ wkz.add_command(reimport)
 
 
 def _upgrade():
-
-    latest_version = luddite.get_version_pypi("workoutizer")
     from workoutizer import __version__ as current_version
 
-    if latest_version == current_version:
-        click.echo(f"No update available. You are running the latest version: {latest_version}")
-    else:
-        click.echo(f"found newer version: {latest_version}, you have {current_version} installed - upgrading...")
-        _pip_install("workoutizer", upgrade=True)
+    if _check_for_update():
+        click.echo("upgrading workoutizer...")
+        new_version = _pip_install("workoutizer")
         execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
         execute_from_command_line(["manage.py", "migrate"])
         execute_from_command_line(["manage.py", "check"])
-        click.echo(f"Successfully upgraded from {current_version} to {latest_version}")
+
+        click.echo(f"Successfully upgraded from {current_version} to {new_version}")
 
 
 def _check_for_update() -> bool:
@@ -133,7 +130,7 @@ def _check_for_update() -> bool:
         return False
     else:  # current_version > pypi_version
         click.echo(
-            f"Your installed version ({current_version}) seems to be greater"
+            f"Your installed version ({current_version}) seems to be greater "
             f"than the latest version on pypi ({pypi_version})."
         )
         return False
@@ -188,11 +185,11 @@ def _init(import_demo_activities: bool = False):
         click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
-def _pip_install(package: str, upgrade: bool = False) -> None:
-    if upgrade:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", package, "--upgrade"])
-    else:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+def _pip_install(package: str) -> str:
+    pypi_version = luddite.get_version_pypi("workoutizer")
+    package = f"{package}=={pypi_version}"
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+    return pypi_version
 
 
 def _stop():
