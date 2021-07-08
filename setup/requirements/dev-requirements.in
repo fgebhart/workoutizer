@@ -11,5 +11,7 @@ pytest-django
 pytest-xdist
 pytest-cov
 pytest-html
+pytest-venv
 rope
 selenium
+wheel

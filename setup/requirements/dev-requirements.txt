@@ -104,6 +104,8 @@ pytest-html==3.1.1
     # via -r dev-requirements.in
 pytest-metadata==1.11.0
     # via pytest-html
+pytest-venv==0.2.1
+    # via -r dev-requirements.in
 pytest-xdist==2.2.1
     # via -r dev-requirements.in
 pytest==6.2.4
@@ -114,6 +116,7 @@ pytest==6.2.4
     #   pytest-forked
     #   pytest-html
     #   pytest-metadata
+    #   pytest-venv
     #   pytest-xdist
 pyyaml==5.4.1
     # via pre-commit
@@ -140,9 +143,13 @@ traitlets==5.0.5
 urllib3==1.26.5
     # via selenium
 virtualenv==20.4.7
-    # via pre-commit
+    # via
+    #   pre-commit
+    #   pytest-venv
 wcwidth==0.2.5
     # via prompt-toolkit
+wheel==0.36.2
+    # via -r dev-requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

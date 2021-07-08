@@ -61,7 +61,7 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
 
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Settings"
 
-    # verify no demo activity is present
+    # verify demo activity is present
     assert models.Activity.objects.filter(is_demo_activity=True).count() > 18
     # Demo heading is present
     webdriver.find_element(By.ID, "delete-demo-data")
