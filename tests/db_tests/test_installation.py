@@ -22,7 +22,7 @@ def _add_wkz_bin(venv: VirtualEnvironment) -> VirtualEnvironment:
     return venv
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def build_wheel() -> Path:
     # build wheel
     subprocess.check_output([sys.executable, "setup.py", "bdist_wheel"])
@@ -61,30 +61,6 @@ def _mock_version(venv: VirtualEnvironment, version: str) -> None:
     # get path to installed init module to mock version
     init_path = Path(venv.path) / "lib" / f"python{sys.version[:3]}" / "site-packages" / "workoutizer" / "__init__.py"
     _replace_string_in_file(init_path, 'pkg_resources.require("workoutizer")[0].version', f"'{version}'")
-
-
-# def _check_pages_accessible(wkz_bin) -> None:
-#     timeout = 20
-#     # run wkz in background and stop it after {timeout} seconds
-#     os.system(f"timeout {timeout} {wkz_bin} run &")
-#     # give wkz some time to start server
-#     time.sleep(10)
-
-#     pages_to_check = [
-#         "",  # home aka dashboard
-#         "sports",
-#         "settings",
-#         "help",
-#         "add-sport",
-#         "awards",
-#         "add-activity",
-#     ]
-#     for page in pages_to_check:
-#         assert requests.get(f"http://127.0.0.1:8000/{page}").ok
-
-#     num_demo_activities = 18
-#     for i in range(1, num_demo_activities):
-#         assert requests.get(f"http://127.0.0.1:8000/activity/{i}").ok
 
 
 def test_upgrade_current_to_latest_pypi_version(venv_with_current_wkz):
@@ -138,8 +114,6 @@ def test_upgrade_latest_pypi_to_current_version(venv_with_latest_pypi_wkz, build
     # check that the current version is always greater than the installed latest version from pypi
     assert version.parse(current_version) > version.parse(installed_version)
 
-    # _check_pages_accessible(wkz)
-
     # upgrading now will not find a newer version, since installed
     # version equals the latest version on pypi
     upgrading = subprocess.check_output([wkz, "upgrade"]).decode("utf-8")
@@ -168,7 +142,7 @@ def test_upgrade_latest_pypi_to_current_version(venv_with_latest_pypi_wkz, build
     )
 
     # also mock version to pass the version check in order to allow subsequent upgrading
-    dummy_version = "0.0.1"
+    dummy_version = "0.0.2"
     _mock_version(venv_with_latest_pypi_wkz, dummy_version)
 
     # upgrading now will install the latest version from pypi
@@ -183,5 +157,3 @@ def test_upgrade_latest_pypi_to_current_version(venv_with_latest_pypi_wkz, build
     # check that the installed version now equals the latest version on pypi
     installed_version = subprocess.check_output([wkz, "-v"]).decode("utf-8").replace("\n", "")
     assert current_version == installed_version
-
-    # _check_pages_accessible(wkz)
