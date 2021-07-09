@@ -181,7 +181,7 @@ def test_upgrade_latest_pypi_to_current_version(current_version, venv_with_lates
     )
 
     # also mock version to pass the version check in order to allow subsequent upgrading
-    dummy_version = "0.0.7"
+    dummy_version = "0.0.0.1"
     _mock_version(venv_with_latest_pypi_wkz, dummy_version)
 
     # upgrading now will install the latest version from pypi
