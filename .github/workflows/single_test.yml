@@ -45,4 +45,4 @@ jobs:
 
     - name: Run Tests
       run: |
-        pytest tests/ -vv -n2 -sk test_upgrade_latest_pypi_to_current_version
+        pytest tests/ -vsk test_upgrade_latest_pypi_to_current_version

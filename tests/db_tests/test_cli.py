@@ -69,7 +69,7 @@ def test_cli__reimport(import_one_activity):
 
 def test__check_for_update(monkeypatch):
     # mock pypi version to be lower than the current version
-    pypi_version = "0.0.1"
+    pypi_version = "0.0.2"
 
     def mocked_get_version_pypi(pkg):
         return pypi_version
