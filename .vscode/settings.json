@@ -25,4 +25,5 @@
         "raspbian",
         "referer"
     ],
+    "git.ignoreLimitWarning": true,
 }
