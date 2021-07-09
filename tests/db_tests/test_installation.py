@@ -137,10 +137,10 @@ def test_upgrade_latest_pypi_to_current_version(venv_with_latest_pypi_wkz):
     assert pypi_version == installed_version
     import pkg_resources
 
-    current_version = pkg_resources.require("workoutizer")[0].version
-    print(f"got current version: {current_version}")
+    dev_version = pkg_resources.require("workoutizer")[0].version
+    print(f"got current version: {dev_version}")
     # check that the current version is always greater than the installed latest version from pypi
-    assert version.parse(current_version) > version.parse(installed_version)
+    assert version.parse(dev_version) > version.parse(installed_version)
 
     _check_pages_accessible(wkz)
 
