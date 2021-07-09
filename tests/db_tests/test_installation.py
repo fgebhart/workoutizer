@@ -24,13 +24,12 @@ def _add_wkz_bin(venv: VirtualEnvironment) -> VirtualEnvironment:
     return venv
 
 
-@pytest.fixture
 def build_wheel() -> Path:
     # build wheel
     subprocess.check_output([sys.executable, "setup.py", "bdist_wheel"])
     # get path and yield it
     path_to_wheel = Path(django_settings.WORKOUTIZER_DIR) / "dist" / f"workoutizer-{current_version}-py3-none-any.whl"
-    yield path_to_wheel
+    return path_to_wheel
 
 
 @pytest.fixture(scope="function")
@@ -130,13 +129,16 @@ def _check_pages_accessible(wkz_bin) -> None:
 #     assert pypi_version == installed_version
 
 
-def test_upgrade_latest_pypi_to_current_version(venv_with_latest_pypi_wkz, build_wheel):
+def test_upgrade_latest_pypi_to_current_version(venv_with_latest_pypi_wkz):
     wkz = venv_with_latest_pypi_wkz.wkz
     subprocess.check_output([wkz, "init", "--demo"])
     installed_version = subprocess.check_output([wkz, "-v"]).decode("utf-8").replace("\n", "")
     pypi_version = luddite.get_version_pypi("workoutizer")
     assert pypi_version == installed_version
+    import pkg_resources
 
+    current_version = pkg_resources.require("workoutizer")[0].version
+    print(f"got current version: {current_version}")
     # check that the current version is always greater than the installed latest version from pypi
     assert version.parse(current_version) > version.parse(installed_version)
 
@@ -164,7 +166,8 @@ def test_upgrade_latest_pypi_to_current_version(venv_with_latest_pypi_wkz, build
     shutil.copy(Path(BASE_DIR) / "workoutizer" / "cli.py", cli_path)
 
     # mock package in pip_install function to install the local dev wheel
-    _replace_string_in_file(cli_path, 'package = f"{package}=={pypi_version}"', f"package = '{build_wheel}'")
+    wheel = build_wheel()
+    _replace_string_in_file(cli_path, 'package = f"{package}=={pypi_version}"', f"package = '{wheel}'")
     _replace_string_in_file(
         cli_path, 'pypi_version = luddite.get_version_pypi("workoutizer")', f"pypi_version = '{current_version}'"
     )
