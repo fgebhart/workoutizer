@@ -101,8 +101,9 @@ def try_to_mount_device():
             pass
     if mount_output:
         if "Mounted" in mount_output:
+            mount_output = mount_output
             path_start = mount_output.find("at")
-            mount_path = mount_output[path_start + 2 : -1]
+            mount_path = mount_output[path_start + 2]
             log.info(f"successfully mounted device at: {mount_path}")
             return mount_path
         else:
@@ -112,7 +113,7 @@ def try_to_mount_device():
 
 
 def _mount_device_using_gio(path: str) -> str:
-    return subprocess.check_output(["gio", "mount", "-d", path]).decode("utf-8")
+    return subprocess.check_output(["gio", "mount", "-d", path]).decode("utf-8").rstrip()
 
 
 def _mount_device_using_pmount(path: str) -> str:
