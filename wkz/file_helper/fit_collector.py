@@ -133,5 +133,5 @@ def _find_device_type(bus: str, dev: str) -> Tuple[str, str]:
             (model_id, vendor_id) = device.get("ID_MODEL_ID"), device.get("ID_VENDOR_ID")
             block_devices = device_tree.list_devices(subsystem="block").match_property("ID_MODEL_ID", model_id)
             for device in block_devices:
-                if vendor_id == device.get("DEVNAME"):
+                if vendor_id == device.get("ID_VENDOR_ID"):
                     return ("BLOCK", device.get("DEVNAME"))
