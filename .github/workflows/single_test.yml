@@ -43,6 +43,11 @@ jobs:
         pip install -r setup/requirements/dev-requirements.txt
         pip install -e .
 
-    - name: Run Tests
+    - name: Run Tests With FireFox
       run: |
         pytest tests/ -vv -n2
+
+    - name: Run Browser Tests With Chrome
+      continue-on-error: True
+      run: |
+        pytest tests/db_tests/browser_tests -vv -n2 --browser=Chrome
