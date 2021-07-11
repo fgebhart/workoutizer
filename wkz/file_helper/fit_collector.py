@@ -101,7 +101,6 @@ def try_to_mount_device():
             pass
     if mount_output:
         if "Mounted" in mount_output:
-            mount_output = mount_output
             path_start = mount_output.find("at")
             mount_path = mount_output[path_start + 2]
             log.info(f"successfully mounted device at: {mount_path}")
