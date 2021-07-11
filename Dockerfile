@@ -23,7 +23,7 @@ RUN rm geckodriver-v0.28.0-linux64.tar.gz
 # You can also use: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 # But this can result in a new version breaking the setup
 RUN wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_91.0.4472.114-1_amd64.deb
-RUN dpkg -i google-chrome-stable_current_amd64.deb; apt-get install -fy
+RUN dpkg -i google-chrome-stable_91.0.4472.114-1_amd64.deb; apt-get install -fy
 RUN wget https://chromedriver.storage.googleapis.com/91.0.4472.101/chromedriver_linux64.zip
 RUN unzip -p chromedriver_linux64.zip > /usr/bin/chromedriver
 RUN chmod +x /usr/bin/chromedriver
