@@ -20,6 +20,7 @@ setuptools.setup(
     setup_requires=["setuptools_scm", "setuptools-git-versioning"],
     install_requires=requirements_from_txt("requirements.txt"),
     include_package_data=True,
+    license="MIT",
     description="🏋️ Browser based Sport and Workout Organizer 🏃‍♀️",
     long_description=long_description,
     long_description_content_type="text/markdown",

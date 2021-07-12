@@ -35,7 +35,7 @@ def _watch_for_device(path_to_garmin_device: str, path_to_trace_dir: str, delete
             if (Path(path_to_garmin_device) / filename).is_dir():
                 sub_dirs.append(sub_dirs)
         if len(sub_dirs) > 0:
-            log.info(f"Found mounted device at {path_to_garmin_device}, triggering fit collector...")
+            log.debug(f"Found mounted device at {path_to_garmin_device}, triggering fit collector...")
             fit_collector = FitCollector(
                 path_to_garmin_device=path_to_garmin_device,
                 target_location=path_to_trace_dir,
