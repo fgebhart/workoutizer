@@ -7,16 +7,16 @@ from selenium.webdriver import Chrome, ChromeOptions, Firefox, FirefoxOptions
 from workoutizer import settings as django_settings
 
 
-# https://qxf2.com/blog/selenium-cross-browser-cross-platform-pytest/
-@pytest.fixture
-def webdriver(browser):
-    if browser.lower() == "firefox":
+@pytest.fixture(params=["chrome", "firefox"])
+def webdriver(request):
+    if request.param == "firefox":
         options = FirefoxOptions()
         options.headless = True
         driver = Firefox(options=options)
-    if browser.lower() == "chrome":
+    if request.param == "chrome":
         options = ChromeOptions()
         options.add_argument("--no-sandbox")  # This can probally be removed when #30 is fixed
+        options.add_argument("--disable-dev-shm-usage")  # https://stackoverflow.com/a/53970825
         options.headless = True
         driver = Chrome(options=options)
     driver.set_window_size(1280, 1024)

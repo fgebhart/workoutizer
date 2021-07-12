@@ -81,8 +81,10 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
     second_delete_button = webdriver.find_element_by_class_name("btn-space")
     assert second_delete_button.text == "  DELETE"
     second_delete_button.click()
+    webdriver.get(live_server.url + reverse("home"))
 
     # verify that all demo data got deleted
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "logo-normal")))
     assert models.Activity.objects.filter(is_demo_activity=True).count() == 0
 
     # no delete demo data button present
@@ -118,7 +120,11 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     garmin_device_input_field = webdriver.find_element(By.ID, "id_path_to_garmin_device")
     garmin_device_input_field.clear()
     garmin_device_input_field.send_keys("garmin/dummy/path")
+    # click somewhere to trigger updating settings
     webdriver.find_element(By.ID, "navigation").click()
+    # wait until loading image shows up and disappears again
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "loading-bar")))
+    WebDriverWait(webdriver, 3).until(EC.invisibility_of_element_located((By.ID, "loading-bar")))
     delayed_assertion(lambda: models.get_settings().path_to_garmin_device, operator.eq, "garmin/dummy/path")
 
     # got removed, should not be accessible

@@ -72,7 +72,7 @@ def test_sidebar(live_server, webdriver):
     assert webdriver.current_url == live_server.url + reverse("home")
 
 
-def test_responsiveness(live_server, webdriver, take_screenshot):
+def test_responsiveness(live_server, webdriver):
     # first go to dashboard page
     webdriver.get(live_server.url + reverse("home"))
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Dashboard"

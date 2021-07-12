@@ -328,6 +328,7 @@ def test_add_activity_page(insert_sport, webdriver, live_server):
     assert webdriver.current_url == live_server.url + reverse("add-activity")
 
     # set name
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_name")))
     webdriver.find_element(By.ID, "id_name").click()
     webdriver.find_element(By.ID, "id_name").clear()
     webdriver.find_element(By.ID, "id_name").send_keys("Dummy Activity")

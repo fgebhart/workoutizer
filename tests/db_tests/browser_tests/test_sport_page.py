@@ -143,6 +143,7 @@ def test_sport_page__infinite_scroll(live_server, webdriver, insert_activity, in
     webdriver.get(live_server.url + "/sport/skiing")
 
     # number of rows equals the number of rows per page, since only one page is loaded
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "activities-table-row")))
     table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
     assert len(table_rows) + 1 == rows_per_page
 
