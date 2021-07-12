@@ -84,8 +84,8 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
     webdriver.get(live_server.url + reverse("home"))
 
     # verify that all demo data got deleted
-    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "logo-normal")))
-    assert models.Activity.objects.filter(is_demo_activity=True).count() == 0
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "dropdown-btn")))
+    delayed_assertion(models.Activity.objects.filter(is_demo_activity=True).count, operator.eq, 0)
 
     # no delete demo data button present
     with pytest.raises(NoSuchElementException):
