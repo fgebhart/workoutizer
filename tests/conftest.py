@@ -5,6 +5,23 @@ import pytest
 from workoutizer import settings as django_settings
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "-B",
+        "--browser",
+        dest="browser",
+        action="store",
+        default="firefox",
+        help="Add Browsers used for the test, Firefox is enabled by default, Chrome can be added",
+    )
+
+
+@pytest.fixture
+def browser(request):
+    "pytest fixture for browser"
+    return request.config.getoption("-B")
+
+
 @pytest.fixture
 def test_data_dir():
     return os.path.join(os.path.dirname(__file__), "data")

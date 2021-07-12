@@ -2,17 +2,23 @@ import datetime
 from pathlib import Path
 
 import pytest
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver import Chrome, ChromeOptions, Firefox, FirefoxOptions
 
 from workoutizer import settings as django_settings
 
 
+# https://qxf2.com/blog/selenium-cross-browser-cross-platform-pytest/
 @pytest.fixture
-def webdriver():
-    options = Options()
-    options.headless = True
-    driver = Firefox(options=options)
+def webdriver(browser):
+    if browser.lower() == "firefox":
+        options = FirefoxOptions()
+        options.headless = True
+        driver = Firefox(options=options)
+    if browser.lower() == "chrome":
+        options = ChromeOptions()
+        options.add_argument("--no-sandbox")  # This can probally be removed when #30 is fixed
+        options.headless = True
+        driver = Chrome(options=options)
     driver.set_window_size(1280, 1024)
     yield driver
     driver.quit()

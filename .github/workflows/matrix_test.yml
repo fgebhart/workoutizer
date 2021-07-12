@@ -57,6 +57,11 @@ jobs:
       run: |
         pytest tests/ -vv -n2
 
+    - name: Run Browser Tests With Chrome
+      continue-on-error: True
+      run: |
+        pytest tests/db_tests/browser_tests -vv -n2 --browser=Chrome
+        
     - name: Init
       if: always()
       env:
