@@ -43,7 +43,7 @@ jobs:
         pip install -r setup/requirements/dev-requirements.txt
         pip install -e .
 
-    - name: Run Tests With FireFox
+    - name: Run Tests
       run: |
         pytest tests/ -vv -n2
 
