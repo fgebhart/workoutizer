@@ -53,6 +53,7 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Dashboard"
 
     # check that all activity names are in the table
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "td")))
     table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
     assert "Noon Jogging in Heidelberg" in table_data
     assert "Swimming" in table_data
@@ -136,6 +137,7 @@ def test_dashboard__infinite_scroll(tracks_in_tmpdir, live_server, webdriver, in
     webdriver.get(live_server.url + reverse("home"))
 
     # number of rows equals the number of rows per page, since only one page is loaded
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "activities-table-row")))
     table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
     assert len(table_rows) + 1 == rows_per_page
 
@@ -146,6 +148,7 @@ def test_dashboard__infinite_scroll(tracks_in_tmpdir, live_server, webdriver, in
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "end-of-activities")))
 
     # again check number of table rows
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "activities-table-row")))
     table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
     assert len(table_rows) + 1 == nr_of_inserted_activities
 
@@ -199,6 +202,7 @@ def test_trophy_icon_for_awarded_activities_in_table_are_displayed_correctly(db,
     )
     webdriver.get(live_server.url + reverse("home"))
     # ... and verify that 1 trophy is present
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "fa-trophy")))
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 1
     assert get_flat_list_of_pks_of_activities_in_top_awards() == [activity_1.pk]
 
@@ -213,6 +217,7 @@ def test_trophy_icon_for_awarded_activities_in_table_are_displayed_correctly(db,
     )
     webdriver.get(live_server.url + reverse("home"))
     # ... and verify that 2 trophies are present
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "fa-trophy")))
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 2
     assert set(get_flat_list_of_pks_of_activities_in_top_awards()) == {activity_1.pk, activity_2.pk}
 
@@ -228,5 +233,6 @@ def test_trophy_icon_for_awarded_activities_in_table_are_displayed_correctly(db,
     activity_3.save()
     webdriver.get(live_server.url + reverse("home"))
     # ... and verify that 3 trophies are present
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "fa-trophy")))
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 3
-    assert get_flat_list_of_pks_of_activities_in_top_awards() == [activity_1.pk, activity_2.pk, activity_3.pk]
+    assert set(get_flat_list_of_pks_of_activities_in_top_awards()) == set([activity_1.pk, activity_2.pk, activity_3.pk])

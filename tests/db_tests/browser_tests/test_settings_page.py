@@ -5,6 +5,8 @@ import pytest
 from django.urls import reverse
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from tests.utils import delayed_assertion
 from wkz import models
@@ -103,6 +105,7 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     # Note, that with using htmx to update the settings form, all fields are submitted once their values got changed
 
     # modify values by inserting into input fields
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_path_to_trace_dir")))
     trace_dir_input_field = webdriver.find_element(By.ID, "id_path_to_trace_dir")
     trace_dir_input_field.clear()
     trace_dir_input_field.send_keys("some/dummy/path")
@@ -111,6 +114,7 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
 
     delayed_assertion(lambda: models.get_settings().path_to_trace_dir, operator.eq, "some/dummy/path")
 
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_path_to_garmin_device")))
     garmin_device_input_field = webdriver.find_element(By.ID, "id_path_to_garmin_device")
     garmin_device_input_field.clear()
     garmin_device_input_field.send_keys("garmin/dummy/path")
