@@ -107,7 +107,7 @@ systemctl enable wkz
 
 ```
 
-### 3. Init and run Workoutizer
+### 4. Init and run Workoutizer
 Afterwards initialize and run workoutizer:
 ```
 wkz init
