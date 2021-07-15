@@ -67,7 +67,7 @@ def test_sidebar(live_server, webdriver):
     # again minimize sidebar
     webdriver.find_element(By.CSS_SELECTOR, ".fa-chevron-left").click()
     # maximize
-    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".fa-chevron-right")))
+    WebDriverWait(webdriver, 3).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".fa-chevron-right")))
     webdriver.find_element(By.CSS_SELECTOR, ".fa-chevron-right").click()
     assert webdriver.current_url == live_server.url + reverse("home")
 

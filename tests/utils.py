@@ -10,4 +10,4 @@ def delayed_assertion(func, operator, result):
     """
     Helper function to check if a function evaluates to given value with a fixed number of retries.
     """
-    assert operator(func(), result), f"function: {func} did not return a result which is {operator} {result}"
+    assert operator(func(), result), f"function {func} returned {func()}, which is not {operator} {result}"

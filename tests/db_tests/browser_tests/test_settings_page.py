@@ -113,6 +113,10 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     # basically clicking somewhere else to trigger submitting the change
     webdriver.find_element(By.ID, "navigation").click()
 
+    # wait until loading image shows up and disappears again
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "loading-bar")))
+    WebDriverWait(webdriver, 3).until(EC.invisibility_of_element_located((By.ID, "loading-bar")))
+
     delayed_assertion(lambda: models.get_settings().path_to_trace_dir, operator.eq, "some/dummy/path")
 
     WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_path_to_garmin_device")))
