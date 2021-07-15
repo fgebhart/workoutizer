@@ -267,7 +267,8 @@ def test_keyboard_shortcuts__activity_and_sport(flush_db, live_server, webdriver
     ac.key_up("e")
     _try_to_perform_chain(ac)
 
-    assert webdriver.current_url == live_server.url + "/activity/1/edit/"
+    # assert webdriver.current_url == live_server.url + "/activity/1/edit/"
+    delayed_assertion(lambda: webdriver.current_url, operator.eq, live_server.url + "/activity/1/edit/")
 
     webdriver.get(live_server.url + "/sport/bowling")
     assert webdriver.current_url == live_server.url + "/sport/bowling"
