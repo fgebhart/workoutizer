@@ -85,11 +85,33 @@ Description=Workoutizer Device Mounting Service
 User=pi
 ExecStart=curl -X POST "Content-Type: application/json" http://{{ address }}/mount-device/
 ```
-### 3. Init and run Workoutizer
+
+### 3. Creat the wkz systemd Service
+Create a file at `/etc/systemd/system/wkz.service` with the following content:
+```
+[Unit]
+Description=Workoutizer
+After=syslog.target network.target
+
+[Service]
+User=pi
+ExecStart=/home/pi/venv/bin/wkz run
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+```
+Execute the following command to start the wkz service automatically after reboot.
+```
+systemctl enable wkz
+
+```
+
+### 4. Init and run Workoutizer
 Afterwards initialize and run workoutizer:
 ```
 wkz init
-wkz run
+systemctl start wkz
 ```
 
 ## Background
