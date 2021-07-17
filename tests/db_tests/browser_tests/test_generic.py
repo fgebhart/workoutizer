@@ -13,7 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from tests.utils import delayed_assertion
+from tests.utils import delayed_assertion, retry_finding_and_clicking_element
 from wkz import models
 
 
@@ -68,7 +68,9 @@ def test_sidebar(live_server, webdriver):
     webdriver.find_element(By.CSS_SELECTOR, ".fa-chevron-left").click()
     # maximize
     WebDriverWait(webdriver, 3).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".fa-chevron-right")))
-    webdriver.find_element(By.CSS_SELECTOR, ".fa-chevron-right").click()
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".fa-chevron-right")))
+    retry_finding_and_clicking_element(webdriver, By.CSS_SELECTOR, ".fa-chevron-right")
+
     assert webdriver.current_url == live_server.url + reverse("home")
 
 
