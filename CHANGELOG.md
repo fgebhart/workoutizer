@@ -6,9 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-* Added tests for Google Chrome browser
+* Run browser tests not only for firefox but also for chrome, thus workoutizer now
+  officially supports chrome.
 ### Fixed
-* Fix not mounting block devices due to flawed logic
+* Fix not mounting block devices due to flawed logic.
 
 ## [0.21.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.21.0) - 2021-07-06
 ### Added

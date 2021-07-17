@@ -1,4 +1,5 @@
 import operator
+import time
 
 import pytest
 from django.urls import reverse
@@ -20,10 +21,13 @@ def test_sidebar(live_server, webdriver):
     def _assert_only_selected_link_is_highlighted(red_link_text: str):
         all_links = webdriver.find_elements(By.TAG_NAME, "a")
         for link in all_links:
+            color = link.value_of_css_property("color")
             if link.text == red_link_text:
-                assert link.value_of_css_property("color") == "rgb(239, 129, 87)"
+                assert "rgb" in color
+                assert "239, 129, 87" in color
             else:
-                assert link.value_of_css_property("color") != "rgb(239, 129, 87)"
+                assert "rgb" in color
+                assert "239, 129, 87" not in color
 
     webdriver.get(live_server.url + reverse("home"))
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Dashboard"
@@ -63,6 +67,7 @@ def test_sidebar(live_server, webdriver):
     # again minimize sidebar
     webdriver.find_element(By.CSS_SELECTOR, ".fa-chevron-left").click()
     # maximize
+    WebDriverWait(webdriver, 3).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".fa-chevron-right")))
     webdriver.find_element(By.CSS_SELECTOR, ".fa-chevron-right").click()
     assert webdriver.current_url == live_server.url + reverse("home")
 
@@ -106,6 +111,7 @@ def test_responsiveness(live_server, webdriver):
 
     # now toggle the sidebar to expand again
     webdriver.find_element(By.CLASS_NAME, "navbar-toggler").click()
+    time.sleep(1)  # wait a moment until sidebar reveals, in order to make chrome tests pass
     # sidebar items should be present again
     webdriver.find_element(By.LINK_TEXT, "WORKOUTIZER")
     webdriver.find_element(By.LINK_TEXT, "SPORTS")
@@ -130,11 +136,19 @@ def test_responsiveness(live_server, webdriver):
     webdriver.find_element(By.CLASS_NAME, "navbar-kebab").click()
 
     # verify navbar items are visible and interactable again
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "add-activity-button")))
     webdriver.find_element(By.ID, "add-activity-button").click()
+    assert webdriver.current_url == live_server.url + reverse("add-activity")
+
     webdriver.find_element(By.CLASS_NAME, "navbar-kebab").click()
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "help-button")))
     webdriver.find_element(By.ID, "help-button").click()
+    assert webdriver.current_url == live_server.url + reverse("help")
+
     webdriver.find_element(By.CLASS_NAME, "navbar-kebab").click()
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "settings-button")))
     webdriver.find_element(By.ID, "settings-button").click()
+    assert webdriver.current_url == live_server.url + reverse("settings")
 
 
 def test_custom_navbar_items(db, live_server, webdriver, import_one_activity):
@@ -253,7 +267,8 @@ def test_keyboard_shortcuts__activity_and_sport(flush_db, live_server, webdriver
     ac.key_up("e")
     _try_to_perform_chain(ac)
 
-    assert webdriver.current_url == live_server.url + "/activity/1/edit/"
+    # assert webdriver.current_url == live_server.url + "/activity/1/edit/"
+    delayed_assertion(lambda: webdriver.current_url, operator.eq, live_server.url + "/activity/1/edit/")
 
     webdriver.get(live_server.url + "/sport/bowling")
     assert webdriver.current_url == live_server.url + "/sport/bowling"

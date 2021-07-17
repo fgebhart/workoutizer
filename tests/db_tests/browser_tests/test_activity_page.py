@@ -228,26 +228,20 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
 
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Edit Activity: Noon Cycling In Bad Schandau"
     assert webdriver.find_element_by_id("submit-button").text == "  SAVE"
-    assert (
-        webdriver.find_element_by_tag_name("form").text
-        == """Activity Name
-Sport
----------
-Cycling
-MTB
-Date
-Duration [HH:MM:SS]
-Distance [in km]
-Description
-Consider Activity for Awards
-
-Lap Data
-
-
-  SAVE
-CANCEL
-  DELETE"""
-    )
+    form_text = webdriver.find_element_by_tag_name("form").text
+    assert "Activity Name" in form_text
+    assert "Sport" in form_text
+    assert "Cycling" in form_text
+    assert "MTB" in form_text
+    assert "Date" in form_text
+    assert "Duration [HH:MM:SS]" in form_text
+    assert "Distance [in km]" in form_text
+    assert "Description" in form_text
+    assert "Consider Activity for Awards" in form_text
+    assert "Lap Data" in form_text
+    assert "SAVE" in form_text
+    assert "CANCEL" in form_text
+    assert "DELETE" in form_text
 
     links = [link.text for link in webdriver.find_elements_by_tag_name("a")]
     assert "DASHBOARD" in links
@@ -283,11 +277,13 @@ CANCEL
     webdriver.find_element(By.CSS_SELECTOR, "tr:nth-child(4) > .day:nth-child(5)").click()
     webdriver.find_element(By.CSS_SELECTOR, "tr:nth-child(3) > .day:nth-child(3)").click()
     webdriver.find_element(By.CSS_SELECTOR, ".fa-clock-o").click()
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "td:nth-child(3) .fa-chevron-down")))
     webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(3) .fa-chevron-down").click()
 
     # also edit lap data
     webdriver.find_element(By.ID, "edit-lap-data").click()
     lap_input_0 = webdriver.find_element(By.ID, "id_form-0-label")
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_form-0-label")))
     lap_input_0.clear()
     lap_input_0.send_keys("lap label 0")
 
@@ -332,6 +328,7 @@ def test_add_activity_page(insert_sport, webdriver, live_server):
     assert webdriver.current_url == live_server.url + reverse("add-activity")
 
     # set name
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_name")))
     webdriver.find_element(By.ID, "id_name").click()
     webdriver.find_element(By.ID, "id_name").clear()
     webdriver.find_element(By.ID, "id_name").send_keys("Dummy Activity")
@@ -343,6 +340,7 @@ def test_add_activity_page(insert_sport, webdriver, live_server):
     webdriver.find_element(By.ID, "id_date").click()
     webdriver.find_element(By.CSS_SELECTOR, ".fa-clock-o").click()
     # change hours
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "td:nth-child(1) .fa-chevron-up")))
     webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(1) .fa-chevron-up").click()
     # change minutes
     webdriver.find_element(By.CSS_SELECTOR, "td:nth-child(3) .fa-chevron-down").click()
@@ -530,8 +528,9 @@ def test_trophy_icon_for_awarded_activity_is_displayed_correctly(db, live_server
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 1
 
     trophy = webdriver.find_element_by_class_name("fa-trophy")
-    gold = "rgb(255, 215, 0)"
-    assert trophy.value_of_css_property("color") == gold
+    color = trophy.value_of_css_property("color")
+    assert "255, 215, 0" in color
+    assert "rgb" in color
 
     # add best sections
     models.BestSection.objects.create(

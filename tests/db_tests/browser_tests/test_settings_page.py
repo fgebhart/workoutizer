@@ -5,6 +5,8 @@ import pytest
 from django.urls import reverse
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from tests.utils import delayed_assertion
 from wkz import models
@@ -79,6 +81,7 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
     second_delete_button = webdriver.find_element_by_class_name("btn-space")
     assert second_delete_button.text == "  DELETE"
     second_delete_button.click()
+    webdriver.get(live_server.url + reverse("home"))
 
     # verify that all demo data got deleted
     assert models.Activity.objects.filter(is_demo_activity=True).count() == 0
@@ -103,18 +106,28 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     # Note, that with using htmx to update the settings form, all fields are submitted once their values got changed
 
     # modify values by inserting into input fields
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_path_to_trace_dir")))
     trace_dir_input_field = webdriver.find_element(By.ID, "id_path_to_trace_dir")
     trace_dir_input_field.clear()
     trace_dir_input_field.send_keys("some/dummy/path")
     # basically clicking somewhere else to trigger submitting the change
     webdriver.find_element(By.ID, "navigation").click()
 
+    # wait until loading image shows up and disappears again
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "loading-bar")))
+    WebDriverWait(webdriver, 3).until(EC.invisibility_of_element_located((By.ID, "loading-bar")))
+
     delayed_assertion(lambda: models.get_settings().path_to_trace_dir, operator.eq, "some/dummy/path")
 
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_path_to_garmin_device")))
     garmin_device_input_field = webdriver.find_element(By.ID, "id_path_to_garmin_device")
     garmin_device_input_field.clear()
     garmin_device_input_field.send_keys("garmin/dummy/path")
+    # click somewhere to trigger updating settings
     webdriver.find_element(By.ID, "navigation").click()
+    # wait until loading image shows up and disappears again
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "loading-bar")))
+    WebDriverWait(webdriver, 3).until(EC.invisibility_of_element_located((By.ID, "loading-bar")))
     delayed_assertion(lambda: models.get_settings().path_to_garmin_device, operator.eq, "garmin/dummy/path")
 
     # got removed, should not be accessible
