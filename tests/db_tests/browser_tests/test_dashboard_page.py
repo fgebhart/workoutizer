@@ -184,6 +184,7 @@ def test_trophy_icon_for_awarded_activities_in_table_are_displayed_correctly(db,
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 0
 
     # check that activities are already displayed in the table
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "td")))
     td = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
     assert activity_1.name in td
     assert activity_2.name in td

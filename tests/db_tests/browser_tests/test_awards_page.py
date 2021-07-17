@@ -1,5 +1,9 @@
+import time
+
 from django.urls import reverse
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from wkz import configuration as cfg
 from wkz import models
@@ -101,6 +105,7 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     # first check activities listed in fastest awards
     webdriver.get(live_server.url + reverse("awards"))
 
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "th")))
     th = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
     assert "RANK" in th
     assert "DISTANCE" in th
@@ -118,6 +123,7 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
         fastest_top_awards += list(awards)
 
     # get table content
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "td")))
     td = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
 
     # verify that these activities are present in the table content
@@ -136,6 +142,7 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     # now check the same for the climb awards, first go to climb tab
     webdriver.find_element(By.LINK_TEXT, "Best Climb Section").click()
 
+    time.sleep(1)  # wait a sec to let the corresponding table reveal
     th = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
     assert "RANK" in th
     assert "DISTANCE" in th
@@ -156,6 +163,7 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     td = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
 
     # verify that these activities are present in the table content
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "th")))
     activity_names = [award.activity.name for award in climb_top_awards]
     for name in activity_names:
         assert name in td
@@ -171,6 +179,7 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     # now check the same for the total ascent awards, first go to total ascent tab
     webdriver.find_element(By.LINK_TEXT, "Total Ascent").click()
 
+    time.sleep(1)  # wait a sec to let the corresponding table reveal
     th = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
     assert "RANK" in th
     assert "DATE" in th
@@ -191,6 +200,7 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
         ascent_top_awards += list(activities)
 
     # get table content
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "td")))
     td = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
 
     # verify that these activities are present in the table content
