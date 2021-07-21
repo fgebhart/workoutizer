@@ -28,7 +28,7 @@ def test_sportgems_climb_interface__real_activity_data__fit(fit_parser):
 
     assert result.start == 339
     assert result.end == 580
-    assert math.isclose(result.climb, 5.786, abs_tol=0.01)
+    assert math.isclose(result.climb, 11.55, abs_tol=0.01)
 
 
 def test_sportgems_climb_interface__real_activity_data__gpx(gpx_parser):
@@ -50,19 +50,19 @@ def test_get_best_climb_section__fit(fit_parser):
     res = get_best_climb_section(1000, parser)
     assert res.start == 339
     assert res.end == 580
-    assert round(res.max_value, 2) == 5.78
+    assert round(res.max_value, 2) == 11.56
 
     # test fastest 2km
     res = get_best_climb_section(2000, parser)
     assert res.start == 50
     assert res.end == 584
-    assert round(res.max_value, 2) == 5.0
+    assert round(res.max_value, 2) == 9.99
 
     # test fastest 5km
     res = get_best_climb_section(5000, parser)
     assert res.start == 52
     assert res.end == 1151
-    assert round(res.max_value, 2) == 2.36
+    assert round(res.max_value, 2) == 4.73
 
     # test fastest 10km, in this case the activity data is shorter
     # than 10km and thus we expect that no suitable section was found

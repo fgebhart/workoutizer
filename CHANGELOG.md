@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-Placeholder section for unreleased changes.
+## Changed
+* #189: Upgrade `fitparse` to most recent version and use `enhanced_altitude` instead of
+  `altitude` value when parsing fit files, since `enhanced_altitude` seems to contain
+  the correct altitude value for all garmin devices. This requires a reimport of
+  activities.
 
 ## [0.21.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.21.1) - 2021-07-17
 ### Added
