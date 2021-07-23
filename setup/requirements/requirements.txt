@@ -67,7 +67,7 @@ django-grip==3.0.0
     # via django-eventstream
 djangorestframework==3.12.4
     # via -r requirements.in
-fitparse==1.1.0
+fitparse==1.2.0
     # via -r requirements.in
 fsspec==2021.6.0
     # via dask

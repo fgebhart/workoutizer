@@ -130,9 +130,9 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
                 lap_lines += lap
 
                 # add tools to plot
-                x_hover = ("Time", "@x")
+                x_hover = ("Time", "@x s")
                 hover = HoverTool(
-                    tooltips=[(plot_matrix[attribute]["title"], f"@y {plot_matrix[attribute]['axis']}"), x_hover],
+                    tooltips=[(plot_matrix[attribute]["title"], "@y{0.0} " + plot_matrix[attribute]["axis"]), x_hover],
                     mode="vline",
                     toggleable=False,
                 )
