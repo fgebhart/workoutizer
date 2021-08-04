@@ -49,7 +49,7 @@ class ActivityView(MapView):
             activity_context["script_time_series"] = script_time_series
             activity_context["div_time_series"] = div_time_series
             activity_context["map_height"] = _get_map_height(number_of_plots)
-        laps = Lap.objects.filter(trace=activity.trace_file, trigger="manual")
+        laps = Lap.objects.filter(trace=activity.trace_file).exclude(trigger="unknown")
         if laps:
             activity_context["laps"] = laps
         activity_context["evaluates_for_awards"] = False

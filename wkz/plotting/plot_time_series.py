@@ -211,7 +211,7 @@ def _add_laps_to_plot(laps: list, plot, y_values: list) -> List:
     x_value = pd.Timedelta(seconds=0)
     for lap in laps:
         x_value += lap.elapsed_time
-        if lap.trigger == "manual":
+        if lap.trigger != "unknown":
             line = plot.line([x_value, x_value], [y_values.min() - 1, y_values.max() + 1], color="grey")
             lap_lines.append(line)
     return lap_lines
