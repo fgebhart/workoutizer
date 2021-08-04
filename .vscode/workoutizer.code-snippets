@@ -8,6 +8,7 @@
 		],
 		"description": "embedding with IPython"
 	},
+
 	"Pandas Display Settings": {
 		"scope": "python",
 		"prefix": "pandas-display-settings",
@@ -15,5 +16,14 @@
 			"pd.options.display.max_rows = pd.options.display.max_columns = None",
 		],
 		"description": "Pandas Display Settings"
+	},
+
+	"Set Breakpoint": {
+		"scope": "python",
+		"prefix": "set-breakpoint",
+		"body": [
+			"breakpoint()",
+		],
+		"description": "Set Breakpoint"
 	},
 }
