@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Added
 * Use value of `altitude` field in case `enhanced_altitude` field is not available during
   parsing of fit files.
+* Render activity duration in hover tooltip on history plot on dashboard page.
 
 ## [0.21.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.21.1) - 2021-07-17
 ### Added

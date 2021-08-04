@@ -4,10 +4,11 @@ import logging
 import pandas as pd
 import pytz
 from bokeh.embed import components
-from bokeh.models import BoxZoomTool
+from bokeh.models import HoverTool
 from bokeh.plotting import figure
-from django.conf import settings
 from django.utils import timezone
+
+from workoutizer import settings as django_settings
 
 log = logging.getLogger(__name__)
 
@@ -21,45 +22,49 @@ def _plot_activities(activities, sport_model, number_of_days):
         colors.append(sport.color)
 
     df.drop(columns=["sport", "duration", "name"], inplace=True)
-    today = timezone.now().replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
+    today = timezone.now().replace(tzinfo=pytz.timezone(django_settings.TIME_ZONE))
     if number_of_days < 9999:
         start = today - datetime.timedelta(days=number_of_days)
     else:
-        start = df["date"].min().replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
-    date_range = pd.DataFrame({"date": pd.date_range(start=start, end=today, tz=settings.TIME_ZONE)})
+        start = df["date"].min().replace(tzinfo=pytz.timezone(django_settings.TIME_ZONE))
+    date_range = pd.DataFrame({"date": pd.date_range(start=start, end=today, tz=django_settings.TIME_ZONE)})
     df = pd.concat([df, date_range], sort=True)
 
     df["date"] = pd.to_datetime(df["date"], utc=True).dt.date
     df = df.groupby("date", as_index=False).sum()  # group date duplicates to ensure actual stacking of vbars
-    df["date_name"] = df["date"].astype(str)
+    df["date_formatted"] = df["date"].astype(str)
     df.fillna(value=pd.Timedelta(seconds=0), inplace=True)
+    for sport in sports:
+        # add formatted duration
+        df[f"{sport.name}_duration"] = df[sport.name].dt.to_pytimedelta().astype(str)
 
     p = figure(
         x_axis_type="datetime",
         y_axis_type="datetime",
-        plot_height=settings.PLOT_HEIGHT,
+        plot_height=django_settings.PLOT_HEIGHT,
         sizing_mode="stretch_width",
-        tools="hover,reset",
-        tooltips="$name @date_name",
-        # tooltips="$name @date_name: @$name",
     )
+    p.tools = []
 
     sports_list = [sport.name for sport in sports]
-    p.vbar_stack(
+    renderers = p.vbar_stack(
         sports_list,
         x="date",
         width=datetime.timedelta(days=0.8),
         color=colors,
-        muted_color=colors,
-        muted_alpha=0.2,
         source=df,
     )
+    for r in renderers:
+        sport = r.name
+        hover = HoverTool(
+            tooltips=[("%s" % sport, "@%s" % f"{sport}_duration"), ("Date", "@date_formatted")], renderers=[r]
+        )
+        p.add_tools(hover)
 
     # render zero hours properly
     p.yaxis.major_label_overrides = {0: "0h"}
     p.toolbar.logo = None
-
-    p.add_tools(BoxZoomTool(dimensions="width"))
+    p.toolbar_location = None
 
     return p
 
