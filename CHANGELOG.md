@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## Fixed
+* Correctly display activity duration as timedelta formatted as `HH:MM:SS` instead of
+  raw seconds in time series plots on activity page.
 ## Changed
 * #189: Upgrade `fitparse` to most recent version and use `enhanced_altitude` instead of
   `altitude` value when parsing fit files, since `enhanced_altitude` seems to contain
