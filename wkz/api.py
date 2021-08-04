@@ -17,7 +17,7 @@ def mount_device_endpoint(request):
     try:
         mount_path = try_to_mount_device()
         if mount_path:
-            return Response("mounted and checked for files", status=status.HTTP_200_OK)
+            return Response("successfully mounted device", status=status.HTTP_200_OK)
         else:
             log.error(f"could not mount device, no valid mount path available - got: {mount_path}")
             return Response("failed", status=status.HTTP_500_INTERNAL_SERVER_ERROR)

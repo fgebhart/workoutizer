@@ -51,7 +51,7 @@ def test_activity_data_in_db_after_import(import_one_activity):
     assert 8.697221484035255 in json.loads(a.trace_file.longitude_list)
     assert 49.40601873211563 in json.loads(a.trace_file.latitude_list)
     assert 1.6 in json.loads(a.trace_file.distance_list)
-    assert 248.9 in json.loads(a.trace_file.altitude_list)
+    assert 206.4 in json.loads(a.trace_file.altitude_list)
     assert 99 in json.loads(a.trace_file.heart_rate_list)
     assert 61 in json.loads(a.trace_file.cadence_list)
     assert 31 in json.loads(a.trace_file.temperature_list)

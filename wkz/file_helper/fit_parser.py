@@ -36,12 +36,15 @@ class FITParser(Parser):
 
             # parse list attributes
             timestamp = record.get("timestamp")
-            self.timestamps_list.append(timestamp.timestamp() if timestamp else timestamp)
+            self.timestamps_list.append(timestamp.timestamp() if timestamp is not None else None)
             self.distance_list.append(record.get("distance"))
             self.longitude_list.append(_to_coordinate(record.get("position_long")))
             self.latitude_list.append(_to_coordinate(record.get("position_lat")))
-            altitude = record.get("altitude")
-            self.altitude_list.append((float(altitude) / 10) if altitude else altitude)
+            # enhanced_altitude seems to contain the correct value (opposed to `altitude`) across multiple garmin devices
+            altitude = record.get("enhanced_altitude")
+            if altitude is None:  # get altitude value as backup in case enhanced_altitude is not available
+                altitude = record.get("altitude")
+            self.altitude_list.append(round(altitude, 1) if altitude is not None else None)
             self.heart_rate_list.append(record.get("heart_rate"))
             self.temperature_list.append(record.get("temperature"))
             self.cadence_list.append(record.get("cadence"))

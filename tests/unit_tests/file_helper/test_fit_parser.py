@@ -46,7 +46,7 @@ def test__parse_records(fit_parser):
     assert 8.697221484035255 in p.longitude_list
     assert 49.40601873211563 in p.latitude_list
     assert 1.6 in p.distance_list
-    assert 248.9 in p.altitude_list
+    assert 206.4 in p.altitude_list
     assert 99 in p.heart_rate_list
     assert 61 in p.cadence_list
     assert 31 in p.temperature_list
@@ -92,8 +92,8 @@ def test_set_min_max_values(fit_parser, monkeypatch):
     assert p.min_speed == 0.0
     assert p.max_temperature == 31.0
     assert p.min_temperature == 26.0
-    assert p.max_altitude == 353.3
-    assert p.min_altitude == 238.2
+    assert p.max_altitude == 206.6
+    assert p.min_altitude == -23.6
     assert p.max_heart_rate == 160.0
     assert p.min_heart_rate == 95.0
     with pytest.raises(AttributeError):
@@ -140,11 +140,11 @@ def test_get_fastest_sections(fit_parser):
     sec2 = GenericBestSection(2000, 537, 814, 2.32, "fastest")
     sec3 = GenericBestSection(3000, 428, 937, 2.13, "fastest")
     sec4 = GenericBestSection(5000, 76, 1167, 1.84, "fastest")
-    sec5 = GenericBestSection(100, 555, 580, 13.05, "climb")
-    sec6 = GenericBestSection(200, 535, 578, 9.73, "climb")
-    sec7 = GenericBestSection(500, 469, 578, 6.75, "climb")
-    sec8 = GenericBestSection(1_000, 339, 580, 5.78, "climb")
-    sec9 = GenericBestSection(2_000, 50, 584, 5.0, "climb")
+    sec5 = GenericBestSection(100, 555, 580, 26.11, "climb")
+    sec6 = GenericBestSection(200, 535, 578, 19.46, "climb")
+    sec7 = GenericBestSection(500, 469, 578, 13.5, "climb")
+    sec8 = GenericBestSection(1_000, 339, 580, 11.56, "climb")
+    sec9 = GenericBestSection(2_000, 50, 584, 9.99, "climb")
 
     assert p.best_sections == [sec1, sec2, sec3, sec4, sec5, sec6, sec7, sec8, sec9]
 

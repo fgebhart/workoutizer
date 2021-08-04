@@ -71,7 +71,7 @@ your vendor id and `{{ product_id }}` with your product id:
 ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="{{ vendor_id }}", ATTRS{idProduct}=="{{ product_id }}", TAG+="systemd", ENV{SYSTEMD_WANTS}="wkz_mount"
 ```
 
-### 2. Create the wkz mount systemd service
+### 2. Create the wkz mount service
 Create a file at `/etc/systemd/system/wkz_mount.service` with the following content and replace `{{ address }}`
 with the address (and port) to your Raspberry Pi in you local network.
 For example if your Raspberry Pi has the IP address `192.168.0.55`, you would need to replace `{{ address }}`
@@ -83,11 +83,13 @@ Description=Workoutizer Device Mounting Service
 
 [Service]
 User=pi
-ExecStart=curl -X POST "Content-Type: application/json" http://{{ address }}/mount-device/
+ExecStart=curl -X POST -H "Content-Type: application/json" http://{{ address }}/mount-device/
 ```
 
-### 3. Creat the wkz systemd Service
-Create a file at `/etc/systemd/system/wkz.service` with the following content:
+### 3. (Optional) Create the wkz service
+In order to automatically start workoutizer on system boot, create a file at `/etc/systemd/system/wkz.service`
+with the following content:
+
 ```
 [Unit]
 Description=Workoutizer
@@ -101,17 +103,26 @@ Restart=on-abort
 [Install]
 WantedBy=multi-user.target
 ```
-Execute the following command to start the wkz service automatically after reboot.
+
+Execute the following command to enable the wkz service automatically after reboot.
+
 ```
 systemctl enable wkz
-
 ```
 
 ### 4. Init and run Workoutizer
-Afterwards initialize and run workoutizer:
+Afterwards initialize - if you haven't done so yet - workoutizer:
 ```
 wkz init
+```
+
+and run it either with:
+```
 systemctl start wkz
+```
+in case you are using the systemd service or, if you don't use systemd:
+```
+wkz run
 ```
 
 ## Background

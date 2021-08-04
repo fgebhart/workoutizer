@@ -8,6 +8,7 @@ from bokeh.layouts import column, gridplot
 from bokeh.models import (
     BoxZoomTool,
     CheckboxButtonGroup,
+    ColumnDataSource,
     CrosshairTool,
     CustomJS,
     HoverTool,
@@ -82,47 +83,53 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
     )
     x_axis = pd.to_datetime(timestamps).dt.tz_localize("utc").dt.tz_convert(settings.TIME_ZONE)
     x_axis = x_axis - x_axis.min()
+    source = ColumnDataSource(data={"x_axis": x_axis, "x_formatted": x_axis.dt.to_pytimedelta().astype(str)})
 
     box_zoom_tool = BoxZoomTool(dimensions="width")
-    for attribute, values in attributes.items():
-        if attribute in cfg.attributes_to_create_time_series_plot_for:
+    for y_axis, values in attributes.items():
+        if y_axis in cfg.attributes_to_create_time_series_plot_for:
             values = pd.Series(json.loads(values), dtype=float).iloc[:: cfg.every_nth_value]
+            y_axis = y_axis.replace("_list", "")
             if values.any():
-                attribute = attribute.replace("_list", "")
+                if y_axis == "speed":
+                    # turn speed values from m/s into km/h to be consistent with other speed values
+                    values = values.mul(3.6)
+
+                # add current values to plotting source data
+                source.add(values, y_axis)
 
                 p = figure(
-                    x_axis_type="datetime",
                     plot_height=int(settings.PLOT_HEIGHT / 2.5),
                     sizing_mode="stretch_width",
-                    y_axis_label=plot_matrix[attribute]["axis"],
+                    y_axis_label=plot_matrix[y_axis]["axis"],
                     tools="reset",
                 )
 
-                if attribute == "speed":
-                    # turn speed values from m/s into km/h to be consistent with other speed values
-                    values = values.mul(3.6)
-                if attribute == "altitude":
+                if y_axis == "altitude":
                     p.varea(
-                        x=x_axis,
-                        y1=values,
+                        x="x_axis",
+                        y1=y_axis,
                         y2=values.min(),
-                        color=plot_matrix[attribute]["second_color"],
+                        color=plot_matrix[y_axis]["second_color"],
                         fill_alpha=0.5,
+                        source=source,
                     )
                     p.line(
-                        x_axis,
-                        values,
+                        x="x_axis",
+                        y=y_axis,
                         line_width=2,
-                        color=plot_matrix[attribute]["color"],
-                        legend_label=plot_matrix[attribute]["title"],
+                        color=plot_matrix[y_axis]["color"],
+                        legend_label=plot_matrix[y_axis]["title"],
+                        source=source,
                     )
                 else:
                     p.line(
-                        x_axis,
-                        values,
+                        x="x_axis",
+                        y=y_axis,
                         line_width=2,
-                        color=plot_matrix[attribute]["color"],
-                        legend_label=plot_matrix[attribute]["title"],
+                        color=plot_matrix[y_axis]["color"],
+                        legend_label=plot_matrix[y_axis]["title"],
+                        source=source,
                     )
 
                 # render vertical lap lines
@@ -130,9 +137,12 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
                 lap_lines += lap
 
                 # add tools to plot
-                x_hover = ("Time", "@x")
+                digits = "{0.0}"
                 hover = HoverTool(
-                    tooltips=[(plot_matrix[attribute]["title"], f"@y {plot_matrix[attribute]['axis']}"), x_hover],
+                    tooltips=[
+                        (plot_matrix[y_axis]["title"], f"@{y_axis}{digits} " + plot_matrix[y_axis]["axis"]),
+                        ("Time", "@x_formatted"),
+                    ],
                     mode="vline",
                     toggleable=False,
                 )

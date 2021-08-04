@@ -53,7 +53,7 @@ wkz run
 See the help description of the CLI with `wkz --help` and subcommands, e.g.: `wkz manage --help`. 
 
 In case you want to run workoutizer on a Raspberry Pi in your local network, follow the 
-[Raspberry Pi setup instructions](https://github.com/fgebhart/workoutizer/tree/master/setup).
+[Raspberry Pi setup instructions](https://github.com/fgebhart/workoutizer/tree/main/setup).
 
 
 ## Gallery 
