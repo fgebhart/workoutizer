@@ -97,6 +97,7 @@ After=syslog.target network.target
 
 [Service]
 User=pi
+WorkingDirectory=~
 ExecStart=/home/pi/venv/bin/wkz run
 Restart=on-abort
 
