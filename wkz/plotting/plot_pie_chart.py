@@ -4,7 +4,7 @@ from typing import List, Tuple
 log = logging.getLogger(__name__)
 
 
-def plot_pie_chart(activities) -> Tuple(List[int], List[str], List[str]):
+def plot_pie_chart(activities) -> Tuple[List[int], List[str], List[str]]:
     sport_distribution = {}
     color_list = []
     for activity in activities:

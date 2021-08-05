@@ -275,70 +275,73 @@ demo = {
   initChartPageCharts: function() {
     chartColor = "#FFFFFF";
 
-    ctx = document.getElementById('chartSportDistribution').getContext("2d");
+    var ChartAvailable = document.getElementById("chartSportDistribution");
+    if(ChartAvailable){
+      ctx = document.getElementById('chartSportDistribution').getContext("2d");
 
-    // read value of pie chart variables from plot_pie_chart.html
-    var pie_chart_data = document.getElementById("pie_chart_data").value;
-    var pie_chart_labels = document.getElementById("pie_chart_labels").value.replace(/'/g, '"');
-    var pie_chart_colors = document.getElementById("pie_chart_colors").value.replace(/'/g, '"');
+      // read value of pie chart variables from plot_pie_chart.html
+      var pie_chart_data = document.getElementById("pie_chart_data").value;
+      var pie_chart_labels = document.getElementById("pie_chart_labels").value.replace(/'/g, '"');
+      var pie_chart_colors = document.getElementById("pie_chart_colors").value.replace(/'/g, '"');
 
-    // turn into js arrays
-    pie_chart_data = JSON.parse(pie_chart_data);
-    pie_chart_labels = JSON.parse(pie_chart_labels);
-    pie_chart_colors = JSON.parse(pie_chart_colors);
+      // turn into js arrays
+      pie_chart_data = JSON.parse(pie_chart_data);
+      pie_chart_labels = JSON.parse(pie_chart_labels);
+      pie_chart_colors = JSON.parse(pie_chart_colors);
 
-    myChart = new Chart(ctx, {
-      type: 'pie',
-      data: {
-        labels: pie_chart_labels,
-        datasets: [{
-          label: "Sport Distribution",
-          pointRadius: 0,
-          pointHoverRadius: 0,
-          backgroundColor: pie_chart_colors,
-          borderWidth: 0,
-          data: pie_chart_data
-        }]
-      },
-      options: {
-
-        legend: {
-
-          display: false
-        },
-
-        tooltips: {
-          enabled: true
-        },
-
-        scales: {
-          yAxes: [{
-
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              drawBorder: false,
-              zeroLineColor: "transparent",
-              color: 'rgba(255,255,255,0.05)'
-            }
-
-          }],
-
-          xAxes: [{
-            barPercentage: 1.6,
-            gridLines: {
-              drawBorder: false,
-              color: 'rgba(255,255,255,0.1)',
-              zeroLineColor: "transparent"
-            },
-            ticks: {
-              display: false,
-            }
+      myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: pie_chart_labels,
+          datasets: [{
+            label: "Sport Distribution",
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            backgroundColor: pie_chart_colors,
+            borderWidth: 0,
+            data: pie_chart_data
           }]
         },
-      }
-    });
+        options: {
+
+          legend: {
+
+            display: false
+          },
+
+          tooltips: {
+            enabled: true
+          },
+
+          scales: {
+            yAxes: [{
+
+              ticks: {
+                display: false
+              },
+              gridLines: {
+                drawBorder: false,
+                zeroLineColor: "transparent",
+                color: 'rgba(255,255,255,0.05)'
+              }
+
+            }],
+
+            xAxes: [{
+              barPercentage: 1.6,
+              gridLines: {
+                drawBorder: false,
+                color: 'rgba(255,255,255,0.1)',
+                zeroLineColor: "transparent"
+              },
+              ticks: {
+                display: false,
+              }
+            }]
+          },
+        }
+      });
+    }
 
     // General configuration for the charts with Line gradientStroke
     gradientChartOptionsConfiguration = {
