@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   `altitude` value when parsing fit files, since `enhanced_altitude` seems to contain
   the correct altitude value for all garmin devices. This requires a reimport of
   activities.
+* Use pie chart of Creative Tims paperdashboard instead of bokeh for the sake of
+  simplification, speed-up and nice reload animation.
 ## Added
 * Use value of `altitude` field in case `enhanced_altitude` field is not available during
   parsing of fit files.
