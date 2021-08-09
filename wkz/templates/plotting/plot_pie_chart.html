@@ -1,15 +1,15 @@
-{% include "plotting/bokeh_statics.html" %}
 {% load filters %}
+{% comment %} hacky way of reading pie chart data from django template variables {% endcomment %}
+<input id="pie_chart_data" value = "{{ pie_chart_data | safe }}" style="display:none;">
+<input id="pie_chart_labels" value = "{{ pie_chart_labels | safe }}" style="display:none;">
+<input id="pie_chart_colors" value = "{{ pie_chart_colors | safe }}" style="display:none;">
 
-{{ script_pc | safe }}
-
-{% if div_pc %}
-<div class="card">
-    <div class="card-header">
-        <h4 class="card-title">Sport Distribution</h4>
+<div class="card ">
+    <div class="card-header ">
+        <h5 class="card-title">Sport Distribution</h5>
     </div>
-    <div class="card-body">
-        {{ div_pc | safe }}
+    <div class="card-body ">
+        <canvas id="chartSportDistribution" class="ct-chart ct-perfect-fourth"></canvas>
     </div>
     <div class="card-footer ">
         <hr>
@@ -19,4 +19,3 @@
         </div>
     </div>
 </div>
-{% endif %}
