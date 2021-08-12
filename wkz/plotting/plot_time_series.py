@@ -185,7 +185,6 @@ def _add_button_to_toggle_laps(lap_lines, layout):
     btn = CheckboxButtonGroup(labels=["Show Auto Laps", "Show Manual Laps"], active=[0, 1], width=100)
 
     js = """
-        console.log(laps)
         for (types in laps) {
             if (typeof markerGroup != "undefined") {
                markerGroup.removeFrom(map);
