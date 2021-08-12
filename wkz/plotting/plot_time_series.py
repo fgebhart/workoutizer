@@ -76,7 +76,7 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
     attributes = activity.trace_file.__dict__
     lap_data = models.Lap.objects.filter(trace=activity.trace_file)
     plots = []
-    lap_lines = []
+    lap_lines = {}
 
     timestamps = pd.to_datetime(
         pd.Series(json.loads(attributes["timestamps_list"]), dtype=float).iloc[:: cfg.every_nth_value], unit="s"
@@ -134,7 +134,10 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
 
                 # render vertical lap lines
                 lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
-                lap_lines += lap
+                for trigger, line in lap.items():
+                    if trigger not in lap_lines:
+                        lap_lines[trigger] = []
+                    lap_lines[trigger] = lap_lines[trigger] + line
 
                 # add tools to plot
                 digits = "{0.0}"
@@ -179,22 +182,34 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
 
 def _add_button_to_toggle_laps(lap_lines, layout):
     # include button to toggle rendering of laps
-    btn = CheckboxButtonGroup(labels=["Show Laps"], active=[0], width=100)
+    btn = CheckboxButtonGroup(labels=["Show Auto Laps", "Show Manual Laps"], active=[0, 1], width=100)
 
     js = """
-        for (line in laps) {
-            laps[line].visible = false;
+        console.log(laps)
+        for (types in laps) {
             if (typeof markerGroup != "undefined") {
-                markerGroup.removeFrom(map);
-                }
+               markerGroup.removeFrom(map);
+            }
+            for (line in laps[types]) {
+                laps[types][line].visible = false;
+            }
         }
+
         for (i in cb_obj.active) {
             if (cb_obj.active[i] == 0) {
-                for (line in laps) {
-                    laps[line].visible = true;
-                    if (typeof markerGroup != "undefined") {
-                        markerGroup.addTo(map);
-                        }
+                if (typeof markerGroup != "undefined") {
+                    markerGroup.addTo(map);
+                }
+                for (line in laps['distance']) {
+                    laps['distance'][line].visible = true;
+                }
+            }
+            if (cb_obj.active[i] == 1) {
+                if (typeof markerGroup != "undefined") {
+                    markerGroup.addTo(map);
+                }
+                for (line in laps['manual']) {
+                    laps['manual'][line].visible = true;
                 }
             }
         }
@@ -207,13 +222,26 @@ def _add_button_to_toggle_laps(lap_lines, layout):
 
 
 def _add_laps_to_plot(laps: list, plot, y_values: list) -> List:
-    lap_lines = []
+    lap_lines = {}
+    lap_colors = {
+        "manual": "grey",
+        "time": "blue",
+        "distance": "red",
+        "position_start": "purple",
+        "position_lap": "purple",
+        "position_waypoint": "purple",
+        "position_marked": "purple",
+        "session_end": "green",
+        "fitness_equipment": "cyan",
+    }
     x_value = pd.Timedelta(seconds=0)
     for lap in laps:
         x_value += lap.elapsed_time
         if lap.trigger != "unknown":
-            line = plot.line([x_value, x_value], [y_values.min() - 1, y_values.max() + 1], color="grey")
-            lap_lines.append(line)
+            line = plot.line([x_value, x_value], [y_values.min() - 1, y_values.max() + 1], color=lap_colors[lap.trigger])
+            if lap.trigger not in lap_lines:
+                lap_lines[lap.trigger] = []
+            lap_lines[lap.trigger].append(line)
     return lap_lines
 
 
