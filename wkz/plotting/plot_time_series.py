@@ -185,13 +185,29 @@ def _add_button_to_toggle_laps(lap_lines, layout):
     btn = CheckboxButtonGroup(labels=["Show Auto Laps", "Show Manual Laps"], active=[0, 1], width=100)
 
     js = """
+        function ChangeLapLineState(laps, state) {
+            for (line in laps) {
+                laps[line].visible = state;
+            }
+        }
+
+        function ChangeAutoLapLineState(laps, state) {
+            autolap_triggers = ["time",
+                            "distance",
+                            "position_start",
+                            "position_lap",
+                            "position_waypoint",
+                            "position_marked"]
+            for (type in autolap_triggers) {
+                ChangeLapLineState(laps[autolap_triggers[type]], state)
+            }
+        }
+
         for (types in laps) {
             if (typeof markerGroup != "undefined") {
                markerGroup.removeFrom(map);
             }
-            for (line in laps[types]) {
-                laps[types][line].visible = false;
-            }
+            ChangeLapLineState(laps[types], false)
         }
 
         for (i in cb_obj.active) {
@@ -199,17 +215,13 @@ def _add_button_to_toggle_laps(lap_lines, layout):
                 if (typeof markerGroup != "undefined") {
                     markerGroup.addTo(map);
                 }
-                for (line in laps['distance']) {
-                    laps['distance'][line].visible = true;
-                }
+                ChangeAutoLapLineState(laps, true)
             }
             if (cb_obj.active[i] == 1) {
                 if (typeof markerGroup != "undefined") {
                     markerGroup.addTo(map);
                 }
-                for (line in laps['manual']) {
-                    laps['manual'][line].visible = true;
-                }
+                ChangeLapLineState(laps['manual'], true)
             }
         }
         """
