@@ -183,7 +183,7 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
 
 def _add_button_to_toggle_laps(lap_lines, layout):
     # include button to toggle rendering of laps
-    btn = CheckboxButtonGroup(labels=["Show Auto Laps", "Show Manual Laps"], active=[0, 1], width=100)
+    btn = CheckboxButtonGroup(labels=["Show Auto Laps", "Show Manual Laps"], active=[1], width=100)
 
     js = """
         function ChangeLapLineState(laps, state) {
@@ -250,7 +250,16 @@ def _add_laps_to_plot(laps: list, plot, y_values: list) -> List:
     for lap in laps:
         x_value += lap.elapsed_time
         if lap.trigger not in ("unknown", "session_end"):
-            line = plot.line([x_value, x_value], [y_values.min() - 1, y_values.max() + 1], color=lap_colors[lap.trigger])
+            if lap.trigger == "manual":
+                visible = True
+            else:
+                visible = False
+            line = plot.line(
+                [x_value, x_value],
+                [y_values.min() - 1, y_values.max() + 1],
+                color=lap_colors[lap.trigger],
+                visible=visible,
+            )
             if lap.trigger not in lap_lines:
                 lap_lines[lap.trigger] = []
             lap_lines[lap.trigger].append(line)
