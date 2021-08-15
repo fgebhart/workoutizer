@@ -14,6 +14,7 @@ from bokeh.models import (
     HoverTool,
 )
 from bokeh.models.formatters import DatetimeTickFormatter
+from bokeh.palettes import Set2_8 as palette
 from bokeh.plotting import figure
 from django.conf import settings
 
@@ -235,15 +236,15 @@ def _add_button_to_toggle_laps(lap_lines, layout):
 def _add_laps_to_plot(laps: list, plot, y_values: list) -> List:
     lap_lines = {}
     lap_colors = {
-        "manual": "grey",
-        "time": "blue",
-        "distance": "red",
-        "position_start": "purple",
-        "position_lap": "purple",
-        "position_waypoint": "purple",
-        "position_marked": "purple",
-        "session_end": "green",
-        "fitness_equipment": "cyan",
+        "manual": palette[2],
+        "time": palette[0],
+        "distance": palette[1],
+        "position_start": palette[3],
+        "position_lap": palette[3],
+        "position_waypoint": palette[3],
+        "position_marked": palette[3],
+        "session_end": palette[6],
+        "fitness_equipment": palette[4],
     }
     x_value = pd.Timedelta(seconds=0)
     for lap in laps:
