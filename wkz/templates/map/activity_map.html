@@ -104,7 +104,8 @@
         fillOpacity: 1.0,
     };
 
-    var markerGroup = L.layerGroup();
+    var manualLapGroup = L.layerGroup();
+    var autoLapGroup = L.layerGroup();
 
     // add lap markers to map as tooltip
     {% for lap in laps %}
@@ -123,9 +124,14 @@
             } else {
                 var text = "Lap {{ forloop.counter }}: " + label;
             }
+            var trigger = "{{ lap.trigger }}";
             var marker = L.circleMarker([lat, lon], LapMarker).bindTooltip(text);
-            marker.addTo(markerGroup);
-            markerGroup.addTo(map);
+            if (trigger == "manual") {
+                marker.addTo(manualLapGroup);
+            } else {
+                marker.addTo(autoLapGroup)
+            }
+            manualLapGroup.addTo(map);
         {% endif %}
     {% endfor %}
 

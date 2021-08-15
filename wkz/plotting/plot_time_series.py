@@ -205,22 +205,23 @@ def _add_button_to_toggle_laps(lap_lines, layout):
         }
 
         for (types in laps) {
-            if (typeof markerGroup != "undefined") {
-               markerGroup.removeFrom(map);
+            if (typeof autoLapGroup != "undefined") {
+               autoLapGroup.removeFrom(map);
+               manualLapGroup.removeFrom(map);
             }
             ChangeLapLineState(laps[types], false)
         }
 
         for (i in cb_obj.active) {
             if (cb_obj.active[i] == 0) {
-                if (typeof markerGroup != "undefined") {
-                    markerGroup.addTo(map);
+                if (typeof autoLapGroup != "undefined") {
+                    autoLapGroup.addTo(map);
                 }
                 ChangeAutoLapLineState(laps, true)
             }
             if (cb_obj.active[i] == 1) {
-                if (typeof markerGroup != "undefined") {
-                    markerGroup.addTo(map);
+                if (typeof manualLapGroup != "undefined") {
+                    manualLapGroup.addTo(map);
                 }
                 ChangeLapLineState(laps['manual'], true)
             }
