@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Added
 * Use value of `altitude` field in case `enhanced_altitude` field is not available during
   parsing of fit files.
+* Now all types of Laps are shown in the activity page, a button allows you to toggle if
+  the laps are shown in de graphs/map. Every type of lap trigger has its own color to
+  distinguish it from other lap types.
 
 ## [0.21.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.21.1) - 2021-07-17
 ### Added
