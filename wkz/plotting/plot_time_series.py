@@ -16,10 +16,10 @@ from bokeh.models import (
 from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.palettes import Set2_8 as palette
 from bokeh.plotting import figure
-from django.conf import settings
 
 from wkz import configuration as cfg
 from wkz import models
+from workoutizer import settings as django_settings
 
 plot_matrix = {
     "temperature": {
@@ -82,7 +82,7 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
     timestamps = pd.to_datetime(
         pd.Series(json.loads(attributes["timestamps_list"]), dtype=float).iloc[:: cfg.every_nth_value], unit="s"
     )
-    x_axis = pd.to_datetime(timestamps).dt.tz_localize("utc").dt.tz_convert(settings.TIME_ZONE)
+    x_axis = pd.to_datetime(timestamps).dt.tz_localize("utc").dt.tz_convert(django_settings.TIME_ZONE)
     x_axis = x_axis - x_axis.min()
     source = ColumnDataSource(data={"x_axis": x_axis, "x_formatted": x_axis.dt.to_pytimedelta().astype(str)})
 
@@ -100,7 +100,7 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
                 source.add(values, y_axis)
 
                 p = figure(
-                    plot_height=int(settings.PLOT_HEIGHT / 2.5),
+                    plot_height=int(django_settings.PLOT_HEIGHT / 2.5),
                     sizing_mode="stretch_width",
                     y_axis_label=plot_matrix[y_axis]["axis"],
                     tools="reset",

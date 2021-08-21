@@ -6,13 +6,15 @@
         {% include 'plotting/plot_history.html' %}
     </div>
 </div>
-<div class="row">
-    <div class="col-sm-4">
-        {% include 'plotting/plot_pie_chart.html' %}
+{% if activities_available %}
+    <div class="row">
+        <div class="col-sm-4">
+            {% include 'plotting/plot_pie_chart.html' %}
+        </div>
+        <div class="col-sm-8">
+            {% include 'plotting/plot_trend.html' %}
+        </div>
     </div>
-    <div class="col-sm-8">
-        {% include 'plotting/plot_trend.html' %}
-    </div>
-</div>
+{% endif %}
 {% include 'lib/table.html' %}
 {% endblock %}

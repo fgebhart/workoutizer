@@ -1,0 +1,19 @@
+// config options of leaflet-ui plugin: https://github.com/Raruto/leaflet-ui
+var map = L.map('leaflet_map', {
+    center: [41.4583, 12.7059],  // needs value to initialize
+    zoom: 5,                     // needs value to initialize
+    mapTypeId: 'streets',
+    mapTypeIds: ['streets', 'topo', 'osm', 'terrain', 'satellite'],
+    gestureHandling: false,     // zoom with Cmd + Scroll
+    zoomControl: true,          // plus minus buttons
+    pegmanControl: false,
+    locateControl: false,
+    fullscreenControl: true,
+    layersControl: true,
+    minimapControl: false,
+    editInOSMControl: false,
+    loadingControl: false,
+    searchControl: false,
+    disableDefaultUI: false,
+    printControl: false,
+});

@@ -128,13 +128,15 @@ class DashboardView(View, PlotView):
             script_history, div_history = plot_history(
                 activities=activities, sport_model=models.Sport, number_of_days=settings.number_of_days
             )
-            script_pc, div_pc = plot_pie_chart(activities=activities)
+            pie_chart_data, pie_chart_labels, pie_chart_colors = plot_pie_chart(activities=activities)
             script_trend, div_trend = plot_trend(activities=activities, sport_model=models.Sport)
             plotting_context = {
+                "activities_available": True,
                 "script_history": script_history,
                 "div_history": div_history,
-                "script_pc": script_pc,
-                "div_pc": div_pc,
+                "pie_chart_data": pie_chart_data,
+                "pie_chart_labels": pie_chart_labels,
+                "pie_chart_colors": pie_chart_colors,
                 "script_trend": script_trend,
                 "div_trend": div_trend,
                 "activities_selected_for_plot": True,
@@ -142,6 +144,7 @@ class DashboardView(View, PlotView):
             return render(request, self.template_name, {**context, **plotting_context})
         else:
             log.warning("no activities found...")
+            context["activities_available"] = False
             context["activities_selected_for_plot"] = False
         return render(request, self.template_name, {**context})
 

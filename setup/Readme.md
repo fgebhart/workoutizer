@@ -41,34 +41,16 @@ pip install workoutizer
 ```
 
 
-## Configuring your Device
-
-Figure out the `product_id` and `vendor_id` of your device by connecting it to your Raspberry Pi via USB and run 
-```
-lsusb
-```
-Wait 1-2 minutes until the `(various models)` line next to your Garmin device disappears and trigger the `lsusb` command
-again. You want to have a similar output like: 
-```
-pi@raspberrypi:~ $ lsusb
-Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-Bus 001 Device 008: ID 091e:4b48 Garmin International 
-Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
-Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-```
-In this example the vendor id is `091e` and the product id is `4b48`. Keep your values for the next step.
-
-
 ## Setup Workoutizer
 
 To configure your Raspberry Pi to automatically detect and mount your garmin watch you'll need to follow these steps:
 
 ### 1. Create a udev rule
-Create a file at `/etc/udev/rules.d/device_mount.rules` with the following content and replace `{{ vendor_id }}` with
-your vendor id and `{{ product_id }}` with your product id:
+Create a file at `/etc/udev/rules.d/device_mount.rules` with the following content:
 
 ```
-ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="{{ vendor_id }}", ATTRS{idProduct}=="{{ product_id }}", TAG+="systemd", ENV{SYSTEMD_WANTS}="wkz_mount"
+ACTION=="add", SUBSYSTEM=="block", ATTRS{idVendor}=="091e", TAG+="systemd", ENV{SYSTEMD_WANTS}="wkz_mount"
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="091e", ATTRS{ID_MTP_DEVICE}="1", TAG+="systemd", ENV{SYSTEMD_WANTS}="wkz_mount"
 ```
 
 ### 2. Create the wkz mount service
@@ -97,6 +79,7 @@ After=syslog.target network.target
 
 [Service]
 User=pi
+WorkingDirectory=~
 ExecStart=/home/pi/venv/bin/wkz run
 Restart=on-abort
 

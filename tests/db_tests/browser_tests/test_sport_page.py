@@ -129,6 +129,16 @@ def test_sport_page__complete(import_demo_data, live_server, webdriver):
     # check that it is possible to click on the fullscreen toggle using leaflet-ui
     webdriver.find_element_by_css_selector(".leaflet-control-zoom-fullscreen").click()
 
+    # check that streets is the default map layer
+    default_layer = [
+        span.text
+        for span in webdriver.find_elements_by_css_selector(
+            ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
+        )
+    ]
+    assert len(default_layer) == 1
+    assert "Streets" in default_layer
+
 
 def test_sport_page__infinite_scroll(live_server, webdriver, insert_activity, insert_sport):
     rows_per_page = configuration.number_of_rows_per_page_in_table
@@ -194,3 +204,13 @@ def test_sport_page__no_activities_selected_for_plot(live_server, webdriver, ins
     assert "Topo" in spans
     assert "Terrain" in spans
     assert "Satellite" in spans
+
+    # check that streets is the default map layer
+    default_layer = [
+        span.text
+        for span in webdriver.find_elements_by_css_selector(
+            ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
+        )
+    ]
+    assert len(default_layer) == 1
+    assert "Streets" in default_layer

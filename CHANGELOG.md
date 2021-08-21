@@ -8,17 +8,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Fixed
 * Correctly display activity duration as timedelta formatted as `HH:MM:SS` instead of
   raw seconds in time series plots on activity page.
+* Use the same layer type for all maps.
 ## Changed
 * #189: Upgrade `fitparse` to most recent version and use `enhanced_altitude` instead of
   `altitude` value when parsing fit files, since `enhanced_altitude` seems to contain
   the correct altitude value for all garmin devices. This requires a reimport of
   activities.
+* Use pie chart of Creative Tims paperdashboard instead of bokeh for the sake of
+  simplification, speed-up and nice reload animation.
 ## Added
 * Use value of `altitude` field in case `enhanced_altitude` field is not available during
   parsing of fit files.
 * Now all types of Laps are shown in the activity page, a button allows you to toggle if
   the laps are shown in de graphs/map. Every type of lap trigger has its own color to
   distinguish it from other lap types.
+* Render activity duration in hover tooltip on history plot on dashboard page.
 
 ## [0.21.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.21.1) - 2021-07-17
 ### Added
