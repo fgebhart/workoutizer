@@ -163,13 +163,22 @@
         icon_marker = L.marker([coordinates[index][1], coordinates[index][0]], {icon: icon}).addTo(map);
     }
 
-    let markers = markerGroup.getLayers();
+    let manualMarkers = manualLapGroup.getLayers();
+    let autoMarkers = autoLapGroup.getLayers();
     // function to be called from activity_laps.html when hovering over rows of laps
-    function render_lap_marker(index) {
-        markers[index].openTooltip();
+    function render_lap_marker(lap_type, index) {
+        if (lap_type == "manual") {
+            manualMarkers[index].openTooltip();
+        } else if (lap_type == "auto") {
+            autoMarkers[index].openTooltip();
+        }
     }
-    function hide_lap_marker(index) {
-        markers[index].closeTooltip();
+    function hide_lap_marker(lap_type, index) {
+        if (lap_type == "manual") {
+            manualMarkers[index].closeTooltip();
+        } else if (lap_type == "auto") {
+            autoMarkers[index].closeTooltip();
+        }
     }
 
     let fastest_layers = fastestSectionGroup.getLayers();

@@ -20,6 +20,11 @@
                 <tbody>
                 {% for lap in laps %}
                     <tr class="lap_row">
+                    {% if lap.trigger == "manual" %}
+                    <tr class="lap_row lap_manual">
+                    {% else %}
+                    <tr class="lap_row lap_auto">
+                    {% endif %}
                         <td>{{ forloop.counter }}</td>
                         <td>{{ lap.elapsed_time|h_m_s }}</td>
                         <td>{{ lap.distance|to_int }}</td>
@@ -38,18 +43,25 @@
     </div>
 
     <script>
-    var tableRows=document.getElementsByClassName('lap_row');
-    for (var i=0; i < tableRows.length; i +=1) {
-        tableRows[i].addEventListener('mouseover', function(e) {
-            let row_index = $(this).index();
-                render_lap_marker(row_index);
-            }
-        );
-        tableRows[i].addEventListener('mouseout', function(e) {
-            let row_index = $(this).index();
-                hide_lap_marker(row_index);
-            }
-        );
+    function addToolTip(lap_type) {
+        if (lap_type == "manual") {
+            var tableRows = document.getElementsByClassName('lap_row lap_manual');
+        } else if (lap_type == "auto") {
+            var tableRows = document.getElementsByClassName('lap_row lap_auto');
+        }
+        for (let i=0; i < tableRows.length; i +=1) {
+            tableRows[i].addEventListener('mouseover', function(e) {
+                    render_lap_marker(lap_type, i);
+                }
+            );
+            tableRows[i].addEventListener('mouseout', function(e) {
+                    hide_lap_marker(lap_type, i);
+                }
+            );
+        }
     }
+
+    addToolTip("manual")
+    addToolTip("auto")
     </script>
 {% endif %}
