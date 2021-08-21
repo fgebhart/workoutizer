@@ -97,11 +97,60 @@
 
     // create lap markers
     var LapMarker = {
+    manual: {
         radius: 4,
-        fillColor: "white",
+        fillColor: "#8da0cb",
         color: "grey",
         weight: 2.0,
-        fillOpacity: 1.0,
+        fillOpacity: 1.0,},
+    time: {
+        radius: 4,
+        fillColor: "#66c2a5",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    distance: {
+        radius: 4,
+        fillColor: "#fc8d62",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    position_start: {
+        radius: 4,
+        fillColor: "#e78ac3",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    position_lap: {
+        radius: 4,
+        fillColor: "#e78ac3",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    position_waypoint: {
+        radius: 4,
+        fillColor: "#e78ac3",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    position_marked: {
+        radius: 4,
+        fillColor: "#e78ac3",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    session_end: {
+        radius: 4,
+        fillColor: "#e5c494",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    fitness_equipment: {
+        radius: 4,
+        fillColor: "#a6d854",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
     };
 
     var manualLapGroup = L.layerGroup();
@@ -125,7 +174,7 @@
                 var text = "Lap {{ forloop.counter }}: " + label;
             }
             var trigger = "{{ lap.trigger }}";
-            var marker = L.circleMarker([lat, lon], LapMarker).bindTooltip(text);
+            var marker = L.circleMarker([lat, lon], LapMarker["{{ lap.trigger }}"]).bindTooltip(text);
             if (trigger == "manual") {
                 marker.addTo(manualLapGroup);
             } else {
