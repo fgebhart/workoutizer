@@ -116,6 +116,16 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert webdriver.find_element_by_class_name("bk-root").text == "Show Laps"
     assert len(webdriver.find_elements_by_class_name("bk-canvas")) == 3
 
+    # check that streets is the default map layer
+    default_layer = [
+        span.text
+        for span in webdriver.find_elements_by_css_selector(
+            ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
+        )
+    ]
+    assert len(default_layer) == 1
+    assert "Streets" in default_layer
+
 
 def test_activity_page__complete__gpx(import_one_activity, live_server, webdriver):
     import_one_activity("cycling_walchensee.gpx")
@@ -185,6 +195,16 @@ def test_activity_page__complete__gpx(import_one_activity, live_server, webdrive
 
     # check that only one bokeh plot is available
     assert len(webdriver.find_elements_by_class_name("bk-canvas")) == 1
+
+    # check that streets is the default map layer
+    default_layer = [
+        span.text
+        for span in webdriver.find_elements_by_css_selector(
+            ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
+        )
+    ]
+    assert len(default_layer) == 1
+    assert "Streets" in default_layer
 
 
 def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_sport):

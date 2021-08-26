@@ -92,10 +92,14 @@ Coded by www.creative-tim.com
     <!--  Notifications Plugin    -->
     <script src="{% static  'js/plugins/bootstrap-notify.js' %}"></script>
     <script src="{% static 'js/custom.js' %}"></script>
+    <!-- Chart JS -->
+    <script src="{% static 'js/plugins/chartjs.min.js' %}"></script>
     <script>
     $(document).ready(function() {
         // initialise Datetimepicker
         demo.initDateTimePicker();
+        // initialise Charts
+        demo.initChartPageCharts();
     });
     </script>
     {% include "lib/keyboard_shortcuts.html" %}

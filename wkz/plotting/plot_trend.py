@@ -23,7 +23,7 @@ def plot_trend(activities, sport_model):
     df = df.rename(columns=id_color_mapping)
 
     p = figure(
-        height=135,
+        height=160,
         sizing_mode="stretch_width",
         x_axis_type="datetime",
         y_axis_type="datetime",
