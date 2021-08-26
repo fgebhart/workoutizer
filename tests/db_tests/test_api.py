@@ -38,7 +38,7 @@ def test_mount_device__failure(db, monkeypatch, client):
 
 
 @pytest.mark.parametrize("mock_dev", ["BLOCK", "MTP"])
-def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev):
+def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev, caplog):
     # prepare settings
     target_dir = tmpdir.mkdir("tracks")
     settings = models.get_settings()
@@ -57,9 +57,9 @@ def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev):
 
     monkeypatch.setattr(fit_collector, "try_to_mount_device", try_to_mount_device)
 
-    # mock output of actual mounting command
+    # mock output of actual mounting command (with actual gio output text)
     def mount(path):
-        return "Mounted at /dummy/path"
+        return "Mounted /dev/bus/usb/001/004 at /some/dummy/path/to/device"
 
     monkeypatch.setattr(fit_collector, "_mount_device_using_gio", mount)
     monkeypatch.setattr(fit_collector, "_mount_device_using_pmount", mount)
@@ -78,4 +78,5 @@ def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev):
     os.makedirs(fake_device_dir)
 
     res = client.post("/mount-device/")
+    assert "successfully mounted device at: /some/dummy/path/to/device" in caplog.text
     assert res.status_code == 200
