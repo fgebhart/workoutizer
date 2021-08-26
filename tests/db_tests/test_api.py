@@ -37,7 +37,8 @@ def test_mount_device__failure(db, monkeypatch, client):
     assert res.status_code == 500
 
 
-def test_mount_device__success(db, monkeypatch, tmpdir, client):
+@pytest.mark.parametrize("mock_dev", ["BLOCK", "MTP"])
+def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev):
     # prepare settings
     target_dir = tmpdir.mkdir("tracks")
     settings = models.get_settings()
@@ -58,13 +59,17 @@ def test_mount_device__success(db, monkeypatch, tmpdir, client):
 
     # mock output of actual mounting command
     def mount(path):
-        return "Mounted"
+        return "Mounted at /dummy/path"
 
     monkeypatch.setattr(fit_collector, "_mount_device_using_gio", mount)
+    monkeypatch.setattr(fit_collector, "_mount_device_using_pmount", mount)
 
     # mock output of _find_device_type
     def _find_device_type(bus, dev):
-        return ("MTP", "/dev/bus/usb/001/002")
+        if mock_dev == "MTP":
+            return ("MTP", "/dev/bus/usb/001/002")
+        elif mock_dev == "BLOCK":
+            return ("BLOCK", "/dev/sda")
 
     monkeypatch.setattr(fit_collector, "_find_device_type", _find_device_type)
 
