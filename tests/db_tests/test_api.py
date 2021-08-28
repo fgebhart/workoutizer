@@ -38,7 +38,7 @@ def test_mount_device__failure(db, monkeypatch, client):
 
 
 @pytest.mark.parametrize("mock_dev", ["BLOCK", "MTP"])
-def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev):
+def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev, caplog):
     # prepare settings
     target_dir = tmpdir.mkdir("tracks")
     settings = models.get_settings()
@@ -46,20 +46,17 @@ def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev):
     settings.path_to_trace_dir = target_dir  # target
     settings.save()
 
+    # mock output of subprocess ("lsusb") to prevent function from failing
     def check_output(dummy):
         return "dummy\nstring\nsome\ncontent\ncontaining\nGarmin"
 
     monkeypatch.setattr(subprocess, "check_output", check_output)
 
-    # mock output of subprocess to prevent function from failing
-    def try_to_mount_device():
-        return "dummy-string"
+    # mock output of actual mounting command (with actual gio output text)
+    path_to_device = "/some/dummy/path/to/device"
 
-    monkeypatch.setattr(fit_collector, "try_to_mount_device", try_to_mount_device)
-
-    # mock output of actual mounting command
     def mount(path):
-        return "Mounted at /dummy/path"
+        return f"Mounted /dev/bus/usb/001/004 at {path_to_device}"
 
     monkeypatch.setattr(fit_collector, "_mount_device_using_gio", mount)
     monkeypatch.setattr(fit_collector, "_mount_device_using_pmount", mount)
@@ -78,4 +75,5 @@ def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev):
     os.makedirs(fake_device_dir)
 
     res = client.post("/mount-device/")
+    assert f"successfully mounted device at: {path_to_device}" in caplog.text
     assert res.status_code == 200
