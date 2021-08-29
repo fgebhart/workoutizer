@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Use value of `altitude` field in case `enhanced_altitude` field is not available during
   parsing of fit files.
 * Now all types of Laps are shown in the activity page, a button allows you to toggle if
-  the laps are shown in de graphs/map. Every type of lap trigger has its own color to
+  the laps are shown in the graphs/map. Every type of lap trigger has its own color to
   distinguish it from other lap types.
 * Render activity duration in hover tooltip on history plot on dashboard page.
 
