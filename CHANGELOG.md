@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Now all types of Laps are shown in the activity page, a button allows you to toggle if
   the laps are shown in the graphs/map. Every type of lap trigger has its own color to
   distinguish it from other lap types.
+* Test both mounting Block and MTP devices.
 * Render activity duration in hover tooltip on history plot on dashboard page.
 
 ## [0.21.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.21.1) - 2021-07-17
