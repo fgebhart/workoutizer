@@ -9,6 +9,7 @@ from types import ModuleType
 import pytz
 from django.db import models
 
+from wkz.tools.colors import Colors
 from workoutizer import settings as django_settings
 
 log = logging.getLogger(__name__)
@@ -23,10 +24,10 @@ class Sport:
     evaluates_for_awards: bool
 
 
-hiking = Sport("Hiking", "#6BD098", "hiking", "hiking", False)
-swimming = Sport("Swimming", "#51CBCE", "swimmer", "swimming", False)
-cycling = Sport("Cycling", "#FCC468", "bicycle", "cycling", True)
-jogging = Sport("Jogging", "#F17E5D", "running", "jogging", True)
+hiking = Sport("Hiking", Colors.demo_sport_colors.hiking, "hiking", "hiking", False)
+swimming = Sport("Swimming", Colors.demo_sport_colors.swimming, "swimmer", "swimming", False)
+cycling = Sport("Cycling", Colors.demo_sport_colors.cycling, "bicycle", "cycling", True)
+jogging = Sport("Jogging", Colors.demo_sport_colors.jogging, "running", "jogging", True)
 demo_sports = [hiking, swimming, cycling, jogging]
 
 
