@@ -113,7 +113,7 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     )
 
     # check that bokeh plots are available
-    assert webdriver.find_element_by_class_name("bk-root").text == "Show Laps"
+    assert webdriver.find_element_by_class_name("bk-root").text == "Show Auto Laps\nShow Manual Laps"
     assert len(webdriver.find_elements_by_class_name("bk-canvas")) == 3
 
     # check that streets is the default map layer

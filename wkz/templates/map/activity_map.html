@@ -79,14 +79,64 @@
 
     // create lap markers
     var LapMarker = {
+    manual: {
         radius: 4,
-        fillColor: "white",
+        fillColor: "#8da0cb",
         color: "grey",
         weight: 2.0,
-        fillOpacity: 1.0,
+        fillOpacity: 1.0,},
+    time: {
+        radius: 4,
+        fillColor: "#66c2a5",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    distance: {
+        radius: 4,
+        fillColor: "#fc8d62",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    position_start: {
+        radius: 4,
+        fillColor: "#e78ac3",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    position_lap: {
+        radius: 4,
+        fillColor: "#e78ac3",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    position_waypoint: {
+        radius: 4,
+        fillColor: "#e78ac3",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    position_marked: {
+        radius: 4,
+        fillColor: "#e78ac3",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    session_end: {
+        radius: 4,
+        fillColor: "#e5c494",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
+    fitness_equipment: {
+        radius: 4,
+        fillColor: "#a6d854",
+        color: "grey",
+        weight: 2.0,
+        fillOpacity: 1.0,},
     };
 
-    var markerGroup = L.layerGroup();
+    var manualLapGroup = L.layerGroup();
+    var autoLapGroup = L.layerGroup();
 
     // add lap markers to map as tooltip
     {% for lap in laps %}
@@ -105,9 +155,14 @@
             } else {
                 var text = "Lap {{ forloop.counter }}: " + label;
             }
-            var marker = L.circleMarker([lat, lon], LapMarker).bindTooltip(text);
-            marker.addTo(markerGroup);
-            markerGroup.addTo(map);
+            var trigger = "{{ lap.trigger }}";
+            var marker = L.circleMarker([lat, lon], LapMarker["{{ lap.trigger }}"]).bindTooltip(text);
+            if (trigger == "manual") {
+                marker.addTo(manualLapGroup);
+            } else {
+                marker.addTo(autoLapGroup)
+            }
+            manualLapGroup.addTo(map);
         {% endif %}
     {% endfor %}
 
@@ -139,13 +194,22 @@
         icon_marker = L.marker([coordinates[index][1], coordinates[index][0]], {icon: icon}).addTo(map);
     }
 
-    let markers = markerGroup.getLayers();
+    let manualMarkers = manualLapGroup.getLayers();
+    let autoMarkers = autoLapGroup.getLayers();
     // function to be called from activity_laps.html when hovering over rows of laps
-    function render_lap_marker(index) {
-        markers[index].openTooltip();
+    function render_lap_marker(lap_type, index) {
+        if (lap_type == "manual") {
+            manualMarkers[index].openTooltip();
+        } else if (lap_type == "auto") {
+            autoMarkers[index].openTooltip();
+        }
     }
-    function hide_lap_marker(index) {
-        markers[index].closeTooltip();
+    function hide_lap_marker(lap_type, index) {
+        if (lap_type == "manual") {
+            manualMarkers[index].closeTooltip();
+        } else if (lap_type == "auto") {
+            autoMarkers[index].closeTooltip();
+        }
     }
 
     let fastest_layers = fastestSectionGroup.getLayers();

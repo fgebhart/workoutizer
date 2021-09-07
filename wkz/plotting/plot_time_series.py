@@ -14,6 +14,7 @@ from bokeh.models import (
     HoverTool,
 )
 from bokeh.models.formatters import DatetimeTickFormatter
+from bokeh.palettes import Set2_8 as palette
 from bokeh.plotting import figure
 
 from wkz import configuration as cfg
@@ -76,7 +77,7 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
     attributes = activity.trace_file.__dict__
     lap_data = models.Lap.objects.filter(trace=activity.trace_file)
     plots = []
-    lap_lines = []
+    lap_lines = {}
 
     timestamps = pd.to_datetime(
         pd.Series(json.loads(attributes["timestamps_list"]), dtype=float).iloc[:: cfg.every_nth_value], unit="s"
@@ -134,7 +135,10 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
 
                 # render vertical lap lines
                 lap = _add_laps_to_plot(laps=lap_data, plot=p, y_values=values)
-                lap_lines += lap
+                for trigger, line in lap.items():
+                    if trigger not in lap_lines:
+                        lap_lines[trigger] = []
+                    lap_lines[trigger] = lap_lines[trigger] + line
 
                 # add tools to plot
                 digits = "{0.0}"
@@ -179,23 +183,47 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
 
 def _add_button_to_toggle_laps(lap_lines, layout):
     # include button to toggle rendering of laps
-    btn = CheckboxButtonGroup(labels=["Show Laps"], active=[0], width=100)
+    btn = CheckboxButtonGroup(labels=["Show Auto Laps", "Show Manual Laps"], active=[1], width=100)
 
     js = """
-        for (line in laps) {
-            laps[line].visible = false;
-            if (typeof markerGroup != "undefined") {
-                markerGroup.removeFrom(map);
-                }
+        function ChangeLapLineState(laps, state) {
+            for (line in laps) {
+                laps[line].visible = state;
+            }
         }
+
+        function ChangeAutoLapLineState(laps, state) {
+            autolap_triggers = ["time",
+                            "distance",
+                            "position_start",
+                            "position_lap",
+                            "position_waypoint",
+                            "position_marked"]
+            for (type in autolap_triggers) {
+                ChangeLapLineState(laps[autolap_triggers[type]], state)
+            }
+        }
+
+        for (types in laps) {
+            if (typeof autoLapGroup != "undefined") {
+               autoLapGroup.removeFrom(map);
+               manualLapGroup.removeFrom(map);
+            }
+            ChangeLapLineState(laps[types], false)
+        }
+
         for (i in cb_obj.active) {
             if (cb_obj.active[i] == 0) {
-                for (line in laps) {
-                    laps[line].visible = true;
-                    if (typeof markerGroup != "undefined") {
-                        markerGroup.addTo(map);
-                        }
+                if (typeof autoLapGroup != "undefined") {
+                    autoLapGroup.addTo(map);
                 }
+                ChangeAutoLapLineState(laps, true)
+            }
+            if (cb_obj.active[i] == 1) {
+                if (typeof manualLapGroup != "undefined") {
+                    manualLapGroup.addTo(map);
+                }
+                ChangeLapLineState(laps['manual'], true)
             }
         }
         """
@@ -207,13 +235,35 @@ def _add_button_to_toggle_laps(lap_lines, layout):
 
 
 def _add_laps_to_plot(laps: list, plot, y_values: list) -> List:
-    lap_lines = []
+    lap_lines = {}
+    lap_colors = {
+        "manual": palette[2],
+        "time": palette[0],
+        "distance": palette[1],
+        "position_start": palette[3],
+        "position_lap": palette[3],
+        "position_waypoint": palette[3],
+        "position_marked": palette[3],
+        "session_end": palette[6],
+        "fitness_equipment": palette[4],
+    }
     x_value = pd.Timedelta(seconds=0)
     for lap in laps:
         x_value += lap.elapsed_time
-        if lap.trigger == "manual":
-            line = plot.line([x_value, x_value], [y_values.min() - 1, y_values.max() + 1], color="grey")
-            lap_lines.append(line)
+        if lap.trigger not in ("unknown", "session_end"):
+            if lap.trigger == "manual":
+                visible = True
+            else:
+                visible = False
+            line = plot.line(
+                [x_value, x_value],
+                [y_values.min() - 1, y_values.max() + 1],
+                color=lap_colors[lap.trigger],
+                visible=visible,
+            )
+            if lap.trigger not in lap_lines:
+                lap_lines[lap.trigger] = []
+            lap_lines[lap.trigger].append(line)
     return lap_lines
 
 
