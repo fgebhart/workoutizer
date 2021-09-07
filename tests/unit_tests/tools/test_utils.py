@@ -1,9 +1,4 @@
-from wkz.tools.utils import (
-    cut_list_to_have_same_length,
-    get_local_ip_address,
-    limit_string,
-    sanitize,
-)
+from wkz.tools.utils import get_local_ip_address, limit_string, sanitize
 
 
 def test_sanitize():
@@ -13,20 +8,6 @@ def test_sanitize():
     assert sanitize(1) == "1"
     assert sanitize(0.123) == "0.123"
     assert sanitize(True) == "true"
-
-
-def test_cut_list_to_have_same_length():
-    # mode: cut beginning
-    assert cut_list_to_have_same_length([1, 2, 3, 4, 5], [3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
-    assert cut_list_to_have_same_length([3, 4, 5], [1, 2, 3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
-    assert cut_list_to_have_same_length([3, 4, 5], [3, 4, 5]) == ([3, 4, 5], [3, 4, 5])
-    assert cut_list_to_have_same_length([3], []) == ([], [])
-    # mode: fill end of shorter list with same as last item
-    assert cut_list_to_have_same_length([1, 2, 3], [1], mode="fill end") == ([1, 2, 3], [1, 1, 1])
-    assert cut_list_to_have_same_length([1], [1, 2, 3], mode="fill end") == ([1, 1, 1], [1, 2, 3])
-    assert cut_list_to_have_same_length([1], [1, 2, 3], mode="fill end", modify_only_list2=True) == ([1], [1, 2, 3])
-    assert cut_list_to_have_same_length(["a"], ["a", "b", "c"], mode="fill end") == (["a", "a", "a"], ["a", "b", "c"])
-    assert cut_list_to_have_same_length([3, 4, 5], [3, 4, 5], mode="fill end") == ([3, 4, 5], [3, 4, 5])
 
 
 def test_limit_string():

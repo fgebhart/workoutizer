@@ -20,6 +20,7 @@ from wkz.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wkz.forms import DATETIMEPICKER_FORMAT, AddActivityForm, EditActivityForm
 from wkz.models import Activity, BestSection, Lap, Sport
 from wkz.plotting.plot_time_series import plot_time_series
+from wkz.tools.colors import Colors
 from wkz.views import MapView, get_all_form_field_ids
 from workoutizer import settings as django_settings
 
@@ -43,6 +44,7 @@ class ActivityView(MapView):
             "climb_sections": BestSection.objects.filter(activity=activity, kind="climb"),
             "page_name": activity.name,
             "is_activity_page": True,
+            "colors": Colors,
         }
         if activity.trace_file:
             script_time_series, div_time_series, number_of_plots = plot_time_series(activity)

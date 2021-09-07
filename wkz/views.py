@@ -18,8 +18,7 @@ from wkz.gis.geo import GeoTrace, get_list_of_coordinates
 from wkz.plotting.plot_history import plot_history
 from wkz.plotting.plot_pie_chart import plot_pie_chart
 from wkz.plotting.plot_trend import plot_trend
-from wkz.tools.colors import lines_colors
-from wkz.tools.utils import cut_list_to_have_same_length
+from wkz.tools.colors import Colors, sport_trace_colors
 from workoutizer import __version__
 from workoutizer import settings as django_settings
 
@@ -70,7 +69,8 @@ class MapView(View):
         has_traces = True if traces else False
 
         if traces:
-            traces, colors = cut_list_to_have_same_length(traces, lines_colors, mode="fill end", modify_only_list2=True)
+            # simple approach to quickly create a large list of colors and then strip it to the required length
+            colors = (sport_trace_colors * len(traces))[: len(traces)]
             traces = zip(traces, colors)
         return {
             "traces": traces,
@@ -123,6 +123,7 @@ class DashboardView(View, PlotView):
             "summary": summary,
             "page_name": "Dashboard",
             "form_field_ids": get_all_form_field_ids(),
+            "colors": Colors,
         }
         if activities:
             script_history, div_history = plot_history(

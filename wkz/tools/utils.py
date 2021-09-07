@@ -3,7 +3,6 @@ import hashlib
 import logging
 import socket
 
-
 log = logging.getLogger(__name__)
 
 timestamp_format = "%Y-%m-%dT%H:%M:%SZ"
@@ -19,25 +18,6 @@ def calc_md5(file) -> str:
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
-
-
-def cut_list_to_have_same_length(list1, list2, mode="cut beginning", modify_only_list2=False):
-    diff = len(list1) - len(list2)
-    if mode == "cut beginning":
-        if diff < 0:
-            list2 = list2[abs(diff) :]
-        elif diff > 0:
-            if not modify_only_list2:
-                list1 = list1[diff:]
-    elif mode == "fill end":
-        if diff < 0:  # last 2 is larger
-            if not modify_only_list2:
-                list1 = list1 + abs(diff) * [list1[-1]]
-        elif diff > 0:  # list 1 is larger
-            list2 = list2 + diff * [list2[-1]]
-    else:
-        raise NotImplementedError("mode not implemented")
-    return list1, list2
 
 
 def remove_microseconds(delta):

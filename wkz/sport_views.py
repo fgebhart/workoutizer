@@ -12,6 +12,7 @@ from django.views.generic import DeleteView, View
 from wkz import configuration, models
 from wkz.forms import AddSportsForm
 from wkz.plotting.plot_history import plot_history
+from wkz.tools.colors import Colors
 from wkz.tools.utils import remove_microseconds
 from wkz.views import (
     MapView,
@@ -99,6 +100,7 @@ class SportView(MapView, PlotView):
                 "summary": summary,
                 "sport": sport,
                 "form_field_ids": get_all_form_field_ids(),
+                "colors": Colors,
             },
         )
 

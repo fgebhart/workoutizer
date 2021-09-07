@@ -14,11 +14,11 @@ from bokeh.models import (
     HoverTool,
 )
 from bokeh.models.formatters import DatetimeTickFormatter
-from bokeh.palettes import Set2_8 as palette
 from bokeh.plotting import figure
 
 from wkz import configuration as cfg
 from wkz import models
+from wkz.tools.colors import Colors
 from workoutizer import settings as django_settings
 
 plot_matrix = {
@@ -237,15 +237,15 @@ def _add_button_to_toggle_laps(lap_lines, layout):
 def _add_laps_to_plot(laps: list, plot, y_values: list) -> List:
     lap_lines = {}
     lap_colors = {
-        "manual": palette[2],
-        "time": palette[0],
-        "distance": palette[1],
-        "position_start": palette[3],
-        "position_lap": palette[3],
-        "position_waypoint": palette[3],
-        "position_marked": palette[3],
-        "session_end": palette[6],
-        "fitness_equipment": palette[4],
+        "manual": Colors.lap_colors.manual,
+        "time": Colors.lap_colors.time,
+        "distance": Colors.lap_colors.distance,
+        "position_start": Colors.lap_colors.position_start,
+        "position_lap": Colors.lap_colors.position_lap,
+        "position_waypoint": Colors.lap_colors.position_waypoint,
+        "position_marked": Colors.lap_colors.position_marked,
+        "session_end": Colors.lap_colors.session_end,
+        "fitness_equipment": Colors.lap_colors.fitness_equipment,
     }
     x_value = pd.Timedelta(seconds=0)
     for lap in laps:
