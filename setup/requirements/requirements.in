@@ -9,7 +9,7 @@ fitparse
 geopy>=2.1.0
 gpxpy
 huey
-pandas
+pandas<1.3.0           # pinned because of a bug in groupby in v1.3.0 https://github.com/pandas-dev/pandas/issues/43209
 psutil
 requests
 sportgems==0.6.0        # pinned to avoid unexpected issues because of interface not being stable yet
