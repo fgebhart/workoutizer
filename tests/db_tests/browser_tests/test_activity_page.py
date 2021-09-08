@@ -568,7 +568,11 @@ def test_trophy_icon_for_awarded_activity_is_displayed_correctly(db, live_server
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 3
 
 
-def test_bokeh_lap_button(import_one_activity, live_server, webdriver, take_screenshot, tmp_path):
+def test_bokeh_lap_button(import_one_activity, live_server, webdriver_firefox, take_screenshot, tmp_path):
+    # note: this test is ran with firefox only, since chrome did take screenshots
+    # with different colors than expected when running with mac os.
+    webdriver = webdriver_firefox()
+
     import_one_activity("2020-08-20-09-34-33.fit")
 
     activity = models.Activity.objects.get()
@@ -584,6 +588,7 @@ def test_bokeh_lap_button(import_one_activity, live_server, webdriver, take_scre
     take_screenshot(webdriver, name=img_default, path=tmp_path)
 
     # get the number of pixels in the color of manual and auto lap triggers
+    print(f"storing image at: {tmp_path / img_default}")
     image = Image.open(tmp_path / img_default)
     manual_rgb_color = ImageColor.getcolor(Colors.lap_colors.manual, "RGBA")
     manual_pixel_default = 0
