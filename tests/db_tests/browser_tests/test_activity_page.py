@@ -4,6 +4,7 @@ import pytest
 import pytz
 from django.urls import reverse
 from django.utils import timezone
+from PIL import Image, ImageColor
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -11,6 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from wkz import models
+from wkz.tools.colors import Colors
 
 
 def test_activity_page__complete__fit(import_one_activity, live_server, webdriver):
@@ -564,3 +566,89 @@ def test_trophy_icon_for_awarded_activity_is_displayed_correctly(db, live_server
     webdriver.get(activity_url)
     # since the title of the "fastest section" card will also contain an additional trophy, we now expect 3
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 3
+
+
+def test_bokeh_lap_button(import_one_activity, live_server, webdriver_firefox, take_screenshot, tmp_path):
+    # note: this test is ran with firefox only, since chrome did take screenshots
+    # with different colors than expected when running with mac os.
+    webdriver = webdriver_firefox()
+
+    import_one_activity("2020-08-20-09-34-33.fit")
+
+    activity = models.Activity.objects.get()
+    webdriver.get(live_server.url + f"/activity/{activity.pk}")
+
+    # click on zoom-out button of leaflet map to ensure webdriver focus is in correct position on page
+    # webdriver.find_element(By.CSS_SELECTOR, ".leaflet-control-zoom-out").click()
+    webdriver.find_element(By.CSS_SELECTOR, "div.bk-btn:nth-child(1)").click()
+    webdriver.find_element(By.CSS_SELECTOR, "div.bk-btn:nth-child(1)").click()
+
+    # test rendering of lap markers by taking screenshots of the page and counting the number of colored pixels
+    img_default = "activity_screenshot_default.png"
+    take_screenshot(webdriver, name=img_default, path=tmp_path)
+
+    # get the number of pixels in the color of manual and auto lap triggers
+    print(f"storing image at: {tmp_path / img_default}")
+    image = Image.open(tmp_path / img_default)
+    manual_rgb_color = ImageColor.getcolor(Colors.lap_colors.manual, "RGBA")
+    manual_pixel_default = 0
+    auto_rgb_color = ImageColor.getcolor(Colors.lap_colors.distance, "RGBA")
+    auto_pixel_default = 0
+    for pixel in image.getdata():
+        if pixel == manual_rgb_color:
+            manual_pixel_default += 1
+        if pixel == auto_rgb_color:
+            auto_pixel_default += 1
+
+    # since manual laps are toggled by default, we expect to find some manual laps to be rendered as both vertical lines
+    # in the bokeh plot and circle markers in the leaflet map
+    assert manual_pixel_default > 0
+    # auto laps are not toggled, thus number of pixles should be 0
+    assert auto_pixel_default == 0
+
+    # now lets toggle the auto laps on, take a screenshot and again count the number of colored pixels
+    webdriver.find_element(By.CSS_SELECTOR, "div.bk-btn:nth-child(1)").click()
+
+    img_auto_on = "activity_screenshot_auto_on.png"
+    take_screenshot(webdriver, name=img_auto_on, path=tmp_path)
+
+    manual_pixel_auto_on = 0
+    auto_pixel_auto_on = 0
+
+    image = Image.open(tmp_path / img_auto_on)
+    for pixel in image.getdata():
+        if pixel == manual_rgb_color:
+            manual_pixel_auto_on += 1
+        if pixel == auto_rgb_color:
+            auto_pixel_auto_on += 1
+
+    # since we didn't touch the manual laps button, number of pixels should still be the same
+    assert manual_pixel_auto_on == manual_pixel_default
+    # auto laps are now toggled, thus we expect to find some pixels in the respective color
+    assert auto_pixel_auto_on > 0
+
+    # now lets toggle the manual laps off and again count the pixels
+    webdriver.find_element(By.CSS_SELECTOR, "div.bk-btn:nth-child(2)").click()
+
+    img_manual_off = "activity_screenshot_manual_off.png"
+    take_screenshot(webdriver, name=img_manual_off, path=tmp_path)
+
+    manual_pixel_manual_off = 0
+    auto_pixel_manual_off = 0
+
+    image = Image.open(tmp_path / img_manual_off)
+    for pixel in image.getdata():
+        if pixel == manual_rgb_color:
+            manual_pixel_manual_off += 1
+        if pixel == auto_rgb_color:
+            auto_pixel_manual_off += 1
+
+    # since we didn't touch the auto laps button, number of pixels should still be the same
+    # (within little variations due to the fact that manual laps could have covered auto lap lines)
+    assert (
+        auto_pixel_manual_off - auto_pixel_manual_off * 0.1
+        < auto_pixel_auto_on
+        < auto_pixel_manual_off + auto_pixel_manual_off * 0.1
+    )
+    # manual pixels are again toggled off and thus we expect to find zero pixels
+    assert manual_pixel_manual_off == 0
