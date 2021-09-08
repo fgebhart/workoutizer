@@ -4,17 +4,15 @@
 #
 #    pip-compile dev-requirements.in
 #
-appdirs==1.4.4
-    # via
-    #   black
-    #   virtualenv
 attrs==21.2.0
     # via pytest
 backcall==0.2.0
     # via ipython
-black==21.6b0
+backports.entry-points-selectable==1.1.0
+    # via virtualenv
+black==21.8b0
     # via -r dev-requirements.in
-cfgv==3.3.0
+cfgv==3.3.1
     # via pre-commit
 click==8.0.1
     # via
@@ -34,25 +32,23 @@ filelock==3.0.12
     # via virtualenv
 flake8==3.9.2
     # via -r dev-requirements.in
-identify==2.2.10
+identify==2.2.13
     # via pre-commit
 iniconfig==1.1.1
     # via pytest
 ipdb==0.13.9
     # via -r dev-requirements.in
-ipython-genutils==0.2.0
-    # via traitlets
-ipython==7.24.1
+ipython==7.27.0
     # via
     #   -r dev-requirements.in
     #   ipdb
-isort==5.8.0
+isort==5.9.3
     # via -r dev-requirements.in
 jedi==0.18.0
     # via ipython
 lxml==4.6.3
     # via -r dev-requirements.in
-matplotlib-inline==0.1.2
+matplotlib-inline==0.1.3
     # via ipython
 mccabe==0.6.1
     # via flake8
@@ -60,25 +56,29 @@ mypy-extensions==0.4.3
     # via black
 nodeenv==1.6.0
     # via pre-commit
-packaging==20.9
+packaging==21.0
     # via pytest
 parso==0.8.2
     # via jedi
-pathspec==0.8.1
+pathspec==0.9.0
     # via black
-pep517==0.10.0
+pep517==0.11.0
     # via pip-tools
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-pip-tools==6.1.0
+pip-tools==6.2.0
     # via -r dev-requirements.in
-pluggy==0.13.1
+platformdirs==2.3.0
+    # via
+    #   black
+    #   virtualenv
+pluggy==1.0.0
     # via pytest
-pre-commit==2.13.0
+pre-commit==2.15.0
     # via -r dev-requirements.in
-prompt-toolkit==3.0.18
+prompt-toolkit==3.0.20
     # via ipython
 ptyprocess==0.7.0
     # via pexpect
@@ -90,7 +90,7 @@ pycodestyle==2.7.0
     # via flake8
 pyflakes==2.3.1
     # via flake8
-pygments==2.9.0
+pygments==2.10.0
     # via ipython
 pyparsing==2.4.7
     # via packaging
@@ -104,9 +104,9 @@ pytest-html==3.1.1
     # via -r dev-requirements.in
 pytest-metadata==1.11.0
     # via pytest-html
-pytest-xdist==2.2.1
+pytest-xdist==2.3.0
     # via -r dev-requirements.in
-pytest==6.2.4
+pytest==6.2.5
     # via
     #   -r dev-requirements.in
     #   pytest-cov
@@ -117,7 +117,7 @@ pytest==6.2.4
     #   pytest-xdist
 pyyaml==5.4.1
     # via pre-commit
-regex==2021.4.4
+regex==2021.8.28
     # via black
 rope==0.19.0
     # via -r dev-requirements.in
@@ -127,22 +127,28 @@ six==1.16.0
     # via virtualenv
 toml==0.10.2
     # via
-    #   black
     #   ipdb
-    #   pep517
     #   pre-commit
     #   pytest
     #   pytest-cov
-traitlets==5.0.5
+tomli==1.2.1
+    # via
+    #   black
+    #   pep517
+traitlets==5.1.0
     # via
     #   ipython
     #   matplotlib-inline
-urllib3==1.26.5
+typing-extensions==3.10.0.2
+    # via black
+urllib3==1.26.6
     # via selenium
-virtualenv==20.4.7
+virtualenv==20.7.2
     # via pre-commit
 wcwidth==0.2.5
     # via prompt-toolkit
+wheel==0.37.0
+    # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
