@@ -118,7 +118,7 @@ pandas==1.2.4
     # via -r requirements.in
 partd==1.2.0
     # via dask
-pillow==8.2.0
+pillow==8.3.2
     # via bokeh
 psutil==5.8.0
     # via
