@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   distinguish it from other lap types.
 * Test both mounting Block and MTP devices.
 * Render activity duration in hover tooltip on history plot on dashboard page.
+* Include lap trigger column within the lap table on activity page.
 * Run Django on `DEBUG=True` when working in docker environment, otherwise `DEBUG=False`.
 
 ## [0.21.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.21.1) - 2021-07-17

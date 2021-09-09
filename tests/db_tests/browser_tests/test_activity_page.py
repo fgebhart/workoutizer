@@ -27,6 +27,7 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert "TIME" in table_header
     assert "DISTANCE" in table_header
     assert "PACE" in table_header
+    assert "TRIGGER" in table_header
     assert "LABEL" in table_header
 
     # check summary facts
@@ -69,6 +70,10 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert "09:18" in table_data
     assert "447 m" in table_data  # total ascent
     assert "451 m" in table_data  # total descent
+
+    # check that lap triggers are in lap table
+    assert "manual" in table_data
+    assert "session_end" in table_data
 
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Noon Cycling In Bad Schandau"
 
