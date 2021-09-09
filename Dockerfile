@@ -40,6 +40,7 @@ RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workspaces/wo
 ENV SHELL /bin/zsh
 ENV WKZ_ENV='devel'
 ENV WKZ_LOG_LEVEL='DEBUG'
+ENV DJANGO_DEBUG=True
 ENV PYTHONBREAKPOINT=ipdb.set_trace
 
 EXPOSE 8000

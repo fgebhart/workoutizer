@@ -583,8 +583,7 @@ def test_bokeh_lap_button(import_one_activity, live_server, webdriver_firefox, t
     activity = models.Activity.objects.get()
     webdriver.get(live_server.url + f"/activity/{activity.pk}")
 
-    # click on zoom-out button of leaflet map to ensure webdriver focus is in correct position on page
-    # webdriver.find_element(By.CSS_SELECTOR, ".leaflet-control-zoom-out").click()
+    # click two times (on and off) on bokeh button to ensure the plots and the map are in the center of the screen
     webdriver.find_element(By.CSS_SELECTOR, "div.bk-btn:nth-child(1)").click()
     webdriver.find_element(By.CSS_SELECTOR, "div.bk-btn:nth-child(1)").click()
 
@@ -593,7 +592,6 @@ def test_bokeh_lap_button(import_one_activity, live_server, webdriver_firefox, t
     take_screenshot(webdriver, name=img_default, path=tmp_path)
 
     # get the number of pixels in the color of manual and auto lap triggers
-    print(f"storing image at: {tmp_path / img_default}")
     image = Image.open(tmp_path / img_default)
     manual_rgb_color = ImageColor.getcolor(Colors.lap_colors.manual, "RGBA")
     manual_pixel_default = 0
