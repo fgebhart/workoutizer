@@ -18,7 +18,7 @@ from bokeh.plotting import figure
 
 from wkz import configuration as cfg
 from wkz import models
-from wkz.tools.colors import Colors
+from wkz.tools.style import Style
 from workoutizer import settings as django_settings
 
 plot_matrix = {
@@ -155,8 +155,12 @@ def plot_time_series(activity: models.Activity) -> Tuple[str, str, int]:
 
                 p.xgrid.grid_line_color = None
                 p.legend.location = "top_left"
-                p.legend.label_text_font = "Montserrat"
+                p.legend.label_text_font = Style.font
                 p.legend.background_fill_alpha = 0.7
+                p.yaxis.major_label_text_font = Style.font
+                p.xaxis.major_label_text_font = Style.font
+                p.yaxis.axis_label_text_font = Style.font
+                p.yaxis.axis_label_text_font_style = "normal"
                 dtf = DatetimeTickFormatter()
                 dtf.minutes = ["%M:%S"]
                 p.xaxis.formatter = dtf
@@ -236,16 +240,17 @@ def _add_button_to_toggle_laps(lap_lines, layout):
 
 def _add_laps_to_plot(laps: list, plot, y_values: list) -> List:
     lap_lines = {}
+    colors = Style.colors
     lap_colors = {
-        "manual": Colors.lap_colors.manual,
-        "time": Colors.lap_colors.time,
-        "distance": Colors.lap_colors.distance,
-        "position_start": Colors.lap_colors.position_start,
-        "position_lap": Colors.lap_colors.position_lap,
-        "position_waypoint": Colors.lap_colors.position_waypoint,
-        "position_marked": Colors.lap_colors.position_marked,
-        "session_end": Colors.lap_colors.session_end,
-        "fitness_equipment": Colors.lap_colors.fitness_equipment,
+        "manual": colors.lap_colors.manual,
+        "time": colors.lap_colors.time,
+        "distance": colors.lap_colors.distance,
+        "position_start": colors.lap_colors.position_start,
+        "position_lap": colors.lap_colors.position_lap,
+        "position_waypoint": colors.lap_colors.position_waypoint,
+        "position_marked": colors.lap_colors.position_marked,
+        "session_end": colors.lap_colors.session_end,
+        "fitness_equipment": colors.lap_colors.fitness_equipment,
     }
     x_value = pd.Timedelta(seconds=0)
     for lap in laps:

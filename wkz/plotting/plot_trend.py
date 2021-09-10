@@ -4,6 +4,7 @@ from bokeh.embed import components
 from bokeh.plotting import figure
 
 from wkz import models
+from wkz.tools.style import font
 
 
 def plot_trend(activities, sport_model):
@@ -34,6 +35,8 @@ def plot_trend(activities, sport_model):
 
     # render zero hours properly
     p.yaxis.major_label_overrides = {0: "0h"}
+    p.yaxis.major_label_text_font = font
+    p.xaxis.major_label_text_font = font
     p.toolbar.logo = None
     p.toolbar_location = None
     p.tools = []

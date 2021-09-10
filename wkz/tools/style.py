@@ -2,6 +2,8 @@ from dataclasses import dataclass
 
 from bokeh.palettes import Set1, Set2_8
 
+font = "Montserrat"
+
 
 @dataclass
 class ThemeColors:
@@ -37,6 +39,12 @@ class Colors:
     lap_colors = LapColors
     demo_sport_colors = DemoSportColors
     theme_colors = ThemeColors
+
+
+@dataclass
+class Style:
+    colors = Colors
+    font = font
 
 
 # color of traces rendered on map in sport page

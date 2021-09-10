@@ -63,6 +63,29 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Hiking in Aftersteg" in table_data
     assert "Noon Hiking in Kornau" in table_data
 
+    h4 = [heading.text for heading in webdriver.find_elements_by_tag_name("h4")]
+    assert "Overview" in h4
+    assert "Sport Distribution" in h4
+    assert "Sport Trend" in h4
+    assert "Workload & Mileage" in h4
+
+    stats = [stat.text for stat in webdriver.find_elements_by_class_name("stats")]
+    assert "Duration over last 7 Days" in stats
+    assert "Total Distance of Activities" in stats
+    assert "Total Duration of Activities" in stats
+    assert "Total Number of Activities" in stats
+    assert "Over the last 30 days" in stats
+    assert "Overall Workload aggregated by Weeks" in stats
+
+    # verify history plot is present
+    webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[2]/div/div/div[2]/div/div/div/div[2]")
+    # verify pie chart is present
+    webdriver.find_element_by_id("chartSportDistribution")
+    # verify sport trend plot is present
+    webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[3]/div[2]/div/div[2]/div/div/div/div[2]")
+    # verify workload plot is present
+    webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[4]/div/div/div[2]/div/div/div/div[2]")
+
     # check that the trophy icons are present
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
 

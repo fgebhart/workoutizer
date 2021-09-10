@@ -12,7 +12,7 @@ from django.views.generic import DeleteView, View
 from wkz import configuration, models
 from wkz.forms import AddSportsForm
 from wkz.plotting.plot_history import plot_history
-from wkz.tools.colors import Colors
+from wkz.tools.style import Style
 from wkz.tools.utils import remove_microseconds
 from wkz.views import (
     MapView,
@@ -46,7 +46,13 @@ class SportsView(View):
         return render(
             request,
             self.template_name,
-            {"sports": sports, "page_name": "Sports", "form_field_ids": get_all_form_field_ids(), **sport_data},
+            {
+                "sports": sports,
+                "page_name": "Sports",
+                "form_field_ids": get_all_form_field_ids(),
+                **sport_data,
+                "style": Style,
+            },
         )
 
 
@@ -100,7 +106,7 @@ class SportView(MapView, PlotView):
                 "summary": summary,
                 "sport": sport,
                 "form_field_ids": get_all_form_field_ids(),
-                "colors": Colors,
+                "style": Style,
             },
         )
 
@@ -121,7 +127,13 @@ def add_sport_view(request):
     return render(
         request,
         "sport/add_sport.html",
-        {"sports": sports, "form": form, "page_name": "Add Sport", "form_field_ids": get_all_form_field_ids()},
+        {
+            "sports": sports,
+            "form": form,
+            "page_name": "Add Sport",
+            "form_field_ids": get_all_form_field_ids(),
+            "style": Style,
+        },
     )
 
 
@@ -149,6 +161,7 @@ def edit_sport_view(request, sports_name_slug):
             "form": form,
             "form_field_ids": get_all_form_field_ids(),
             "page_name": f"Edit Sport: {sport.name}",
+            "style": Style,
         },
     )
 
@@ -173,5 +186,6 @@ class SportDeleteView(DeleteView):
                 "sport": sport,
                 "form_field_ids": get_all_form_field_ids(),
                 "page_name": f"Delete Sport: {sport.name}",
+                "style": Style,
             },
         )

@@ -18,7 +18,8 @@ from wkz.gis.geo import GeoTrace, get_list_of_coordinates
 from wkz.plotting.plot_history import plot_history
 from wkz.plotting.plot_pie_chart import plot_pie_chart
 from wkz.plotting.plot_trend import plot_trend
-from wkz.tools.colors import Colors, sport_trace_colors
+from wkz.plotting.plot_workload import plot_workload
+from wkz.tools.style import Style, sport_trace_colors
 from workoutizer import __version__
 from workoutizer import settings as django_settings
 
@@ -41,7 +42,7 @@ def get_all_form_field_ids():
 class WKZView(View):
     sports = models.Sport.objects.all().order_by("name")
     form_field_ids = get_all_form_field_ids()
-    context = {"sports": sports, "form_field_ids": form_field_ids}
+    context = {"sports": sports, "form_field_ids": form_field_ids, "style": Style}
 
 
 class MapView(View):
@@ -123,7 +124,7 @@ class DashboardView(View, PlotView):
             "summary": summary,
             "page_name": "Dashboard",
             "form_field_ids": get_all_form_field_ids(),
-            "colors": Colors,
+            "style": Style,
         }
         if activities:
             script_history, div_history = plot_history(
@@ -131,7 +132,11 @@ class DashboardView(View, PlotView):
             )
             pie_chart_data, pie_chart_labels, pie_chart_colors = plot_pie_chart(activities=activities)
             script_trend, div_trend = plot_trend(activities=activities, sport_model=models.Sport)
+            script_workload, div_workload, aggregated_by = plot_workload(models.Activity)
             plotting_context = {
+                "script_workload": script_workload,
+                "div_workload": div_workload,
+                "aggregated_by": aggregated_by,
                 "activities_available": True,
                 "script_history": script_history,
                 "div_history": div_history,
@@ -165,6 +170,7 @@ def settings_view(request):
             "settings": settings,
             "form_field_ids": get_all_form_field_ids(),
             "delete_demos": True if activities else False,
+            "style": Style,
         },
     )
 
