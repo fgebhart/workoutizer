@@ -43,7 +43,7 @@ class FitCollector:
             if fits:
                 no_file_was_copied = True
                 for fit in fits:
-                    file_name = str(fit.split("/")[-1])
+                    file_name = os.path.basename(fit)
                     target_file = os.path.join(self.target_location, file_name)
                     if not os.path.isfile(target_file):
                         shutil.copy(fit, target_file)

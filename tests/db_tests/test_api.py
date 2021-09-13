@@ -71,7 +71,7 @@ def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev, caplog
     monkeypatch.setattr(fit_collector, "_find_device_type", _find_device_type)
 
     # create directory to import the fit files from
-    fake_device_dir = os.path.join(tmpdir, "mtp:host/Primary/GARMIN/Activity/")
+    fake_device_dir = os.path.join(tmpdir, "mtp:host", "Primary", "GARMIN", "Activity")
     os.makedirs(fake_device_dir)
 
     res = client.post("/mount-device/")

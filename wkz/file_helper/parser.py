@@ -99,7 +99,7 @@ class Parser:
         self.date = datetime.datetime.fromtimestamp(os.path.getctime(self.path_to_file)).date()
 
     def get_file_name_from_path(self, path: str):
-        return path.split("/")[-1]
+        return os.path.basename(path)
 
     def get_best_sections(self):
         log.debug("parsing best sections using sportgems...")
