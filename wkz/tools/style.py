@@ -47,5 +47,18 @@ class Style:
     font = font
 
 
+@dataclass
+class Set1Palette:
+    red = Set1[9][0]
+    blue = Set1[9][1]
+    green = Set1[9][2]
+    violet = Set1[9][3]
+    orange = Set1[9][4]
+    yellow = Set1[9][5]
+    brown = Set1[9][6]
+    pink = Set1[9][7]
+    grey = Set1[9][8]
+
+
 # color of traces rendered on map in sport page
 sport_trace_colors = Set1[9]
