@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Render activity duration in hover tooltip on history plot on dashboard page.
 * Include lap trigger column within the lap table on activity page.
 * Run Django on `DEBUG=True` when working in docker environment, otherwise `DEBUG=False`.
+* Added 'Workload & Mileage' plot to dashboard page which shows the overall duration and
+  distance aggregated by either weeks or months.
 
 ## [0.21.1](https://github.com/fgebhart/workoutizer/releases/tag/v0.21.1) - 2021-07-17
 ### Added
