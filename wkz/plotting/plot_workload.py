@@ -7,7 +7,7 @@ from bokeh.models import FuncTickFormatter, HoverTool, LinearAxis, Range1d
 from bokeh.plotting import figure
 
 from wkz import models
-from wkz.tools.style import Set1Palette, Style
+from wkz.tools.style import Style
 
 log = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ def plot_workload(activity_model: models.Activity):
         "x_axis",
         "duration",
         line_width=3,
-        color=Set1Palette.orange,
+        color=Style.colors.theme_colors.red,
         legend_label="Duration",
         source=df,
     )
@@ -76,7 +76,7 @@ def plot_workload(activity_model: models.Activity):
         "distance",
         line_width=3,
         y_range_name=y_column2_range,
-        color=Set1Palette.violet,
+        color=Style.colors.theme_colors.green,
         legend_label="Distance",
         source=df,
     )
