@@ -1,7 +1,11 @@
 
 name: Single Test
 
-on: [push]
+on:
+  push:
+    paths:
+      - "**.py"
+      - "setup/requirements/**.txt"
 
 jobs:
   test:

@@ -3,6 +3,9 @@ name: Matrix Test
 
 on:
   pull_request:
+    paths:
+      - "**.py"
+      - "setup/requirements/**.txt"
   push:
     branches: main
 
