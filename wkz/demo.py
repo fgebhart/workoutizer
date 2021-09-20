@@ -9,7 +9,7 @@ from types import ModuleType
 import pytz
 from django.db import models
 
-from wkz.tools.colors import Colors
+from wkz.tools.style import Colors
 from workoutizer import settings as django_settings
 
 log = logging.getLogger(__name__)

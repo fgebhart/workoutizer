@@ -20,7 +20,7 @@ from wkz.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wkz.forms import DATETIMEPICKER_FORMAT, AddActivityForm, EditActivityForm
 from wkz.models import Activity, BestSection, Lap, Sport
 from wkz.plotting.plot_time_series import plot_time_series
-from wkz.tools.colors import Colors
+from wkz.tools.style import Style
 from wkz.views import MapView, get_all_form_field_ids
 from workoutizer import settings as django_settings
 
@@ -44,7 +44,7 @@ class ActivityView(MapView):
             "climb_sections": BestSection.objects.filter(activity=activity, kind="climb"),
             "page_name": activity.name,
             "is_activity_page": True,
-            "colors": Colors,
+            "style": Style,
         }
         if activity.trace_file:
             script_time_series, div_time_series, number_of_plots = plot_time_series(activity)
@@ -91,7 +91,13 @@ def add_activity_view(request):
     return render(
         request,
         "activity/add_activity.html",
-        {"sports": sports, "form": form, "form_field_ids": get_all_form_field_ids(), "page_name": "Add Activity"},
+        {
+            "sports": sports,
+            "form": form,
+            "form_field_ids": get_all_form_field_ids(),
+            "page_name": "Add Activity",
+            "style": Style,
+        },
     )
 
 
@@ -134,6 +140,7 @@ def edit_activity_view(request, activity_id):
             "has_laps": has_laps,
             "form_field_ids": form_field_ids,
             "page_name": f"Edit Activity: {activity.name}",
+            "style": Style,
         },
     )
 
@@ -179,6 +186,7 @@ class ActivityDeleteView(DeleteView):
                 "activity": activity,
                 "form_field_ids": get_all_form_field_ids(),
                 "page_name": f"Delete Activity: {activity.name}",
+                "style": Style,
             },
         )
 
@@ -198,6 +206,7 @@ class DemoActivityDeleteView(DeleteView):
                 "activities": activities,
                 "form_field_ids": get_all_form_field_ids(),
                 "page_name": "Delete Demo Activities",
+                "style": Style,
             },
         )
 

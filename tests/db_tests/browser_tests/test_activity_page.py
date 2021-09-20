@@ -12,7 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from wkz import models
-from wkz.tools.colors import Colors
+from wkz.tools.style import Colors
 
 
 def test_activity_page__complete__fit(import_one_activity, live_server, webdriver):

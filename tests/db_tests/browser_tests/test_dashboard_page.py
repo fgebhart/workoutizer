@@ -52,8 +52,10 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     webdriver.get(live_server.url + reverse("home"))
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Dashboard"
 
-    # check that all activity names are in the table
+    # scroll down to table to ensure data is getting loaded
+    webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "td")))
+    # check that all activity names are in the table
     table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
     assert "Noon Jogging in Heidelberg" in table_data
     assert "Swimming" in table_data
@@ -62,6 +64,29 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     assert "Early Morning Cycling in Kochel am See" in table_data
     assert "Noon Hiking in Aftersteg" in table_data
     assert "Noon Hiking in Kornau" in table_data
+
+    h4 = [heading.text for heading in webdriver.find_elements_by_tag_name("h4")]
+    assert "Overview" in h4
+    assert "Sport Distribution" in h4
+    assert "Sport Trend" in h4
+    assert "Workload & Mileage" in h4
+
+    stats = [stat.text for stat in webdriver.find_elements_by_class_name("stats")]
+    assert "Duration over last 7 Days" in stats
+    assert "Total Distance of Activities" in stats
+    assert "Total Duration of Activities" in stats
+    assert "Total Number of Activities" in stats
+    assert "Over the last 30 days" in stats
+    assert "Overall Workload aggregated by Weeks" in stats
+
+    # verify history plot is present
+    webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[2]/div/div/div[2]/div/div/div/div[2]")
+    # verify pie chart is present
+    webdriver.find_element_by_id("chartSportDistribution")
+    # verify sport trend plot is present
+    webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[3]/div[2]/div/div[2]/div/div/div/div[2]")
+    # verify workload plot is present
+    webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[4]/div/div/div[2]/div/div/div/div[2]")
 
     # check that the trophy icons are present
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
@@ -237,3 +262,58 @@ def test_trophy_icon_for_awarded_activities_in_table_are_displayed_correctly(db,
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "fa-trophy")))
     assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 3
     assert set(get_flat_list_of_pks_of_activities_in_top_awards()) == set([activity_1.pk, activity_2.pk, activity_3.pk])
+
+
+def test_workload_plot_is_aggregated_by_week_or_month(db, live_server, webdriver):
+    webdriver.get(live_server.url + reverse("home"))
+    assert webdriver.find_element_by_class_name("navbar-brand").text == "Dashboard"
+
+    # having no activities at all would lead to the workload plot not being present at all
+    h4 = [heading.text for heading in webdriver.find_elements_by_tag_name("h4")]
+    assert "Overview" in h4
+    assert "Sport Distribution" not in h4
+    assert "Sport Trend" not in h4
+    assert "Workload & Mileage" not in h4
+
+    with pytest.raises(NoSuchElementException):
+        webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[4]/div/div/div[2]/div/div/div/div[2]")
+
+    # insert a few activities for the first 4 weeks (28 days)
+    sport = models.Sport.objects.create(name="Swimming", slug="swimming", icon="swimmer", color="#51CBCE")
+    for i in range(28):
+        models.Activity.objects.create(
+            name=f"Activity {i}",
+            sport=sport,
+            date=datetime.datetime.now(tz=pytz.UTC) - datetime.timedelta(days=i),
+            duration=datetime.timedelta(0, 3600),
+            distance=12.34,
+        )
+    assert models.Activity.objects.count() == 28
+
+    webdriver.get(live_server.url + reverse("home"))
+
+    # check that workload plot is present now
+    webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[4]/div/div/div[2]/div/div/div/div[2]")
+    h4 = [heading.text for heading in webdriver.find_elements_by_tag_name("h4")]
+    assert "Workload & Mileage" in h4
+
+    # and that it is aggregated by weeks
+    stats = [stat.text for stat in webdriver.find_elements_by_class_name("stats")]
+    assert "Overall Workload aggregated by Weeks" in stats
+
+    # now insert even more activities to test that workload plot gets aggregated by months
+    for i in range(6):  # oldest activity needs to be older than 'today - 20 weeks'
+        models.Activity.objects.create(
+            name=f"Activity {i}",
+            sport=sport,
+            date=datetime.datetime.now(tz=pytz.UTC) - datetime.timedelta(weeks=4 * i),
+            duration=datetime.timedelta(0, 3600),
+            distance=12.34,
+        )
+    assert models.Activity.objects.count() == 34
+
+    webdriver.get(live_server.url + reverse("home"))
+
+    # verify that workload is aggregated by months
+    stats = [stat.text for stat in webdriver.find_elements_by_class_name("stats")]
+    assert "Overall Workload aggregated by Months" in stats

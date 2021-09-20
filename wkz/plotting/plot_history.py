@@ -8,6 +8,7 @@ from bokeh.models import HoverTool
 from bokeh.plotting import figure
 from django.utils import timezone
 
+from wkz.tools.style import font
 from workoutizer import settings as django_settings
 
 log = logging.getLogger(__name__)
@@ -57,12 +58,14 @@ def _plot_activities(activities, sport_model, number_of_days):
     for r in renderers:
         sport = r.name
         hover = HoverTool(
-            tooltips=[("%s" % sport, "@%s" % f"{sport}_duration"), ("Date", "@date_formatted")], renderers=[r]
+            tooltips=[("%s" % sport, "@%s" % f"{sport}_duration h"), ("Date", "@date_formatted")], renderers=[r]
         )
         p.add_tools(hover)
 
     # render zero hours properly
     p.yaxis.major_label_overrides = {0: "0h"}
+    p.yaxis.major_label_text_font = font
+    p.xaxis.major_label_text_font = font
     p.toolbar.logo = None
     p.toolbar_location = None
 

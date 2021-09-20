@@ -1,0 +1,20 @@
+{% load filters %}
+
+{{ script_workload | safe }}
+{% if div_workload %}
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Workload & Mileage</h4>
+    </div>
+    <div class="card-body">
+        {{ div_workload | safe }}
+    </div>
+    <div class="card-footer ">
+        <hr>
+        <div class="stats">
+            <i class="fas fa-chart-bar"></i>
+            Overall Workload aggregated by {{ aggregated_by }}
+        </div>
+    </div>
+</div>
+{% endif %}
