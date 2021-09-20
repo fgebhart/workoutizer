@@ -3,6 +3,9 @@ name: Setup on Raspberry Pi
 
 on:
   pull_request:
+    paths:
+      - "**.py"
+      - "setup/requirements/**.txt"
   push:
     branches: main
 
