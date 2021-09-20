@@ -6,7 +6,6 @@
 [![Setup on Raspberry Pi](https://github.com/fgebhart/workoutizer/actions/workflows/raspberry_pi_test.yml/badge.svg)](https://github.com/fgebhart/workoutizer/actions/workflows/raspberry_pi_test.yml)
 [![Coverage Badge](https://raw.githubusercontent.com/fgebhart/workoutizer/master/.github/badges/coverage.svg)](https://raw.githubusercontent.com/fgebhart/workoutizer/master/.github/badges/coverage.svg)
 [![Downloads](https://img.shields.io/pypi/dm/workoutizer.svg?label=Pypi%20downloads)](https://pypi.org/project/workoutizer/)
-[![workoutizer](https://snyk.io/advisor/python/workoutizer/badge.svg)](https://snyk.io/advisor/python/workoutizer)
 
 Workoutizer is a simple web application for organizing your workouts and sports activities. It is designed to work
 locally on any UNIX-like system running Python.
