@@ -5,18 +5,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-## Fixed
+...
+
+## [0.22.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.22.0) - 2021-09-20
+### Fixed
 * Correctly display activity duration as timedelta formatted as `HH:MM:SS` instead of
   raw seconds in time series plots on activity page.
-* Use the same layer type for all maps.
-## Changed
-* #189: Upgrade `fitparse` to most recent version and use `enhanced_altitude` instead of
-  `altitude` value when parsing fit files, since `enhanced_altitude` seems to contain
-  the correct altitude value for all garmin devices. This requires a reimport of
+* Use the same layer type for all maps (map on sport and activity page).
+### Changed
+* #189: Upgrade `fitparse` to most recent version (1.2.0) and use `enhanced_altitude`
+  instead of `altitude` value when parsing fit files, since `enhanced_altitude` seems to
+  contain the correct altitude value for all garmin devices. This requires a reimport of
   activities.
 * Use pie chart of Creative Tims paperdashboard instead of bokeh for the sake of
   simplification, speed-up and nice reload animation.
-## Added
+### Added
 * Use value of `altitude` field in case `enhanced_altitude` field is not available during
   parsing of fit files.
 * Now all types of Laps are shown in the activity page, a button allows you to toggle if
