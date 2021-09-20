@@ -52,8 +52,10 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     webdriver.get(live_server.url + reverse("home"))
     assert webdriver.find_element_by_class_name("navbar-brand").text == "Dashboard"
 
-    # check that all activity names are in the table
+    # scroll down to table to ensure data is getting loaded
+    webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "td")))
+    # check that all activity names are in the table
     table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
     assert "Noon Jogging in Heidelberg" in table_data
     assert "Swimming" in table_data
