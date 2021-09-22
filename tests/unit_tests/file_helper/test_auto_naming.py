@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-from wkz.file_helper.auto_naming import (
+from wkz.parser.auto_naming import (
     _get_coordinate_not_null,
     _get_daytime_name,
     _get_sport_name,

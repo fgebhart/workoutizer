@@ -3,8 +3,8 @@ import os
 from pathlib import Path
 
 from wkz import models
-from wkz.file_helper.fit_collector import FitCollector
 from wkz.file_importer import run_importer__dask
+from wkz.parser.fit_collector import FitCollector
 
 log = logging.getLogger(__name__)
 

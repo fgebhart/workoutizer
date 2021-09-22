@@ -12,10 +12,10 @@ from fitparse.utils import FitEOFError, FitHeaderError
 from wkz import configuration
 from wkz.best_sections.generic import GenericBestSection
 from wkz.demo import finalize_demo_activity_insertion
-from wkz.file_helper.auto_naming import get_automatic_name
-from wkz.file_helper.fit_parser import FITParser
-from wkz.file_helper.gpx_parser import GPXParser
-from wkz.file_helper.parser import Parser
+from wkz.parser.auto_naming import get_automatic_name
+from wkz.parser.fit_parser import FITParser
+from wkz.parser.gpx_parser import GPXParser
+from wkz.parser.parser import Parser
 from wkz.tools import sse
 from wkz.tools.utils import calc_md5, limit_string, sanitize
 

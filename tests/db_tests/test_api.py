@@ -5,7 +5,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from wkz import models
-from wkz.file_helper import fit_collector
+from wkz.parser import fit_collector
 
 
 @pytest.fixture

@@ -16,9 +16,9 @@ from wkz.awards_views import (
     get_top_awards_for_one_sport,
 )
 from wkz.best_sections.generic import activity_suitable_for_awards
-from wkz.file_helper.gpx_exporter import save_activity_to_gpx_file
 from wkz.forms import DATETIMEPICKER_FORMAT, AddActivityForm, EditActivityForm
 from wkz.models import Activity, BestSection, Lap, Sport
+from wkz.parser.gpx_exporter import save_activity_to_gpx_file
 from wkz.plotting.plot_time_series import plot_time_series
 from wkz.tools.style import Style
 from wkz.views import MapView, get_all_form_field_ids

@@ -15,7 +15,7 @@ from workoutizer import settings as django_settings
 
 def test_activity_data_in_db_after_import(import_one_activity):
     """
-    This test corresponds to tests.unit_tests.file_helper.test_fit_parser.test__parse_records
+    This test corresponds to tests.unit_tests.parser.test_fit_parser.test__parse_records
     but checks the integration with the database and the django model fields.
     """
 

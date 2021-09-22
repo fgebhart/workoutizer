@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 
-from wkz.file_helper.fit_collector import FitCollector, _find_activity_sub_dir_in_path
+from wkz.parser.fit_collector import FitCollector, _find_activity_sub_dir_in_path
 
 
 def test__find_activity_sub_dir_in_path(tmp_path):

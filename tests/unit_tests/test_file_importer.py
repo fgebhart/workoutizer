@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pytest
 
-from wkz.file_helper.parser import Parser
 from wkz.file_importer import (
     _all_files_in_db_already,
     _check_and_parse_file,
@@ -13,6 +12,7 @@ from wkz.file_importer import (
     _parse_single_file,
     sport_naming_map,
 )
+from wkz.parser.parser import Parser
 from wkz.tools.utils import calc_md5
 
 
