@@ -180,7 +180,10 @@ class Settings(models.Model):
         max_length=120, default=django_settings.TRACKS_DIR, verbose_name="Path to Traces Directory"
     )
     path_to_garmin_device = models.CharField(
-        max_length=120, default="/run/user/1000/gvfs/", verbose_name="Path to Garmin Device"
+        max_length=120,
+        default="",
+        verbose_name="Path to Garmin Device",
+        blank=True,
     )
     number_of_days = models.IntegerField(choices=days_choices, default=30)
     delete_files_after_import = models.BooleanField(verbose_name="Delete fit Files after Copying ", default=False)
@@ -208,10 +211,10 @@ class Settings(models.Model):
         self.__original_path_to_trace_dir = self.path_to_trace_dir
 
         if self.path_to_garmin_device != self.__original_path_to_garmin_device:
-            from wkz import models
-
-            if Path(self.path_to_garmin_device).is_dir():
-                sse.send(f"<b>Device watchdog</b> now monitors <code>{self.path_to_garmin_device}</code>.", "green")
+            if self.path_to_garmin_device == "":
+                sse.send("<b>Device watchdog disabled.</b>", "green")
+            elif Path(self.path_to_garmin_device).is_dir():
+                sse.send(f"<b>Device watchdog</b> now monitors <code>{self.path_to_garmin_device}</code>", "green")
             else:
                 sse.send(f"<code>{self.path_to_garmin_device}</code> is not a valid path.", "red", "WARNING")
         self.__original_path_to_garmin_device = self.path_to_garmin_device

@@ -1,4 +1,5 @@
 import datetime
+import logging
 import operator
 
 import pytest
@@ -91,11 +92,13 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
         webdriver.find_element(By.ID, "delete-demo-data")
 
 
-def test_settings_page__edit_and_submit_form(live_server, webdriver):
+def test_settings_page__edit_and_submit_form(live_server, webdriver, caplog, tmp_path):
+    caplog.set_level(logging.DEBUG, logger="wkz.tools.sse")
+
     # get settings and check that all values are at their default configuration
     settings = models.get_settings()
     assert settings.path_to_trace_dir == django_settings.TRACKS_DIR
-    assert settings.path_to_garmin_device == "/run/user/1000/gvfs/"
+    assert settings.path_to_garmin_device == ""
     assert settings.delete_files_after_import is False
     assert settings.number_of_days == 30
 
@@ -109,7 +112,9 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_path_to_trace_dir")))
     trace_dir_input_field = webdriver.find_element(By.ID, "id_path_to_trace_dir")
     trace_dir_input_field.clear()
-    trace_dir_input_field.send_keys("some/dummy/path")
+    # test invalid path
+    invalid_path = "invalid/dummy/path"
+    trace_dir_input_field.send_keys(invalid_path)
     # basically clicking somewhere else to trigger submitting the change
     webdriver.find_element(By.ID, "navigation").click()
 
@@ -117,18 +122,37 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "loading-bar")))
     WebDriverWait(webdriver, 3).until(EC.invisibility_of_element_located((By.ID, "loading-bar")))
 
-    delayed_assertion(lambda: models.get_settings().path_to_trace_dir, operator.eq, "some/dummy/path")
+    delayed_assertion(lambda: models.get_settings().path_to_trace_dir, operator.eq, invalid_path)
+    assert f"{invalid_path} is not a valid path." in caplog.text
 
+    # test valid path
+    valid_path = tmp_path / "dummy_path"
+    valid_path.mkdir()
+    assert valid_path.is_dir()
     WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_path_to_garmin_device")))
     garmin_device_input_field = webdriver.find_element(By.ID, "id_path_to_garmin_device")
     garmin_device_input_field.clear()
-    garmin_device_input_field.send_keys("garmin/dummy/path")
+    garmin_device_input_field.send_keys(str(valid_path))
     # click somewhere to trigger updating settings
     webdriver.find_element(By.ID, "navigation").click()
     # wait until loading image shows up and disappears again
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "loading-bar")))
     WebDriverWait(webdriver, 3).until(EC.invisibility_of_element_located((By.ID, "loading-bar")))
-    delayed_assertion(lambda: models.get_settings().path_to_garmin_device, operator.eq, "garmin/dummy/path")
+    delayed_assertion(lambda: models.get_settings().path_to_garmin_device, operator.eq, str(valid_path))
+    assert f"Device watchdog now monitors {valid_path}" in caplog.text
+
+    # test disabling by passing an empty string
+    empty_string = ""
+    WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_path_to_garmin_device")))
+    garmin_device_input_field = webdriver.find_element(By.ID, "id_path_to_garmin_device")
+    garmin_device_input_field.clear()
+    # click somewhere to trigger updating settings
+    webdriver.find_element(By.ID, "navigation").click()
+    # wait until loading image shows up and disappears again
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "loading-bar")))
+    WebDriverWait(webdriver, 3).until(EC.invisibility_of_element_located((By.ID, "loading-bar")))
+    delayed_assertion(lambda: models.get_settings().path_to_garmin_device, operator.eq, empty_string)
+    assert "Device watchdog disabled." in caplog.text
 
     # got removed, should not be accessible
     with pytest.raises(NoSuchElementException):
@@ -139,8 +163,8 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver):
 
     # again get settings and check that the values are the once entered above
     settings = models.get_settings()
-    assert settings.path_to_trace_dir == "some/dummy/path"
-    assert settings.path_to_garmin_device == "garmin/dummy/path"
+    assert settings.path_to_trace_dir == invalid_path
+    assert settings.path_to_garmin_device == ""
 
     # did not get changed, since selenium is not able to click into checkbox (?)
     assert settings.delete_files_after_import is False
