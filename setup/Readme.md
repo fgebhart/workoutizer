@@ -46,7 +46,7 @@ pip install workoutizer
 To configure your Raspberry Pi to automatically detect and mount your garmin watch you'll need to follow these steps:
 
 ### 1. Create a udev rule
-Create a file at `/etc/udev/rules.d/device_mount.rules` with the following content:
+Create a file at `/etc/udev/rules.d/device_mount.rules` with the following content:                    // TODO adjust this!!!
 
 ```
 ACTION=="add", SUBSYSTEM=="block", ATTRS{idVendor}=="091e", TAG+="systemd", ENV{SYSTEMD_WANTS}="wkz_mount"

@@ -42,3 +42,12 @@ def fit_file_a():
 @pytest.fixture
 def fit_file_b():
     return "2019-09-25-16-15-53.fit"
+
+
+@pytest.fixture
+def mock_mount_waiting_time(monkeypatch):
+    from wkz.device import mount
+
+    # mock number of retries and waiting time to speed up test execution
+    monkeypatch.setattr(mount, "WAIT", 1)
+    monkeypatch.setattr(mount, "RETRIES", 3)

@@ -1,7 +1,10 @@
 import shutil
 from pathlib import Path
 
-from wkz.parser.fit_collector import FitCollector, _find_activity_sub_dir_in_path
+from wkz.parser.fit_collector import (
+    _find_activity_sub_dir_in_path,
+    collect_fit_files_from_device,
+)
 
 
 def test__find_activity_sub_dir_in_path(tmp_path):
@@ -58,8 +61,7 @@ def test_deleting_fit_files_after_coying(tmp_path, demo_data_dir):
     assert fit_file_1.is_file()
 
     # first collect fit file without deleting source file
-    fit_collector = FitCollector(garmin, target, delete_files_after_import=False)
-    fit_collector.copy_fit_files()
+    collect_fit_files_from_device(garmin, target, delete_files_after_import=False)
 
     # verify fit file got copied
     assert (target / "garmin" / "test_fit.fit").is_file()
@@ -73,8 +75,7 @@ def test_deleting_fit_files_after_coying(tmp_path, demo_data_dir):
     assert fit_file_2.is_file()
 
     # now collect it with deleting it
-    fit_collector = FitCollector(garmin, target, delete_files_after_import=True)
-    fit_collector.copy_fit_files()
+    collect_fit_files_from_device(garmin, target, delete_files_after_import=True)
 
     # verify fit file got copied
     assert (target / "garmin" / "test_fit_2.fit").is_file()
@@ -103,8 +104,7 @@ def test_collecting_fit_files_with_upper_case_ending(tmp_path, demo_data_dir):
 
     assert fit_file.is_file()
 
-    fit_collector = FitCollector(garmin, target)
-    fit_collector.copy_fit_files()
+    collect_fit_files_from_device(garmin, target)
 
     # verify fit file got copied
     assert (target / "garmin" / "test_fit.FIT").is_file()
