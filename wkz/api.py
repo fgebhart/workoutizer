@@ -19,7 +19,8 @@ def mount_device_endpoint(request):
     # TODO: run function non-blocking!?
     log.debug("received POST request for mounting garmin device")
     try:
-        path_to_garmin_device = wait_for_device_and_mount()
+        task = wait_for_device_and_mount()
+        path_to_garmin_device = task()
         settings = models.get_settings()
         n_files_collected = collect_fit_files_from_device(
             path_to_garmin_device=path_to_garmin_device,

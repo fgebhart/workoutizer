@@ -5,6 +5,8 @@ from typing import Tuple
 
 import pyudev
 
+from workoutizer.settings import HUEY
+
 RETRIES = 10
 WAIT = 10
 DEVICE_READY_STRING = "Garmin International"
@@ -18,6 +20,7 @@ class FailedToMountDevice(Exception):
     pass
 
 
+@HUEY.task()
 def wait_for_device_and_mount() -> str:
     """
     Function to be called whenever a garmin device is connected via USB. Since it takes a moment for the device to be
@@ -37,12 +40,7 @@ def wait_for_device_and_mount() -> str:
         if DEVICE_READY_STRING in lsusb and DEVICE_NOT_READY_STRING not in lsusb:
             dev, bus, path = _get_dev_bus_and_path_to_device(lsusb)
             log.debug("device seems to be ready for mount, mounting...")
-            (dev_type, path) = _find_device_type(bus, dev)
-            log.debug(f"device at path {path} is of type {dev_type}")
-            if dev_type == "MTP":
-                mount_output = _mount_device_using_gio(path)
-            elif dev_type == "BLOCK":
-                mount_output = _mount_device_using_pmount(path)
+            mount_output = _determine_type_and_mount(path)
             if "Mounted" in mount_output:
                 mounted_path = _get_mounted_path(mount_output)
                 # TODO also trigger fit collector once mounted.
@@ -97,20 +95,42 @@ def _get_lsusb_output() -> str:
     return subprocess.check_output("lsusb").decode("utf8")
 
 
-def _find_device_type(bus: str, dev: str) -> Tuple[str, str]:
-    log.debug("Looking up type of device")
+def _determine_type_and_mount(path: str) -> str:
+    device_type = _determine_device_type(path)
+    log.debug(f"device at path {path} is of type {device_type}")
+    try:
+        if device_type == "MTP":
+            return _mount_device_using_gio(path)
+        elif device_type == "BLOCK":
+            return _mount_device_using_pmount(path)
+    except subprocess.CalledProcessError:
+        raise FailedToMountDevice("Execution of mount command failed.")
+
+
+def _determine_device_type(path: str) -> str:
+    log.debug(f"trying to determine device type for device at: {path}...")
     device_tree = pyudev.Context()
-    usb_devices = device_tree.list_devices(subsystem="usb").match_property("DEVNAME", f"/dev/bus/usb/{bus}/{dev}")
-    for device in usb_devices:
-        if str(device.get("ID_MTP_DEVICE")) == str(1):
-            log.debug("Device is an MTP device")
-            return ("MTP", f"/dev/bus/usb/{bus}/{dev}")
-        else:
-            log.debug("Device is block device")
-            (model_id, vendor_id) = device.get("ID_MODEL_ID"), device.get("ID_VENDOR_ID")
-            block_devices = device_tree.list_devices(subsystem="block").match_property("ID_MODEL_ID", model_id)
-            for device in block_devices:
-                if vendor_id == device.get("ID_VENDOR_ID"):
-                    return ("BLOCK", device.get("DEVNAME"))
-    # raise error in case no device type was found
-    raise FailedToMountDevice(f"Could not determine device type for bus: {bus}, dev: {dev}")
+    if _is_of_type_mtp(device_tree, path):
+        return "MTP"
+    elif _is_of_type_block(device_tree, path):
+        return "BLOCK"
+    else:
+        raise FailedToMountDevice("Could not determine device type. Device is neither MTP nor BLOCK.")
+
+
+def _is_of_type_mtp(device_tree: pyudev.core.Context, path: str) -> bool:
+    devices = (
+        device_tree.list_devices(subsystem="usb").match_property("DEVNAME", path).match_property("ID_MTP_DEVICE", "1")
+    )
+    if len(list(devices)) > 0:
+        return True
+    else:
+        return False
+
+
+def _is_of_type_block(device_tree: pyudev.core.Context, path: str) -> bool:
+    devices = device_tree.list_devices(subsystem="block").match_property("DEVNAME", path)
+    if len(list(devices)) > 0:
+        return True
+    else:
+        return False
