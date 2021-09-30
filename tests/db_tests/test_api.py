@@ -79,6 +79,7 @@ def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev, caplog
 
     # mount device (no new fit files collected)
     res = client.post("/mount-device/")
+    assert "received POST request for mounting garmin device" in caplog.text
     assert f"successfully mounted device at: {path_to_device}" in caplog.text
     assert res.status_code == 200
     assert res.content.decode("utf8") == '"Mounted device and collected 0 fit files."'

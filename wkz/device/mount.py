@@ -24,7 +24,11 @@ def wait_for_device_and_mount() -> str:
     accessible and ready to be mounted we need to wait until the `lsusb` command has "Garmin International" in its
     output.
     """
-    lsusb = _get_lsusb_output()
+    time.sleep(2)
+    try:
+        lsusb = _get_lsusb_output()
+    except FileNotFoundError:
+        raise FailedToMountDevice("Failed to call 'lsusb' command.")
     assert "Garmin" in lsusb
 
     log.debug("checking device to be ready for mount...")
@@ -45,12 +49,12 @@ def wait_for_device_and_mount() -> str:
                 log.info(f"successfully mounted device at: {mounted_path}")
                 return mounted_path
             else:
-                raise FailedToMountDevice("Failed to mount garmin device")
+                raise FailedToMountDevice(f"Mount command did not return expected output: {mount_output}")
         else:
             log.debug(f"device is not ready for mounting yet, waiting {WAIT} seconds...")
             time.sleep(WAIT)
     log.warning(f"could not mount device within time window of {RETRIES * WAIT} seconds.")
-    raise FailedToMountDevice("Failed to mount garmin device")
+    raise FailedToMountDevice(f"Unable to mount device with after {RETRIES} retries, with {WAIT}s delay each.")
 
 
 def _get_mounted_path(mount_output: str) -> str:

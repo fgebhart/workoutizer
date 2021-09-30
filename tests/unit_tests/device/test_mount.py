@@ -150,7 +150,7 @@ def test_wait_for_device_and_mount__first_not_but_then_ready(
 
     mount_path = mount.wait_for_device_and_mount()
 
-    assert "device is not ready for mounting yet, waiting 1 seconds..." in caplog.text
+    assert "device is not ready for mounting yet, waiting 0.1 seconds..." in caplog.text
     assert "device seems to be ready for mount, mounting..." in caplog.text
     assert f"device at path {path} is of type {dev_type}" in caplog.text
     assert f"successfully mounted device at: {mount_path}" in caplog.text

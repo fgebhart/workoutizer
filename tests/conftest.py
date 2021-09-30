@@ -49,5 +49,5 @@ def mock_mount_waiting_time(monkeypatch):
     from wkz.device import mount
 
     # mock number of retries and waiting time to speed up test execution
-    monkeypatch.setattr(mount, "WAIT", 1)
+    monkeypatch.setattr(mount, "WAIT", 0.1)
     monkeypatch.setattr(mount, "RETRIES", 3)

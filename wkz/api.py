@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 @api_view(["POST"])
 def mount_device_endpoint(request):
     # TODO: run function non-blocking!?
-    log.info("received POST request for mounting garmin device")
+    log.debug("received POST request for mounting garmin device")
     try:
         path_to_garmin_device = wait_for_device_and_mount()
         settings = models.get_settings()
@@ -27,8 +27,8 @@ def mount_device_endpoint(request):
             delete_files_after_import=settings.delete_files_after_import,
         )
         return Response(f"Mounted device and collected {n_files_collected} fit files.", status=status.HTTP_200_OK)
-    except FailedToMountDevice:
-        return Response("Failed to mount device.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except FailedToMountDevice as e:
+        return Response(f"Failed to mount device: {e}", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(["POST"])
