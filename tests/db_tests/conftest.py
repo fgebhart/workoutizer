@@ -10,7 +10,7 @@ from py._path.local import LocalPath
 
 from wkz import models
 from wkz.demo import copy_demo_fit_files_to_track_dir, prepare_import_of_demo_activities
-from wkz.file_importer import run_importer__dask
+from wkz.io.file_importer import run_importer__dask
 from workoutizer import settings as django_settings
 
 

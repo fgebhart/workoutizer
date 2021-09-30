@@ -4,7 +4,7 @@ import gpxpy
 import gpxpy.gpx
 
 from wkz.gis.geo import get_total_distance_of_trace
-from wkz.parser.parser import Parser
+from wkz.io.parser import Parser
 
 log = logging.getLogger(__name__)
 

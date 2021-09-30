@@ -1,6 +1,6 @@
 import datetime
 
-from wkz.parser.gpx_exporter import _build_gpx, _fill_list_of_timestamps
+from wkz.io.gpx_exporter import _build_gpx, _fill_list_of_timestamps
 
 
 def test__build_gpx(trace_coordinates, gpx_string):

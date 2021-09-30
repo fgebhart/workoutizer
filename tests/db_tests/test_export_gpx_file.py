@@ -2,7 +2,7 @@ import os
 
 from lxml import etree
 
-from wkz.parser.gpx_exporter import save_activity_to_gpx_file
+from wkz.io.gpx_exporter import save_activity_to_gpx_file
 
 
 def test_save_activity_to_gpx_file(activity):

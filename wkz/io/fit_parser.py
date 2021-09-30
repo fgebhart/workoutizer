@@ -8,7 +8,7 @@ from django.conf import settings
 from fitparse import FitFile
 
 from wkz import configuration
-from wkz.parser.parser import Parser
+from wkz.io.parser import Parser
 
 log = logging.getLogger(__name__)
 

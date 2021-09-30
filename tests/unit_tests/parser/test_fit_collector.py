@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 
-from wkz.parser.fit_collector import (
+from wkz.io.fit_collector import (
     _find_activity_sub_dir_in_path,
     collect_fit_files_from_device,
 )

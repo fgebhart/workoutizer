@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from wkz import models
 from wkz.device.mount import FailedToMountDevice, wait_for_device_and_mount
-from wkz.parser.fit_collector import collect_fit_files_from_device
+from wkz.io.fit_collector import collect_fit_files_from_device
 
 log = logging.getLogger(__name__)
 

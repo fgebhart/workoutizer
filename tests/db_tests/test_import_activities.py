@@ -8,7 +8,7 @@ import pytz
 from wkz import models
 from wkz.best_sections.generic import activity_suitable_for_awards
 from wkz.demo import copy_demo_fit_files_to_track_dir
-from wkz.file_importer import run_importer__dask
+from wkz.io.file_importer import run_importer__dask
 from wkz.tools.utils import calc_md5
 from workoutizer import settings as django_settings
 

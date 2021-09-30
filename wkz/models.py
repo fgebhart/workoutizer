@@ -8,7 +8,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
-from wkz.file_importer import run_importer__dask
+from wkz.io.file_importer import run_importer__dask
 from wkz.tools import sse
 from workoutizer import settings as django_settings
 

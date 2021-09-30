@@ -8,7 +8,7 @@ import pytz
 from wkz import configuration, models
 from wkz.best_sections.generic import activity_suitable_for_awards
 from wkz.demo import prepare_import_of_demo_activities
-from wkz.file_importer import run_importer__dask
+from wkz.io.file_importer import run_importer__dask
 
 
 def test_reimport_of_activities(tracks_in_tmpdir, client):

@@ -178,7 +178,7 @@ def _init(import_demo_activities: bool = False):
     if import_demo_activities:
         # import demo activities
         from wkz.demo import prepare_import_of_demo_activities
-        from wkz.file_importer import run_importer__dask
+        from wkz.io.file_importer import run_importer__dask
 
         prepare_import_of_demo_activities(models)
         run_importer__dask(models, importing_demo_data=True)
@@ -225,7 +225,7 @@ def _reimport():
     _check()
 
     from wkz import models
-    from wkz.file_importer import run_importer__dask
+    from wkz.io.file_importer import run_importer__dask
 
     run_importer__dask(models, reimporting=True)
 

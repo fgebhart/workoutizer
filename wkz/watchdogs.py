@@ -3,8 +3,8 @@ import os
 from pathlib import Path
 
 from wkz import models
-from wkz.file_importer import run_importer__dask
-from wkz.parser.fit_collector import collect_fit_files_from_device
+from wkz.io.file_importer import run_importer__dask
+from wkz.io.fit_collector import collect_fit_files_from_device
 
 log = logging.getLogger(__name__)
 
