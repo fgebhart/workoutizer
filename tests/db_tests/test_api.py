@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import subprocess
@@ -43,6 +44,8 @@ def test_mount_device__failure(db, monkeypatch, client, mock_mount_waiting_time)
 
 @pytest.mark.parametrize("mock_dev", ["BLOCK", "MTP"])
 def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev, caplog, mock_mount_waiting_time):
+    caplog.set_level(logging.DEBUG, logger="wkz.device.mount")
+
     # mock output of subprocess ("lsusb") to prevent function from failing
     def check_output(dummy):
         return lsusb_ready_to_be_mounted_device
