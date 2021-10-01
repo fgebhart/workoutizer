@@ -54,40 +54,46 @@ def test__get_lsusb_output(_mock_lsusb):
 
 
 def test__get_path_to_device():
-    assert mount._get_dev_bus_and_path_to_device(lsusb_ready_to_be_mounted_device) == (
+    assert mount._get_path_to_device(lsusb_ready_to_be_mounted_device) == (
         "004",
         "001",
         "/dev/bus/usb/001/004",
     )
 
     with pytest.raises(FileNotFoundError, match="Could not find Garmin International in lsusb output."):
-        mount._get_dev_bus_and_path_to_device("dummy string")
+        mount._get_path_to_device("dummy string")
 
 
 @pytest.mark.parametrize("mock_dev", ["BLOCK", "MTP"])
 def test_wait_for_device_and_mount(monkeypatch, _mock_lsusb, caplog, mock_dev, mock_mount_waiting_time):
     caplog.set_level(logging.DEBUG, logger="wkz.device.mount")
 
+    # mock away huey task decorator
+    def _huey_task(func):
+        return func
+
+    monkeypatch.setattr(mount.HUEY, "task", _huey_task)
+
     # try to mount device where no device is connected at all
     _mock_lsusb(lsusb_no_garmin_device_at_all)
-    with pytest.raises(AssertionError):
-        mount.wait_for_device_and_mount()
+    # with pytest.raises(AssertionError):
+    mount.wait_for_device_and_mount()
 
     # try to mount device where device is not ready
     _mock_lsusb(lsusb_device_not_ready_to_be_mounted)
-    with pytest.raises(mount.FailedToMountDevice):
-        mount.wait_for_device_and_mount()
+    # with pytest.raises(mount.FailedToMountDevice):
+    mount.wait_for_device_and_mount()
 
-        assert "device is not ready for mounting yet, waiting 1 seconds..." in caplog.text
-        assert "could not mount device within time window of 2 seconds." in caplog.text
+    assert "device is not ready for mounting yet, waiting 1 seconds..." in caplog.text
+    assert "could not mount device within time window of 2 seconds." in caplog.text
 
     # mock output of actual mounting command (with actual gio output text)
     path_to_device = "/some/dummy/path/to/device"
 
-    def mount_cmd(path):
+    def _mount_cmd(path):
         return f"Mounted /dev/bus/usb/001/004 at {path_to_device}"
 
-    monkeypatch.setattr(mount, "_mount_device_using_gio", mount_cmd)
+    monkeypatch.setattr(mount, "_mount_device_using_gio", _mount_cmd)
 
     # mock output of _find_device_type
     def _find_device_type(bus, dev):

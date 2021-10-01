@@ -7,29 +7,24 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from wkz import models
-from wkz.device.mount import FailedToMountDevice, wait_for_device_and_mount
-from wkz.io.fit_collector import collect_fit_files_from_device
+from wkz.device.mount import (
+    garmin_device_connected,
+    try_to_mount_device_and_collect_fit_files,
+)
 
 log = logging.getLogger(__name__)
 
 
 @api_view(["POST"])
 def mount_device_endpoint(request):
-    # TODO: run function non-blocking!?
     log.debug("received POST request for mounting garmin device")
-    try:
-        task = wait_for_device_and_mount()
-        path_to_garmin_device = task()
-        settings = models.get_settings()
-        n_files_collected = collect_fit_files_from_device(
-            path_to_garmin_device=path_to_garmin_device,
-            target_location=settings.path_to_trace_dir,
-            delete_files_after_import=settings.delete_files_after_import,
-        )
+    if garmin_device_connected():
+        log.debug("found connected garmin device")
+        task = try_to_mount_device_and_collect_fit_files()
+        n_files_collected = task()
         return Response(f"Mounted device and collected {n_files_collected} fit files.", status=status.HTTP_200_OK)
-    except FailedToMountDevice as e:
-        return Response(f"Failed to mount device: {e}", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response("No Garmin device connected.", status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])

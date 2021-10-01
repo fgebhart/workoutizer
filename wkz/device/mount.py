@@ -1,10 +1,11 @@
 import logging
 import subprocess
 import time
-from typing import Tuple
 
 import pyudev
 
+from wkz import models
+from wkz.io.fit_collector import collect_fit_files_from_device
 from workoutizer.settings import HUEY
 
 RETRIES = 10
@@ -21,24 +22,36 @@ class FailedToMountDevice(Exception):
 
 
 @HUEY.task()
+def try_to_mount_device_and_collect_fit_files() -> int:
+    path_to_garmin_device = wait_for_device_and_mount()
+
+    settings = models.get_settings()
+    n_files_collected = collect_fit_files_from_device(
+        path_to_garmin_device=path_to_garmin_device,
+        target_location=settings.path_to_trace_dir,
+        delete_files_after_import=settings.delete_files_after_import,
+    )
+    return n_files_collected
+
+
 def wait_for_device_and_mount() -> str:
     """
     Function to be called whenever a garmin device is connected via USB. Since it takes a moment for the device to be
     accessible and ready to be mounted we need to wait until the `lsusb` command has "Garmin International" in its
     output.
     """
-    time.sleep(2)
+    # time.sleep(2)
+    # breakpoint()
     try:
         lsusb = _get_lsusb_output()
     except FileNotFoundError:
         raise FailedToMountDevice("Failed to call 'lsusb' command.")
     assert "Garmin" in lsusb
-
     log.debug("checking device to be ready for mount...")
     for _ in range(RETRIES):
         lsusb = _get_lsusb_output()
         if DEVICE_READY_STRING in lsusb and DEVICE_NOT_READY_STRING not in lsusb:
-            dev, bus, path = _get_dev_bus_and_path_to_device(lsusb)
+            path = _get_path_to_device(lsusb)
             log.debug("device seems to be ready for mount, mounting...")
             mount_output = _determine_type_and_mount(path)
             if "Mounted" in mount_output:
@@ -65,7 +78,7 @@ def _get_mounted_path(mount_output: str) -> str:
     return mount_path
 
 
-def _get_dev_bus_and_path_to_device(lsusb_output: str) -> Tuple[str, str, str]:
+def _get_path_to_device(lsusb_output: str) -> str:
     lsusb_output = str(lsusb_output).split("\\n")
     path = None
     for line in lsusb_output:
@@ -78,7 +91,7 @@ def _get_dev_bus_and_path_to_device(lsusb_output: str) -> Tuple[str, str, str]:
     if path is None:
         raise FileNotFoundError(f"Could not find {DEVICE_READY_STRING} in lsusb output.")
     else:
-        return dev, bus, path
+        return path
 
 
 def _mount_device_using_gio(path: str) -> str:
@@ -89,6 +102,14 @@ def _mount_device_using_pmount(path: str) -> str:
     subprocess.check_output(["pmount", path, "garmin"]).decode("utf-8")
     # pmount does not return anything, assume command to be successful and return expected string
     return "Mounted at /media/garmin"
+
+
+def garmin_device_connected() -> bool:
+    lsusb = _get_lsusb_output()
+    if "Garmin" in lsusb:
+        return True
+    else:
+        return False
 
 
 def _get_lsusb_output() -> str:
@@ -103,8 +124,8 @@ def _determine_type_and_mount(path: str) -> str:
             return _mount_device_using_gio(path)
         elif device_type == "BLOCK":
             return _mount_device_using_pmount(path)
-    except subprocess.CalledProcessError:
-        raise FailedToMountDevice("Execution of mount command failed.")
+    except subprocess.CalledProcessError as e:
+        raise FailedToMountDevice(f"Execution of mount command failed: {e}")
 
 
 def _determine_device_type(path: str) -> str:
