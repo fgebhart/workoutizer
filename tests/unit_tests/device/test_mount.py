@@ -5,20 +5,20 @@ import pytest
 
 from wkz.device import mount
 
-lsusb_ready_to_be_mounted_device = b"""
+lsusb_ready_to_be_mounted_device = """
 Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
 Bus 001 Device 004: ID 091e:4b48 Garmin International
 Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
 Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 """
 
-lsusb_no_garmin_device_at_all = b"""
+lsusb_no_garmin_device_at_all = """
 Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
 Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
 Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 """
 
-lsusb_device_not_ready_to_be_mounted = b"""
+lsusb_device_not_ready_to_be_mounted = """
 Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
 Bus 001 Device 003: ID 091e:0003 Garmin International GPS (various models)
 Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
@@ -53,15 +53,23 @@ def test__get_lsusb_output(_mock_lsusb):
     assert output == "dummy string"
 
 
-def test__get_path_to_device():
-    assert mount._get_path_to_device(lsusb_ready_to_be_mounted_device) == (
-        "004",
-        "001",
-        "/dev/bus/usb/001/004",
-    )
+def test__get_path_to_device__passes():
+    assert mount._get_path_to_device(lsusb_ready_to_be_mounted_device) == "/dev/bus/usb/001/004"
 
-    with pytest.raises(FileNotFoundError, match="Could not find Garmin International in lsusb output."):
+
+def test__get_path_to_device__no_device():
+    with pytest.raises(AssertionError):
         mount._get_path_to_device("dummy string")
+
+
+def test__get_path_to_device__real_world_string():
+    lsusb = """
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 006: ID 091e:4b48 Garmin International
+Bus 001 Device 002: ID 2109:3431 VIA Labs, Inc. Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+    """
+    assert mount._get_path_to_device(lsusb) == "/dev/bus/usb/001/006"
 
 
 @pytest.mark.parametrize("mock_dev", ["BLOCK", "MTP"])
@@ -169,3 +177,6 @@ def test__get_mounted_path():
     mount_output = "String not containing keyword"  # missing "Mounted"
     with pytest.raises(mount.FailedToMountDevice):
         mount._get_mounted_path(mount_output)
+
+
+# TODO add tests for new functions added

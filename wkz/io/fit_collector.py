@@ -23,7 +23,7 @@ def collect_fit_files_from_device(
 
 
 def copy_fit_files(path_to_garmin_device: str, target_location: str, delete_files_after_import: bool) -> int:
-    log.debug("looking for new activity files in garmin device")
+    log.debug(f"looking for new activity files in garmin device at {path_to_garmin_device}")
     activity_path = _find_activity_sub_dir_in_path(
         name_of_dir=ACTIVITY_DIR_NAME,
         path=path_to_garmin_device,

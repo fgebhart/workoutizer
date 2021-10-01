@@ -20,10 +20,12 @@ def mount_device_endpoint(request):
     log.debug("received POST request for mounting garmin device")
     if garmin_device_connected():
         log.debug("found connected garmin device")
-        task = try_to_mount_device_and_collect_fit_files()
-        n_files_collected = task()
-        return Response(f"Mounted device and collected {n_files_collected} fit files.", status=status.HTTP_200_OK)
+        huey_task = try_to_mount_device_and_collect_fit_files()
+        # schedule huey task
+        huey_task()
+        return Response("Found device, will mount and collect fit files.", status=status.HTTP_200_OK)
     else:
+        log.warning("No garmin device connected.")
         return Response("No Garmin device connected.", status=status.HTTP_200_OK)
 
 

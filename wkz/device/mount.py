@@ -22,16 +22,22 @@ class FailedToMountDevice(Exception):
 
 
 @HUEY.task()
-def try_to_mount_device_and_collect_fit_files() -> int:
-    path_to_garmin_device = wait_for_device_and_mount()
+def try_to_mount_device_and_collect_fit_files() -> None:
+    try:
+        path_to_garmin_device = wait_for_device_and_mount()
+        # sleep for a second after mounting to avoid IO error
+        time.sleep(1)
 
-    settings = models.get_settings()
-    n_files_collected = collect_fit_files_from_device(
-        path_to_garmin_device=path_to_garmin_device,
-        target_location=settings.path_to_trace_dir,
-        delete_files_after_import=settings.delete_files_after_import,
-    )
-    return n_files_collected
+        settings = models.get_settings()
+        collect_fit_files_from_device(
+            path_to_garmin_device=path_to_garmin_device,
+            target_location=settings.path_to_trace_dir,
+            delete_files_after_import=settings.delete_files_after_import,
+        )
+        # TODO unmount device here?
+        log.debug("could be unmounting device here...")
+    except FailedToMountDevice as e:
+        log.error(f"Failed to mount device: {e}")
 
 
 def wait_for_device_and_mount() -> str:
@@ -40,8 +46,6 @@ def wait_for_device_and_mount() -> str:
     accessible and ready to be mounted we need to wait until the `lsusb` command has "Garmin International" in its
     output.
     """
-    # time.sleep(2)
-    # breakpoint()
     try:
         lsusb = _get_lsusb_output()
     except FileNotFoundError:
@@ -62,7 +66,7 @@ def wait_for_device_and_mount() -> str:
             else:
                 raise FailedToMountDevice(f"Mount command did not return expected output: {mount_output}")
         else:
-            log.debug(f"device is not ready for mounting yet, waiting {WAIT} seconds...")
+            log.info(f"device is not ready for mounting yet, waiting {WAIT} seconds...")
             time.sleep(WAIT)
     log.warning(f"could not mount device within time window of {RETRIES * WAIT} seconds.")
     raise FailedToMountDevice(f"Unable to mount device with after {RETRIES} retries, with {WAIT}s delay each.")
@@ -79,19 +83,17 @@ def _get_mounted_path(mount_output: str) -> str:
 
 
 def _get_path_to_device(lsusb_output: str) -> str:
-    lsusb_output = str(lsusb_output).split("\\n")
+    assert DEVICE_READY_STRING in str(lsusb_output)
+    list_of_lines = str(lsusb_output).split("\n")
     path = None
-    for line in lsusb_output:
+    for line in list_of_lines:
         if DEVICE_READY_STRING in line:
             bus_start = line.find("Bus") + 4
             bus = line[bus_start : bus_start + 3]
             device_start = line.find("Device") + 7
             dev = line[device_start : device_start + 3]
             path = f"/dev/bus/usb/{bus}/{dev}"
-    if path is None:
-        raise FileNotFoundError(f"Could not find {DEVICE_READY_STRING} in lsusb output.")
-    else:
-        return path
+            return path
 
 
 def _mount_device_using_gio(path: str) -> str:
