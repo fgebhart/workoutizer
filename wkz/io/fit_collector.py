@@ -55,7 +55,7 @@ def copy_fit_files(path_to_garmin_device: str, target_location: str, delete_file
         else:
             log.debug(f"Could not find any activity fit files at {activity_path}")
     else:
-        log.warning(f"No directory named {ACTIVITY_DIR_NAME} found in path {path_to_garmin_device}")
+        log.warning(f"No directory named '{ACTIVITY_DIR_NAME}' found in path {path_to_garmin_device}")
     return n_files_copied
 
 

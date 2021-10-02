@@ -46,11 +46,10 @@ pip install workoutizer
 To configure your Raspberry Pi to automatically detect and mount your garmin watch you'll need to follow these steps:
 
 ### 1. Create a udev rule
-Create a file at `/etc/udev/rules.d/device_mount.rules` with the following content:                    // TODO adjust this!!!
+Create a file at `/etc/udev/rules.d/99-mount_device.rules` with the following content:
 
 ```
-ACTION=="add", SUBSYSTEM=="block", ATTRS{idVendor}=="091e", TAG+="systemd", ENV{SYSTEMD_WANTS}="wkz_mount"
-ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="091e", ATTRS{ID_MTP_DEVICE}="1", TAG+="systemd", ENV{SYSTEMD_WANTS}="wkz_mount"
+ACTION=="add", ATTRS{idVendor}=="091e", TAG+="systemd", ENV{SYSTEMD_WANTS}="wkz_mount"
 ```
 
 ### 2. Create the wkz mount service
@@ -110,10 +109,14 @@ wkz run
 
 ## Background
 
-Whenever you connect your Garmin device to your Raspberry Pi, workoutizer will automatically mount the device. Workoutizer currently supports devices with MTP (e.g. FR645) and Block (e.g. FR920XT) modes. Some devices support both modes, some only one. 
+Whenever you connect your Garmin device to your Raspberry Pi, workoutizer will automatically mount the device.
+Workoutizer currently supports devices with MTP (e.g. FR645) and Block (e.g. FR920XT) modes. Some devices support both
+modes, some only one. 
 
-All devices are mounted using `udev` which is used to define the type of device. MTP devices are mounted as a [gvfs](https://en.wikipedia.org/wiki/GVfs) device, the file system of your device will
-be mounted at `/run/user/1000/gvfs/...`. This is the default location for Raspbian and workoutizer will look for your
-device in this location as default.
+All devices are mounted using `udev` which is used to define the type of device. MTP devices are mounted as a
+[gvfs](https://en.wikipedia.org/wiki/GVfs) device, the file system of your device will be mounted at
+`/run/user/1000/gvfs/...`. This is the default location for Raspbian and workoutizer will look for your device in this
+location as default.
 
-The Block devices are mounted using `pmount`, the file system is found at `/media/garmin`. You should configure this location under `Fetch Files from Device` under the setting from workoutizer.
+The Block devices are mounted using `pmount`, the file system is found at `/media/garmin`. You should configure this
+location under `Fetch Files from Device` under the setting from workoutizer.

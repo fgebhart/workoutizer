@@ -35,7 +35,8 @@ def try_to_mount_device_and_collect_fit_files() -> None:
             delete_files_after_import=settings.delete_files_after_import,
         )
         # TODO unmount device here?
-        log.debug("could be unmounting device here...")
+        log.debug("could be unmounting device here...!?")
+        return 1
     except FailedToMountDevice as e:
         log.error(f"Failed to mount device: {e}")
 
@@ -60,7 +61,6 @@ def wait_for_device_and_mount() -> str:
             mount_output = _determine_type_and_mount(path)
             if "Mounted" in mount_output:
                 mounted_path = _get_mounted_path(mount_output)
-                # TODO also trigger fit collector once mounted.
                 log.info(f"successfully mounted device at: {mounted_path}")
                 return mounted_path
             else:

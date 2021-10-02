@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 import pytest
 
@@ -44,10 +45,26 @@ def fit_file_b():
     return "2019-09-25-16-15-53.fit"
 
 
+MOCKED_WAIT = 0.1
+MOCKED_RETRY = 3
+
+
 @pytest.fixture
 def mock_mount_waiting_time(monkeypatch):
     from wkz.device import mount
 
     # mock number of retries and waiting time to speed up test execution
-    monkeypatch.setattr(mount, "WAIT", 0.1)
-    monkeypatch.setattr(mount, "RETRIES", 3)
+    monkeypatch.setattr(mount, "WAIT", MOCKED_WAIT)
+    monkeypatch.setattr(mount, "RETRIES", MOCKED_RETRY)
+
+
+@pytest.fixture
+def _mock_lsusb(monkeypatch) -> None:
+    # mocking the subprocess call to `lsusb` to get the desired outout
+    def mock(output: str) -> None:
+        def lsusb_output(foo) -> bytes:
+            return bytes(output, "utf8")
+
+        return monkeypatch.setattr(subprocess, "check_output", lsusb_output)
+
+    return mock

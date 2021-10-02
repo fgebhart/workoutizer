@@ -1,5 +1,4 @@
 import logging
-import subprocess
 
 import pytest
 
@@ -26,18 +25,6 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 """
 
 
-@pytest.fixture
-def _mock_lsusb(monkeypatch) -> None:
-    # mocking the subprocess call to `lsusb` to get the desired outout
-    def mock(output: bytes) -> None:
-        def lsusb_output(foo) -> bytes:
-            return output
-
-        return monkeypatch.setattr(subprocess, "check_output", lsusb_output)
-
-    return mock
-
-
 def test__get_lsusb_output(_mock_lsusb):
     # without mocking it will fail since lsusb does not exist in docker container
     with pytest.raises(Exception):
@@ -48,7 +35,7 @@ def test__get_lsusb_output(_mock_lsusb):
     assert "Garmin International" in output
     assert "091e:4b48" in output
 
-    _mock_lsusb(output=b"dummy string")
+    _mock_lsusb(output="dummy string")
     output = mount._get_lsusb_output()
     assert output == "dummy string"
 
@@ -76,24 +63,20 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 def test_wait_for_device_and_mount(monkeypatch, _mock_lsusb, caplog, mock_dev, mock_mount_waiting_time):
     caplog.set_level(logging.DEBUG, logger="wkz.device.mount")
 
-    # mock away huey task decorator
-    def _huey_task(func):
-        return func
-
-    monkeypatch.setattr(mount.HUEY, "task", _huey_task)
-
     # try to mount device where no device is connected at all
     _mock_lsusb(lsusb_no_garmin_device_at_all)
-    # with pytest.raises(AssertionError):
-    mount.wait_for_device_and_mount()
+    with pytest.raises(AssertionError):
+        mount.wait_for_device_and_mount()
 
     # try to mount device where device is not ready
     _mock_lsusb(lsusb_device_not_ready_to_be_mounted)
-    # with pytest.raises(mount.FailedToMountDevice):
-    mount.wait_for_device_and_mount()
+    with pytest.raises(mount.FailedToMountDevice):
+        mount.wait_for_device_and_mount()
 
-    assert "device is not ready for mounting yet, waiting 1 seconds..." in caplog.text
-    assert "could not mount device within time window of 2 seconds." in caplog.text
+    from tests.conftest import MOCKED_RETRY, MOCKED_WAIT
+
+    assert f"device is not ready for mounting yet, waiting {MOCKED_WAIT} seconds..." in caplog.text
+    assert f"could not mount device within time window of {MOCKED_WAIT * MOCKED_RETRY} seconds." in caplog.text
 
     # mock output of actual mounting command (with actual gio output text)
     path_to_device = "/some/dummy/path/to/device"
@@ -103,14 +86,14 @@ def test_wait_for_device_and_mount(monkeypatch, _mock_lsusb, caplog, mock_dev, m
 
     monkeypatch.setattr(mount, "_mount_device_using_gio", _mount_cmd)
 
-    # mock output of _find_device_type
-    def _find_device_type(bus, dev):
+    # mock output of _determine_device_type
+    def _determine_device_type(path):
         if mock_dev == "MTP":
-            return ("MTP", "/dev/bus/usb/001/002")
+            return "MTP"
         elif mock_dev == "BLOCK":
-            return ("BLOCK", "/dev/sda")
+            return "BLOCK"
 
-    monkeypatch.setattr(mount, "_find_device_type", _find_device_type)
+    monkeypatch.setattr(mount, "_determine_device_type", _determine_device_type)
 
     # try to mount device which is ready to be mounted from the beginning on
     _mock_lsusb(lsusb_ready_to_be_mounted_device)
@@ -133,7 +116,7 @@ def test_wait_for_device_and_mount__first_not_but_then_ready(
     counter_file = tmp_path / "counter.txt"
     counter_file.write_text("0")
 
-    def lsusb_output(foo) -> bytes:
+    def lsusb_output() -> str:
         counter = int(counter_file.read_text())
         counter_file.write_text(str(counter + 1))
         if counter > 2:
@@ -141,32 +124,31 @@ def test_wait_for_device_and_mount__first_not_but_then_ready(
         else:
             return lsusb_device_not_ready_to_be_mounted
 
-    monkeypatch.setattr(subprocess, "check_output", lsusb_output)
+    monkeypatch.setattr(mount, "_get_lsusb_output", lsusb_output)
+
+    path = "/dev/bus/usb/001/004"
+
+    def mount_cmd(path):
+        return f"Mounted device at {path}"
 
     # mock output of _find_device_type
     if mock_dev == "MTP":
-        path = "/dev/bus/usb/001/002"
-        dev_type = "MTP"
+        monkeypatch.setattr(mount, "_mount_device_using_gio", mount_cmd)
+
     elif mock_dev == "BLOCK":
-        path = "/dev/sda"
-        dev_type = "BLOCK"
+        monkeypatch.setattr(mount, "_mount_device_using_pmount", mount_cmd)
 
-    def _find_device_type(bus, dev):
-        return (dev_type, path)
+    def _determine_device_type(path):
+        return mock_dev
 
-    monkeypatch.setattr(mount, "_find_device_type", _find_device_type)
+    monkeypatch.setattr(mount, "_determine_device_type", _determine_device_type)
 
-    # mock output of actual mounting command (with actual gio output text)
-    def mount_cmd(path):
-        return f"Mounted /dev/bus/usb/001/004 at {path}"
-
-    monkeypatch.setattr(mount, "_mount_device_using_gio", mount_cmd)
-
+    # call function to be tested
     mount_path = mount.wait_for_device_and_mount()
 
     assert "device is not ready for mounting yet, waiting 0.1 seconds..." in caplog.text
     assert "device seems to be ready for mount, mounting..." in caplog.text
-    assert f"device at path {path} is of type {dev_type}" in caplog.text
+    assert f"device at path {path} is of type {mock_dev}" in caplog.text
     assert f"successfully mounted device at: {mount_path}" in caplog.text
 
 
