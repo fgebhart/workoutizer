@@ -8,8 +8,8 @@ from wkz import models
 from wkz.io.fit_collector import collect_fit_files_from_device
 from workoutizer.settings import HUEY
 
-RETRIES = 10
-WAIT = 10
+RETRIES = 5
+WAIT = 20
 DEVICE_READY_STRING = "Garmin International"
 DEVICE_NOT_READY_STRING = "(various models)"
 
@@ -22,9 +22,10 @@ class FailedToMountDevice(Exception):
 
 
 @HUEY.task()
-def try_to_mount_device_and_collect_fit_files() -> None:
+def mount_device_and_collect_files() -> None:
     try:
         path_to_garmin_device = wait_for_device_and_mount()
+
         # sleep for a second after mounting to avoid IO error
         time.sleep(1)
 
@@ -36,7 +37,6 @@ def try_to_mount_device_and_collect_fit_files() -> None:
         )
         # TODO unmount device here?
         log.debug("could be unmounting device here...!?")
-        return 1
     except FailedToMountDevice as e:
         log.error(f"Failed to mount device: {e}")
 

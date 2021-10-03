@@ -161,4 +161,9 @@ def test__get_mounted_path():
         mount._get_mounted_path(mount_output)
 
 
-# TODO add tests for new functions added
+def test_garmin_device_connected(_mock_lsusb):
+    _mock_lsusb(output=lsusb_ready_to_be_mounted_device)
+    assert mount.garmin_device_connected() is True
+
+    _mock_lsusb(output=lsusb_no_garmin_device_at_all)
+    assert mount.garmin_device_connected() is False
