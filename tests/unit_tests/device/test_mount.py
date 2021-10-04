@@ -65,7 +65,7 @@ def test_wait_for_device_and_mount(monkeypatch, _mock_lsusb, caplog, mock_dev, m
 
     # try to mount device where no device is connected at all
     _mock_lsusb(lsusb_no_garmin_device_at_all)
-    with pytest.raises(AssertionError):
+    with pytest.raises(mount.FailedToMountDevice, match="Expected output of 'lsusb' to contain string 'Garmin'."):
         mount.wait_for_device_and_mount()
 
     # try to mount device where device is not ready

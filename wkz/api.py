@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from wkz.device.mount import garmin_device_connected, mount_device_and_collect_files
+from workoutizer.settings import HUEY
 
 log = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ def mount_device_endpoint(request):
     log.debug("received POST request for mounting garmin device")
     if garmin_device_connected():
         log.debug("found connected garmin device")
-        huey_task = mount_device_and_collect_files()
+        huey_task = HUEY.task(mount_device_and_collect_files)
         # schedule huey task
         huey_task()
         return Response("Found device, will mount and collect fit files.", status=status.HTTP_200_OK)

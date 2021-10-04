@@ -1,12 +1,10 @@
 import logging
-import os
 import subprocess
 
 import pytest
 from rest_framework.test import APIClient
 
 from tests.unit_tests.device.test_mount import lsusb_ready_to_be_mounted_device
-from wkz import models
 from wkz.device import mount
 
 
@@ -54,8 +52,15 @@ def test_mount_device__device_connected(db, monkeypatch, client):
 
 
 @pytest.mark.parametrize("mock_dev", ["BLOCK", "MTP"])
-def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev, caplog, mock_mount_waiting_time, _mock_lsusb):
+def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev, caplog, _mock_lsusb):
     caplog.set_level(logging.DEBUG, logger="wkz.api")
+    from workoutizer import settings as django_settings
+
+    def task(func):
+        return func
+
+    # first mock decorator HUEY.task with dummy function
+    monkeypatch.setattr(django_settings.HUEY, "task", task)
 
     # mock output of subprocess ("lsusb") to prevent function from failing
     _mock_lsusb(lsusb_ready_to_be_mounted_device)
@@ -78,32 +83,9 @@ def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev, caplog
 
     monkeypatch.setattr(mount, "_determine_device_type", _determine_device_type)
 
-    # create directory to import the fit files from
-    fake_device_dir = os.path.join(path_to_device, "mtp:host", "Primary", "GARMIN", "Activity")
-    os.makedirs(fake_device_dir)
-
-    settings = models.get_settings()
-    settings.path_to_garmin_device = fake_device_dir
-    path_to_trace_dir = tmpdir / "trace_dir"
-    settings.path_to_trace_dir = path_to_trace_dir
-    settings.save()
-
     # mount device (no new fit files collected)
     res = client.post("/mount-device/")
     assert "received POST request for mounting garmin device" in caplog.text
     # assert f"successfully mounted device at: {path_to_device}" in caplog.text
     assert res.status_code == 200
     assert res.content.decode("utf8") == '"Found device, will mount and collect fit files."'
-
-    """ TODO move this to test_mount?
-    # put a fit file into fake_device_dir and verified it being collected
-    fit = "2019-09-18-16-02-35.fit"
-    shutil.copy2(os.path.join(django_settings.INITIAL_TRACE_DATA_DIR, fit), fake_device_dir)
-    res = client.post("/mount-device/")
-    assert f"successfully mounted device at: {path_to_device}" in caplog.text
-    assert res.status_code == 200
-    assert res.content.decode("utf8") == '"Mounted device and collected 1 fit files."'
-
-    # verify that fit file got collected
-    assert Path(path_to_trace_dir / "garmin" / fit).is_file()
-    """

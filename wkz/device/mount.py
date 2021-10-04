@@ -6,7 +6,6 @@ import pyudev
 
 from wkz import models
 from wkz.io.fit_collector import collect_fit_files_from_device
-from workoutizer.settings import HUEY
 
 RETRIES = 5
 WAIT = 20
@@ -21,7 +20,6 @@ class FailedToMountDevice(Exception):
     pass
 
 
-@HUEY.task()
 def mount_device_and_collect_files() -> None:
     try:
         path_to_garmin_device = wait_for_device_and_mount()
@@ -35,8 +33,6 @@ def mount_device_and_collect_files() -> None:
             target_location=settings.path_to_trace_dir,
             delete_files_after_import=settings.delete_files_after_import,
         )
-        # TODO unmount device here?
-        log.debug("could be unmounting device here...!?")
     except FailedToMountDevice as e:
         log.error(f"Failed to mount device: {e}")
 
@@ -51,7 +47,8 @@ def wait_for_device_and_mount() -> str:
         lsusb = _get_lsusb_output()
     except FileNotFoundError:
         raise FailedToMountDevice("Failed to call 'lsusb' command.")
-    assert "Garmin" in lsusb
+    if not garmin_device_connected():
+        raise FailedToMountDevice("Expected output of 'lsusb' to contain string 'Garmin'.")
     log.debug("checking device to be ready for mount...")
     for _ in range(RETRIES):
         lsusb = _get_lsusb_output()
@@ -69,7 +66,7 @@ def wait_for_device_and_mount() -> str:
             log.info(f"device is not ready for mounting yet, waiting {WAIT} seconds...")
             time.sleep(WAIT)
     log.warning(f"could not mount device within time window of {RETRIES * WAIT} seconds.")
-    raise FailedToMountDevice(f"Unable to mount device with after {RETRIES} retries, with {WAIT}s delay each.")
+    raise FailedToMountDevice(f"Unable to mount device after {RETRIES} retries, with {WAIT}s delay each.")
 
 
 def _get_mounted_path(mount_output: str) -> str:

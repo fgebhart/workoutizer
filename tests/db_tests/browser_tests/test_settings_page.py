@@ -155,7 +155,7 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver_firefox, cap
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "loading-bar")))
     WebDriverWait(webdriver, 3).until(EC.invisibility_of_element_located((By.ID, "loading-bar")))
     delayed_assertion(lambda: models.get_settings().path_to_garmin_device, operator.eq, empty_string)
-    assert "Device watchdog disabled." in caplog.text
+    assert "Disabled device watchdog." in caplog.text
 
     # got removed, should not be accessible
     with pytest.raises(NoSuchElementException):
