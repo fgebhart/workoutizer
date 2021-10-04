@@ -38,7 +38,15 @@ def test_mount_device__no_device_connected(db, monkeypatch, client):
     assert res.content.decode("utf8") == '"No Garmin device connected."'
 
 
-def test_mount_device__device_connected(db, monkeypatch, client):
+def test_mount_device__device_connected(db, monkeypatch, client, mock_mount_waiting_time):
+    from workoutizer import settings as django_settings
+
+    def task(func):
+        return func
+
+    # first mock decorator HUEY.task with dummy function
+    monkeypatch.setattr(django_settings.HUEY, "task", task)
+
     # mock output of subprocess to prevent function from failing
     def dummy_output(dummy):
         return b"dummy-string-containing-Garmin"
@@ -86,6 +94,6 @@ def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev, caplog
     # mount device (no new fit files collected)
     res = client.post("/mount-device/")
     assert "received POST request for mounting garmin device" in caplog.text
-    # assert f"successfully mounted device at: {path_to_device}" in caplog.text
+    assert f"successfully mounted device at: {path_to_device}" in caplog.text
     assert res.status_code == 200
     assert res.content.decode("utf8") == '"Found device, will mount and collect fit files."'

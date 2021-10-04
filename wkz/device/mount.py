@@ -43,10 +43,6 @@ def wait_for_device_and_mount() -> str:
     accessible and ready to be mounted we need to wait until the `lsusb` command has "Garmin International" in its
     output.
     """
-    try:
-        lsusb = _get_lsusb_output()
-    except FileNotFoundError:
-        raise FailedToMountDevice("Failed to call 'lsusb' command.")
     if not garmin_device_connected():
         raise FailedToMountDevice("Expected output of 'lsusb' to contain string 'Garmin'.")
     log.debug("checking device to be ready for mount...")
@@ -104,7 +100,10 @@ def _mount_device_using_pmount(path: str) -> str:
 
 
 def garmin_device_connected() -> bool:
-    lsusb = _get_lsusb_output()
+    try:
+        lsusb = _get_lsusb_output()
+    except FileNotFoundError:
+        raise FailedToMountDevice("No 'lsusb' command available on your system.")
     if "Garmin" in lsusb:
         return True
     else:

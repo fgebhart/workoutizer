@@ -27,7 +27,7 @@ def test_mount_device_and_collect_files(db, monkeypatch, caplog, tmpdir):
     mount_device_and_collect_files()
 
     # without futher mocking this would print and failed message
-    assert "Failed to mount device: Failed to call 'lsusb' command." in caplog.text
+    assert "Failed to mount device: No 'lsusb' command available on your system." in caplog.text
 
     # now mock even other inner functions in order to have the mounting & fit file collecting proceed
     from wkz.device import mount
