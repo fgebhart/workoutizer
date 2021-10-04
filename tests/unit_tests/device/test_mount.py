@@ -1,4 +1,5 @@
 import logging
+import subprocess
 
 import pytest
 
@@ -27,7 +28,7 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 
 def test__get_lsusb_output(_mock_lsusb):
     # without mocking it will fail since lsusb does not exist in docker container
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises((FileNotFoundError, subprocess.CalledProcessError)):
         mount._get_lsusb_output()
 
     _mock_lsusb(output=lsusb_ready_to_be_mounted_device)

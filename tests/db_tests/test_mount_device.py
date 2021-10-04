@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 from pathlib import Path
@@ -11,6 +12,7 @@ from wkz import models
 
 
 def test_mount_device_and_collect_files(db, monkeypatch, caplog, tmpdir):
+    caplog.set_level(logging.DEBUG, logger="wkz.device.mount")
     # mock huey task away to actually test concent of function mount_device_and_collect_files
     from workoutizer import settings as django_settings
 
