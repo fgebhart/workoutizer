@@ -102,7 +102,7 @@ def _mount_device_using_pmount(path: str) -> str:
 def garmin_device_connected() -> bool:
     try:
         lsusb = _get_lsusb_output()
-    except FileNotFoundError:
+    except (FileNotFoundError, subprocess.CalledProcessError):
         raise FailedToMountDevice("No 'lsusb' command available on your system.")
     if "Garmin" in lsusb:
         return True
