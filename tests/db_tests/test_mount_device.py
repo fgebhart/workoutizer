@@ -62,7 +62,7 @@ def test_mount_device_and_collect_files(db, monkeypatch, caplog, tmpdir):
     assert "could not mount device within time window of 0.5 seconds." in caplog.text
     assert "Failed to mount device: Unable to mount device after 5 retries, with 0.1s delay each." in caplog.text
 
-    # now test the mounting of a device which is read to be mounted
+    # now test the mounting of a device which is ready to be mounted
     from wkz.device import mount
 
     def _get_lsusb_output():
@@ -73,7 +73,11 @@ def test_mount_device_and_collect_files(db, monkeypatch, caplog, tmpdir):
     assert "checking device to be ready for mount..." in caplog.text
     assert "device seems to be ready for mount, mounting..." in caplog.text
     assert "trying to determine device type for device at: /dev/bus/usb/001/004..." in caplog.text
-    assert "Failed to mount device: Could not determine device type. Device is neither MTP nor BLOCK." in caplog.text
+    # hacky way to test both unix and mac world. Mac lacks udev and thus the second assertion should pass
+    try:
+        assert "Failed to mount device: Could not determine device type. Device is neither MTP nor BLOCK." in caplog.text
+    except AssertionError:
+        assert "Failed to mount device: Your system seems to lack the udev utility." in caplog.text
 
     # now also mock _determine_type_and_mount to return the path to the mounted device
     path_to_device = tmpdir

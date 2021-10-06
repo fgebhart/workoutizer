@@ -128,7 +128,10 @@ def _determine_type_and_mount(path: str) -> str:
 
 def _determine_device_type(path: str) -> str:
     log.debug(f"trying to determine device type for device at: {path}...")
-    device_tree = pyudev.Context()
+    try:
+        device_tree = pyudev.Context()
+    except ImportError:
+        raise FailedToMountDevice("Your system seems to lack the udev utility.")
     if _is_of_type_mtp(device_tree, path):
         return "MTP"
     elif _is_of_type_block(device_tree, path):

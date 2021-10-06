@@ -92,7 +92,7 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
         webdriver.find_element(By.ID, "delete-demo-data")
 
 
-def test_settings_page__edit_and_submit_form(live_server, webdriver_firefox, caplog, tmp_path):
+def test_settings_page__edit_and_submit_form(db, live_server, webdriver_firefox, caplog, tmp_path):
     # Note, running this test with firefox only, since chrome seemed to fail in github actions
     # note sure why exactly, though. Test passed locally in docker environment.
     webdriver = webdriver_firefox()
@@ -129,7 +129,7 @@ def test_settings_page__edit_and_submit_form(live_server, webdriver_firefox, cap
     assert f"{invalid_path} is not a valid path." in caplog.text
 
     # test valid path
-    valid_path = tmp_path / "dummy_path"
+    valid_path = tmp_path / "foo"
     valid_path.mkdir()
     assert valid_path.is_dir()
     WebDriverWait(webdriver, 3).until(EC.element_to_be_clickable((By.ID, "id_path_to_garmin_device")))

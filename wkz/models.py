@@ -212,7 +212,7 @@ class Settings(models.Model):
 
         if self.path_to_garmin_device != self.__original_path_to_garmin_device:
             if self.path_to_garmin_device == "":
-                sse.send("<b>Disabled device watchdog.</b>", "green", log_level="INFO")
+                sse.send("Disabled device watchdog.", "green", log_level="INFO")
             elif Path(self.path_to_garmin_device).is_dir():
                 sse.send(f"<b>Device watchdog</b> now monitors <code>{self.path_to_garmin_device}</code>", "green")
             else:
