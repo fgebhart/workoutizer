@@ -293,7 +293,9 @@ def test_workload_plot_is_aggregated_by_week_or_month(db, live_server, webdriver
     webdriver.get(live_server.url + reverse("home"))
 
     # check that workload plot is present now
-    webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[4]/div/div/div[2]/div/div/div/div[2]")
+    workload_plot_xpath = "/html/body/div/div[2]/div/div[4]/div/div/div[2]/div/div/div/div[2]"
+    WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.XPATH, workload_plot_xpath)))
+    webdriver.find_element(By.XPATH, workload_plot_xpath)
     h4 = [heading.text for heading in webdriver.find_elements_by_tag_name("h4")]
     assert "Workload & Mileage" in h4
 
