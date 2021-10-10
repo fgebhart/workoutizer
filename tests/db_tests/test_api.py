@@ -62,13 +62,6 @@ def test_mount_device__device_connected(db, monkeypatch, client, mock_mount_wait
 @pytest.mark.parametrize("mock_dev", ["BLOCK", "MTP"])
 def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev, caplog, _mock_lsusb):
     caplog.set_level(logging.DEBUG, logger="wkz.api")
-    from workoutizer import settings as django_settings
-
-    def task(func):
-        return func
-
-    # first mock decorator HUEY.task with dummy function
-    monkeypatch.setattr(django_settings.HUEY, "task", task)
 
     # mock output of subprocess ("lsusb") to prevent function from failing
     _mock_lsusb(lsusb_ready_to_be_mounted_device)
@@ -94,6 +87,6 @@ def test_mount_device__success(db, monkeypatch, tmpdir, client, mock_dev, caplog
     # mount device (no new fit files collected)
     res = client.post("/mount-device/")
     assert "received POST request for mounting garmin device" in caplog.text
-    assert f"successfully mounted device at: {path_to_device}" in caplog.text
+    assert "found connected garmin device" in caplog.text
     assert res.status_code == 200
     assert res.content.decode("utf8") == '"Found device, will mount and collect fit files."'
