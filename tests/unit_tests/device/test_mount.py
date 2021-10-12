@@ -90,9 +90,9 @@ def test_wait_for_device_and_mount(monkeypatch, _mock_lsusb, caplog, mock_dev, m
     # mock output of _determine_device_type
     def _determine_device_type(path):
         if mock_dev == "MTP":
-            return "MTP"
+            return "MTP", path
         elif mock_dev == "BLOCK":
-            return "BLOCK"
+            return "BLOCK", path
 
     monkeypatch.setattr(mount, "_determine_device_type", _determine_device_type)
 
@@ -140,7 +140,7 @@ def test_wait_for_device_and_mount__first_not_but_then_ready(
         monkeypatch.setattr(mount, "_mount_device_using_pmount", mount_cmd)
 
     def _determine_device_type(path):
-        return mock_dev
+        return mock_dev, path
 
     monkeypatch.setattr(mount, "_determine_device_type", _determine_device_type)
 

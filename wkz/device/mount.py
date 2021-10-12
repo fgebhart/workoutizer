@@ -1,6 +1,7 @@
 import logging
 import subprocess
 import time
+from typing import Tuple
 
 import pyudev
 
@@ -115,7 +116,7 @@ def _get_lsusb_output() -> str:
 
 
 def _determine_type_and_mount(path: str) -> str:
-    device_type = _determine_device_type(path)
+    device_type, path = _determine_device_type(path)
     log.debug(f"device at path {path} is of type {device_type}")
     try:
         if device_type == "MTP":
@@ -126,33 +127,38 @@ def _determine_type_and_mount(path: str) -> str:
         raise FailedToMountDevice(f"Execution of mount command failed: {e}")
 
 
-def _determine_device_type(path: str) -> str:
+def _determine_device_type(path: str) -> Tuple[str, str]:
     log.debug(f"trying to determine device type for device at: {path}...")
     try:
         device_tree = pyudev.Context()
     except ImportError:
         raise FailedToMountDevice("Your system seems to lack the udev utility.")
-    if _is_of_type_mtp(device_tree, path):
-        return "MTP"
-    elif _is_of_type_block(device_tree, path):
-        return "BLOCK"
+
+    # check if device is of type MTP
+    if _is_of_type_mtp(device_tree):
+        return "MTP", path
+
+    # check if device is of type BLOCK
+    block_device_path = _get_block_device_path(device_tree, path)
+    if block_device_path:
+        return "BLOCK", block_device_path
     else:
         raise FailedToMountDevice("Could not determine device type. Device is neither MTP nor BLOCK.")
 
 
-def _is_of_type_mtp(device_tree: pyudev.core.Context, path: str) -> bool:
-    devices = (
-        device_tree.list_devices(subsystem="usb").match_property("DEVNAME", path).match_property("ID_MTP_DEVICE", "1")
-    )
+def _is_of_type_mtp(device_tree: pyudev.core.Context) -> bool:
+    devices = device_tree.list_devices(subsystem="usb").match_property("ID_MTP_DEVICE", "1")
     if len(list(devices)) > 0:
         return True
     else:
         return False
 
 
-def _is_of_type_block(device_tree: pyudev.core.Context, path: str) -> bool:
-    devices = device_tree.list_devices(subsystem="block").match_property("DEVNAME", path)
-    if len(list(devices)) > 0:
-        return True
-    else:
-        return False
+def _get_block_device_path(device_tree: pyudev.core.Context, path: str) -> str:
+    usb_devices = device_tree.list_devices(subsystem="usb").match_property("DEVNAME", path)
+    for device in usb_devices:
+        (model_id, vendor_id) = device.get("ID_MODEL_ID"), device.get("ID_VENDOR_ID")
+        block_devices = device_tree.list_devices(subsystem="block").match_property("ID_MODEL_ID", model_id)
+        for device in block_devices:
+            if vendor_id == device.get("ID_VENDOR_ID"):
+                return device.get("DEVNAME")
