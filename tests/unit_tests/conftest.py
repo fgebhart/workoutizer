@@ -2,9 +2,9 @@ import os
 
 import pytest
 
-from wkz.file_helper.fit_parser import FITParser
-from wkz.file_helper.gpx_exporter import gpx_header
-from wkz.file_helper.gpx_parser import GPXParser
+from wkz.io.fit_parser import FITParser
+from wkz.io.gpx_exporter import gpx_header
+from wkz.io.gpx_parser import GPXParser
 
 
 @pytest.fixture

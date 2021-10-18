@@ -7,7 +7,7 @@ from django.conf import settings
 from fitparse.utils import FitHeaderError
 
 from wkz.best_sections.generic import GenericBestSection
-from wkz.file_helper.fit_parser import FITParser, LapData
+from wkz.io.fit_parser import FITParser, LapData
 
 tz = pytz.timezone(settings.TIME_ZONE)
 

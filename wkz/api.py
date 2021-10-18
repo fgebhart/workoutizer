@@ -7,23 +7,23 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from wkz.file_helper.fit_collector import try_to_mount_device
+from wkz.device.mount import garmin_device_connected
+from wkz.tasks import mount_device_and_collect_files_task
 
 log = logging.getLogger(__name__)
 
 
 @api_view(["POST"])
 def mount_device_endpoint(request):
-    try:
-        mount_path = try_to_mount_device()
-        if mount_path:
-            return Response("successfully mounted device", status=status.HTTP_200_OK)
-        else:
-            log.error(f"could not mount device, no valid mount path available - got: {mount_path}")
-            return Response("failed", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    except Exception as e:
-        log.error(f"could not mount device: {e}", exc_info=True)
-        return Response("failed", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    log.debug("received POST request for mounting garmin device")
+    if garmin_device_connected():
+        log.debug("found connected garmin device")
+        # schedule huey task to answer response and work on mounting asynchronously
+        mount_device_and_collect_files_task()
+        return Response("Found device, will mount and collect fit files.", status=status.HTTP_200_OK)
+    else:
+        log.warning("No garmin device connected.")
+        return Response("No Garmin device connected.", status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])

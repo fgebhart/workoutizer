@@ -5,7 +5,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-...
+### Changed
+* Changed mounting mechanism to be triggered early on by `udev` whenever a Garmin device
+  is connected, even before knowing the exact product id and type. Thus workoutizer
+  takes care of waiting for the device being mountable and than mounts it, once it is
+  ready. This fixes [#9](https://github.com/fgebhart/workoutizer/issues/9). Mind the
+  following:
+  - In case your device gets mounted via the manually added `udev` rule and the new
+    mounting mechanism, you no longer need to provide the `path_to_garmin_device` setting
+    parameter, since the path gets detected automatically during mounting. Just leave the
+    setting empty to disable the device watchdog in this case. Your device will still be
+    detected automatically and fit files would be collected accordingly.
+  - In case your device is mounted automatically on your system (without specifying a
+    custom `udev` rule), you would still need to configure the path to your device within
+    the setting page aka `path_to_garmin_device` in order for workoutizer to regularly
+    check for your device and and collect  fit files.
 
 ## [0.22.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.22.0) - 2021-09-20
 ### Fixed

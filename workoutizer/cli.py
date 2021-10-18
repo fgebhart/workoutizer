@@ -56,7 +56,7 @@ def run(url):
         else:
             url = f"{get_local_ip_address()}:8000"
     if _is_main_run():
-        click.echo(f"using workoutizer home at {WORKOUTIZER_DIR}")
+        click.echo(f"Starting workoutizer with home at {WORKOUTIZER_DIR}")
     with HueyManager():
         execute_from_command_line(["manage.py", "runserver", url, "--insecure"])
 
@@ -149,6 +149,7 @@ def _build_home() -> None:
 
 
 def _init(import_demo_activities: bool = False):
+    click.echo("initializing workoutizer...")
     _build_home()
     if Path(WORKOUTIZER_DB_PATH).is_file():
         execute_from_command_line(["manage.py", "check"])
@@ -178,11 +179,11 @@ def _init(import_demo_activities: bool = False):
     if import_demo_activities:
         # import demo activities
         from wkz.demo import prepare_import_of_demo_activities
-        from wkz.file_importer import run_importer__dask
+        from wkz.io.file_importer import run_importer__dask
 
         prepare_import_of_demo_activities(models)
         run_importer__dask(models, importing_demo_data=True)
-        click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
+    click.echo(f"Database and track files are stored in: {WORKOUTIZER_DIR}")
 
 
 def _pip_install(package: str) -> str:
@@ -225,7 +226,7 @@ def _reimport():
     _check()
 
     from wkz import models
-    from wkz.file_importer import run_importer__dask
+    from wkz.io.file_importer import run_importer__dask
 
     run_importer__dask(models, reimporting=True)
 
