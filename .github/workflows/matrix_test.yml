@@ -6,6 +6,8 @@ on:
     paths:
       - "**.py"
       - "setup/requirements/**.txt"
+      - ".github/workflows/matrix_test.yml"
+
   push:
     branches: main
 
@@ -52,6 +54,7 @@ jobs:
     - name: Install dependencies
       if: always()
       run: |
+        pip install pip==21.2.4
         pip install -r setup/requirements/dev-requirements.txt
         pip install -e .
 

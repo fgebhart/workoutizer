@@ -6,6 +6,8 @@ on:
     paths:
       - "**.py"
       - "setup/requirements/**.txt"
+      - ".github/workflows/raspberry_pi_test.yml"
+
   push:
     branches: main
 
