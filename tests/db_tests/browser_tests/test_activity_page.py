@@ -578,6 +578,8 @@ def test_bokeh_lap_button(import_one_activity, live_server, webdriver_firefox, t
     # with different colors than expected when running with mac os.
     webdriver = webdriver_firefox()
 
+    # fix window size to (hopefully) fix varying behavior across different os'+python versions
+    webdriver.set_window_size(1000, 800)
     import_one_activity("2020-08-20-09-34-33.fit")
 
     activity = models.Activity.objects.get()
