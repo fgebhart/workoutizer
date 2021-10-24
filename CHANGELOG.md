@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+...
+
+## [0.23.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.23.0) - 2021-10-24
 ### Added
 * Introduce sports `mapping name`. It can be used to map a particular sport to a
   certain sport name label given by Garmin. Mapping of such names was previously

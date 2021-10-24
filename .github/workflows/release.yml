@@ -17,6 +17,7 @@ jobs:
         python-version: 3.8
     - name: Install Dependencies
       run: |
+        pip install pip==21.2.4   # 21.3 breaks editable install
         pip install -r setup/requirements/dev-requirements.txt
         pip install -r setup/requirements/requirements.txt
         pip install -e . --no-deps
