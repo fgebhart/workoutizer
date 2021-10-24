@@ -11,37 +11,15 @@ from fitparse.utils import FitEOFError, FitHeaderError
 
 from wkz import configuration
 from wkz.best_sections.generic import GenericBestSection
-from wkz.demo import finalize_demo_activity_insertion
+from wkz.demo import finalize_demo_activity_insertion, sport_name_mapping
 from wkz.io.auto_naming import get_automatic_name
 from wkz.io.fit_parser import FITParser
 from wkz.io.gpx_parser import GPXParser
 from wkz.io.parser import Parser
 from wkz.tools import sse
-from wkz.tools.utils import calc_md5, limit_string, sanitize
+from wkz.tools.utils import calc_md5, limit_string
 
 log = logging.getLogger(__name__)
-
-
-sport_naming_map = {
-    "Jogging": ["jogging", "running"],
-    "Cycling": ["cycle", "cycling", "biking"],
-    "Mountainbiking": [
-        "mountainbiking",
-        "mountainbike",
-        "mountain biking",
-        "mountain bike",
-        "mountain-biking",
-        "mountain-bike",
-        "mtbing",
-        "mtb",
-        "cycling_mountain",
-    ],
-    "Hiking": ["hiking", "hike", "wandern", "walking", "mountaineering"],
-    "Triathlon": ["triathlon", "tria"],
-    "Swimming": ["swimming", "swim", "pool"],
-    "Yoga": ["yoga", "yogi"],
-    "Workout": ["training"],
-}
 
 
 def _save_laps_to_model(lap_model, laps: list, trace_instance, update_existing: bool):
@@ -113,17 +91,22 @@ def _save_best_sections_to_model(best_section_model, parser, activity_instance, 
             best_section_object.save()
 
 
-def _map_sport_name(sport_name, map_dict):  # will be adapted in GH #4
-    sport = None
-    for k, v in map_dict.items():
-        if sanitize(sport_name) in v:
-            sport = k
-    if sport:
-        log.debug(f"mapped activity sport: {sport_name} to {sport}")
+def _get_or_create_sport(models, parsed_sport_name: str):
+    if parsed_sport_name in sport_name_mapping.keys():
+        sport = sport_name_mapping[parsed_sport_name]
+        # check if sport does already exist with mapping_name
+        db_sport = models.Sport.objects.filter(mapping_name=sport.mapping_name).first()
+        if db_sport:
+            return db_sport
+        else:
+            # could also be that sport with slug already exists
+            db_sport = models.Sport.objects.filter(slug=sport.mapping_name).first()
+            if db_sport:
+                return db_sport
+            else:
+                return models.Sport.objects.get_or_create(**sport.__dict__)[0]
     else:
-        sport = "unknown"
-        log.warning(f"could not map '{sport_name}' to given sport names, use unknown instead")
-    return sport
+        return models.default_sport(return_pk=False)
 
 
 def _save_activity_to_model(models, parser, trace_instance, importing_demo_data: bool, update_existing: bool):
@@ -139,16 +122,12 @@ def _save_activity_to_model(models, parser, trace_instance, importing_demo_data:
             log.debug(f"updating date of non-demo activity: '{activity_object.name}' (ID: {activity_object.pk})")
             activity_object.date = parser.date
     else:
-        # get appropriate sport from db
-        sport = parser.sport
-        mapped_sport = _map_sport_name(sport, sport_naming_map)
-        sport_instance = models.Sport.objects.filter(slug=sanitize(mapped_sport)).first()
-        if sport_instance is None:  # needs to be adapted in GH #4
-            sport_instance = models.default_sport(return_pk=False)
-        # determine automatic name (based on location and daytime)
+        sport = _get_or_create_sport(models, parser.sport)
+        log.info(f"parsed sport name: {parser.sport} was mapped to: {sport.name}")
         activity_object = models.Activity(
-            name=get_automatic_name(parser, mapped_sport),
-            sport=sport_instance,
+            # determine automatic name (based on location, sport name and daytime)
+            name=get_automatic_name(parser, sport.name),
+            sport=sport,
             date=parser.date,
             duration=parser.duration,
             distance=parser.distance,

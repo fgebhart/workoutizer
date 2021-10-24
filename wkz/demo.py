@@ -9,7 +9,7 @@ from types import ModuleType
 import pytz
 from django.db import models
 
-from wkz.tools.style import Colors
+from wkz.tools.style import Colors, Set1Palette
 from workoutizer import settings as django_settings
 
 log = logging.getLogger(__name__)
@@ -18,31 +18,29 @@ log = logging.getLogger(__name__)
 @dataclass
 class Sport:
     name: str
+    mapping_name: str
     color: str
     icon: str
     slug: str
     evaluates_for_awards: bool
 
 
-hiking = Sport("Hiking", Colors.demo_sport_colors.hiking, "hiking", "hiking", False)
-swimming = Sport("Swimming", Colors.demo_sport_colors.swimming, "swimmer", "swimming", False)
-cycling = Sport("Cycling", Colors.demo_sport_colors.cycling, "bicycle", "cycling", True)
-jogging = Sport("Jogging", Colors.demo_sport_colors.jogging, "running", "jogging", True)
-demo_sports = [hiking, swimming, cycling, jogging]
+jogging = Sport("Jogging", "jogging", Colors.demo_sport_colors.jogging, "running", "jogging", True)
+cycling = Sport("Cycling", "cycling", Colors.demo_sport_colors.cycling, "bicycle", "cycling", True)
+hiking = Sport("Hiking", "hiking", Colors.demo_sport_colors.hiking, "hiking", "hiking", False)
+swimming = Sport("Swimming", "swimming", Colors.demo_sport_colors.swimming, "swimmer", "swimming", False)
+workout = Sport("Workout", "workout", Set1Palette.violet, "dumbbell", "workout", False)
+skating = Sport("Skating", "skating", Set1Palette.brown, "person-skating", "skating", True)
 
 
-def insert_demo_sports_to_model(models):
-    # insert default unknown sport
-    models.default_sport()
-    # insert all other demo sports
-    for sport in demo_sports:
-        models.Sport.objects.get_or_create(
-            name=sport.name,
-            color=sport.color,
-            icon=sport.icon,
-            slug=sport.slug,
-            evaluates_for_awards=sport.evaluates_for_awards,
-        )
+sport_name_mapping = {
+    "running": jogging,
+    "cycling": cycling,
+    "walking": hiking,
+    "swimming": swimming,
+    "training": workout,
+    "generic": skating,
+}
 
 
 def copy_demo_fit_files_to_track_dir(source_dir: str, targe_dir: str, list_of_files_to_copy: list = []):
@@ -82,7 +80,6 @@ def insert_custom_demo_activities(count: int, every_nth_day: int, activity_model
 
 def prepare_import_of_demo_activities(models, list_of_files_to_copy: list = []):
     settings = models.get_settings()
-    insert_demo_sports_to_model(models)
     copy_demo_fit_files_to_track_dir(
         source_dir=django_settings.INITIAL_TRACE_DATA_DIR,
         targe_dir=settings.path_to_trace_dir,

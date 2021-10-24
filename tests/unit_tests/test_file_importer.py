@@ -8,19 +8,10 @@ from wkz.io.file_importer import (
     _check_and_parse_file,
     _convert_list_attributes_to_json,
     _get_all_files,
-    _map_sport_name,
     _parse_single_file,
-    sport_naming_map,
 )
 from wkz.io.parser import Parser
 from wkz.tools.utils import calc_md5
-
-
-def test_map_sport_name():
-    assert _map_sport_name("running", sport_naming_map) == "Jogging"
-    assert _map_sport_name("Running", sport_naming_map) == "Jogging"
-    assert _map_sport_name("swim", sport_naming_map) == "Swimming"
-    assert _map_sport_name("SUP", sport_naming_map) == "unknown"
 
 
 def test_convert_list_attributes_to_json(fit_parser):

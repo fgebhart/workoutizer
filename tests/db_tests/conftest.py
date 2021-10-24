@@ -80,11 +80,12 @@ def activity(db, sport, trace_file):
 @pytest.fixture
 def import_demo_data(tracks_in_tmpdir):
     prepare_import_of_demo_activities(models)
-    assert models.Sport.objects.count() == 5
+    assert models.Sport.objects.count() == 0
     assert models.Settings.objects.count() == 1
 
     run_importer__dask(models, importing_demo_data=True)
     assert models.Activity.objects.count() > 1
+    assert models.Sport.objects.count() == 4
 
 
 @pytest.fixture
@@ -108,8 +109,9 @@ def import_one_activity(tracks_in_tmpdir, test_data_dir, demo_data_dir):
             targe_dir=models.get_settings().path_to_trace_dir,
             list_of_files_to_copy=[path],
         )
+        cnt = models.Activity.objects.count()
         run_importer__dask(models)
-        assert models.Activity.objects.count() == 1
+        assert models.Activity.objects.count() == cnt + 1
 
     return _copy_activity
 

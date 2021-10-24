@@ -20,6 +20,7 @@ class Sport(models.Model):
         return self.name
 
     name = models.CharField(max_length=24, unique=True, verbose_name="Sport Name")
+    mapping_name = models.CharField(max_length=24, unique=True, blank=True, null=True, verbose_name="Mapping Name")
     icon = models.CharField(max_length=24, verbose_name="Icon")
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     color = ColorField(default="#42FF71", verbose_name="Color")
@@ -90,7 +91,7 @@ class Traces(models.Model):
 def default_sport(return_pk: bool = True):
     sport = Sport.objects.filter(slug="unknown").first()
     if not sport:
-        sport = Sport(name="unknown", color="gray", icon="question-circle", slug="unknown")
+        sport = Sport(name="unknown", color="gray", icon="question-circle", slug="unknown", mapping_name="unknown")
         sport.save()
     if return_pk:
         return sport.pk
