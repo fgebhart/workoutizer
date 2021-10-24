@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+* Introduce sports `mapping name`. It can be used to map a particular sport to a
+  certain sport name label given by Garmin. Mapping of such names was previously
+  hard-coded. With this flexible approach users can decide themselves which Garmin
+  sport label should be mapped to which workoutizer sport. Note, that not all garmin
+  activity types have their own individual name and unfortunately many are labelled
+  with the same name, e.g. `running`, `training`, `generic` ... To figure out the
+  Garmin name use either the `fitparse` library to manually parse your activities or
+  have a look at the workoutizer logs when importing new files. A warning should be
+  raised in case the Garmin name could not be mapped successfully.
 ### Changed
 * Changed mounting mechanism to be triggered early on by `udev` whenever a Garmin device
   is connected, even before knowing the exact product id and type. Thus workoutizer

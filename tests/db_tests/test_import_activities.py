@@ -25,7 +25,7 @@ def test_activity_data_in_db_after_import(import_one_activity):
 
     a = models.Activity.objects.get()
 
-    assert a.sport.slug == "unknown"
+    assert a.sport.slug == "jogging"
     assert a.distance == 5.84
     assert a.duration == datetime.timedelta(seconds=3164)
     assert a.date == datetime.datetime(2019, 9, 14, 15, 22, tzinfo=pytz.UTC)
@@ -149,9 +149,9 @@ def test_import_of_activities__not_evaluates_for_awards(import_one_activity):
 
     # get activity
     activity = models.Activity.objects.get()
-    assert activity.sport.evaluates_for_awards is False
+    assert activity.sport.evaluates_for_awards is True
     assert activity.evaluates_for_awards is True
-    assert activity_suitable_for_awards(activity) is False
+    assert activity_suitable_for_awards(activity) is True
 
     # best sections got saved
     assert models.BestSection.objects.filter(activity=activity).count() > 0

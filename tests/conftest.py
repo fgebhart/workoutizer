@@ -31,18 +31,53 @@ def keep_tracks_dir_clean():
 
 
 @pytest.fixture
-def fit_file():
+def fit_file():  # sport = running
     return "2019-09-14-17-22-05.fit"
 
 
 @pytest.fixture
-def fit_file_a():
+def fit_file_a():  # sport = running
     return "2019-09-18-16-02-35.fit"
 
 
 @pytest.fixture
-def fit_file_b():
+def fit_file_b():  # sport = running
     return "2019-09-25-16-15-53.fit"
+
+
+@pytest.fixture
+def fit_file_c():  # sport = walking
+    return "2020-08-20-09-34-33.fit"
+
+
+@pytest.fixture
+def fit_file_d():  # sport = walking
+    return "2020-08-28-11-57-10.fit"
+
+
+@pytest.fixture
+def fit_file_e():  # sport = running
+    return "2020-08-31-17-41-11.fit"
+
+
+@pytest.fixture
+def fit_file_f():  # sport = cycling
+    return "2020-10-25-10-54-06.fit"
+
+
+@pytest.fixture
+def fit_file_g():  # sport = cycling
+    return "cycling_bad_schandau.fit"
+
+
+@pytest.fixture
+def fit_file_h():  # sport = hiking
+    return "hike_with_coordinates_muggenbrunn.fit"
+
+
+@pytest.fixture
+def gpx_file():  # sport = cycling
+    return "cycling_walchensee.gpx"
 
 
 MOCKED_WAIT = 0.1

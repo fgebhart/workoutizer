@@ -8,18 +8,8 @@ from wkz.demo import (
     change_date_of_demo_activities,
     copy_demo_fit_files_to_track_dir,
     insert_custom_demo_activities,
-    insert_demo_sports_to_model,
 )
 from workoutizer import settings as django_settings
-
-
-def test_insert_demo_sports_to_model(db, flush_db):
-    # assert that there are no sports
-    assert models.Sport.objects.count() == 0
-    # insert sports
-    insert_demo_sports_to_model(models)
-    # check that all sports are created
-    assert models.Sport.objects.count() == 5
 
 
 def test_copy_demo_fit_files_to_track_dir__all(tmpdir, demo_data_dir):

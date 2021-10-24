@@ -202,7 +202,7 @@ def test_custom_navbar_items(db, live_server, webdriver, import_one_activity):
     _assert_that_only_these_slugs_are_present(default_slugs)
 
     # sport page should have default slugs + edit slug
-    webdriver.get(live_server.url + "/sport/unknown")
+    webdriver.get(live_server.url + "/sport/cycling")
     _assert_that_only_these_slugs_are_present(default_slugs + ["edit"])
 
     # activity page should have default slugs + edit + download

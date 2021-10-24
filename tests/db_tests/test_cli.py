@@ -26,7 +26,7 @@ def test_cli__init(tracks_in_tmpdir):
 
     cli._init(import_demo_activities=True)
     assert os.path.isdir(django_settings.WORKOUTIZER_DIR)
-    assert len(models.Sport.objects.all()) == 5
+    assert len(models.Sport.objects.all()) == 4
     assert len(models.Settings.objects.all()) == 1
     assert len(models.Activity.objects.all()) > 1
 

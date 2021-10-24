@@ -30,14 +30,15 @@ def test_reimport_of_activities(tracks_in_tmpdir, client):
             "cycling_bad_schandau.fit",
         ],
     )
-    assert len(models.Sport.objects.all()) == 5
-    assert len(models.Settings.objects.all()) == 1
+    assert models.Sport.objects.count() == 0
+    assert models.Settings.objects.count() == 1
 
     run_importer__dask(models, importing_demo_data=True)
+    assert models.Sport.objects.count() == 3
     all_activities = models.Activity.objects.all()
     assert len(all_activities) == 11
-    assert len(models.Activity.objects.filter(sport__slug="swimming")) == 9
-    assert len(models.Activity.objects.filter(sport__slug="jogging")) == 0
+    assert models.Activity.objects.filter(sport__slug="swimming").count() == 9
+    assert models.Activity.objects.filter(sport__slug="jogging").count() == 0
 
     all_cycling = models.Activity.objects.filter(sport__slug="cycling")
     assert len(all_cycling) == 1

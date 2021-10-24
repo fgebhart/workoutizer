@@ -11,6 +11,21 @@
 </div>
 <div class="row">
     <label class="col-md-4 col-form-label">
+        {{ form.mapping_name.label }}
+        <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right"
+            title="Name to be mapped to Garmin sport names of imported fit files. Known
+            Garmin sport names are e.g. running, walking, training, ... Leave blank if
+            you don't plan to import activities of this sport type.">
+        </i>
+    </label>
+    <div class="col-md-8">
+        <div class="form-group">
+            {{ form.mapping_name }}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <label class="col-md-4 col-form-label">
         {{ form.icon.label }}&nbsp;&nbsp;
         <a href="https://fontawesome.com/">
             <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right"
