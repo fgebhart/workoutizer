@@ -19,114 +19,114 @@ autobahn==21.3.1
 automat==20.2.0
     # via twisted
 bokeh==1.4.0
-    # via -r requirements.in
-certifi==2021.5.30
+    # via -r setup/requirements/requirements.in
+certifi==2021.10.8
     # via requests
-cffi==1.14.6
+cffi==1.15.0
     # via cryptography
 channels==3.0.4
-    # via -r requirements.in
-charset-normalizer==2.0.4
+    # via -r setup/requirements/requirements.in
+charset-normalizer==2.0.7
     # via requests
-click==8.0.1
+click==8.0.3
     # via
-    #   -r requirements.in
+    #   -r setup/requirements/requirements.in
     #   distributed
-cloudpickle==1.6.0
+cloudpickle==2.0.0
     # via
     #   dask
     #   distributed
 coloredlogs==15.0.1
-    # via -r requirements.in
+    # via -r setup/requirements/requirements.in
 constantly==15.1.0
     # via twisted
-cryptography==3.4.8
+cryptography==35.0.0
     # via
     #   autobahn
     #   pyopenssl
     #   service-identity
 daphne==3.0.2
     # via channels
-dask[distributed]==2021.09.0
+dask[distributed]==2021.11.0
     # via
-    #   -r requirements.in
+    #   -r setup/requirements/requirements.in
     #   distributed
-distributed==2021.09.0
+distributed==2021.11.0
     # via dask
-django==3.2.7
+django==3.2.9
     # via
-    #   -r requirements.in
+    #   -r setup/requirements/requirements.in
     #   channels
     #   django-grip
     #   djangorestframework
-django-colorfield==0.4.2
-    # via -r requirements.in
-django-eventstream==4.2.0
-    # via -r requirements.in
+django-colorfield==0.4.5
+    # via -r setup/requirements/requirements.in
+django-eventstream==4.3.1
+    # via -r setup/requirements/requirements.in
 django-grip==3.0.0
     # via django-eventstream
 djangorestframework==3.12.4
-    # via -r requirements.in
+    # via -r setup/requirements/requirements.in
 fitparse==1.2.0
-    # via -r requirements.in
-fsspec==2021.8.1
+    # via -r setup/requirements/requirements.in
+fsspec==2021.11.0
     # via dask
 geographiclib==1.52
     # via geopy
 geopy==2.2.0
-    # via -r requirements.in
-gpxpy==1.4.2
-    # via -r requirements.in
+    # via -r setup/requirements/requirements.in
+gpxpy==1.5.0
+    # via -r setup/requirements/requirements.in
 gripcontrol==4.1.0
     # via
     #   django-eventstream
     #   django-grip
 heapdict==1.0.1
     # via zict
-huey==2.4.0
-    # via -r requirements.in
-humanfriendly==9.2
+huey==2.4.1
+    # via -r setup/requirements/requirements.in
+humanfriendly==10.0
     # via coloredlogs
 hyperlink==21.0.0
     # via
     #   autobahn
     #   twisted
-idna==3.2
+idna==3.3
     # via
     #   hyperlink
     #   requests
     #   twisted
 incremental==21.3.0
     # via twisted
-jinja2==3.0.1
+jinja2==3.0.2
     # via
     #   bokeh
     #   distributed
 locket==0.2.1
     # via partd
 luddite==1.0.2
-    # via -r requirements.in
+    # via -r setup/requirements/requirements.in
 markupsafe==2.0.1
     # via jinja2
 msgpack==1.0.2
     # via distributed
-numpy==1.21.2
+numpy==1.21.4
     # via
     #   bokeh
     #   pandas
-packaging==21.0
+packaging==21.2
     # via
     #   bokeh
     #   dask
 pandas==1.2.5
-    # via -r requirements.in
+    # via -r setup/requirements/requirements.in
 partd==1.2.0
     # via dask
-pillow==8.3.2
+pillow==8.4.0
     # via bokeh
 psutil==5.8.0
     # via
-    #   -r requirements.in
+    #   -r setup/requirements/requirements.in
     #   distributed
 pubcontrol==3.2.0
     # via
@@ -138,14 +138,14 @@ pyasn1==0.4.8
     #   service-identity
 pyasn1-modules==0.2.8
     # via service-identity
-pycparser==2.20
+pycparser==2.21
     # via cffi
-pyjwt==2.1.0
+pyjwt==2.3.0
     # via
     #   django-eventstream
     #   gripcontrol
     #   pubcontrol
-pyopenssl==20.0.1
+pyopenssl==21.0.0
     # via twisted
 pyparsing==2.4.7
     # via packaging
@@ -153,20 +153,20 @@ python-dateutil==2.8.2
     # via
     #   bokeh
     #   pandas
-pytz==2021.1
+pytz==2021.3
     # via
     #   django
     #   pandas
 pyudev==0.22.0
-    # via -r requirements.in
-pyyaml==5.4.1
+    # via -r setup/requirements/requirements.in
+pyyaml==6.0
     # via
     #   bokeh
     #   dask
     #   distributed
 requests==2.26.0
     # via
-    #   -r requirements.in
+    #   -r setup/requirements/requirements.in
     #   pubcontrol
 service-identity==21.1.0
     # via twisted
@@ -184,14 +184,14 @@ six==1.16.0
 sortedcontainers==2.4.0
     # via distributed
 sportgems==0.6.0
-    # via -r requirements.in
+    # via -r setup/requirements/requirements.in
 sqlparse==0.4.2
     # via django
 tblib==1.7.0
     # via distributed
 tenacity==8.0.1
-    # via -r requirements.in
-toolz==0.11.1
+    # via -r setup/requirements/requirements.in
+toolz==0.11.2
     # via
     #   dask
     #   distributed
@@ -206,12 +206,10 @@ txaio==21.2.1
     # via autobahn
 typing-extensions==3.10.0.2
     # via twisted
-urllib3==1.26.6
+urllib3==1.26.7
     # via requests
 werkzeug==0.16.1
-    # via
-    #   django-eventstream
-    #   django-grip
+    # via django-grip
 zict==2.0.0
     # via distributed
 zope.interface==5.4.0
