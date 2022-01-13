@@ -69,13 +69,15 @@ def get_location_name(coordinate: Tuple[float, float]) -> str:
     try:
         p = Point(coordinate[0], coordinate[1])
         address = app.reverse(query=p, language="en", timeout=10).raw["address"]
-        # use name of location from village, town or city (in this order)
+        # use name of location from village, town, city or county (in this order)
         if "village" in address.keys():
             return address["village"]
         elif "town" in address.keys():
             return address["town"]
         elif "city" in address.keys():
             return address["city"]
+        elif "county" in address.keys():
+            return address["county"]
     except (TypeError, ValueError, AttributeError):
         return None
 

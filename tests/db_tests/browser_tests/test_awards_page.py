@@ -37,7 +37,7 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Hiking in Aftersteg" not in links
     assert "Noon Hiking in Kornau" not in links
     assert "Noon Hiking in Bad Schandau" not in links
-    assert "Noon Jogging in Mirow" in links
+    assert "Noon Jogging in Mecklenburgische Seenplatte" in links
     assert "Noon Jogging in Heidelberg" in links
     assert "Noon Cycling in Hinterzarten" in links
     assert "Noon Cycling in Bad Schandau" in links
@@ -48,7 +48,7 @@ def test_awards_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Cycling in Hinterzarten" in table_data
     assert "Early Morning Cycling in Kochel am See" in table_data
     assert "Noon Jogging in Heidelberg" in table_data
-    assert "Noon Jogging in Mirow" in table_data
+    assert "Noon Jogging in Mecklenburgische Seenplatte" in table_data
     assert "42.2 km/h" in table_data
 
     # fastest sections distances
