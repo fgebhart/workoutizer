@@ -47,6 +47,8 @@ jobs:
             echo "inserted piwheels index to pip.conf"
             cat /etc/pip.conf
 
+            python3 --version
+            pip3 --version
             pip3 install -e .
 
             echo "---- initializing wkz ----"

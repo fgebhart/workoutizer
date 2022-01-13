@@ -9,12 +9,12 @@ asgiref==3.4.1
     #   channels
     #   daphne
     #   django
-attrs==21.2.0
+attrs==21.4.0
     # via
     #   automat
     #   service-identity
     #   twisted
-autobahn==21.3.1
+autobahn==21.11.1
     # via daphne
 automat==20.2.0
     # via twisted
@@ -26,7 +26,7 @@ cffi==1.15.0
     # via cryptography
 channels==3.0.4
     # via -r setup/requirements/requirements.in
-charset-normalizer==2.0.7
+charset-normalizer==2.0.10
     # via requests
 click==8.0.3
     # via
@@ -40,36 +40,36 @@ coloredlogs==15.0.1
     # via -r setup/requirements/requirements.in
 constantly==15.1.0
     # via twisted
-cryptography==35.0.0
+cryptography==36.0.1
     # via
     #   autobahn
     #   pyopenssl
     #   service-identity
 daphne==3.0.2
     # via channels
-dask[distributed]==2021.11.0
+dask[distributed]==2021.12.0
     # via
     #   -r setup/requirements/requirements.in
     #   distributed
-distributed==2021.11.0
+distributed==2021.12.0
     # via dask
-django==3.2.9
+django==3.2.11
     # via
     #   -r setup/requirements/requirements.in
     #   channels
     #   django-grip
     #   djangorestframework
-django-colorfield==0.4.5
+django-colorfield==0.6.3
     # via -r setup/requirements/requirements.in
 django-eventstream==4.3.1
     # via -r setup/requirements/requirements.in
 django-grip==3.0.0
     # via django-eventstream
-djangorestframework==3.12.4
+djangorestframework==3.13.1
     # via -r setup/requirements/requirements.in
 fitparse==1.2.0
     # via -r setup/requirements/requirements.in
-fsspec==2021.11.0
+fsspec==2022.1.0
     # via dask
 geographiclib==1.52
     # via geopy
@@ -83,7 +83,7 @@ gripcontrol==4.1.0
     #   django-grip
 heapdict==1.0.1
     # via zict
-huey==2.4.1
+huey==2.4.3
     # via -r setup/requirements/requirements.in
 humanfriendly==10.0
     # via coloredlogs
@@ -98,7 +98,7 @@ idna==3.3
     #   twisted
 incremental==21.3.0
     # via twisted
-jinja2==3.0.2
+jinja2==3.0.3
     # via
     #   bokeh
     #   distributed
@@ -108,13 +108,14 @@ luddite==1.0.2
     # via -r setup/requirements/requirements.in
 markupsafe==2.0.1
     # via jinja2
-msgpack==1.0.2
+msgpack==1.0.3
     # via distributed
-numpy==1.21.4
+numpy==1.21.5
     # via
+    #   -r setup/requirements/requirements.in
     #   bokeh
     #   pandas
-packaging==21.2
+packaging==21.3
     # via
     #   bokeh
     #   dask
@@ -126,7 +127,8 @@ pillow==9.0.0
     # via
     #   -r setup/requirements/requirements.in
     #   bokeh
-psutil==5.8.0
+    #   django-colorfield
+psutil==5.9.0
     # via
     #   -r setup/requirements/requirements.in
     #   distributed
@@ -149,7 +151,7 @@ pyjwt==2.3.0
     #   pubcontrol
 pyopenssl==21.0.0
     # via twisted
-pyparsing==2.4.7
+pyparsing==3.0.6
     # via packaging
 python-dateutil==2.8.2
     # via
@@ -158,6 +160,7 @@ python-dateutil==2.8.2
 pytz==2021.3
     # via
     #   django
+    #   djangorestframework
     #   pandas
 pyudev==0.22.0
     # via -r setup/requirements/requirements.in
@@ -166,7 +169,7 @@ pyyaml==6.0
     #   bokeh
     #   dask
     #   distributed
-requests==2.26.0
+requests==2.27.1
     # via
     #   -r setup/requirements/requirements.in
     #   pubcontrol
@@ -206,9 +209,9 @@ twisted[tls]==21.7.0
     # via daphne
 txaio==21.2.1
     # via autobahn
-typing-extensions==3.10.0.2
+typing-extensions==4.0.1
     # via twisted
-urllib3==1.26.7
+urllib3==1.26.8
     # via requests
 werkzeug==0.16.1
     # via django-grip
