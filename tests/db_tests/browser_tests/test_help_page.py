@@ -8,22 +8,22 @@ from workoutizer import __version__
 
 def test_help_page(live_server, webdriver):
     webdriver.get(live_server.url + reverse("help"))
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Help"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Help"
 
-    card_title = [a.text for a in webdriver.find_elements_by_class_name("card-title")]
+    card_title = [a.text for a in webdriver.find_elements(By.CLASS_NAME, "card-title")]
 
     # check version card
     assert "Version" in card_title
     assert webdriver.find_element(By.CLASS_NAME, "badge").text.lower() == __version__.lower()
 
     # check source code card
-    hrefs = [a.get_attribute("href") for a in webdriver.find_elements_by_tag_name("a")]
+    hrefs = [a.get_attribute("href") for a in webdriver.find_elements(By.TAG_NAME, "a")]
     assert "Source Code" in card_title
     assert "https://github.com/fgebhart/workoutizer" in hrefs
 
     # check keyboard navigation card
     assert "Keyboard Navigation" in card_title
-    table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+    table_data = [cell.text for cell in webdriver.find_elements(By.TAG_NAME, "td")]
     assert "Go to Dashboard" in table_data
     assert "g + d" in table_data
 

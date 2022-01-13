@@ -30,7 +30,7 @@ def test_sidebar(live_server, webdriver):
                 assert "239, 129, 87" not in color
 
     webdriver.get(live_server.url + reverse("home"))
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Dashboard"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Dashboard"
     assert webdriver.current_url == live_server.url + reverse("home")
     _assert_only_selected_link_is_highlighted("DASHBOARD")
 
@@ -77,7 +77,7 @@ def test_sidebar(live_server, webdriver):
 def test_responsiveness(live_server, webdriver):
     # first go to dashboard page
     webdriver.get(live_server.url + reverse("home"))
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Dashboard"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Dashboard"
     assert webdriver.current_url == live_server.url + reverse("home")
 
     # check home logo is present and interactable

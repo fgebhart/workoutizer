@@ -18,10 +18,10 @@ def test_settings_page__no_demo_activity(live_server, webdriver):
     models.get_settings()
     webdriver.get(live_server.url + reverse("settings"))
 
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Settings"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Settings"
 
     # verify the text of the input field labels
-    input_labels = [link.text for link in webdriver.find_elements_by_class_name("col-md-4")]
+    input_labels = [link.text for link in webdriver.find_elements(By.CLASS_NAME, "col-md-4")]
     assert "Path to Traces Directory " in input_labels
     input_labels.remove("Path to Traces Directory ")
     assert "Path to Garmin Device " in input_labels
@@ -62,7 +62,7 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
     models.get_settings()
     webdriver.get(live_server.url + reverse("settings"))
 
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Settings"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Settings"
 
     # verify demo activity is present
     assert models.Activity.objects.filter(is_demo_activity=True).count() > 18
@@ -70,16 +70,16 @@ def test_settings_page__demo_activity_present__delete_it(import_demo_data, live_
     webdriver.find_element(By.ID, "delete-demo-data")
 
     # also delete demo activity button is present
-    first_delete_button = webdriver.find_element_by_id("delete-demo-data")
+    first_delete_button = webdriver.find_element(By.ID, "delete-demo-data")
     assert first_delete_button.text == "  DELETE"
 
     # click button to verify demo data gets deleted
     first_delete_button.click()
     assert webdriver.current_url == live_server.url + reverse("delete-demo-data")
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Delete Demo Activities"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Delete Demo Activities"
 
     # on the new page find the additional delete button and click it
-    second_delete_button = webdriver.find_element_by_class_name("btn-space")
+    second_delete_button = webdriver.find_element(By.CLASS_NAME, "btn-space")
     assert second_delete_button.text == "  DELETE"
     second_delete_button.click()
     webdriver.get(live_server.url + reverse("home"))
@@ -107,7 +107,7 @@ def test_settings_page__edit_and_submit_form(db, live_server, webdriver_firefox,
 
     # go to settings page
     webdriver.get(live_server.url + reverse("settings"))
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Settings"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Settings"
 
     # Note, that with using htmx to update the settings form, all fields are submitted once their values got changed
 
@@ -159,10 +159,10 @@ def test_settings_page__edit_and_submit_form(db, live_server, webdriver_firefox,
 
     # got removed, should not be accessible
     with pytest.raises(NoSuchElementException):
-        webdriver.find_element_by_css_selector("#id_reimporter_updates_all")
+        webdriver.find_element(By.CSS_SELECTOR, "#id_reimporter_updates_all")
     # verify that the number of days field is not present nor editable
     with pytest.raises(NoSuchElementException):
-        webdriver.find_element_by_css_selector("#id_number_of_days")
+        webdriver.find_element(By.CSS_SELECTOR, "#id_number_of_days")
 
     # again get settings and check that the values are the once entered above
     settings = models.get_settings()
