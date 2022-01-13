@@ -112,8 +112,9 @@ markupsafe==2.0.1
     # via jinja2
 msgpack==1.0.3
     # via distributed
-numpy==1.22.0
+numpy==1.21.5
     # via
+    #   -r setup/requirements/requirements.in
     #   bokeh
     #   pandas
 packaging==21.3

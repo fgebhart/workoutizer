@@ -2,7 +2,7 @@ black
 flake8
 isort
 ipdb
-ipython<8.0.0   # 8.0.0 was not yet available in github actions
+ipython<8.0.0   # 8.0.0 drops 
 lxml>=4.6.5     # to fix CVE
 pip-tools
 pre-commit
