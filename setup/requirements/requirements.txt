@@ -18,8 +18,6 @@ autobahn==21.11.1
     # via daphne
 automat==20.2.0
     # via twisted
-backports.zoneinfo==0.2.1
-    # via django
 bokeh==1.4.0
     # via -r setup/requirements/requirements.in
 certifi==2021.10.8
@@ -55,7 +53,7 @@ dask[distributed]==2021.12.0
     #   distributed
 distributed==2021.12.0
     # via dask
-django==4.0.1
+django==3.2.11
     # via
     #   -r setup/requirements/requirements.in
     #   channels
@@ -161,6 +159,7 @@ python-dateutil==2.8.2
     #   pandas
 pytz==2021.3
     # via
+    #   django
     #   djangorestframework
     #   pandas
 pyudev==0.22.0
