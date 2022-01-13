@@ -67,7 +67,7 @@ isort==5.10.0
     # via -r setup/requirements/dev-requirements.in
 jedi==0.18.0
     # via ipython
-lxml==4.6.4
+lxml==4.7.1
     # via -r setup/requirements/dev-requirements.in
 matplotlib-inline==0.1.3
     # via ipython

@@ -3,7 +3,7 @@ flake8
 isort
 ipdb
 IPython
-lxml>=4.6.3
+lxml>=4.6.5
 pip-tools
 pre-commit
 pytest

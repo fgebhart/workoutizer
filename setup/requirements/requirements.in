@@ -18,3 +18,4 @@ tenacity
 django-eventstream
 channels
 pyudev
+Pillow>=9.0.0           # to remedy CVEs
