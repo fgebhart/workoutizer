@@ -13,9 +13,9 @@ def test_all_sports_page_accessible(live_server, webdriver):
     webdriver.get(live_server.url + reverse("sports"))
 
     # first time running workoutizer will lead to the dashboard page with no data
-    card_title = webdriver.find_element_by_class_name("card-title")
+    card_title = webdriver.find_element(By.CLASS_NAME, "card-title")
     assert card_title.text == "Sports Overview"
-    assert "Sports" in webdriver.find_element_by_class_name("navbar-brand").text
+    assert "Sports" in webdriver.find_element(By.CLASS_NAME, "navbar-brand").text
 
 
 def test_adding_new_sport(live_server, webdriver):
@@ -28,21 +28,21 @@ def test_adding_new_sport(live_server, webdriver):
     webdriver.get(live_server.url + reverse("add-sport"))
 
     # fill out form to add new sport
-    sport_name_input_field = webdriver.find_element_by_css_selector("#id_name")
+    sport_name_input_field = webdriver.find_element(By.CSS_SELECTOR, "#id_name")
     sport_name_input_field.clear()
     sport_name_input_field.send_keys("UltimateFrisbee")
 
-    icon_input_field = webdriver.find_element_by_css_selector("#id_icon")
+    icon_input_field = webdriver.find_element(By.CSS_SELECTOR, "#id_icon")
     icon_input_field.clear()
     icon_input_field.send_keys("compact-disc")
 
     # TODO: color seems not to work that way, will leave it for now...
-    color_input_field = webdriver.find_element_by_css_selector("#id_color")
+    color_input_field = webdriver.find_element(By.CSS_SELECTOR, "#id_color")
     color_input_field.clear()
     color_input_field.send_keys("#FF1F3D")
 
     # find button and submit
-    button = webdriver.find_element_by_id("button")
+    button = webdriver.find_element(By.ID, "button")
     button.click()
 
     # check that a new sport was added
@@ -59,7 +59,7 @@ def test_sport_page__complete(import_demo_data, live_server, webdriver):
     # import demo activity and check that all expected elements are available on the sport page
     webdriver.get(live_server.url + "/sport/cycling")
 
-    table_header = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
+    table_header = [cell.text for cell in webdriver.find_elements(By.TAG_NAME, "th")]
     assert "DATE" in table_header
     assert "ACTIVITY" in table_header
     assert "TRACK" in table_header
@@ -68,27 +68,27 @@ def test_sport_page__complete(import_demo_data, live_server, webdriver):
     assert "DISTANCE" in table_header
 
     # the sport name should be unknown
-    assert "Cycling" in webdriver.find_element_by_class_name("navbar-brand").text
+    assert "Cycling" in webdriver.find_element(By.CLASS_NAME, "navbar-brand").text
 
-    card_category = [a.text for a in webdriver.find_elements_by_class_name("card-category")]
+    card_category = [a.text for a in webdriver.find_elements(By.CLASS_NAME, "card-category")]
     assert "Trend" in card_category
     assert "Distance" in card_category
     assert "Duration" in card_category
     assert "Count" in card_category
 
-    card_title = [a.text for a in webdriver.find_elements_by_class_name("card-title")]
+    card_title = [a.text for a in webdriver.find_elements(By.CLASS_NAME, "card-title")]
     # assert "0h 0m" in card_title        # fails in CI
     assert "169 km" in card_title
     assert "13h" in card_title
     assert "3" in card_title
 
-    links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
+    links = [a.text for a in webdriver.find_elements(By.TAG_NAME, "a")]
     assert "CYCLING" in links
 
-    card_title = [p.text for p in webdriver.find_elements_by_class_name("card-title")]
+    card_title = [p.text for p in webdriver.find_elements(By.CLASS_NAME, "card-title")]
     assert "Overview" in card_title
 
-    paragraph = [p.text for p in webdriver.find_elements_by_tag_name("p")]
+    paragraph = [p.text for p in webdriver.find_elements(By.TAG_NAME, "p")]
     assert "DASHBOARD" in paragraph
     assert "AWARDS" in paragraph
     assert "SPORTS" in paragraph
@@ -102,19 +102,19 @@ def test_sport_page__complete(import_demo_data, live_server, webdriver):
     # wait until activity row is present
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "activities-table-row")))
 
-    table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+    table_data = [cell.text for cell in webdriver.find_elements(By.TAG_NAME, "td")]
     assert "Noon Cycling in Bad Schandau" in table_data
     assert "Early Morning Cycling in Kochel am See" in table_data
     assert "Noon Cycling in Hinterzarten" in table_data
 
-    assert len(webdriver.find_elements_by_class_name("fa-chart-line")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-road")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-hashtag")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-chart-line")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-road")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-history")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-hashtag")) > 0
 
     # check that map is displayed
-    map_text = webdriver.find_element_by_id("leaflet_map").text
+    map_text = webdriver.find_element(By.ID, "leaflet_map").text
     assert "Streets" in map_text
     assert "Leaflet | Map data: © OpenStreetMap" in map_text
     assert "−" in map_text
@@ -124,16 +124,16 @@ def test_sport_page__complete(import_demo_data, live_server, webdriver):
     assert "Topo" in map_text
 
     # check that bokeh plot is available
-    assert len(webdriver.find_elements_by_class_name("bk-canvas")) == 1
+    assert len(webdriver.find_elements(By.CLASS_NAME, "bk-canvas")) == 1
 
     # check that it is possible to click on the fullscreen toggle using leaflet-ui
-    webdriver.find_element_by_css_selector(".leaflet-control-zoom-fullscreen").click()
+    webdriver.find_element(By.CSS_SELECTOR, ".leaflet-control-zoom-fullscreen").click()
 
     # check that streets is the default map layer
     default_layer = [
         span.text
-        for span in webdriver.find_elements_by_css_selector(
-            ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
+        for span in webdriver.find_elements(
+            By.CSS_SELECTOR, ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
         )
     ]
     assert len(default_layer) == 1
@@ -154,7 +154,7 @@ def test_sport_page__infinite_scroll(live_server, webdriver, insert_activity, in
 
     # number of rows equals the number of rows per page, since only one page is loaded
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "activities-table-row")))
-    table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
+    table_rows = [cell.text for cell in webdriver.find_elements(By.ID, "activities-table-row")]
     assert len(table_rows) + 1 == rows_per_page
 
     webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -164,7 +164,7 @@ def test_sport_page__infinite_scroll(live_server, webdriver, insert_activity, in
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "end-of-activities")))
 
     # again check number of table rows
-    table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
+    table_rows = [cell.text for cell in webdriver.find_elements(By.ID, "activities-table-row")]
     assert len(table_rows) + 1 == nr_of_inserted_activities
 
 
@@ -179,10 +179,10 @@ def test_sport_page__no_activities_selected_for_plot(live_server, webdriver, ins
 
     # even though the activity data is far in the past, the rows will be shown in the table
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "activities-table-row")))
-    table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
+    table_rows = [cell.text for cell in webdriver.find_elements(By.ID, "activities-table-row")]
     assert len(table_rows) == 5
 
-    paragraph = [p.text for p in webdriver.find_elements_by_tag_name("p")]
+    paragraph = [p.text for p in webdriver.find_elements(By.TAG_NAME, "p")]
     assert "BUNGEE JUMPING" in paragraph
     # because the activity was added has dates far in the past, there is no activity data available for plotting
     assert (
@@ -190,7 +190,7 @@ def test_sport_page__no_activities_selected_for_plot(live_server, webdriver, ins
         "The activity plot will appear here  "
     ) in paragraph
 
-    links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
+    links = [a.text for a in webdriver.find_elements(By.TAG_NAME, "a")]
     assert "WORKOUTIZER" in links
 
     # verify leaflet elements are present
@@ -199,7 +199,7 @@ def test_sport_page__no_activities_selected_for_plot(live_server, webdriver, ins
     assert "Leaflet" in links
     assert "OpenStreetMap" in links
 
-    spans = [a.text for a in webdriver.find_elements_by_tag_name("span")]
+    spans = [a.text for a in webdriver.find_elements(By.TAG_NAME, "span")]
     assert "Streets" in spans
     assert "Topo" in spans
     assert "Terrain" in spans
@@ -208,8 +208,8 @@ def test_sport_page__no_activities_selected_for_plot(live_server, webdriver, ins
     # check that streets is the default map layer
     default_layer = [
         span.text
-        for span in webdriver.find_elements_by_css_selector(
-            ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
+        for span in webdriver.find_elements(
+            By.CSS_SELECTOR, ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
         )
     ]
     assert len(default_layer) == 1

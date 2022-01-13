@@ -22,7 +22,7 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     pk = activity.pk
     webdriver.get(live_server.url + f"/activity/{pk}")
 
-    table_header = [cell.text for cell in webdriver.find_elements_by_tag_name("th")]
+    table_header = [cell.text for cell in webdriver.find_elements(By.TAG_NAME, "th")]
     assert "#" in table_header
     assert "TIME" in table_header
     assert "DISTANCE" in table_header
@@ -31,18 +31,18 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert "LABEL" in table_header
 
     # check summary facts
-    card_category = [cell.text for cell in webdriver.find_elements_by_class_name("card-category")]
+    card_category = [cell.text for cell in webdriver.find_elements(By.CLASS_NAME, "card-category")]
     assert "Date" in card_category
     assert "Distance" in card_category
     assert "Duration" in card_category
     assert "Calories" in card_category
-    card_title = [cell.text for cell in webdriver.find_elements_by_class_name("card-title")]
+    card_title = [cell.text for cell in webdriver.find_elements(By.CLASS_NAME, "card-title")]
     assert "4h 59m" in card_title
     assert "44.96 km" in card_title
     assert "1044 kcal" in card_title
     assert "29. Aug 20" in card_title
 
-    table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+    table_data = [cell.text for cell in webdriver.find_elements(By.TAG_NAME, "td")]
     # best sections
     assert "  1km" in table_data
     assert "  2km" in table_data
@@ -75,7 +75,7 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert "manual" in table_data
     assert "session_end" in table_data
 
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Noon Cycling In Bad Schandau"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Noon Cycling In Bad Schandau"
 
     # check card titles
     assert "Fastest Sections  " in card_title
@@ -86,7 +86,7 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert "Laps" in card_title
     assert "Elevation" in card_title
 
-    links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
+    links = [a.text for a in webdriver.find_elements(By.TAG_NAME, "a")]
     assert "WORKOUTIZER" in links
     assert "DASHBOARD" in links
     assert "AWARDS" in links
@@ -97,37 +97,37 @@ def test_activity_page__complete__fit(import_one_activity, live_server, webdrive
     assert "Leaflet" in links
     assert "OpenStreetMap" in links
 
-    spans = [a.text for a in webdriver.find_elements_by_tag_name("span")]
+    spans = [a.text for a in webdriver.find_elements(By.TAG_NAME, "span")]
     assert "Streets" in spans
     assert "Topo" in spans
     assert "Terrain" in spans
     assert "Satellite" in spans
 
     # check that icons are present
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-fire")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-road")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-calendar-alt")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-arrow-down")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-arrow-up")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-fire")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-road")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-history")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-history")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-calendar-alt")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-arrow-down")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-arrow-up")) > 0
 
     # check that map is displayed
     assert (
-        webdriver.find_element_by_id("leaflet_map").text
+        webdriver.find_element(By.ID, "leaflet_map").text
         == "Streets\nTopo\nTerrain\nSatellite\n+\n−\n3 km\nLeaflet | Map data: © OpenStreetMap"
     )
 
     # check that bokeh plots are available
-    assert webdriver.find_element_by_class_name("bk-root").text == "Show Auto Laps\nShow Manual Laps"
-    assert len(webdriver.find_elements_by_class_name("bk-canvas")) == 3
+    assert webdriver.find_element(By.CLASS_NAME, "bk-root").text == "Show Auto Laps\nShow Manual Laps"
+    assert len(webdriver.find_elements(By.CLASS_NAME, "bk-canvas")) == 3
 
     # check that streets is the default map layer
     default_layer = [
         span.text
-        for span in webdriver.find_elements_by_css_selector(
-            ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
+        for span in webdriver.find_elements(
+            By.CSS_SELECTOR, ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
         )
     ]
     assert len(default_layer) == 1
@@ -142,18 +142,18 @@ def test_activity_page__complete__gpx(import_one_activity, live_server, webdrive
     webdriver.get(live_server.url + f"/activity/{pk}")
 
     # check summary facts
-    card_category = [cell.text for cell in webdriver.find_elements_by_class_name("card-category")]
+    card_category = [cell.text for cell in webdriver.find_elements(By.CLASS_NAME, "card-category")]
     assert "Date" in card_category
     assert "Distance" in card_category
     assert "Duration" in card_category
     assert "Calories" in card_category
-    card_title = [cell.text for cell in webdriver.find_elements_by_class_name("card-title")]
+    card_title = [cell.text for cell in webdriver.find_elements(By.CLASS_NAME, "card-title")]
     assert "3h 32m" in card_title
     assert "82.6 km" in card_title
     assert "- kcal" in card_title
     assert "28. May 21" in card_title
 
-    table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+    table_data = [cell.text for cell in webdriver.find_elements(By.TAG_NAME, "td")]
     # best sections
     assert "  1km" in table_data
     assert "  2km" in table_data
@@ -163,13 +163,13 @@ def test_activity_page__complete__gpx(import_one_activity, live_server, webdrive
     assert "51.3 km/h" in table_data
     assert "49.9 km/h" in table_data
 
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Early Morning Cycling In Kochel Am See"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Early Morning Cycling In Kochel Am See"
 
     # check card titles
     assert "Fastest Sections  " in card_title
     assert "Best Climb Sections  " in card_title
 
-    links = [a.text for a in webdriver.find_elements_by_tag_name("a")]
+    links = [a.text for a in webdriver.find_elements(By.TAG_NAME, "a")]
     assert "WORKOUTIZER" in links
     assert "DASHBOARD" in links
     assert "AWARDS" in links
@@ -180,34 +180,34 @@ def test_activity_page__complete__gpx(import_one_activity, live_server, webdrive
     assert "Leaflet" in links
     assert "OpenStreetMap" in links
 
-    spans = [a.text for a in webdriver.find_elements_by_tag_name("span")]
+    spans = [a.text for a in webdriver.find_elements(By.TAG_NAME, "span")]
     assert "Streets" in spans
     assert "Topo" in spans
     assert "Terrain" in spans
     assert "Satellite" in spans
 
     # check that icons are present
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-fire")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-road")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-history")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-calendar-alt")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-fire")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-road")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-history")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-history")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-calendar-alt")) > 0
 
     # check that map is displayed
     assert (
-        webdriver.find_element_by_id("leaflet_map").text
+        webdriver.find_element(By.ID, "leaflet_map").text
         == "Streets\nTopo\nTerrain\nSatellite\n+\n−\n10 km\nLeaflet | Map data: © OpenStreetMap"
     )
 
     # check that only one bokeh plot is available
-    assert len(webdriver.find_elements_by_class_name("bk-canvas")) == 1
+    assert len(webdriver.find_elements(By.CLASS_NAME, "bk-canvas")) == 1
 
     # check that streets is the default map layer
     default_layer = [
         span.text
-        for span in webdriver.find_elements_by_css_selector(
-            ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
+        for span in webdriver.find_elements(
+            By.CSS_SELECTOR, ".leaflet-control-layers-inline .leaflet-control-layers-base input:checked+span"
         )
     ]
     assert len(default_layer) == 1
@@ -233,12 +233,12 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     webdriver.get(live_server.url + f"/activity/{pk}")
 
     # verify that activity has some awards
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) > 0
     # because it currently evaluates for awards there is no exclamation circle icon
-    assert len(webdriver.find_elements_by_class_name("fa-exclamation-circle")) == 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-exclamation-circle")) == 0
 
     # go to edit activity page by clicking the edit button
-    button = webdriver.find_element_by_id("edit-activity-button")
+    button = webdriver.find_element(By.ID, "edit-activity-button")
     button.click()
 
     # verify url got changed to activity view
@@ -253,9 +253,9 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     activity.save()
     assert activity.is_demo_activity is True
 
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Edit Activity: Noon Cycling In Bad Schandau"
-    assert webdriver.find_element_by_id("submit-button").text == "  SAVE"
-    form_text = webdriver.find_element_by_tag_name("form").text
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Edit Activity: Noon Cycling In Bad Schandau"
+    assert webdriver.find_element(By.ID, "submit-button").text == "  SAVE"
+    form_text = webdriver.find_element(By.TAG_NAME, "form").text
     assert "Activity Name" in form_text
     assert "Sport" in form_text
     assert "Cycling" in form_text
@@ -270,7 +270,7 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     assert "CANCEL" in form_text
     assert "DELETE" in form_text
 
-    links = [link.text for link in webdriver.find_elements_by_tag_name("a")]
+    links = [link.text for link in webdriver.find_elements(By.TAG_NAME, "a")]
     assert "DASHBOARD" in links
     assert "ADD SPORT" in links
     assert "SPORTS" in links
@@ -283,15 +283,15 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
     assert "" in links
 
     # uncheck the box for evaluates_for_awards
-    webdriver.find_element_by_class_name("form-check-label").click()
+    webdriver.find_element(By.CLASS_NAME, "form-check-label").click()
 
     # enter a different name
-    name_field = webdriver.find_element_by_css_selector("#id_name")
+    name_field = webdriver.find_element(By.CSS_SELECTOR, "#id_name")
     name_field.clear()
     name_field.send_keys("Dummy Activity Name")
 
     # change duration
-    duration_field = webdriver.find_element_by_css_selector("#id_duration")
+    duration_field = webdriver.find_element(By.CSS_SELECTOR, "#id_duration")
     duration_field.clear()
     duration_field.send_keys("01:11:11")
 
@@ -319,16 +319,16 @@ def test_edit_activity_page(import_one_activity, live_server, webdriver, insert_
         webdriver.find_element(By.ID, "id_form-1-label")
 
     # submit form with modified data
-    button = webdriver.find_element_by_id("submit-button")
+    button = webdriver.find_element(By.ID, "submit-button")
     button.click()
 
     # verify url got changed to activity view
     assert webdriver.current_url == f"{live_server.url}/activity/{pk}"
 
     # check that all trophies got removed, since activity no longer evaluates for awards
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) == 0
     # two warning exclamation circles are present, one for fastest, one for climb
-    assert len(webdriver.find_elements_by_class_name("fa-exclamation-circle")) == 2
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-exclamation-circle")) == 2
 
     # verify attributes got changed
     activity = models.Activity.objects.get()
@@ -439,9 +439,9 @@ def test_activity_page__rendering_of_sport_icon_on_map(insert_sport, import_one_
     webdriver.get(live_server.url + f"/activity/{pk}")
     assert webdriver.current_url == f"{live_server.url}/activity/{pk}"
 
-    initial_number_of_sport_icons = len(webdriver.find_elements_by_class_name(f"fa-{icon_name}"))
+    initial_number_of_sport_icons = len(webdriver.find_elements(By.CLASS_NAME, f"fa-{icon_name}"))
 
-    headings = [h.text for h in webdriver.find_elements_by_tag_name("h4")]
+    headings = [h.text for h in webdriver.find_elements(By.TAG_NAME, "h4")]
     assert "Fastest Sections  " in headings
     assert "Best Climb Sections  " in headings
     assert "Cadence" in headings
@@ -457,7 +457,7 @@ def test_activity_page__rendering_of_sport_icon_on_map(insert_sport, import_one_
     hover.perform()
 
     # once sport icon gets rendered we should find one more sport icons than before
-    number_of_sport_icons_when_hovering = len(webdriver.find_elements_by_class_name(f"fa-{icon_name}"))
+    number_of_sport_icons_when_hovering = len(webdriver.find_elements(By.CLASS_NAME, f"fa-{icon_name}"))
     assert number_of_sport_icons_when_hovering == initial_number_of_sport_icons + 1
 
 
@@ -479,10 +479,10 @@ def test_activity_page__missing_attributes(import_one_activity, live_server, web
     webdriver.get(live_server.url + f"/activity/{pk}")
 
     # verify that page load does not fail (without safety measures in place this would fail with TypeError, see GH95)
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Noon Cycling In Bad Schandau"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Noon Cycling In Bad Schandau"
 
     # also verify that the sections with missing data are not displayed
-    headings = [h.text for h in webdriver.find_elements_by_tag_name("h4")]
+    headings = [h.text for h in webdriver.find_elements(By.TAG_NAME, "h4")]
     assert "Trainings Effect" not in headings
     assert "Heart Rate" not in headings
     assert "Speed" not in headings
@@ -512,7 +512,7 @@ def test_activity_page__missing_attributes(import_one_activity, live_server, web
     webdriver.refresh()
 
     # and verify all headings are back
-    headings = [h.text for h in webdriver.find_elements_by_tag_name("h4")]
+    headings = [h.text for h in webdriver.find_elements(By.TAG_NAME, "h4")]
     assert "Fastest Sections  " in headings
     assert "Laps" in headings
     assert "Speed" in headings
@@ -538,7 +538,7 @@ def test_trophy_icon_for_awarded_activity_is_displayed_correctly(db, live_server
     activity_url = live_server.url + f"/activity/{activity.pk}"
     webdriver.get(activity_url)
     # neither best sections nor total ascent is available, thus we expect 0 trophies on the activity page
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) == 0
 
     # add total ascent to activity
     trace = models.Traces.objects.create(
@@ -552,9 +552,9 @@ def test_trophy_icon_for_awarded_activity_is_displayed_correctly(db, live_server
     activity.save()
 
     webdriver.get(activity_url)
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 1
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) == 1
 
-    trophy = webdriver.find_element_by_class_name("fa-trophy")
+    trophy = webdriver.find_element(By.CLASS_NAME, "fa-trophy")
     color = trophy.value_of_css_property("color")
     assert "255, 215, 0" in color
     assert "rgb" in color
@@ -570,7 +570,7 @@ def test_trophy_icon_for_awarded_activity_is_displayed_correctly(db, live_server
     )
     webdriver.get(activity_url)
     # since the title of the "fastest section" card will also contain an additional trophy, we now expect 3
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 3
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) == 3
 
 
 def test_bokeh_lap_button(import_one_activity, live_server, webdriver_firefox, take_screenshot, tmp_path):

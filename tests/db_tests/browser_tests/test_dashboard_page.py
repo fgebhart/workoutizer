@@ -16,7 +16,7 @@ def test_dashboard_page_accessible(live_server, webdriver):
     webdriver.get(live_server.url + reverse("home"))
 
     # first time running workoutizer will lead to the dashboard page with no data
-    h3 = webdriver.find_element_by_css_selector("h3")
+    h3 = webdriver.find_element(By.CSS_SELECTOR, "h3")
     assert h3.text == "No activity data selected for plotting  "
 
 
@@ -24,7 +24,7 @@ def test_add_activity_button(live_server, webdriver):
     webdriver.get(live_server.url + reverse("home"))
 
     # ensure button to create new data is actually redirecting to add activity page
-    webdriver.find_element_by_id("add-activity-button").click()
+    webdriver.find_element(By.ID, "add-activity-button").click()
     assert webdriver.current_url == live_server.url + reverse("add-activity")
 
 
@@ -32,11 +32,11 @@ def test_nav_bar_items(live_server, webdriver):
     webdriver.get(live_server.url + reverse("home"))
 
     # ensure nav bar link to settings page works
-    webdriver.find_element_by_id("settings-button").click()
+    webdriver.find_element(By.ID, "settings-button").click()
     assert webdriver.current_url == live_server.url + reverse("settings")
 
     # ensure nav bar link to help page works
-    webdriver.find_element_by_id("help-button").click()
+    webdriver.find_element(By.ID, "help-button").click()
     assert webdriver.current_url == live_server.url + reverse("help")
 
 
@@ -44,19 +44,19 @@ def test_drop_down_visible(live_server, webdriver, settings):
     webdriver.get(live_server.url + reverse("home"))
     days = settings.number_of_days
 
-    dropdown_button = webdriver.find_element_by_id("dropdown-btn")
+    dropdown_button = webdriver.find_element(By.ID, "dropdown-btn")
     assert dropdown_button.text == f"{days} DAYS"
 
 
 def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     webdriver.get(live_server.url + reverse("home"))
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Dashboard"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Dashboard"
 
     # scroll down to table to ensure data is getting loaded
     webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "td")))
     # check that all activity names are in the table
-    table_data = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+    table_data = [cell.text for cell in webdriver.find_elements(By.TAG_NAME, "td")]
     assert "Noon Jogging in Heidelberg" in table_data
     assert "Swimming" in table_data
     assert "Noon Cycling in Bad Schandau" in table_data
@@ -65,13 +65,13 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     assert "Noon Hiking in Aftersteg" in table_data
     assert "Noon Hiking in Kornau" in table_data
 
-    h4 = [heading.text for heading in webdriver.find_elements_by_tag_name("h4")]
+    h4 = [heading.text for heading in webdriver.find_elements(By.TAG_NAME, "h4")]
     assert "Overview" in h4
     assert "Sport Distribution" in h4
     assert "Sport Trend" in h4
     assert "Workload & Mileage" in h4
 
-    stats = [stat.text for stat in webdriver.find_elements_by_class_name("stats")]
+    stats = [stat.text for stat in webdriver.find_elements(By.CLASS_NAME, "stats")]
     assert "Duration over last 7 Days" in stats
     assert "Total Distance of Activities" in stats
     assert "Total Duration of Activities" in stats
@@ -82,38 +82,38 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
     # verify history plot is present
     webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[2]/div/div/div[2]/div/div/div/div[2]")
     # verify pie chart is present
-    webdriver.find_element_by_id("chartSportDistribution")
+    webdriver.find_element(By.ID, "chartSportDistribution")
     # verify sport trend plot is present
     webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[3]/div[2]/div/div[2]/div/div/div/div[2]")
     # verify workload plot is present
     webdriver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[4]/div/div/div[2]/div/div/div/div[2]")
 
     # check that the trophy icons are present
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) > 0
 
     # check that sport icons are present
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-bicycle")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-hiking")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-running")) > 0
-    assert len(webdriver.find_elements_by_class_name("fa-swimmer")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-bicycle")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-hiking")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-running")) > 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-swimmer")) > 0
 
     # check left side bar icons are present
-    assert len(webdriver.find_elements_by_class_name("fa-chart-line")) == 2  # sidebar and summary facts
-    assert len(webdriver.find_elements_by_class_name("fa-medal")) == 1
-    assert len(webdriver.find_elements_by_class_name("fa-plus")) >= 1
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-chart-line")) == 2  # sidebar and summary facts
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-medal")) == 1
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-plus")) >= 1
 
     # check icons in top navbar are present
-    assert len(webdriver.find_elements_by_class_name("fa-question-circle")) == 1
-    assert len(webdriver.find_elements_by_class_name("fa-cog")) == 1
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-question-circle")) == 1
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-cog")) == 1
 
     # check icons in right sidebar are present
-    assert len(webdriver.find_elements_by_class_name("fa-hashtag")) == 1
-    assert len(webdriver.find_elements_by_class_name("fa-road")) == 1
-    assert len(webdriver.find_elements_by_class_name("fa-history")) == 3
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-hashtag")) == 1
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-road")) == 1
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-history")) == 3
 
     # verify that each activity which is in top score has an award and also is displayed with a trophy
-    href = [a.get_attribute("href") for a in webdriver.find_elements_by_tag_name("a")]
+    href = [a.get_attribute("href") for a in webdriver.find_elements(By.TAG_NAME, "a")]
     pks = []
     for url in href:
         if url is not None:
@@ -143,7 +143,7 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
         if pk in top_award_pks:
             expected_num_of_trophies += 1
 
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == expected_num_of_trophies
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) == expected_num_of_trophies
 
     # check that "made with love" text is not present
     with pytest.raises(NoSuchElementException):
@@ -163,7 +163,7 @@ def test_dashboard__infinite_scroll(tracks_in_tmpdir, live_server, webdriver, in
 
     # number of rows equals the number of rows per page, since only one page is loaded
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "activities-table-row")))
-    table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
+    table_rows = [cell.text for cell in webdriver.find_elements(By.ID, "activities-table-row")]
     assert len(table_rows) + 1 == rows_per_page
 
     webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -174,7 +174,7 @@ def test_dashboard__infinite_scroll(tracks_in_tmpdir, live_server, webdriver, in
 
     # again check number of table rows
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.ID, "activities-table-row")))
-    table_rows = [cell.text for cell in webdriver.find_elements_by_id("activities-table-row")]
+    table_rows = [cell.text for cell in webdriver.find_elements(By.ID, "activities-table-row")]
     assert len(table_rows) + 1 == nr_of_inserted_activities
 
 
@@ -206,11 +206,11 @@ def test_trophy_icon_for_awarded_activities_in_table_are_displayed_correctly(db,
 
     # verify no trophies are present by now
     webdriver.get(live_server.url + reverse("home"))
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 0
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) == 0
 
     # check that activities are already displayed in the table
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "td")))
-    td = [cell.text for cell in webdriver.find_elements_by_tag_name("td")]
+    td = [cell.text for cell in webdriver.find_elements(By.TAG_NAME, "td")]
     assert activity_1.name in td
     assert activity_2.name in td
     assert activity_3.name in td
@@ -229,7 +229,7 @@ def test_trophy_icon_for_awarded_activities_in_table_are_displayed_correctly(db,
     webdriver.get(live_server.url + reverse("home"))
     # ... and verify that 1 trophy is present
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "fa-trophy")))
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 1
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) == 1
     assert get_flat_list_of_pks_of_activities_in_top_awards() == [activity_1.pk]
 
     # add best section to activity 2 ...
@@ -244,7 +244,7 @@ def test_trophy_icon_for_awarded_activities_in_table_are_displayed_correctly(db,
     webdriver.get(live_server.url + reverse("home"))
     # ... and verify that 2 trophies are present
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "fa-trophy")))
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 2
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) == 2
     assert set(get_flat_list_of_pks_of_activities_in_top_awards()) == {activity_1.pk, activity_2.pk}
 
     # also add total ascent value to activity 3...
@@ -260,16 +260,16 @@ def test_trophy_icon_for_awarded_activities_in_table_are_displayed_correctly(db,
     webdriver.get(live_server.url + reverse("home"))
     # ... and verify that 3 trophies are present
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "fa-trophy")))
-    assert len(webdriver.find_elements_by_class_name("fa-trophy")) == 3
+    assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) == 3
     assert set(get_flat_list_of_pks_of_activities_in_top_awards()) == set([activity_1.pk, activity_2.pk, activity_3.pk])
 
 
 def test_workload_plot_is_aggregated_by_week_or_month(db, live_server, webdriver):
     webdriver.get(live_server.url + reverse("home"))
-    assert webdriver.find_element_by_class_name("navbar-brand").text == "Dashboard"
+    assert webdriver.find_element(By.CLASS_NAME, "navbar-brand").text == "Dashboard"
 
     # having no activities at all would lead to the workload plot not being present at all
-    h4 = [heading.text for heading in webdriver.find_elements_by_tag_name("h4")]
+    h4 = [heading.text for heading in webdriver.find_elements(By.TAG_NAME, "h4")]
     assert "Overview" in h4
     assert "Sport Distribution" not in h4
     assert "Sport Trend" not in h4
@@ -296,11 +296,11 @@ def test_workload_plot_is_aggregated_by_week_or_month(db, live_server, webdriver
     workload_plot_xpath = "/html/body/div/div[2]/div/div[4]/div/div/div[2]/div/div/div/div[2]"
     WebDriverWait(webdriver, 3).until(EC.presence_of_element_located((By.XPATH, workload_plot_xpath)))
     webdriver.find_element(By.XPATH, workload_plot_xpath)
-    h4 = [heading.text for heading in webdriver.find_elements_by_tag_name("h4")]
+    h4 = [heading.text for heading in webdriver.find_elements(By.TAG_NAME, "h4")]
     assert "Workload & Mileage" in h4
 
     # and that it is aggregated by weeks
-    stats = [stat.text for stat in webdriver.find_elements_by_class_name("stats")]
+    stats = [stat.text for stat in webdriver.find_elements(By.CLASS_NAME, "stats")]
     assert "Overall Workload aggregated by Weeks" in stats
 
     # now insert even more activities to test that workload plot gets aggregated by months
@@ -317,5 +317,5 @@ def test_workload_plot_is_aggregated_by_week_or_month(db, live_server, webdriver
     webdriver.get(live_server.url + reverse("home"))
 
     # verify that workload is aggregated by months
-    stats = [stat.text for stat in webdriver.find_elements_by_class_name("stats")]
+    stats = [stat.text for stat in webdriver.find_elements(By.CLASS_NAME, "stats")]
     assert "Overall Workload aggregated by Months" in stats
