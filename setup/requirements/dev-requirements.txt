@@ -4,8 +4,6 @@
 #
 #    pip-compile setup/requirements/dev-requirements.in
 #
-asttokens==2.0.5
-    # via stack-data
 async-generator==1.10
     # via
     #   trio
@@ -18,9 +16,7 @@ attrs==21.4.0
 backcall==0.2.0
     # via ipython
 black==21.12b0
-    # via
-    #   -r setup/requirements/dev-requirements.in
-    #   ipython
+    # via -r setup/requirements/dev-requirements.in
 certifi==2021.10.8
     # via urllib3
 cffi==1.15.0
@@ -45,8 +41,6 @@ distlib==0.3.4
     # via virtualenv
 execnet==1.9.0
     # via pytest-xdist
-executing==0.8.2
-    # via stack-data
 filelock==3.4.2
     # via virtualenv
 flake8==4.0.1
@@ -63,7 +57,7 @@ iniconfig==1.1.1
     # via pytest
 ipdb==0.13.9
     # via -r setup/requirements/dev-requirements.in
-ipython==8.0.0
+ipython==7.31.0
     # via
     #   -r setup/requirements/dev-requirements.in
     #   ipdb
@@ -109,8 +103,6 @@ prompt-toolkit==3.0.24
     # via ipython
 ptyprocess==0.7.0
     # via pexpect
-pure-eval==0.2.1
-    # via stack-data
 py==1.11.0
     # via
     #   pytest
@@ -156,15 +148,12 @@ selenium==4.1.0
     # via -r setup/requirements/dev-requirements.in
 six==1.16.0
     # via
-    #   asttokens
     #   pyopenssl
     #   virtualenv
 sniffio==1.2.0
     # via trio
 sortedcontainers==2.4.0
     # via trio
-stack-data==0.1.3
-    # via ipython
 toml==0.10.2
     # via
     #   ipdb
