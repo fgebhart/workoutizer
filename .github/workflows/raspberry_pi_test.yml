@@ -9,7 +9,7 @@ on:
       - ".github/workflows/raspberry_pi_test.yml"
 
   push:
-    branches: main
+    # branches: main
 
 jobs:
   armv7_job:
@@ -26,7 +26,7 @@ jobs:
           install: |
             echo "---- installing apt packages ----"
             apt-get update -q -y
-            apt-get install -q -y python3 \
+            apt-get install -q -y python3.9 \
                                   python3-pip \
                                   python3-dev \
                                   build-essential \
@@ -47,6 +47,8 @@ jobs:
             echo "inserted piwheels index to pip.conf"
             cat /etc/pip.conf
 
+            python3 --version
+            pip3 --version
             pip3 install -e .
 
             echo "---- initializing wkz ----"
