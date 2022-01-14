@@ -40,16 +40,15 @@ jobs:
 
           run: |
             echo "---- installing pip dependencies ----"
-
             echo '[global]
             extra-index-url=https://www.piwheels.org/simple' > /etc/pip.conf
-
             echo "inserted piwheels index to pip.conf"
             cat /etc/pip.conf
 
+            echo "---- installing workoutizer ----"
             python3 --version
             pip3 --version
-            pip3 install -e .
+            pip3 install .
 
             echo "---- initializing wkz ----"
             wkz init --demo
