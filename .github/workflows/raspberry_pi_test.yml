@@ -48,7 +48,7 @@ jobs:
             echo "---- installing workoutizer ----"
             python3 --version
             pip3 --version
-            pip3 install .
+            pip3 install -e .
 
             echo "---- initializing wkz ----"
             wkz init --demo
