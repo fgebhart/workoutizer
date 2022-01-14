@@ -48,9 +48,8 @@ jobs:
             echo "---- installing workoutizer ----"
             python3 --version
             pip --version
-            pip install pip==21.2.4   # 21.3 breaks editable install
-            pip --version
-            pip install -e .
+            python3 setup.py bdist_wheel
+            pip install dist/*.whl
 
             echo "---- initializing wkz ----"
             wkz init --demo
