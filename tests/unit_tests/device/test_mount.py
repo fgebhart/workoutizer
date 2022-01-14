@@ -67,12 +67,12 @@ def test_wait_for_device_and_mount(monkeypatch, _mock_lsusb, caplog, mock_dev, m
     # try to mount device where no device is connected at all
     _mock_lsusb(lsusb_no_garmin_device_at_all)
     with pytest.raises(mount.FailedToMountDevice, match="Expected output of 'lsusb' to contain string 'Garmin'."):
-        mount.wait_for_device_and_mount()
+        mount._wait_for_device_and_mount()
 
     # try to mount device where device is not ready
     _mock_lsusb(lsusb_device_not_ready_to_be_mounted)
     with pytest.raises(mount.FailedToMountDevice):
-        mount.wait_for_device_and_mount()
+        mount._wait_for_device_and_mount()
 
     from tests.conftest import MOCKED_RETRY, MOCKED_WAIT
 
@@ -98,7 +98,7 @@ def test_wait_for_device_and_mount(monkeypatch, _mock_lsusb, caplog, mock_dev, m
 
     # try to mount device which is ready to be mounted from the beginning on
     _mock_lsusb(lsusb_ready_to_be_mounted_device)
-    path = mount.wait_for_device_and_mount()
+    path = mount._wait_for_device_and_mount()
 
     assert "device seems to be ready for mount, mounting..." in caplog.text
     if mock_dev == "MTP":
@@ -145,21 +145,12 @@ def test_wait_for_device_and_mount__first_not_but_then_ready(
     monkeypatch.setattr(mount, "_determine_device_type", _determine_device_type)
 
     # call function to be tested
-    mount_path = mount.wait_for_device_and_mount()
+    mount_path = mount._wait_for_device_and_mount()
 
     assert "device is not ready for mounting yet, waiting 0.1 seconds..." in caplog.text
     assert "device seems to be ready for mount, mounting..." in caplog.text
     assert f"device at path {path} is of type {mock_dev}" in caplog.text
     assert f"successfully mounted device at: {mount_path}" in caplog.text
-
-
-def test__get_mounted_path():
-    mount_output = "Mounted at /media/garmin"
-    assert mount._get_mounted_path(mount_output) == "/media/garmin"
-
-    mount_output = "String not containing keyword"  # missing "Mounted"
-    with pytest.raises(mount.FailedToMountDevice):
-        mount._get_mounted_path(mount_output)
 
 
 def test_garmin_device_connected(_mock_lsusb):
