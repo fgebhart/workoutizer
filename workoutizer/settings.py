@@ -7,7 +7,7 @@ from workoutizer.logger import get_logging_config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-INITIAL_TRACE_DATA_DIR = os.path.join(BASE_DIR, "setup", "initial_trace_data")
+INITIAL_TRACE_DATA_DIR = os.path.join(BASE_DIR, "wkz", "initial_trace_data")
 
 if os.getenv("WKZ_ENV", None) == "devel":
     WORKOUTIZER_DIR = BASE_DIR

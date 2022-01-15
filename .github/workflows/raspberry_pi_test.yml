@@ -17,11 +17,11 @@ jobs:
     name: Test on armv7
     steps:
       - uses: actions/checkout@v2.1.0
-      - uses: uraimo/run-on-arch-action@v2.0.5
+      - uses: uraimo/run-on-arch-action@v2.1.1
         name: Install and run workoutizer
         with:
           arch: armv7
-          distro: buster
+          distro: bullseye
           
           install: |
             echo "---- installing apt packages ----"
@@ -29,6 +29,7 @@ jobs:
             apt-get install -q -y python3 \
                                   python3-pip \
                                   python3-dev \
+                                  virtualenv \
                                   build-essential \
                                   libssl-dev \
                                   libffi-dev \
@@ -40,16 +41,18 @@ jobs:
 
           run: |
             echo "---- installing pip dependencies ----"
-
             echo '[global]
             extra-index-url=https://www.piwheels.org/simple' > /etc/pip.conf
-
             echo "inserted piwheels index to pip.conf"
             cat /etc/pip.conf
 
+            echo "---- installing workoutizer ----"
             python3 --version
-            pip3 --version
-            pip3 install -e .
+            pip --version
+            python3 setup.py bdist_wheel
+            virtualenv -p python3 venv
+            source venv/bin/activate
+            pip install dist/*.whl
 
             echo "---- initializing wkz ----"
             wkz init --demo

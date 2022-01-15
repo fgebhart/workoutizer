@@ -4,6 +4,7 @@ static/
 media/*.gpx
 tracks/*.gpx
 tracks/*.fit
+tracks/*.py
 .pytest_cache/
 *.sqlite3
 *.sqlite3-journal

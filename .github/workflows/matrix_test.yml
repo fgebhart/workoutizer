@@ -61,7 +61,7 @@ jobs:
     - name: Run Tests
       if: always()
       run: |
-        pytest tests/ -vv -n2
+        pytest tests/ -vv -n2 --color=yes
 
     - name: Init
       if: always()
