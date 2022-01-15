@@ -23,7 +23,7 @@ jobs:
         pip install -e . --no-deps
     - name: Run Tests
       run: |
-        pytest tests/ -vv -n2
+        pytest tests/ -vv -n2 --color=yes
 
   build:
     name: Build, Check & Release
