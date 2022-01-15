@@ -41,6 +41,6 @@ setuptools.setup(
     extras_require={
         "testing": requirements_from_txt("dev-requirements.txt"),
     },
-    packages=setuptools.find_packages(exclude=["tests"]) + ["tracks", "media"],
+    packages=setuptools.find_packages(exclude=["tests"]) + ["setup", "tracks", "media"],
     entry_points={"console_scripts": ["wkz = workoutizer.cli:wkz"]},
 )
