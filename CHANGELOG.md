@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 * Fixed retrieving geo referenced location names by adding `county` as additional
   field. This will again provide a geo name for activities with particular coordinates.
+### Changed
+* moved `initial_trace_data` dir from `setup` to `wkz` because in some cases this led
+  to a failure of missing dir when initializing workoutizer with the `--demo` flag.
 
 ## [0.23.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.23.0) - 2021-10-24
 ### Added
