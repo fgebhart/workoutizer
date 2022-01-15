@@ -9,7 +9,7 @@ on:
       - ".github/workflows/raspberry_pi_test.yml"
 
   push:
-    # branches: main
+    branches: main
 
 jobs:
   armv7_job:
