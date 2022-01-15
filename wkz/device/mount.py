@@ -74,7 +74,9 @@ def _wait_for_device_and_mount() -> str:
                 log.info(f"successfully mounted device at: {EXPECTED_BLOCK_DEVICE_PATH}")
                 return EXPECTED_BLOCK_DEVICE_PATH
             else:
-                log.warning(f"unable to mount device of type: {device_type}, will retry {RETRIES - n} more time(s)...")
+                log.warning(
+                    f"unable to mount device of type: {device_type}, will retry {RETRIES - (n+1)} more time(s)..."
+                )
         else:
             log.info(f"device is not ready for mounting yet, waiting {WAIT} seconds...")
             time.sleep(WAIT)

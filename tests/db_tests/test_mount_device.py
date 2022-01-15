@@ -23,7 +23,10 @@ def test_mount_device_and_collect_files(db, monkeypatch, caplog, tmpdir):
     monkeypatch.setattr(django_settings.HUEY, "task", task)
     # then import actual function (which in turn applies mocked decorator)
 
-    from wkz.device.mount import mount_device_and_collect_files
+    from wkz.device.mount import (
+        _wait_for_device_and_mount,
+        mount_device_and_collect_files,
+    )
 
     # run actual function to be tested
     mount_device_and_collect_files()
@@ -83,7 +86,8 @@ def test_mount_device_and_collect_files(db, monkeypatch, caplog, tmpdir):
     path_to_device = tmpdir
 
     def _determine_type_and_mount(path):
-        return f"Mounted at {path_to_device}"
+        device_type = mount.DeviceType.MTP
+        return device_type
 
     monkeypatch.setattr(mount, "_determine_type_and_mount", _determine_type_and_mount)
 
@@ -103,7 +107,24 @@ def test_mount_device_and_collect_files(db, monkeypatch, caplog, tmpdir):
     mount_device_and_collect_files()
     assert "checking device to be ready for mount..." in caplog.text
     assert "device seems to be ready for mount, mounting..." in caplog.text
-    assert f"successfully mounted device at: {path_to_device}" in caplog.text
+    assert "unable to mount device of type: DeviceType.MTP, will retry 1 more time(s)..." in caplog.text
+    assert "could not mount device within time window of 0.5 seconds." in caplog.text
+    assert "Failed to mount device: Unable to mount device after 5 retries, with 0.1s delay each." in caplog.text
+
+    # mock the default path of EXPECTED_MTP_DEVICE_PATH since for testing we cannot ensure to construct a path at /var
+    monkeypatch.setattr(mount, "EXPECTED_MTP_DEVICE_PATH", Path(tmpdir))
+
+    mount_device_and_collect_files()
+    assert "sanity check to see if a device is already mounted..." in caplog.text
+    assert f"found mounted garmin device at: {path_to_device}, will skip mounting" in caplog.text
+    assert f"looking for new activity files in garmin device at {path_to_device}" in caplog.text
+    assert "copied file" in caplog.text
 
     # verify that fit file got collected
     assert Path(path_to_trace_dir / "garmin" / fit).is_file()
+
+    # we could also run _wait_for_device_and_mount to avoid the skipped mounting
+    _wait_for_device_and_mount()
+    assert "checking device to be ready for mount..." in caplog.text
+    assert "device seems to be ready for mount, mounting..." in caplog.text
+    assert f"successfully mounted device at: {path_to_device}" in caplog.text

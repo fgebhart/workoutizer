@@ -1,5 +1,6 @@
 import logging
 import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -159,3 +160,18 @@ def test_garmin_device_connected(_mock_lsusb):
 
     _mock_lsusb(output=lsusb_no_garmin_device_at_all)
     assert mount.garmin_device_connected() is False
+
+
+def test__device_type_is_mounted(tmp_path):
+    # neither is path a dir nor does it contain anything
+    assert mount._device_type_is_mounted(expected_path=Path("no_path")) is False
+
+    # path is dir but does not contain anything
+    assert mount._device_type_is_mounted(expected_path=Path(tmp_path)) is False
+
+    # path is dir and contains a file
+    d = tmp_path / "subfolder"
+    d.mkdir()
+    p = d / "some_file.txt"
+    p.write_text("foo")
+    assert mount._device_type_is_mounted(expected_path=Path(d)) is True
