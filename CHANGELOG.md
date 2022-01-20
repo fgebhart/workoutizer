@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 * Fixed retrieving geo referenced location names by adding `county` as additional
   field. This will again provide a geo name for activities with particular coordinates.
+* Updated the mounting mechanism to account for new `gio` on Raspberry Pi OS bullseye
+  which does no longer return the path to a mounted device. The mount mechanism was
+  changed in a way that it simply checks whether a device is mounted a the expected
+  location. This should work with in all scenarios.
 ### Changed
 * moved `initial_trace_data` dir from `setup` to `wkz` because in some cases this led
   to a failure of missing dir when initializing workoutizer with the `--demo` flag.
