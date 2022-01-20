@@ -13,6 +13,7 @@ from wkz import models
 
 def test_mount_device_and_collect_files(db, monkeypatch, caplog, tmpdir):
     caplog.set_level(logging.DEBUG, logger="wkz.device.mount")
+    caplog.set_level(logging.DEBUG, logger="wkz.io.fit_collector")
     # mock huey task away to actually test content of function mount_device_and_collect_files
     from workoutizer import settings as django_settings
 
