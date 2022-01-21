@@ -85,7 +85,7 @@ MOCKED_RETRY = 3
 
 
 @pytest.fixture
-def mock_mount_waiting_time(monkeypatch):
+def mock_mount_waiting_time(monkeypatch) -> None:
     from wkz.device import mount
 
     # mock number of retries and waiting time to speed up test execution
@@ -103,3 +103,21 @@ def _mock_lsusb(monkeypatch) -> None:
         return monkeypatch.setattr(subprocess, "check_output", lsusb_output)
 
     return mock
+
+
+@pytest.fixture
+def mock_expected_device_paths(monkeypatch, tmp_path) -> None:
+    from wkz.device import mount
+
+    # mock expected device paths in order to test these to be real dirs
+    mtp_path = tmp_path / "mtp"
+    mtp_path.mkdir()
+    p = mtp_path / "some_mtp_file.fit"
+    p.write_text("foo")
+    monkeypatch.setattr(mount, "EXPECTED_MTP_DEVICE_PATH", mtp_path)
+
+    block_path = tmp_path / "block"
+    block_path.mkdir()
+    p = block_path / "some_block_file.fit"
+    p.write_text("baa")
+    monkeypatch.setattr(mount, "EXPECTED_BLOCK_DEVICE_PATH", block_path)

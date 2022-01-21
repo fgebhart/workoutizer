@@ -1,9 +1,11 @@
 import logging
 import subprocess
+from pathlib import Path
 
 import pytest
 
 from wkz.device import mount
+from wkz.device.mount import DeviceType
 
 lsusb_ready_to_be_mounted_device = """
 Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
@@ -60,19 +62,21 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
     assert mount._get_path_to_device(lsusb) == "/dev/bus/usb/001/006"
 
 
-@pytest.mark.parametrize("mock_dev", ["BLOCK", "MTP"])
-def test_wait_for_device_and_mount(monkeypatch, _mock_lsusb, caplog, mock_dev, mock_mount_waiting_time):
+@pytest.mark.parametrize("mock_dev", [DeviceType.BLOCK, DeviceType.MTP])
+def test_wait_for_device_and_mount(
+    monkeypatch, _mock_lsusb, caplog, mock_dev, mock_mount_waiting_time, mock_expected_device_paths
+):
     caplog.set_level(logging.DEBUG, logger="wkz.device.mount")
 
     # try to mount device where no device is connected at all
     _mock_lsusb(lsusb_no_garmin_device_at_all)
     with pytest.raises(mount.FailedToMountDevice, match="Expected output of 'lsusb' to contain string 'Garmin'."):
-        mount.wait_for_device_and_mount()
+        mount._wait_for_device_and_mount()
 
     # try to mount device where device is not ready
     _mock_lsusb(lsusb_device_not_ready_to_be_mounted)
     with pytest.raises(mount.FailedToMountDevice):
-        mount.wait_for_device_and_mount()
+        mount._wait_for_device_and_mount()
 
     from tests.conftest import MOCKED_RETRY, MOCKED_WAIT
 
@@ -80,36 +84,31 @@ def test_wait_for_device_and_mount(monkeypatch, _mock_lsusb, caplog, mock_dev, m
     assert f"could not mount device within time window of {MOCKED_WAIT * MOCKED_RETRY} seconds." in caplog.text
 
     # mock output of actual mounting command (with actual gio output text)
-    path_to_device = "/some/dummy/path/to/device"
-
-    def _mount_cmd(path):
-        return f"Mounted /dev/bus/usb/001/004 at {path_to_device}"
-
-    monkeypatch.setattr(mount, "_mount_device_using_gio", _mount_cmd)
+    if mock_dev == DeviceType.BLOCK:
+        path_to_device = mount.EXPECTED_BLOCK_DEVICE_PATH
+    elif mock_dev == DeviceType.MTP:
+        path_to_device = mount.EXPECTED_MTP_DEVICE_PATH
 
     # mock output of _determine_device_type
     def _determine_device_type(path):
-        if mock_dev == "MTP":
-            return "MTP", path
-        elif mock_dev == "BLOCK":
-            return "BLOCK", path
+        if mock_dev == DeviceType.MTP:
+            return DeviceType.MTP, path
+        elif mock_dev == DeviceType.BLOCK:
+            return DeviceType.BLOCK, path
 
     monkeypatch.setattr(mount, "_determine_device_type", _determine_device_type)
 
     # try to mount device which is ready to be mounted from the beginning on
     _mock_lsusb(lsusb_ready_to_be_mounted_device)
-    path = mount.wait_for_device_and_mount()
+    path = mount._wait_for_device_and_mount()
 
     assert "device seems to be ready for mount, mounting..." in caplog.text
-    if mock_dev == "MTP":
-        assert path == path_to_device
-    else:
-        assert path == "/media/garmin"
+    assert path == path_to_device
 
 
-@pytest.mark.parametrize("mock_dev", ["BLOCK", "MTP"])
+@pytest.mark.parametrize("mock_dev", [DeviceType.BLOCK, DeviceType.MTP])
 def test_wait_for_device_and_mount__first_not_but_then_ready(
-    mock_dev, tmp_path, mock_mount_waiting_time, monkeypatch, caplog
+    mock_dev, tmp_path, mock_mount_waiting_time, monkeypatch, caplog, mock_expected_device_paths
 ):
     caplog.set_level(logging.DEBUG, logger="wkz.device.mount")
 
@@ -133,10 +132,10 @@ def test_wait_for_device_and_mount__first_not_but_then_ready(
         return f"Mounted device at {path}"
 
     # mock output of _find_device_type
-    if mock_dev == "MTP":
+    if mock_dev == DeviceType.MTP:
         monkeypatch.setattr(mount, "_mount_device_using_gio", mount_cmd)
 
-    elif mock_dev == "BLOCK":
+    elif mock_dev == DeviceType.BLOCK:
         monkeypatch.setattr(mount, "_mount_device_using_pmount", mount_cmd)
 
     def _determine_device_type(path):
@@ -145,21 +144,12 @@ def test_wait_for_device_and_mount__first_not_but_then_ready(
     monkeypatch.setattr(mount, "_determine_device_type", _determine_device_type)
 
     # call function to be tested
-    mount_path = mount.wait_for_device_and_mount()
+    mount_path = mount._wait_for_device_and_mount()
 
     assert "device is not ready for mounting yet, waiting 0.1 seconds..." in caplog.text
     assert "device seems to be ready for mount, mounting..." in caplog.text
     assert f"device at path {path} is of type {mock_dev}" in caplog.text
     assert f"successfully mounted device at: {mount_path}" in caplog.text
-
-
-def test__get_mounted_path():
-    mount_output = "Mounted at /media/garmin"
-    assert mount._get_mounted_path(mount_output) == "/media/garmin"
-
-    mount_output = "String not containing keyword"  # missing "Mounted"
-    with pytest.raises(mount.FailedToMountDevice):
-        mount._get_mounted_path(mount_output)
 
 
 def test_garmin_device_connected(_mock_lsusb):
@@ -168,3 +158,18 @@ def test_garmin_device_connected(_mock_lsusb):
 
     _mock_lsusb(output=lsusb_no_garmin_device_at_all)
     assert mount.garmin_device_connected() is False
+
+
+def test__device_type_is_mounted(tmp_path):
+    # neither is path a dir nor does it contain anything
+    assert mount._device_type_is_mounted(expected_path=Path("no_path")) is False
+
+    # path is dir but does not contain anything
+    assert mount._device_type_is_mounted(expected_path=Path(tmp_path)) is False
+
+    # path is dir and contains a file
+    d = tmp_path / "subfolder"
+    d.mkdir()
+    p = d / "some_file.txt"
+    p.write_text("foo")
+    assert mount._device_type_is_mounted(expected_path=Path(d)) is True

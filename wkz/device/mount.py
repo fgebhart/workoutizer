@@ -1,7 +1,9 @@
 import logging
 import subprocess
 import time
-from typing import Tuple
+from enum import Enum
+from pathlib import Path
+from typing import Tuple, Union
 
 import pyudev
 
@@ -12,6 +14,8 @@ RETRIES = 5
 WAIT = 20
 DEVICE_READY_STRING = "Garmin International"
 DEVICE_NOT_READY_STRING = "(various models)"
+EXPECTED_MTP_DEVICE_PATH = Path("/run/user/1000/gvfs/")
+EXPECTED_BLOCK_DEVICE_PATH = Path("/media/garmin/")
 
 
 log = logging.getLogger(__name__)
@@ -21,9 +25,19 @@ class FailedToMountDevice(Exception):
     pass
 
 
+class DeviceType(Enum):
+    MTP = "mtp"
+    BLOCK = "block"
+
+
 def mount_device_and_collect_files() -> None:
     try:
-        path_to_garmin_device = wait_for_device_and_mount()
+        path_to_garmin_device = _get_path_of_mounted_device()
+        if path_to_garmin_device:
+            log.debug(f"found mounted garmin device at: {path_to_garmin_device}, will skip mounting")
+        else:
+            log.debug("no device mounted yet, will mount...")
+            path_to_garmin_device = _wait_for_device_and_mount()
 
         # sleep for a second after mounting to avoid IO error
         time.sleep(1)
@@ -38,7 +52,7 @@ def mount_device_and_collect_files() -> None:
         log.error(f"Failed to mount device: {e}")
 
 
-def wait_for_device_and_mount() -> str:
+def _wait_for_device_and_mount() -> str:
     """
     Function to be called whenever a garmin device is connected via USB. Since it takes a moment for the device to be
     accessible and ready to be mounted we need to wait until the `lsusb` command has "Garmin International" in its
@@ -47,33 +61,27 @@ def wait_for_device_and_mount() -> str:
     if not garmin_device_connected():
         raise FailedToMountDevice("Expected output of 'lsusb' to contain string 'Garmin'.")
     log.debug("checking device to be ready for mount...")
-    for _ in range(RETRIES):
+    for n in range(RETRIES):
         lsusb = _get_lsusb_output()
         if DEVICE_READY_STRING in lsusb and DEVICE_NOT_READY_STRING not in lsusb:
             path = _get_path_to_device(lsusb)
             log.debug("device seems to be ready for mount, mounting...")
-            mount_output = _determine_type_and_mount(path)
-            if "Mounted" in mount_output:
-                mounted_path = _get_mounted_path(mount_output)
-                log.info(f"successfully mounted device at: {mounted_path}")
-                return mounted_path
+            device_type = _determine_type_and_mount(path)
+            if device_type == DeviceType.MTP and _device_type_is_mounted(EXPECTED_MTP_DEVICE_PATH):
+                log.info(f"successfully mounted device at: {EXPECTED_MTP_DEVICE_PATH}")
+                return EXPECTED_MTP_DEVICE_PATH
+            elif device_type == DeviceType.BLOCK and _device_type_is_mounted(EXPECTED_BLOCK_DEVICE_PATH):
+                log.info(f"successfully mounted device at: {EXPECTED_BLOCK_DEVICE_PATH}")
+                return EXPECTED_BLOCK_DEVICE_PATH
             else:
-                raise FailedToMountDevice(f"Mount command did not return expected output: {mount_output}")
+                log.warning(
+                    f"unable to mount device of type: {device_type}, will retry {RETRIES - (n+1)} more time(s)..."
+                )
         else:
             log.info(f"device is not ready for mounting yet, waiting {WAIT} seconds...")
             time.sleep(WAIT)
     log.warning(f"could not mount device within time window of {RETRIES * WAIT} seconds.")
     raise FailedToMountDevice(f"Unable to mount device after {RETRIES} retries, with {WAIT}s delay each.")
-
-
-def _get_mounted_path(mount_output: str) -> str:
-    if "Mounted" not in mount_output:
-        raise FailedToMountDevice(
-            f"Output of mount command does not look as expected: {mount_output}. Expected to contain 'Mounted'."
-        )
-    path_start = mount_output.find("at")
-    mount_path = mount_output[path_start + 3 :]
-    return mount_path
 
 
 def _get_path_to_device(lsusb_output: str) -> str:
@@ -90,21 +98,21 @@ def _get_path_to_device(lsusb_output: str) -> str:
             return path
 
 
-def _mount_device_using_gio(path: str) -> str:
-    return subprocess.check_output(["gio", "mount", "-d", path]).decode("utf-8").rstrip()
+def _mount_device_using_gio(path: str) -> None:
+    subprocess.check_output(["gio", "mount", "-d", path]).decode("utf-8").rstrip()
 
 
-def _mount_device_using_pmount(path: str) -> str:
+def _mount_device_using_pmount(path: str) -> None:
     subprocess.check_output(["pmount", path, "garmin"]).decode("utf-8")
-    # pmount does not return anything, assume command to be successful and return expected string
-    return "Mounted at /media/garmin"
 
 
 def garmin_device_connected() -> bool:
     try:
         lsusb = _get_lsusb_output()
     except (FileNotFoundError, subprocess.CalledProcessError):
-        raise FailedToMountDevice("No 'lsusb' command available on your system.")
+        raise FailedToMountDevice(
+            "No 'lsusb' command available on your system. Workoutizer will not be able to mount your Garmin device"
+        )
     if "Garmin" in lsusb:
         return True
     else:
@@ -115,19 +123,20 @@ def _get_lsusb_output() -> str:
     return subprocess.check_output("lsusb").decode("utf8")
 
 
-def _determine_type_and_mount(path: str) -> str:
+def _determine_type_and_mount(path: str) -> DeviceType:
     device_type, path = _determine_device_type(path)
     log.debug(f"device at path {path} is of type {device_type}")
     try:
-        if device_type == "MTP":
-            return _mount_device_using_gio(path)
-        elif device_type == "BLOCK":
-            return _mount_device_using_pmount(path)
+        if device_type == DeviceType.MTP:
+            _mount_device_using_gio(path)
+        elif device_type == DeviceType.BLOCK:
+            _mount_device_using_pmount(path)
+        return device_type
     except subprocess.CalledProcessError as e:
         raise FailedToMountDevice(f"Execution of mount command failed: {e}")
 
 
-def _determine_device_type(path: str) -> Tuple[str, str]:
+def _determine_device_type(path: str) -> Tuple[DeviceType, str]:
     log.debug(f"trying to determine device type for device at: {path}...")
     try:
         device_tree = pyudev.Context()
@@ -136,12 +145,12 @@ def _determine_device_type(path: str) -> Tuple[str, str]:
 
     # check if device is of type MTP
     if _is_of_type_mtp(device_tree):
-        return "MTP", path
+        return DeviceType.MTP, path
 
     # check if device is of type BLOCK
     block_device_path = _get_block_device_path(device_tree, path)
     if block_device_path:
-        return "BLOCK", block_device_path
+        return DeviceType.BLOCK, block_device_path
     else:
         raise FailedToMountDevice("Could not determine device type. Device is neither MTP nor BLOCK.")
 
@@ -162,3 +171,17 @@ def _get_block_device_path(device_tree: pyudev.core.Context, path: str) -> str:
         for device in block_devices:
             if vendor_id == device.get("ID_VENDOR_ID"):
                 return device.get("DEVNAME")
+
+
+def _device_type_is_mounted(expected_path: Path) -> bool:
+    return expected_path.is_dir() and any(expected_path.iterdir())
+
+
+def _get_path_of_mounted_device() -> Union[bool, str]:
+    log.debug("sanity check to see if a device is already mounted...")
+    if _device_type_is_mounted(EXPECTED_MTP_DEVICE_PATH):
+        return str(EXPECTED_MTP_DEVICE_PATH.absolute())
+    elif _device_type_is_mounted(EXPECTED_BLOCK_DEVICE_PATH):
+        return str(EXPECTED_BLOCK_DEVICE_PATH.absolute())
+    else:
+        return False
