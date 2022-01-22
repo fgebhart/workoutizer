@@ -16,7 +16,7 @@ attrs==21.4.0
 backcall==0.2.0
     # via ipython
 black==21.12b0
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 certifi==2021.10.8
     # via urllib3
 cffi==1.15.0
@@ -44,7 +44,7 @@ execnet==1.9.0
 filelock==3.4.2
     # via virtualenv
 flake8==4.0.1
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 h11==0.12.0
     # via wsproto
 identify==2.4.3
@@ -56,17 +56,17 @@ idna==3.3
 iniconfig==1.1.1
     # via pytest
 ipdb==0.13.9
-    # via -r setup/requirements/dev-requirements.in
-ipython==7.31.0
+    # via -r dev-requirements.in
+ipython==7.31.1
     # via
-    #   -r setup/requirements/dev-requirements.in
+    #   -r dev-requirements.in
     #   ipdb
 isort==5.10.1
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 jedi==0.18.1
     # via ipython
 lxml==4.7.1
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 matplotlib-inline==0.1.3
     # via ipython
 mccabe==0.6.1
@@ -90,7 +90,7 @@ pexpect==4.8.0
 pickleshare==0.7.5
     # via ipython
 pip-tools==6.4.0
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 platformdirs==2.4.1
     # via
     #   black
@@ -98,7 +98,7 @@ platformdirs==2.4.1
 pluggy==1.0.0
     # via pytest
 pre-commit==2.16.0
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 prompt-toolkit==3.0.24
     # via ipython
 ptyprocess==0.7.0
@@ -121,7 +121,7 @@ pyparsing==3.0.6
     # via packaging
 pytest==6.2.5
     # via
-    #   -r setup/requirements/dev-requirements.in
+    #   -r dev-requirements.in
     #   pytest-cov
     #   pytest-django
     #   pytest-forked
@@ -129,23 +129,23 @@ pytest==6.2.5
     #   pytest-metadata
     #   pytest-xdist
 pytest-cov==3.0.0
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 pytest-django==4.5.2
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 pytest-forked==1.4.0
     # via pytest-xdist
 pytest-html==3.1.1
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 pytest-metadata==1.11.0
     # via pytest-html
 pytest-xdist==2.5.0
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 pyyaml==6.0
     # via pre-commit
 rope==0.22.0
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 selenium==4.1.0
-    # via -r setup/requirements/dev-requirements.in
+    # via -r dev-requirements.in
 six==1.16.0
     # via
     #   pyopenssl
