@@ -72,13 +72,21 @@ jobs:
 
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction
+      run: |
+        poetry install --no-interaction --no-root
 
     - name: Run Tests
       if: always()
       run: |
         source .venv/bin/activate
         pytest tests/ -vv -n2 --color=yes
+
+    - name: Build and Install Wheel
+      if: always()
+      run: |
+        poetry build -f wheel
+        source .venv/bin/activate
+        pip install dist/workoutizer-*.whl
 
     - name: Init & Check
       if: always()

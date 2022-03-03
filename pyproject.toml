@@ -17,6 +17,14 @@ classifiers = [
     "Framework :: Django :: 3.0",
     "Framework :: Django :: 3.2",
 ]
+packages = [
+    { include = "wkz" },
+    { include = "workoutizer" },
+    { include = "tracks" },
+    { include = "media" },
+    { include = "pyproject.toml" },
+]
+
 
 [tool.poetry.scripts]
 wkz = "workoutizer.cli:wkz"
