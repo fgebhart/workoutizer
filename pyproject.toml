@@ -53,7 +53,7 @@ tomli = "^2.0.1"
 # if upgrade, ensure to be in line with github action workflow and pre-commit hooks
 black = "22.1.0"
 flake8 = "4.0.1"
-isort =  "5.10.0"
+isort =  "5.10.1"
 ipdb = "^0.13.9"
 ipython = "^7.29.0"
 lxml = "^4.6.5"

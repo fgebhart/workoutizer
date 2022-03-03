@@ -5,7 +5,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-...
+### Changed
+* Use Poetry for packaging. This removes the possibility of having dev or dirty
+  versions. But simplifies the overall building and releasing process.
+### Removed
+* Dropped support for Python3.7. This is to follow development of used dependencies
+  e.g. Django, Numpy and others. Recent Raspberry Pi images ship with Python >= 3.8
+  anyway.
+### Added
+* Added support for Python3.10.
 
 ## [0.24.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.24.0) - 2022-01-21
 ### Fixed

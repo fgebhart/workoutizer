@@ -11,10 +11,7 @@ from django.urls import reverse
 from django.views.generic import DeleteView
 
 from wkz import configuration as cfg
-from wkz.awards_views import (
-    get_ascent_ranking_of_activity,
-    get_top_awards_for_one_sport,
-)
+from wkz.awards_views import get_ascent_ranking_of_activity, get_top_awards_for_one_sport
 from wkz.best_sections.generic import activity_suitable_for_awards
 from wkz.forms import DATETIMEPICKER_FORMAT, AddActivityForm, EditActivityForm
 from wkz.io.gpx_exporter import save_activity_to_gpx_file

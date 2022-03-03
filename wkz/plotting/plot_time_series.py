@@ -5,14 +5,7 @@ from typing import List, Tuple
 import pandas as pd
 from bokeh.embed import components
 from bokeh.layouts import column, gridplot
-from bokeh.models import (
-    BoxZoomTool,
-    CheckboxButtonGroup,
-    ColumnDataSource,
-    CrosshairTool,
-    CustomJS,
-    HoverTool,
-)
+from bokeh.models import BoxZoomTool, CheckboxButtonGroup, ColumnDataSource, CrosshairTool, CustomJS, HoverTool
 from bokeh.models.formatters import DatetimeTickFormatter
 from bokeh.plotting import figure
 
