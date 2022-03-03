@@ -7,7 +7,7 @@ on: push
 
 jobs:
   build:
-    name: Build, Check & Release
+    name: Build & Release
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -21,15 +21,6 @@ jobs:
     - name: Build workoutizer
       run: |
         poetry build
-    - name: Install workoutizer
-      run: |
-        poetry install --no-interaction
-    - name: Check Installation
-      env:
-        WKZ_LOG_LEVEL: DEBUG
-      run: |
-        wkz init --demo
-        wkz check
     - name: Release
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
