@@ -49,11 +49,8 @@ def test__fill_list_of_timestamps():
         )
         == length
     )
-    assert (
-        _fill_list_of_timestamps(
-            start=datetime.datetime(2019, 7, 12),
-            duration=datetime.timedelta(minutes=30),
-            length=length,
-        )
-        == ["2019-07-12T12:00:00Z", "2019-07-12T12:10:00Z", "2019-07-12T12:20:00Z"]
-    )
+    assert _fill_list_of_timestamps(
+        start=datetime.datetime(2019, 7, 12),
+        duration=datetime.timedelta(minutes=30),
+        length=length,
+    ) == ["2019-07-12T12:00:00Z", "2019-07-12T12:10:00Z", "2019-07-12T12:20:00Z"]

@@ -49,13 +49,10 @@ def test_get_total_distance_of_trace__reversed_points():
 
 
 def test_add_elevation_data_to_coordinates():
-    assert (
-        add_elevation_data_to_coordinates(
-            coordinates=[(8, 49), (9, 50), (10, 51)],
-            altitude=[248, 249, 250],
-        )
-        == [(8, 49, 248), (9, 50, 249), (10, 51, 250)]
-    )
+    assert add_elevation_data_to_coordinates(
+        coordinates=[(8, 49), (9, 50), (10, 51)],
+        altitude=[248, 249, 250],
+    ) == [(8, 49, 248), (9, 50, 249), (10, 51, 250)]
 
 
 def test__get_location_name():

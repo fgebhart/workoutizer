@@ -3,11 +3,7 @@ import time
 
 import pytest
 from django.urls import reverse
-from selenium.common.exceptions import (
-    ElementNotInteractableException,
-    NoSuchElementException,
-    WebDriverException,
-)
+from selenium.common.exceptions import ElementNotInteractableException, NoSuchElementException, WebDriverException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
