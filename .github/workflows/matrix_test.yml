@@ -24,13 +24,18 @@ jobs:
     - name: black formatting
       run: |
         python -m pip install --upgrade pip
-        pip install black
+        pip install black=22.1.0
         black --check .
     - name: flake8 formatting
       if: always()
       run: |
-        pip install flake8
+        pip install flake8==4.0.1
         flake8 .
+    - name: isort
+      if: always()
+      run: |
+        pip install isort==5.10.1
+        isort . --check-only --recursive
 
   test:
     name: Test
@@ -39,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ["3.8", "3.9", "3.10"]
         os: [ubuntu-latest, macos-latest]
 
     steps:
@@ -51,16 +56,28 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: true
+
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
     - name: Install dependencies
-      if: always()
-      run: |
-        pip install pip==21.2.4
-        pip install -r setup/requirements/dev-requirements.txt
-        pip install -e .
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
 
     - name: Run Tests
       if: always()
       run: |
+        source .venv/bin/activate
         pytest tests/ -vv -n2 --color=yes
 
     - name: Init
@@ -68,9 +85,12 @@ jobs:
       env:
         WKZ_LOG_LEVEL: DEBUG
       run: |
+        source .venv/bin/activate
+        wkz --version
         wkz init --demo
 
     - name: Check
       if: always()
       run: |
+        source .venv/bin/activate
         wkz check

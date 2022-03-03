@@ -1,9 +1,81 @@
+[tool.poetry]
+name = "workoutizer"
+version = "0.24.0"
+description = "🏋️ Browser based Sport and Workout Organizer 🏃‍♀️"
+authors = ["Fabian Gebhart"]
+repository = "https://github.com/fgebhart/workoutizer"
+readme = "Readme.md"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Framework :: Django",
+    "Framework :: Django :: 3.0",
+    "Framework :: Django :: 3.2",
+]
+
+[tool.poetry.scripts]
+wkz = "workoutizer.cli:wkz"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+bokeh = "1.4.0"             # pinned due to CustomJS "use_strict" mode, will break my CustomJS
+channels = "^3.0.4"
+coloredlogs = "^15.0.1"
+click = "^8.0.4"
+dask = "^2022.2.0"
+distributed = "^2022.2.0"
+django = "^4.0.2"
+django-colorfield = "^0.6.3"
+django-eventstream = "^4.4.0"
+djangorestframework = "^3.13.1"
+fitparse = "^1.2.0"
+geopy = "^2.1.0"
+gpxpy = "^1.5.0"
+huey = "^2.4.3"
+luddite = "^1.0.2"
+numpy = "^1.22.2"
+pandas = "<1.3.0"           # pinned because of a bug in groupby in v1.3.0 https://github.com/pandas-dev/pandas/issues/43209
+psutil = "^5.9.0"
+requests = "^2.27.1"
+sportgems = "^0.7.1"        # starting from 0.7.0 supports Python3.10 while support for 3.7 was dropped
+tenacity = "^8.0.1"
+pyudev = "^0.23.2"
+Pillow = "^9.0.0"
+tomli = "^2.0.1"
+
+[tool.poetry.dev-dependencies]
+# following three are pinned to avoid unexpected formatting changes,
+# if upgrade, ensure to be in line with github action workflow and pre-commit hooks
+black = "22.1.0"
+flake8 = "4.0.1"
+isort =  "5.10.0"
+ipdb = "^0.13.9"
+ipython = "^7.29.0"
+lxml = "^4.6.5"
+pip-tools = "^6.4.0"
+pre-commit = "^2.15.0"
+pytest = "^6.2.5"
+pytest-django = "^4.4.0"
+pytest-xdist = "^2.4.0"
+pytest-cov = "^3.0.0"
+pytest-html = "^3.1.1"
+selenium = "^4.0.0"
+
+[tool.isort]
+multi_line_output = 3
+line_length = 121
+include_trailing_comma = true
+
 [tool.black]
 line-length = 121
 target-version = ['py38']
 include = '\.pyi?$'
 exclude = '''
-
 (
   /(
       \.eggs         # exclude a few common directories in the

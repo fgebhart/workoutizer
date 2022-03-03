@@ -1,20 +1,19 @@
 import os
-import subprocess
 
 import pytest
+from click.testing import CliRunner
 from django.core.management import execute_from_command_line
 
 from wkz import models
 from workoutizer import __version__, cli
 from workoutizer import settings as django_settings
+from workoutizer.cli import wkz
 
 
 def test_cli_version():
-    output = subprocess.check_output(["wkz", "--version"]).decode("utf-8")
-    assert output == f"{__version__}\n"
-
-    output = subprocess.check_output(["wkz", "-v"]).decode("utf-8")
-    assert output == f"{__version__}\n"
+    cli = CliRunner()
+    output = cli.invoke(wkz, ["--version"])
+    assert output.stdout == f"{__version__}\n"
 
 
 def test_cli__init(tracks_in_tmpdir):

@@ -17,10 +17,8 @@ jobs:
         python-version: 3.8
     - name: Install Dependencies
       run: |
-        pip install pip==21.2.4   # 21.3 breaks editable install
-        pip install -r setup/requirements/dev-requirements.txt
-        pip install -r setup/requirements/requirements.txt
-        pip install -e . --no-deps
+        pip install --upgrade poetry
+        poetry install
     - name: Run Tests
       run: |
         pytest tests/ -vv -n2 --color=yes
@@ -37,25 +35,22 @@ jobs:
         python-version: 3.8
     - name: Install Dependencies
       run: |
-        pip install setuptools wheel
+        pip install --upgrade poetry
     - name: Build workoutizer
       run: |
-        python setup.py sdist bdist_wheel
+        poetry build
     - name: Install workoutizer
       run: |
-        pip install dist/workoutizer-*.whl
+        poetry install
     - name: Check Installation
       env:
         WKZ_LOG_LEVEL: DEBUG
       run: |
         wkz init --demo
         wkz check
-    - name: Install Publishing Dependencies
-      run: |
-        pip install twine
     - name: Release
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        twine upload dist/*
+        poetry publish
