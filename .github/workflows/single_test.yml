@@ -33,9 +33,19 @@ jobs:
 
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: poetry install --no-interaction
 
     - name: Run Tests
       run: |
         source .venv/bin/activate
         pytest tests/ -vv -n2 --color=yes
+
+    - name: Init & Check
+      if: always()
+      env:
+        WKZ_LOG_LEVEL: DEBUG
+      run: |
+        source .venv/bin/activate
+        wkz --version
+        wkz init --demo
+        wkz check
