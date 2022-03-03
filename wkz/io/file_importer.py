@@ -123,7 +123,7 @@ def _save_activity_to_model(models, parser, trace_instance, importing_demo_data:
             activity_object.date = parser.date
     else:
         sport = _get_or_create_sport(models, parser.sport)
-        log.info(f"parsed sport name: {parser.sport} was mapped to: {sport.name}")
+        log.debug(f"parsed sport name: {parser.sport} was mapped to: {sport.name}")
         activity_object = models.Activity(
             # determine automatic name (based on location, sport name and daytime)
             name=get_automatic_name(parser, sport.name),

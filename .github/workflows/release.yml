@@ -1,32 +1,14 @@
 
 name: Release
 
-on:
-  release:
-    types: [created]
+on: push
+  # release:
+  #   types: [created]
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install Dependencies
-      run: |
-        pip install --upgrade poetry
-        poetry install
-    - name: Run Tests
-      run: |
-        pytest tests/ -vv -n2 --color=yes
-
   build:
     name: Build, Check & Release
     runs-on: ubuntu-latest
-    needs: [test]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -41,7 +23,7 @@ jobs:
         poetry build
     - name: Install workoutizer
       run: |
-        poetry install
+        poetry install --no-interaction
     - name: Check Installation
       env:
         WKZ_LOG_LEVEL: DEBUG
@@ -53,4 +35,4 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        poetry publish
+        poetry publish --dry-run
