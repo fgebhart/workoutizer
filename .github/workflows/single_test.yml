@@ -1,12 +1,7 @@
 
 name: Single Test
 
-on:
-  push:
-    paths:
-      - "**.py"
-      - "setup/requirements/**.txt"
-      - ".github/workflows/single_test.yml"
+on: push
 
 jobs:
   test:
@@ -20,14 +15,37 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: "3.10"
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: true
+
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Install dependencies
-      run: |
-        pip install pip==21.2.4   # 21.3 breaks editable install
-        pip install -r setup/requirements/dev-requirements.txt
-        pip install -e .
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction
 
     - name: Run Tests
       run: |
+        source .venv/bin/activate
         pytest tests/ -vv -n2 --color=yes
+
+    - name: Init & Check
+      if: always()
+      env:
+        WKZ_LOG_LEVEL: DEBUG
+      run: |
+        source .venv/bin/activate
+        wkz --version
+        wkz init --demo
+        wkz check

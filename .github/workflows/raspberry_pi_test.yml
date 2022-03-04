@@ -49,10 +49,11 @@ jobs:
             echo "---- installing workoutizer ----"
             python3 --version
             pip --version
-            python3 setup.py bdist_wheel
-            virtualenv -p python3 venv
-            source venv/bin/activate
-            pip install dist/*.whl
+            virtualenv -p python3 venv && source venv/bin/activate
+            python3 --version
+            pip install --upgrade poetry
+            poetry build
+            pip install dist/workoutizer-*.whl
 
             echo "---- initializing wkz ----"
             wkz init --demo

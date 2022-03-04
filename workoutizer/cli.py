@@ -16,17 +16,8 @@ from workoutizer.settings import TRACKS_DIR, WORKOUTIZER_DB_PATH, WORKOUTIZER_DI
 os.environ["DJANGO_SETTINGS_MODULE"] = "workoutizer.settings"
 
 
-def print_version(ctx, param, value):
-    if not value or ctx.resilient_parsing:
-        return
-    click.echo(__version__)
-    ctx.exit()
-
-
-@click.option(
-    "-v", "--version", help="prints the version", is_flag=True, callback=print_version, expose_value=False, is_eager=True
-)
 @click.group()
+@click.version_option(version=__version__, prog_name="workoutizer", message="%(version)s")
 def wkz():
     pass
 

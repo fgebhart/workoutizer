@@ -24,10 +24,7 @@ def test_mount_device_and_collect_files(db, monkeypatch, caplog, tmpdir):
     monkeypatch.setattr(django_settings.HUEY, "task", task)
     # then import actual function (which in turn applies mocked decorator)
 
-    from wkz.device.mount import (
-        _wait_for_device_and_mount,
-        mount_device_and_collect_files,
-    )
+    from wkz.device.mount import _wait_for_device_and_mount, mount_device_and_collect_files
 
     # run actual function to be tested
     mount_device_and_collect_files()

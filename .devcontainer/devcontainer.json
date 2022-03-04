@@ -30,6 +30,7 @@
 		"akamud.vscode-theme-onedark",
 		"ritwickdey.liveserver",
 		"reverbc.vscode-pytest",
+		"bungcip.better-toml",
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

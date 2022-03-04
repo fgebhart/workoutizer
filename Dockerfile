@@ -4,7 +4,24 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND='noninteractive'
 # install sqlite3 package for the use of djangos db shell
 RUN apt-get update && \
-    apt-get install -y sqlite3 virtualenv vim git zsh wget htop curl firefox unzip
+    apt-get install -y  sqlite3 \
+                        build-essential \
+                        vim \
+                        git \
+                        zsh \
+                        wget \
+                        htop \
+                        curl \
+                        firefox \
+                        unzip
+
+RUN apt-get update && \
+    apt-get install -y python3-dev \
+                       python3-pip \
+                       python3.8 \
+                       python3.9 \
+                       python3.10
+
 
 # install oh-my-zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
@@ -29,13 +46,14 @@ RUN unzip -p chromedriver_linux64.zip > /usr/bin/chromedriver
 RUN chmod +x /usr/bin/chromedriver
 RUN rm google-chrome-stable_91.0.4472.114-1_amd64.deb chromedriver_linux64.zip
 
-# first copy only requirements files to only invalidate the next setps in case of changed requirements
-COPY ./setup/requirements/ /workspaces/workoutizer/setup/requirements/
+# first copy only project toml and lock file to only invalidate the next setps in case of changed requirements
+COPY pyproject.toml /workspaces/workoutizer/pyproject.toml
+COPY poetry.lock /workspaces/workoutizer/poetry.lock
+WORKDIR /workspaces/workoutizer
 
 # install pip dependencies
-RUN virtualenv -p python3.8 /tmp/venv
-RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workspaces/workoutizer/setup/requirements/dev-requirements.txt'
-RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -r /workspaces/workoutizer/setup/requirements/requirements.txt'
+RUN pip install --upgrade poetry
+RUN poetry install --no-interaction --no-root
 
 ENV SHELL /bin/zsh
 ENV WKZ_ENV='devel'
@@ -51,4 +69,4 @@ WORKDIR /workspaces/workoutizer
 # set convenience alias
 RUN echo 'alias run_all_tests="pytest tests -v -n auto --html=pytest-report.html"' >> ~/.zshrc
 
-RUN /bin/bash -c 'source /tmp/venv/bin/activate && pip install -e . --no-deps --disable-pip-version-check'
+RUN poetry install --no-interaction
