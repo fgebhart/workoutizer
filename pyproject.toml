@@ -70,7 +70,7 @@ pytest-django = "^4.4.0"
 pytest-xdist = "^2.4.0"
 pytest-cov = "^3.0.0"
 pytest-html = "^3.1.1"
-selenium = "^4.0.0"
+selenium = "^4.1.2"
 
 [tool.isort]
 multi_line_output = 3

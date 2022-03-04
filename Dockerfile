@@ -31,20 +31,10 @@ RUN echo "Europe/Berlin" > /etc/timezone && \
     dpkg-reconfigure -f noninteractive tzdata
 
 # install gecko driver 
-RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz --no-check-certificate
-RUN sh -c 'tar -x geckodriver -zf geckodriver-v0.28.0-linux64.tar.gz -O > /usr/bin/geckodriver'
+RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz --no-check-certificate
+RUN sh -c 'tar -x geckodriver -zf geckodriver-v0.30.0-linux64.tar.gz -O > /usr/bin/geckodriver'
 RUN chmod +x /usr/bin/geckodriver
-RUN rm geckodriver-v0.28.0-linux64.tar.gz
-
-# Install chrome driver, use link for static version of chrome version
-# You can also use: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-# But this can result in a new version breaking the setup
-RUN wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_91.0.4472.114-1_amd64.deb
-RUN dpkg -i google-chrome-stable_91.0.4472.114-1_amd64.deb; apt-get install -fy
-RUN wget https://chromedriver.storage.googleapis.com/91.0.4472.101/chromedriver_linux64.zip
-RUN unzip -p chromedriver_linux64.zip > /usr/bin/chromedriver
-RUN chmod +x /usr/bin/chromedriver
-RUN rm google-chrome-stable_91.0.4472.114-1_amd64.deb chromedriver_linux64.zip
+RUN rm geckodriver-v0.30.0-linux64.tar.gz
 
 # first copy only project toml and lock file to only invalidate the next setps in case of changed requirements
 COPY pyproject.toml /workspaces/workoutizer/pyproject.toml

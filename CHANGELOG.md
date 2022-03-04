@@ -12,8 +12,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Dropped support for Python3.7. This is to follow development of used dependencies
   e.g. Django, Numpy and others. Recent Raspberry Pi images ship with Python >= 3.8
   anyway.
+* Removed testing support for Chrome browser. This does not mean workoutizer does no
+  longer run on Chrome. It is very likely that it still works without any issue. The
+  purpose of removing the chrome testing pipeline is to speed up the entire build
+  pipeline and reduce the number of features to be maintained.
 ### Added
 * Added support for Python3.10.
+### Fixed
+* Upgrade geckodriver to v0.30.0 in local docker setup to fix failing firefox tests
+  because of incompatible selenium version.
 
 ## [0.24.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.24.0) - 2022-01-21
 ### Fixed

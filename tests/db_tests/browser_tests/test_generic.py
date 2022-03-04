@@ -1,5 +1,4 @@
 import operator
-import time
 
 import pytest
 from django.urls import reverse
@@ -109,7 +108,6 @@ def test_responsiveness(live_server, webdriver):
 
     # now toggle the sidebar to expand again
     webdriver.find_element(By.CLASS_NAME, "navbar-toggler").click()
-    time.sleep(1)  # wait a moment until sidebar reveals, in order to make chrome tests pass
     # sidebar items should be present again
     webdriver.find_element(By.LINK_TEXT, "WORKOUTIZER")
     webdriver.find_element(By.LINK_TEXT, "SPORTS")
