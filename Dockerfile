@@ -53,7 +53,7 @@ WORKDIR /workspaces/workoutizer
 
 # install pip dependencies
 RUN pip install --upgrade poetry
-RUN poetry install
+RUN poetry install --no-interaction --no-root
 
 ENV SHELL /bin/zsh
 ENV WKZ_ENV='devel'
@@ -69,4 +69,4 @@ WORKDIR /workspaces/workoutizer
 # set convenience alias
 RUN echo 'alias run_all_tests="pytest tests -v -n auto --html=pytest-report.html"' >> ~/.zshrc
 
-RUN /bin/bash -c 'poetry install'
+RUN poetry install --no-interaction
