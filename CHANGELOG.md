@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   pipeline and reduce the number of features to be maintained.
 ### Added
 * Added support for Python3.10.
+### Fixed
+* Upgrade geckodriver to v0.30.0 in local docker setup to fix failing firefox tests
+  because of incompatible selenium version.
 
 ## [0.24.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.24.0) - 2022-01-21
 ### Fixed
