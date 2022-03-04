@@ -573,11 +573,7 @@ def test_trophy_icon_for_awarded_activity_is_displayed_correctly(db, live_server
     assert len(webdriver.find_elements(By.CLASS_NAME, "fa-trophy")) == 3
 
 
-def test_bokeh_lap_button(import_one_activity, live_server, webdriver_firefox, take_screenshot, tmp_path):
-    # note: this test is ran with firefox only, since chrome did take screenshots
-    # with different colors than expected when running with mac os.
-    webdriver = webdriver_firefox()
-
+def test_bokeh_lap_button(import_one_activity, live_server, webdriver, take_screenshot, tmp_path):
     import_one_activity("2020-08-20-09-34-33.fit")
 
     # fix window size to (hopefully) fix varying behavior across different os'+python versions
