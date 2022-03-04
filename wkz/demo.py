@@ -3,7 +3,6 @@ import logging
 import os
 import shutil
 from dataclasses import dataclass
-from distutils.dir_util import copy_tree
 from types import ModuleType
 
 import pytz
@@ -46,7 +45,7 @@ sport_name_mapping = {
 def copy_demo_fit_files_to_track_dir(source_dir: str, targe_dir: str, list_of_files_to_copy: list = []):
     log.debug(f"copying demo activities from {source_dir} to {targe_dir}")
     if not list_of_files_to_copy:
-        copy_tree(source_dir, targe_dir)
+        shutil.copytree(source_dir, targe_dir, dirs_exist_ok=True)
     else:
         for file in list_of_files_to_copy:
             shutil.copy2(os.path.join(source_dir, file), targe_dir)
