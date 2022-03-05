@@ -45,7 +45,6 @@ luddite = "^1.0.2"
 numpy = "^1.22.2"
 pandas = "^1.4.1"
 psutil = "^5.9.0"
-requests = "^2.27.1"
 sportgems = "^0.7.1"        # starting from 0.7.0 supports Python3.10 while support for 3.7 was dropped
 tenacity = "^8.0.1"
 pyudev = "^0.23.2"
