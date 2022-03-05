@@ -8,7 +8,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
-from wkz.io.file_importer import run_importer__dask
+from wkz.io.file_importer import run_importer
 from wkz.tools import sse
 from workoutizer import settings as django_settings
 
@@ -206,7 +206,7 @@ class Settings(models.Model):
             from wkz import models
 
             if Path(self.path_to_trace_dir).is_dir():
-                run_importer__dask(models)
+                run_importer(models)
             else:
                 sse.send(f"<code>{self.path_to_trace_dir}</code> is not a valid path.", "red", "WARNING")
         self.__original_path_to_trace_dir = self.path_to_trace_dir

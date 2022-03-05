@@ -329,7 +329,7 @@ def _check_and_parse_file(
             return md5sum, path_to_file, None
 
 
-def run_importer__dask(models: ModuleType, importing_demo_data: bool = False, reimporting: bool = False) -> None:
+def run_importer(models: ModuleType, importing_demo_data: bool = False, reimporting: bool = False) -> None:
     path_to_traces = models.get_settings().path_to_trace_dir
     log.debug(f"triggered file importer on path: {path_to_traces}")
 

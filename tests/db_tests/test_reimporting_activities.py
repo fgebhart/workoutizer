@@ -8,7 +8,7 @@ import pytz
 from wkz import configuration, models
 from wkz.best_sections.generic import activity_suitable_for_awards
 from wkz.demo import prepare_import_of_demo_activities
-from wkz.io.file_importer import run_importer__dask
+from wkz.io.file_importer import run_importer
 
 
 def test_reimport_of_activities(tracks_in_tmpdir, client):
@@ -33,7 +33,7 @@ def test_reimport_of_activities(tracks_in_tmpdir, client):
     assert models.Sport.objects.count() == 0
     assert models.Settings.objects.count() == 1
 
-    run_importer__dask(models, importing_demo_data=True)
+    run_importer(models, importing_demo_data=True)
     assert models.Sport.objects.count() == 3
     all_activities = models.Activity.objects.all()
     assert len(all_activities) == 11
@@ -135,7 +135,7 @@ def test_reimport_of_activities(tracks_in_tmpdir, client):
     assert new_path.is_file()
 
     # 3. trigger reimport to update values
-    run_importer__dask(models, reimporting=True)
+    run_importer(models, reimporting=True)
 
     all_activities = models.Activity.objects.all()
     assert len(all_activities) == 11
@@ -203,7 +203,7 @@ def test_reimporting_of_best_sections(import_one_activity, kind):
     assert models.Activity.objects.count() == 1
     assert models.Settings.objects.count() == 1
 
-    run_importer__dask(models)
+    run_importer(models)
     assert models.Activity.objects.count() == 1
 
     activity = models.Activity.objects.get()
@@ -246,7 +246,7 @@ def test_reimporting_of_best_sections(import_one_activity, kind):
     assert len(models.BestSection.objects.filter(activity=activity, kind=kind)) == orig_number_of_best_sections + 1
 
     # now trigger reimport to update modified values
-    run_importer__dask(models, reimporting=True)
+    run_importer(models, reimporting=True)
 
     # check that dummy section was deleted because it is not present in the configured fastest sections
     assert len(models.BestSection.objects.filter(activity=activity, kind=kind)) == orig_number_of_best_sections
@@ -284,7 +284,7 @@ def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_acti
     assert activity_suitable_for_awards(activity) is False
 
     # reimport activity
-    run_importer__dask(models, reimporting=True)
+    run_importer(models, reimporting=True)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
@@ -300,7 +300,7 @@ def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_acti
     assert activity_suitable_for_awards(activity) is True
 
     # reimport activity
-    run_importer__dask(models, reimporting=True)
+    run_importer(models, reimporting=True)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
@@ -327,7 +327,7 @@ def test_reimport__not_evaluates_for_awards__changing_activity_flag(import_one_a
     assert activity_suitable_for_awards(activity) is False
 
     # reimport activity
-    run_importer__dask(models, reimporting=True)
+    run_importer(models, reimporting=True)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
@@ -342,7 +342,7 @@ def test_reimport__not_evaluates_for_awards__changing_activity_flag(import_one_a
     assert activity_suitable_for_awards(activity) is True
 
     # reimport activity
-    run_importer__dask(models, reimporting=True)
+    run_importer(models, reimporting=True)
 
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
@@ -352,7 +352,7 @@ def test_reimport__not_evaluates_for_awards__changing_activity_flag(import_one_a
     assert models.BestSection.objects.filter(activity=activity).count() > 0
 
 
-def test_run_importer__dask__reimporting(tmp_path, import_one_activity):
+def test_run_importer__reimporting(tmp_path, import_one_activity):
     import_one_activity("cycling_bad_schandau.fit")
     assert models.Activity.objects.count() == 1
     activity = models.Activity.objects.get()
@@ -366,7 +366,7 @@ def test_run_importer__dask__reimporting(tmp_path, import_one_activity):
     activity = models.Activity.objects.get()
     assert activity.name == "Foo"
 
-    run_importer__dask(models, reimporting=True)
+    run_importer(models, reimporting=True)
 
     # the name should not have changed during reimporting
     assert models.Activity.objects.filter(name="Foo").count() == 1

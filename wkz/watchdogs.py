@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 from wkz import models
-from wkz.io.file_importer import run_importer__dask
+from wkz.io.file_importer import run_importer
 from wkz.io.fit_collector import collect_fit_files_from_device
 
 log = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 def trigger_file_watchdog():
     settings = models.get_settings()
     if Path(settings.path_to_trace_dir).is_dir():
-        run_importer__dask(models)
+        run_importer(models)
     else:
         log.warning(f"File Watchdog: {settings.path_to_trace_dir} is not a valid directory.")
 

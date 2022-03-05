@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   longer run on Chrome. It is very likely that it still works without any issue. The
   purpose of removing the chrome testing pipeline is to speed up the entire build
   pipeline and reduce the number of features to be maintained.
+* Removed the usage of Dask & distributed for parallel file importing. The speed up
+  of using dask was not as high as expected. Reason being the database bottleneck.
+  Thus removing the dependency and falling back to purely sequential file imports.
 ### Added
 * Added support for Python3.10.
 ### Fixed
