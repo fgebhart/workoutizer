@@ -26,5 +26,3 @@ profiling/
 *.prof
 pytest-report.html
 assets/
-dask-worker-space/
-*_dask_report.html
