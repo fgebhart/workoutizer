@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Removed the usage of Dask & distributed for parallel file importing. The speed up
   of using dask was not as high as expected. Reason being the database bottleneck.
   Thus removing the dependency and falling back to purely sequential file imports.
+* Removed `requests` library. Functionality is covered by stdlib `urllib` also.
 ### Added
 * Added support for Python3.10.
 ### Fixed

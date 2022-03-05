@@ -1,11 +1,12 @@
 import os
 import subprocess
 import sys
+import urllib
+from http.client import RemoteDisconnected
 from pathlib import Path
 
 import click
 import luddite
-import requests
 from django.core.management import execute_from_command_line
 from django.db.utils import OperationalError
 
@@ -186,13 +187,16 @@ def _pip_install(package: str) -> str:
 
 def _stop():
     host = get_local_ip_address()
-    click.echo(f"stopping workoutizer at {host}")
     url = f"http://{host}:8000/stop/"
     try:
-        requests.post(url)
+        urllib.request.urlopen(url).getcode()
+        # stop wkz irrespective of return code
+        click.echo(f"stopping workoutizer at {host}")
+        urllib.request.Request(url, data={}, method="POST")
+    except RemoteDisconnected:
         click.echo("Stopped.")
-    except requests.exceptions.ConnectionError:
-        click.echo("Workoutizer is not running.")
+    except urllib.error.URLError:
+        click.echo("Workoutizer is not running")
 
 
 class NotInitializedError(Exception):

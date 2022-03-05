@@ -26,7 +26,7 @@ def mount_device_endpoint(request):
         return Response("No Garmin device connected.", status=status.HTTP_200_OK)
 
 
-@api_view(["POST"])
+@api_view(["POST", "GET"])
 def stop_django_server(request):
     log.info("Stopped.")
     pid = os.getpid()
