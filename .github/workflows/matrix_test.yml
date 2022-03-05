@@ -36,6 +36,11 @@ jobs:
       run: |
         pip install isort==5.10.1
         isort . --check-only
+    - name: mypy
+      if: always()
+      run: |
+        pip install mypy==0.931
+        mypy . --check-only
 
   test:
     name: Test

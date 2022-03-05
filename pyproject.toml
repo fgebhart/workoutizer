@@ -52,11 +52,12 @@ Pillow = "^9.0.0"
 tomli = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
-# following three are pinned to avoid unexpected formatting changes,
+# following four are pinned to avoid unexpected formatting changes,
 # if upgrade, ensure to be in line with github action workflow and pre-commit hooks
 black = "22.1.0"
 flake8 = "4.0.1"
 isort =  "5.10.1"
+mypy = "0.931"
 ipdb = "^0.13.9"
 ipython = "^7.29.0"
 lxml = "^4.6.5"
