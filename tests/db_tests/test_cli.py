@@ -1,6 +1,5 @@
 import os
 
-import pytest
 from click.testing import CliRunner
 from django.core.management import execute_from_command_line
 
@@ -11,19 +10,21 @@ from workoutizer.cli import wkz
 
 
 def test_cli_version():
-    cli = CliRunner()
-    output = cli.invoke(wkz, ["--version"])
+    runner = CliRunner()
+    output = runner.invoke(wkz, ["--version"])
     assert output.stdout == f"{__version__}\n"
 
 
 def test_cli__init(tracks_in_tmpdir):
-    cli._init(import_demo_activities=False)
+    runner = CliRunner()
+    runner.invoke(wkz, ["init"])
     assert os.path.isdir(django_settings.WORKOUTIZER_DIR)
     assert len(models.Sport.objects.all()) == 0
     assert len(models.Activity.objects.all()) == 0
     assert len(models.Settings.objects.all()) == 1
 
-    cli._init(import_demo_activities=True)
+    runner = CliRunner()
+    runner.invoke(wkz, ["init", "--demo"])
     assert os.path.isdir(django_settings.WORKOUTIZER_DIR)
     assert len(models.Sport.objects.all()) == 4
     assert len(models.Settings.objects.all()) == 1
@@ -32,21 +33,24 @@ def test_cli__init(tracks_in_tmpdir):
 
 def test_cli__check__demo_data(tracks_in_tmpdir):
     # initialized wkz with demo data and then run check
-    cli._init(import_demo_activities=True)
-    cli._check()
+    runner = CliRunner()
+    runner.invoke(wkz, ["init", "--demo"])
+    runner.invoke(wkz, ["check"])
 
 
 def test_cli__check__no_demo_data(db):
     # initialized wkz without demo data and then run check
-    cli._init(import_demo_activities=False)
-    cli._check()
+    runner = CliRunner()
+    runner.invoke(wkz, ["init"])
+    runner.invoke(wkz, ["check"])
 
 
 def test_cli__check__not_initialized(db):
     # if wkz is not initialized expect to raise error - ensure to start with no preexisting db
     execute_from_command_line(["manage.py", "flush", "--noinput"])
-    with pytest.raises(cli.NotInitializedError, match="ERROR: Make sure to execute 'wkz init' first"):
-        cli._check()
+    runner = CliRunner()
+    result = runner.invoke(wkz, ["check"])
+    assert isinstance(result.exception, cli.NotInitializedError)
 
 
 def test_cli__reimport(import_one_activity):
@@ -60,7 +64,8 @@ def test_cli__reimport(import_one_activity):
     activity.save()
     assert activity.distance != orig_distance
 
-    cli._reimport()
+    runner = CliRunner()
+    runner.invoke(wkz, ["reimport"])
 
     activity = models.Activity.objects.get()
     assert activity.distance == orig_distance
@@ -76,6 +81,12 @@ def test__check_for_update(monkeypatch):
     monkeypatch.setattr(cli.luddite, "get_version_pypi", mocked_get_version_pypi)
 
     assert cli._check_for_update() is False
+    runner = CliRunner()
+    output = runner.invoke(wkz, ["check-for-update"])
+    assert output.stdout == (
+        f"Your installed version ({__version__}) seems to be greater than "
+        f"the latest version on pypi ({pypi_version}).\n"
+    )
 
     # mock pypi version to equal the current version
     pypi_version = __version__
@@ -86,6 +97,9 @@ def test__check_for_update(monkeypatch):
     monkeypatch.setattr(cli.luddite, "get_version_pypi", mocked_get_version_pypi)
 
     assert cli._check_for_update() is False
+    runner = CliRunner()
+    output = runner.invoke(wkz, ["check-for-update"])
+    assert output.stdout == f"No update available. You are running the latest version: {__version__}\n"
 
     # mock pypi version to be larger than the current version
     pypi_version = "9999.9999.9999"
@@ -96,3 +110,6 @@ def test__check_for_update(monkeypatch):
     monkeypatch.setattr(cli.luddite, "get_version_pypi", mocked_get_version_pypi)
 
     assert cli._check_for_update() is True
+    runner = CliRunner()
+    output = runner.invoke(wkz, ["check-for-update"])
+    assert output.stdout == f"Newer version available: {pypi_version}. You are running: {__version__}\n"
