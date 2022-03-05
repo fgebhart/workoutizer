@@ -1,11 +1,10 @@
 {
-    "python.pythonPath": "/tmp/venv/bin/python3.8",
-    "python.testing.pytestPath": "/tmp/venv/bin/pytest",
+    "python.testing.pytestPath": "/root/.cache/pypoetry/virtualenvs/workoutizer-1MVuUryc-py3.8/bin/pytest",
     "python.linting.flake8Enabled": true,
-    "python.linting.flake8Path": "/tmp/venv/bin/flake8",
+    "python.linting.flake8Path": "/root/.cache/pypoetry/virtualenvs/workoutizer-1MVuUryc-py3.8/bin/flake8",
     "python.linting.enabled": true,
     "python.formatting.provider": "black",
-    "python.formatting.blackPath": "/tmp/venv/bin/black",
+    "python.formatting.blackPath": "/root/.cache/pypoetry/virtualenvs/workoutizer-1MVuUryc-py3.8/bin/black",
     "cSpell.words": [
         "combi",
         "datetimepicker",
