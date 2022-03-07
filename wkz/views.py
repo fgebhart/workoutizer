@@ -47,7 +47,6 @@ class WKZView(View):
 
 class MapView(View):
     number_of_days = None
-    days_choices = None
     settings = None
 
     def get(self, request, list_of_activities: list):
@@ -55,7 +54,6 @@ class MapView(View):
         setattr(self.settings, "trace_width", django_settings.trace_line_width)
         setattr(self.settings, "trace_opacity", django_settings.trace_line_opacity)
         self.number_of_days = self.settings.number_of_days
-        self.days_choices = models.Settings.days_choices
         traces = []
         for activity in list_of_activities:
             if activity.trace_file:
@@ -77,14 +75,13 @@ class MapView(View):
             "traces": traces,
             "settings": self.settings,
             "days": self.number_of_days,
-            "choices": self.days_choices,
+            "choices": self.settings.days_choices,
             "has_traces": has_traces,
         }
 
 
 class PlotView:
     number_of_days = None
-    days_choices = None
     settings = None
 
     def get_days_config(self):
@@ -292,7 +289,7 @@ def get_flat_list_of_pks_of_activities_in_top_awards(filter_on_sport: Union[None
     return list(set(top_award_pks))
 
 
-def get_bulk_of_rows_for_next_page(request, page: str):
+def get_bulk_of_rows_for_next_page(request, page: int):
     page = int(page)
     template_name = "lib/row_bulk.html"
     current_url = request.META.get("HTTP_HX_CURRENT_URL")
