@@ -1,3 +1,5 @@
+from typing import Callable, List
+
 from sportgems import find_best_climb_section
 
 from wkz.best_sections.generic import GenericBestSection
@@ -25,3 +27,15 @@ def get_best_climb_section(distance: int, parser) -> GenericBestSection:
         max_value=round(section.climb, 2),
         kind="climb",
     )
+
+
+class BestClimbSections:
+    kind: str = "climb"
+    parser: Callable = get_best_climb_section
+    distances: List[int] = [  # in meter
+        100,
+        200,
+        500,
+        1_000,
+        2_000,
+    ]
