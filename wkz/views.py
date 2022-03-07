@@ -70,9 +70,9 @@ class MapView(View):
         if traces:
             # simple approach to quickly create a large list of colors and then strip it to the required length
             colors = (sport_trace_colors * len(traces))[: len(traces)]
-            traces = zip(traces, colors)
+            traces_w_colors = zip(traces, colors)
         return {
-            "traces": traces,
+            "traces": traces_w_colors if traces else [],
             "settings": self.settings,
             "days": self.number_of_days,
             "choices": self.settings.days_choices,
