@@ -51,8 +51,8 @@ rank_limit = 3
 
 # best sections config
 best_sections: List = [FastestSections, BestClimbSections]
-fastest_distances = BestClimbSections.distances
-climb_distances = FastestSections.distances
+fastest_distances = FastestSections.distances
+climb_distances = BestClimbSections.distances
 
 # with respect to the table listing activities used both on dashboard and sport page
 number_of_rows_per_page_in_table = 40
