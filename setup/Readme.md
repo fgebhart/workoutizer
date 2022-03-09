@@ -74,7 +74,8 @@ with the following content:
 ```
 [Unit]
 Description=Workoutizer
-After=syslog.target network.target
+After=syslog.target network-online.target
+Wants=network-online.target
 
 [Service]
 User=pi
