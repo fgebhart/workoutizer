@@ -124,4 +124,4 @@ class Parser:
                         # e.g NoSectionFoundException and InvalidDesiredDistanceException
 
         for bs in configuration.best_sections:
-            _get_best_sections_for_section_kind(bs["parser"], bs["distances"])
+            _get_best_sections_for_section_kind(bs.parser, bs.distances)

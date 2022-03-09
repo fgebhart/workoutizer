@@ -128,11 +128,11 @@ def test_dashboard_page__complete(import_demo_data, live_server, webdriver):
 
     for sport in sport_slugs:
         for bs in configuration.best_sections:
-            for distance in bs["distances"]:
+            for distance in bs.distances:
                 top_awards = models.BestSection.objects.filter(
                     activity__sport__slug=sport,
                     activity__evaluates_for_awards=True,
-                    kind=bs["kind"],
+                    kind=bs.kind,
                     distance=distance,
                 ).order_by("-max_value")[: configuration.rank_limit]
                 top_award_pks += [str(award.activity.pk) for award in top_awards]
