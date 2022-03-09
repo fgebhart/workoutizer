@@ -271,11 +271,11 @@ def get_flat_list_of_pks_of_activities_in_top_awards(filter_on_sport: Union[None
         ]
     for sport in sport_slugs:
         for bs in cfg.best_sections:
-            for distance in bs["distances"]:
+            for distance in bs.distances:
                 top_awards = models.BestSection.objects.filter(
                     activity__sport__slug=sport,
                     activity__evaluates_for_awards=True,
-                    kind=bs["kind"],
+                    kind=bs.kind,
                     distance=distance,
                 ).order_by("-max_value")[: cfg.rank_limit]
                 top_award_pks += [award.activity.pk for award in top_awards]

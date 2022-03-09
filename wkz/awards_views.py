@@ -91,8 +91,8 @@ def _get_best_sections_of_sport_and_distance(
 def get_top_awards_for_one_sport(sport: models.Sport, top_score: int, kinds: List[str]) -> List[models.BestSection]:
     awards = []
     for bs in cfg.best_sections:
-        if bs["kind"] in kinds:
-            for distance in bs["distances"]:
+        if bs.kind in kinds:
+            for distance in bs.distances:
                 awards_per_distance = _get_best_sections_of_sport_and_distance(sport, distance, top_score, kinds)
                 for rank, section in enumerate(awards_per_distance):
                     setattr(section, "rank", rank + 1)

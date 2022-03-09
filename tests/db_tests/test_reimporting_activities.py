@@ -6,6 +6,7 @@ import pytest
 import pytz
 
 from wkz import configuration, models
+from wkz.best_sections.climb import BestClimbSections
 from wkz.best_sections.generic import activity_suitable_for_awards
 from wkz.demo import prepare_import_of_demo_activities
 from wkz.io.file_importer import run_importer
@@ -263,7 +264,7 @@ def test_reimporting_of_best_sections(import_one_activity, kind):
             assert section.distance in configuration.fastest_distances
     elif kind == "climb":
         for section in updated_bs:
-            assert section.distance in configuration.climb_distances
+            assert section.distance in BestClimbSections.distances
 
 
 def test_reimport__not_evaluates_for_awards__changing_sport_flag(import_one_activity):

@@ -3,8 +3,7 @@ import math
 import pytest
 from sportgems import DistanceTooSmallException, find_best_climb_section
 
-from wkz import configuration
-from wkz.best_sections.climb import get_best_climb_section
+from wkz.best_sections.climb import BestClimbSections, get_best_climb_section
 
 
 def test_sportgems_climb_interface__dummy_data():
@@ -99,7 +98,7 @@ def test_sportgems_climb_interface__fit_file_without_altitude_data(fit_parser):
     parser = fit_parser("2020-09-12-11-15-46.fit")
     # set altitude list to empty list to simulate a fit file without altitude data
     parser.altitude_list = []
-    for distance in configuration.climb_distances:
+    for distance in BestClimbSections.distances:
         result = get_best_climb_section(distance, parser)
 
         # sanity check that no section causes rust panic

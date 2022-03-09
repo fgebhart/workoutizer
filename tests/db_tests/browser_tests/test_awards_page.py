@@ -7,6 +7,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from wkz import configuration as cfg
 from wkz import models
+from wkz.best_sections.climb import BestClimbSections
 
 
 def test_awards_page__complete(import_demo_data, live_server, webdriver):
@@ -151,7 +152,7 @@ def test_correct_activities_are_listed_on_awards_page(import_demo_data, live_ser
     assert "CLIMB  " in th
 
     climb_top_awards = []
-    for distance in cfg.climb_distances:
+    for distance in BestClimbSections.distances:
         awards = models.BestSection.objects.filter(
             distance=distance,
             activity__evaluates_for_awards=True,
