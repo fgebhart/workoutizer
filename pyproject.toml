@@ -28,7 +28,7 @@ packages = [
 wkz = "workoutizer.cli:wkz"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.11"
 bokeh = "1.4.0"             # pinned due to CustomJS "use_strict" mode, will break my CustomJS
 channels = "^3.0.4"
 coloredlogs = "^15.0.1"
