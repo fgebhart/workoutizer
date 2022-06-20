@@ -54,7 +54,7 @@ tomli = "^2.0.1"
 [tool.poetry.dev-dependencies]
 # following three are pinned to avoid unexpected formatting changes,
 # if upgrade, ensure to be in line with github action workflow and pre-commit hooks
-black = "22.1.0"
+black = "22.3.0"
 flake8 = "4.0.1"
 isort =  "5.10.1"
 ipdb = "^0.13.9"
