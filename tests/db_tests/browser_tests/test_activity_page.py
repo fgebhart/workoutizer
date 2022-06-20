@@ -149,7 +149,7 @@ def test_activity_page__complete__gpx(import_one_activity, live_server, webdrive
     assert "Calories" in card_category
     card_title = [cell.text for cell in webdriver.find_elements(By.CLASS_NAME, "card-title")]
     assert "3h 32m" in card_title
-    assert "82.6 km" in card_title
+    assert "82.51 km" in card_title
     assert "- kcal" in card_title
     assert "28. May 21" in card_title
 

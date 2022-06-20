@@ -1,11 +1,11 @@
 import logging
 from dataclasses import dataclass
-from math import acos, cos, pi, sin
 from typing import List, Tuple
 
 import pandas as pd
 from geopy.geocoders import Nominatim
 from geopy.point import Point
+from haversine import Unit, haversine
 
 from wkz import configuration as cfg
 
@@ -23,19 +23,8 @@ class GeoTrace:
     weight: float = 3.0
 
 
-def _to_rad(degree: float) -> float:
-    return degree / 180 * pi
-
-
 def calculate_distance_between_points(coordinate_1: Tuple[float], coordinate_2: Tuple[float]) -> float:
-    if coordinate_1[0] == coordinate_2[0] and coordinate_1[1] == coordinate_2[1]:
-        return 0.0
-    distance = acos(
-        sin(_to_rad(coordinate_1[0])) * sin(_to_rad(coordinate_2[0]))
-        + cos(_to_rad(coordinate_1[0])) * cos(_to_rad(coordinate_2[0])) * cos(_to_rad(coordinate_1[1] - coordinate_2[1]))
-    )
-    # multiply by earth radius (nominal "zero tide" equatorial) in centimeter
-    return distance * 6378100
+    return haversine(coordinate_1, coordinate_2, unit=Unit.METERS)
 
 
 def get_total_distance_of_trace(longitude_list: List[float], latitude_list: List[float]) -> float:

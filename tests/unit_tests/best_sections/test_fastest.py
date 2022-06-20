@@ -73,7 +73,7 @@ def test_get_fastest_section__fit(fit_parser):
 
 def test_get_fastest_section__gpx(gpx_parser):
     parser = gpx_parser()
-    assert parser.distance == 4.3
+    assert parser.distance == 4.29
 
     # test fastest 1km
     res = get_fastest_section(1000, parser)
