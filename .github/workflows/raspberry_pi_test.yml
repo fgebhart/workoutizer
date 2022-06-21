@@ -5,7 +5,7 @@ on:
   pull_request:
     paths:
       - "**.py"
-      - "setup/requirements/**.txt"
+      - "pyproject.toml"
       - ".github/workflows/raspberry_pi_test.yml"
 
   push:
