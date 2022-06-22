@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-...
+### Fixed
+* #239: Rounding error when calculating distance between two coordinates which small
+  proximity was fixed by replacing custom math formula with haversine.
+
 
 ## [0.25.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.25.0) - 2022-03-09
 ### Changed

@@ -21,14 +21,22 @@ def test_calculate_distance_between_points__different_points():
     coordinate_1 = (48.123, 9.456)
     coordinate_2 = (49.678, 9.567)
     distance = calculate_distance_between_points(coordinate_1, coordinate_2)
-    assert math.isclose(distance, 173291.21920642233, abs_tol=0.01)
+    assert math.isclose(distance, 173098.55, abs_tol=0.01)
 
 
 def test_calculate_distance_between_points__other_points():
     coordinate_1 = (48.0, 8.0)
     coordinate_2 = (48.0, 8.1)
     distance = calculate_distance_between_points(coordinate_1, coordinate_2)
-    assert math.isclose(distance, 7448.684105664539, abs_tol=0.01)
+    assert math.isclose(distance, 7440.4, abs_tol=0.01)
+
+
+def test_calculate_distance_between_points__close_points():
+    # this test reproduces the rounding error described in #239
+    coordinate_1 = (46.24446, 14.191566)
+    coordinate_2 = (46.24446, 14.191565)
+    distance = calculate_distance_between_points(coordinate_1, coordinate_2)
+    assert math.isclose(distance, 0.0769, abs_tol=0.01)
 
 
 def test_get_total_distance_of_trace__basic():
@@ -38,14 +46,14 @@ def test_get_total_distance_of_trace__basic():
         get_total_distance_of_trace(longitude_list=[0], latitude_list=[0, 1])
     with pytest.raises(ValueError):
         get_total_distance_of_trace(longitude_list=[0, 1], latitude_list=[0])
-    assert get_total_distance_of_trace(longitude_list=[48, 48], latitude_list=[8, 9]) == 111.32
-    assert get_total_distance_of_trace(longitude_list=[48, 48], latitude_list=[-8, -9]) == 111.32
-    assert get_total_distance_of_trace(longitude_list=[-48, -48], latitude_list=[-8, -9]) == 111.32
-    assert get_total_distance_of_trace(longitude_list=[-48, -48], latitude_list=[8, 9]) == 111.32
+    assert get_total_distance_of_trace(longitude_list=[48, 48], latitude_list=[8, 9]) == 111.2
+    assert get_total_distance_of_trace(longitude_list=[48, 48], latitude_list=[-8, -9]) == 111.2
+    assert get_total_distance_of_trace(longitude_list=[-48, -48], latitude_list=[-8, -9]) == 111.2
+    assert get_total_distance_of_trace(longitude_list=[-48, -48], latitude_list=[8, 9]) == 111.2
 
 
 def test_get_total_distance_of_trace__reversed_points():
-    assert get_total_distance_of_trace(longitude_list=[99, 98], latitude_list=[16, 16]) == 107.01
+    assert get_total_distance_of_trace(longitude_list=[99, 98], latitude_list=[16, 16]) == 106.89
 
 
 def test_add_elevation_data_to_coordinates():
