@@ -8,4 +8,4 @@ docker run \
   -it \
   -v $(pwd):/wkz \
   wkz \
-  /bin/bash -c "source /tmp/venv/bin/activate && bash"
+  /bin/bash -c "poetry shell && bash"
