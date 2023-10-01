@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 * #239: Rounding error when calculating distance between two coordinates which small
   proximity was fixed by replacing custom math formula with haversine.
-
+## Removed
+* Removed Raspberry Pi installation test as it required more maintenance efforts than
+  provided value.
 
 ## [0.25.0](https://github.com/fgebhart/workoutizer/releases/tag/v0.25.0) - 2022-03-09
 ### Changed
