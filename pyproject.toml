@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "workoutizer"
-version = "0.25.0"
+version = "0.25.1"
 description = "🏋️ Browser based Sport and Workout Organizer 🏃‍♀️"
 authors = ["Fabian Gebhart"]
 repository = "https://github.com/fgebhart/workoutizer"
