@@ -646,13 +646,13 @@ six = ">=1.10,<2"
 
 [[package]]
 name = "django-grip"
-version = "3.1.0"
+version = "3.2.0"
 description = "Django GRIP library"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "django-grip-3.1.0.tar.gz", hash = "sha256:43c7a08c292d8e8999faef6628534d8e55ef0e61d828ebab6eaf7a97d2c5a9c3"},
+    {file = "django-grip-3.2.0.tar.gz", hash = "sha256:e5697659e1da3ca7cd6925c6707e9f99328b746f681f350be0f3c1757d14256f"},
 ]
 
 [package.dependencies]
@@ -660,7 +660,7 @@ Django = ">=1.9"
 gripcontrol = ">=4.0,<5"
 pubcontrol = ">=3.0,<4"
 six = ">=1.10,<2"
-Werkzeug = ">=1.0,<2.1"
+Werkzeug = ">=1.0,<2.3"
 
 [[package]]
 name = "djangorestframework"
@@ -2479,15 +2479,18 @@ files = [
 
 [[package]]
 name = "werkzeug"
-version = "2.0.3"
+version = "2.2.3"
 description = "The comprehensive WSGI web application library."
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "Werkzeug-2.0.3-py3-none-any.whl", hash = "sha256:1421ebfc7648a39a5c58c601b154165d05cf47a3cd0ccb70857cbdacf6c8f2b8"},
-    {file = "Werkzeug-2.0.3.tar.gz", hash = "sha256:b863f8ff057c522164b6067c9e28b041161b4be5ba4d0daceeaa50a163822d3c"},
+    {file = "Werkzeug-2.2.3-py3-none-any.whl", hash = "sha256:56433961bc1f12533306c624f3be5e744389ac61d722175d543e1751285da612"},
+    {file = "Werkzeug-2.2.3.tar.gz", hash = "sha256:2e1ccc9417d4da358b9de6f174e3ac094391ea1d4fbef2d667865d819dfd0afe"},
 ]
+
+[package.dependencies]
+MarkupSafe = ">=2.1.1"
 
 [package.extras]
 watchdog = ["watchdog"]
