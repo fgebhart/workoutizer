@@ -31,8 +31,7 @@ uploading all your sensitive health data to some 3rd party cloud.
 
 ## Status
 
-Workoutizer is still in a somewhat experimental phase. Things might change a lot from one version to another. However,
-I'm happy to receive bug reports and feedback.
+Workoutizer is no longer actively maintained. Use it with caution and feel free to fork it.
 
 
 ## Getting Started
